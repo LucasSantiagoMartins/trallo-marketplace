@@ -12,8 +12,10 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({
   className = "" 
 }) => {
   return (
-    <div className={`relative flex min-h-screen w-full max-w-[430px] mx-auto flex-col bg-background overflow-x-hidden ${showBottomNav ? 'pb-24' : ''} ${className}`}>
-      {children}
+    <div className={`relative flex min-h-screen w-full mx-auto flex-col bg-background overflow-x-hidden ${showBottomNav ? 'pb-24 lg:pb-0' : ''} ${className}`}>
+      <div className="w-full max-w-7xl mx-auto">
+        {children}
+      </div>
       
       {/* Decorative Background Elements */}
       <div className="fixed top-[-100px] right-[-100px] w-64 h-64 bg-primary/5 rounded-full blur-3xl pointer-events-none" />

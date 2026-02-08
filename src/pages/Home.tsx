@@ -82,18 +82,18 @@ const Home: React.FC = () => {
       
       <main className="mt-2">
         {/* Carousel Section */}
-        <div className="px-4 py-4">
+        <div className="px-4 md:px-6 lg:px-8 py-4">
           <Carousel slides={carouselSlides} />
         </div>
 
         {/* Featured Products Section */}
-        <div className="px-4 pt-4 pb-4 flex items-center justify-between">
-          <h2 className="text-xl font-bold clash-style">Destaques Para Ti</h2>
-          <button className="text-primary text-sm font-semibold">Ver todos</button>
+        <div className="px-4 md:px-6 lg:px-8 pt-4 pb-4 flex items-center justify-between">
+          <h2 className="text-xl md:text-2xl font-bold clash-style">Destaques Para Ti</h2>
+          <button className="text-primary text-sm font-semibold hover:underline">Ver todos</button>
         </div>
 
-        {/* Product Grid */}
-        <div className="grid grid-cols-2 gap-4 px-4">
+        {/* Product Grid - Responsive */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 px-4 md:px-6 lg:px-8">
           {products.map((product) => (
             <ProductCard
               key={product.id}
@@ -111,12 +111,12 @@ const Home: React.FC = () => {
         </div>
 
         {/* Local Brands CTA */}
-        <div className="px-4 py-8">
-          <div className="bg-foreground rounded-xl p-6 text-background flex items-center justify-between overflow-hidden relative">
+        <div className="px-4 md:px-6 lg:px-8 py-8">
+          <div className="bg-foreground rounded-xl p-6 md:p-8 text-background flex items-center justify-between overflow-hidden relative">
             <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 rounded-full blur-3xl -mr-10 -mt-10" />
             <div className="relative z-10 flex-1">
-              <h3 className="text-xl font-bold mb-1 clash-style">Marcas Locais</h3>
-              <p className="text-xs text-muted-foreground mb-4">
+              <h3 className="text-xl md:text-2xl font-bold mb-1 clash-style">Marcas Locais</h3>
+              <p className="text-xs md:text-sm text-muted-foreground mb-4">
                 Descobre o melhor do Made in Angola
               </p>
               <button className="text-primary text-sm font-bold flex items-center gap-1 group">
@@ -126,8 +126,8 @@ const Home: React.FC = () => {
                 </span>
               </button>
             </div>
-            <div className="relative z-10 w-24 h-24 bg-card/5 rounded-full flex items-center justify-center border border-card/10">
-              <span className="material-symbols-outlined text-4xl text-primary">verified_user</span>
+            <div className="relative z-10 w-24 h-24 md:w-32 md:h-32 bg-card/5 rounded-full flex items-center justify-center border border-card/10">
+              <span className="material-symbols-outlined text-4xl md:text-5xl text-primary">verified_user</span>
             </div>
           </div>
         </div>

@@ -24,27 +24,27 @@ const Carousel: React.FC<CarouselProps> = ({ slides, activeIndex = 0 }) => {
         {slides.map((slide, index) => (
           <div key={slide.id} className="min-w-full snap-start pr-2 last:pr-0">
             <div
-              className="relative w-full h-48 rounded-2xl overflow-hidden flex items-center"
+              className="relative w-full h-48 md:h-64 lg:h-80 rounded-2xl overflow-hidden flex items-center"
               style={{ backgroundColor: slide.backgroundColor }}
             >
               <div
                 className="absolute inset-0 bg-cover bg-center mix-blend-overlay opacity-40"
                 style={{ backgroundImage: `url('${slide.backgroundImage}')` }}
               />
-              <div className="relative z-10 px-6 w-2/3">
+              <div className="relative z-10 px-6 md:px-10 lg:px-12 w-2/3 md:w-1/2">
                 <span
-                  className={`text-primary-foreground text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-widest mb-2 inline-block ${
+                  className={`text-primary-foreground text-[10px] md:text-xs font-bold px-2 py-1 rounded-full uppercase tracking-widest mb-2 inline-block ${
                     slide.tagColor || 'bg-white/20'
                   }`}
                 >
                   {slide.tag}
                 </span>
-                <h3 className="text-primary-foreground text-2xl font-bold leading-tight mb-2 clash-style">
+                <h3 className="text-primary-foreground text-2xl md:text-3xl lg:text-4xl font-bold leading-tight mb-2 clash-style">
                   {slide.title}
                 </h3>
-                <p className="text-white/80 text-sm mb-4">{slide.description}</p>
+                <p className="text-white/80 text-sm md:text-base mb-4">{slide.description}</p>
                 <button
-                  className={`px-4 py-2 rounded-lg text-sm font-bold shadow-lg ${
+                  className={`px-4 py-2 md:px-6 md:py-3 rounded-lg text-sm md:text-base font-bold shadow-lg ${
                     slide.buttonColor || 'bg-white text-primary'
                   }`}
                 >
