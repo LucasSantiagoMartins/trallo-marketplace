@@ -248,15 +248,15 @@ const CreateProduct: React.FC = () => {
           <div className="group relative w-full py-8 rounded-2xl bg-card border border-border focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/10 transition-all flex flex-col items-center justify-center">
             <div className="flex items-center justify-center gap-3 w-full px-4">
               <span className="font-grotesk text-2xl font-bold text-muted-foreground">
-                Kz
+                AOA
               </span>
               <input
                 type="text"
                 inputMode="numeric"
                 value={formData.price}
                 onChange={handlePriceChange}
-                placeholder="0"
-                className="font-grotesk text-4xl md:text-5xl font-bold bg-transparent border-none focus:ring-0 text-center w-full max-w-[400px] md:max-w-[500px] text-zinc-600 placeholder:text-muted-foreground outline-none"
+                placeholder="0.00"
+                className="font-grotesk text-4xl md:text-5xl font-bold bg-transparent border-none focus:ring-0 text-center w-full max-w-[400px] md:max-w-[500px] text-zinc-600 placeholder:text-muted-foreground outline-none caret-zinc-500"
               />
             </div>
           </div>
