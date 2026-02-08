@@ -23,11 +23,10 @@ const App = () => (
           <Route path="/entrar" element={<Login />} />
           <Route path="/registrar" element={<Register />} />
           <Route path="/produto/:id" element={<ProductDetails />} />
-          <Route path="/criar" element={<CreateProduct />} />
+          <Route path="/adicionar-produto" element={<CreateProduct />} />
           {/* Placeholder routes for bottom nav */}
           <Route path="/explorar" element={<Home />} />
           <Route path="/carrinho" element={<Home />} />
-          <Route path="/lista-de-desejos" element={<Home />} />
           <Route path="/perfil" element={<Login />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

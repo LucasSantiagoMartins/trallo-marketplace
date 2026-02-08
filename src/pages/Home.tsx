@@ -183,51 +183,7 @@ const Home: React.FC = () => {
           <Carousel slides={carouselSlides} />
         </div>
 
-        {/* Filtro de Categorias */}
-        <div className="px-4 md:px-6 lg:px-8 py-6 text-center">
-          <h3 className="text-[11px] font-black text-slate-400 mb-6 uppercase tracking-[0.2em]">
-            Explorar Categorias
-          </h3>
-
-          {/* pt-2 adicionado para evitar o corte do translate-y no topo */}
-          <div className="flex gap-4 overflow-x-auto pb-4 pt-2 no-scrollbar justify-start md:justify-center">
-            {categories.map((cat) => (
-              <button
-                key={cat.name}
-                onClick={() => setActiveCategory(cat.name)}
-                className="group shrink-0 flex flex-col items-center gap-2 focus:outline-none"
-              >
-                <div
-                  className={`w-16 h-16 rounded-2xl border transition-all duration-300 flex items-center justify-center shadow-sm 
-                  ${
-                    activeCategory === cat.name
-                      ? "border-primary/30 bg-primary/5 shadow-primary/10 -translate-y-1.5"
-                      : "border-slate-100 bg-white group-hover:shadow-md group-hover:-translate-y-1"
-                  }`}
-                >
-                  <div
-                    className={`w-full h-full rounded-2xl flex items-center justify-center bg-gradient-to-br from-transparent to-white/50
-                    ${activeCategory === cat.name ? "from-primary/10" : "group-hover:from-primary/5"}`}
-                  >
-                    <span
-                      className={`material-symbols-outlined text-2xl transition-colors duration-300
-                      ${activeCategory === cat.name ? "text-primary" : "text-slate-600 group-hover:text-primary"}`}
-                    >
-                      {cat.icon}
-                    </span>
-                  </div>
-                </div>
-
-                <span
-                  className={`text-[11px] font-bold transition-colors
-                  ${activeCategory === cat.name ? "text-primary" : "text-slate-500 group-hover:text-slate-900"}`}
-                >
-                  {cat.name}
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
+       
 
         {/* Grid de Produtos Dinâmico */}
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4 md:px-6 lg:px-8 py-4">
