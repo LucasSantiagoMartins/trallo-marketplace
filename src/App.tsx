@@ -20,15 +20,15 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/product/:id" element={<ProductDetails />} />
-          <Route path="/create" element={<CreateProduct />} />
+          <Route path="/entrar" element={<Login />} />
+          <Route path="/registrar" element={<Register />} />
+          <Route path="/produto/:id" element={<ProductDetails />} />
+          <Route path="/criar" element={<CreateProduct />} />
           {/* Placeholder routes for bottom nav */}
-          <Route path="/explore" element={<Home />} />
-          <Route path="/cart" element={<Home />} />
-          <Route path="/wishlist" element={<Home />} />
-          <Route path="/profile" element={<Login />} />
+          <Route path="/explorar" element={<Home />} />
+          <Route path="/carrinho" element={<Home />} />
+          <Route path="/lista-de-desejos" element={<Home />} />
+          <Route path="/perfil" element={<Login />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

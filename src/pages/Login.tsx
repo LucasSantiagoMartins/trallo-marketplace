@@ -15,8 +15,9 @@ const Login: React.FC = () => {
   };
 
   return (
-    <MobileLayout className="p-6 flex items-center justify-center min-h-screen">
-      <div className="w-full max-w-md lg:max-w-lg">
+    <MobileLayout className="p-6">
+      <div className="flex items-center justify-center min-h-screen w-full">
+        <div className="w-full max-w-md lg:max-w-lg">
         {/* Top Section / Branding */}
         <div className="flex flex-col items-center pt-8 md:pt-12 pb-8 md:pb-10">
           <div className="mb-6 md:mb-8 p-3 bg-card rounded-2xl shadow-sm">
@@ -25,7 +26,7 @@ const Login: React.FC = () => {
             </div>
           </div>
           <h1 className="clash-style text-foreground text-2xl md:text-3xl font-bold leading-tight text-center">
-            Entrar na TRALLO
+            Entrar no TRALLO
           </h1>
           <p className="text-muted-foreground text-sm font-normal leading-normal pt-2 text-center max-w-[280px]">
             Bem-vindo de volta ao marketplace favorito de Angola
@@ -93,10 +94,11 @@ const Login: React.FC = () => {
         <div className="pt-8 md:pt-10 pb-6 text-center">
           <p className="text-muted-foreground text-sm">
             Ainda não tem uma conta?{" "}
-            <Link to="/register" className="text-primary font-bold hover:underline ml-1">
+            <Link to="/registrar" className="text-primary font-bold hover:underline ml-1">
               Criar conta
             </Link>
           </p>
+        </div>
         </div>
       </div>
     </MobileLayout>

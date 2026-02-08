@@ -32,7 +32,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
   return (
     <div className="bg-card rounded-xl overflow-hidden shadow-sm flex flex-col border border-border">
-      <Link to={`/product/${id}`} className="relative aspect-[4/5] bg-muted">
+      <Link to={`/produto/${id}`} className="relative aspect-[4/5] bg-muted">
         <img
           src={image}
           alt={name}

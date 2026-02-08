@@ -174,7 +174,7 @@ const Register: React.FC = () => {
         <div className="mt-8 px-6 text-center">
           <p className="text-muted-foreground text-sm">
             Já tem uma conta?{" "}
-            <Link to="/login" className="text-primary font-bold ml-1">
+            <Link to="/entrar" className="text-primary font-bold ml-1">
               Fazer Login
             </Link>
           </p>

@@ -11,10 +11,10 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { icon: "home", label: "Início", path: "/" },
-  { icon: "explore", label: "Explorar", path: "/explore" },
-  { icon: "shopping_cart", label: "Carrinho", path: "/cart", isCenter: true, badge: 3 },
-  { icon: "favorite", label: "Desejos", path: "/wishlist" },
-  { icon: "person", label: "Perfil", path: "/profile" },
+  { icon: "explore", label: "Explorar", path: "/explorar" },
+  { icon: "shopping_cart", label: "Carrinho", path: "/carrinho", isCenter: true, badge: 3 },
+  { icon: "favorite", label: "Desejos", path: "/lista-de-desejos" },
+  { icon: "person", label: "Perfil", path: "/perfil" },
 ];
 
 const BottomNavigation: React.FC = () => {
