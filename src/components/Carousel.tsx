@@ -28,11 +28,9 @@ const Carousel: React.FC<CarouselProps> = ({ slides, activeIndex = 0 }) => {
     if (!container) return;
     const child = container.children[index] as HTMLElement | undefined;
     if (child) {
-      child.scrollIntoView({
-        behavior: "smooth",
-        block: "nearest",
-        inline: "start",
-      });
+      // Use container.scrollTo to only scroll the carousel, not the page
+      const scrollLeft = child.offsetLeft - container.offsetLeft;
+      container.scrollTo({ left: scrollLeft, behavior: "smooth" });
     }
   };
 

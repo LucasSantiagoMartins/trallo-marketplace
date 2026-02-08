@@ -82,7 +82,7 @@ const Home: React.FC = () => {
       
       <main className="mt-2">
         {/* Carousel Section */}
-        <div className="px-4 md:px-6 lg:px-8 py-4">
+        <div className="px-4 md:px-5 lg:px-5 py-4">
           <Carousel slides={carouselSlides} />
         </div>
 
