@@ -26,8 +26,9 @@ const Register: React.FC = () => {
   };
 
   return (
-    <MobileLayout className="pb-10 flex justify-center">
-      <div className="w-full max-w-md lg:max-w-lg">
+    <MobileLayout className="p-6">
+      <div className="flex items-center justify-center min-h-screen w-full">
+        <div className="w-full max-w-md lg:max-w-lg">
         {/* Header Section */}
         <div className="flex flex-col px-6 pt-8 md:pt-12 pb-6">
           <div className="mb-2">
@@ -178,6 +179,7 @@ const Register: React.FC = () => {
               Fazer Login
             </Link>
           </p>
+        </div>
         </div>
       </div>
     </MobileLayout>

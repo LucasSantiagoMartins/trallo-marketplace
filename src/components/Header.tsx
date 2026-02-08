@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import TralloInput from "@/components/TralloInput";
 
 interface HeaderProps {
   showSearch?: boolean;
@@ -19,7 +20,7 @@ const Header: React.FC<HeaderProps> = ({
   if (showBack) {
     return (
       <header className="fixed top-0 left-0 right-0 z-50 glass-header px-4 md:px-6 lg:px-8 py-3 flex items-center justify-between border-b border-border/5">
-        <div className="w-full max-w-7xl mx-auto flex items-center justify-between">
+        <div className="w-full flex items-center justify-between">
           <button 
             onClick={onBack}
             className="size-10 flex items-center justify-center bg-card rounded-full shadow-soft"
@@ -39,7 +40,7 @@ const Header: React.FC<HeaderProps> = ({
 
   return (
     <header className="sticky top-0 z-50 bg-background/90 backdrop-blur-md px-4 md:px-6 lg:px-8 pt-4 pb-2">
-      <div className="w-full max-w-7xl mx-auto">
+      <div className="w-full">
         <div className="flex items-center justify-between mb-4">
           <Link to="/" className="flex items-center gap-2">
             <div className="bg-primary p-1.5 rounded-lg text-primary-foreground">
@@ -91,18 +92,16 @@ const Header: React.FC<HeaderProps> = ({
         </div>
         
         {showSearch && (
-          <div className="relative max-w-2xl lg:mx-auto">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <span className="material-symbols-outlined text-muted-foreground">search</span>
-            </div>
-            <input
-              type="text"
-              className="block w-full pl-10 pr-4 py-3 bg-card border-none rounded-xl text-sm focus:ring-2 focus:ring-primary/50 shadow-sm placeholder:text-muted-foreground transition-all"
+          <div className="relative max-w-4xl lg:mx-auto">
+            <TralloInput
+              label=""
               placeholder="O que procuras hoje?"
+              icon="search"
+              className="mb-0 pr-10"
             />
-            <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+            {/* <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
               <span className="material-symbols-outlined text-muted-foreground text-xl">tune</span>
-            </div>
+            </div> */}
           </div>
         )}
       </div>

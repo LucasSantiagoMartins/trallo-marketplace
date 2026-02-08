@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 interface TralloInputProps {
-  label: string;
+  label?: string;
   type?: string;
   placeholder?: string;
   value?: string;
@@ -36,14 +36,16 @@ const TralloInput: React.FC<TralloInputProps> = ({
 
   return (
     <div className={`flex flex-col gap-2 ${className}`}>
-      <div className="flex justify-between items-center ml-1">
-        <label className="text-xs font-bold text-muted-foreground uppercase tracking-tight">
-          {label}
-        </label>
-        {optional && (
-          <span className="text-[10px] text-muted-foreground italic">Opcional</span>
-        )}
-      </div>
+      {label && (
+        <div className="flex justify-between items-center ml-1">
+          <label className="text-xs font-bold text-muted-foreground uppercase tracking-tight">
+            {label}
+          </label>
+          {optional && (
+            <span className="text-[10px] text-muted-foreground italic">Opcional</span>
+          )}
+        </div>
+      )}
       <div className="relative">
         {icon && (
           <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-muted-foreground text-lg">
