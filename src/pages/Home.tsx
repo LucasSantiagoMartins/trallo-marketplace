@@ -86,6 +86,41 @@ const Home: React.FC = () => {
           <Carousel slides={carouselSlides} />
         </div>
 
+        {/* Categories - horizontal scroll */}
+        <div className="px-4 md:px-6 lg:px-8 py-4">
+          <h3 className="text-sm font-bold text-muted-foreground mb-3 uppercase tracking-wider">Categorias</h3>
+          <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
+            {['Sneakers', 'Tech', 'Roupas', 'Acessórios', 'Casa', 'Beleza'].map((cat) => (
+              <button key={cat} className="shrink-0 px-4 py-2 rounded-xl bg-card border border-border text-sm font-semibold">
+                {cat}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* New Arrivals */}
+        <div className="px-4 md:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-lg font-bold">Novidades</h2>
+            <button className="text-primary text-sm font-semibold hover:underline">Ver todos</button>
+          </div>
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
+            {products.slice(0,4).map((p) => (
+              <ProductCard
+                key={`new-${p.id}`}
+                id={p.id}
+                image={p.image}
+                category={p.category}
+                name={p.name}
+                price={p.price}
+                isFavorite={p.isFavorite}
+                onFavoriteToggle={() => console.log(`Toggle favorite: ${p.id}`)}
+                onAddToCart={() => console.log(`Add to cart: ${p.id}`)}
+              />
+            ))}
+          </div>
+        </div>
+
         {/* Featured Products Section */}
         <div className="px-4 md:px-6 lg:px-8 pt-4 pb-4 flex items-center justify-between">
           <h2 className="text-xl md:text-2xl font-bold clash-style">Destaques Para Ti</h2>
