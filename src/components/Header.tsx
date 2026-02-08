@@ -85,7 +85,7 @@ const Header: React.FC<HeaderProps> = ({
             </div>
 
             {/* Profile - Desktop */}
-            <Link to="/profile" className="hidden lg:flex size-10 items-center justify-center rounded-full bg-card hover:bg-muted transition-colors">
+            <Link to="/perfil" className="hidden lg:flex size-10 items-center justify-center rounded-full bg-card hover:bg-muted transition-colors">
               <span className="material-symbols-outlined">person</span>
             </Link>
           </div>

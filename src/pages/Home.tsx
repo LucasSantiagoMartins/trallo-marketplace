@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useMemo } from "react";
 import MobileLayout from "@/layouts/MobileLayout";
 import Header from "@/components/Header";
 import BottomNavigation from "@/components/BottomNavigation";
@@ -12,7 +12,8 @@ const carouselSlides = [
     title: "Upgrade na Tua Tech",
     description: "Até 40% de desconto em marcas selecionadas.",
     buttonText: "Comprar Agora",
-    backgroundImage: "https://lh3.googleusercontent.com/aida-public/AB6AXuBqBKnC1iFzRCrpxblgAR9g7ApfnIcuxXVrJqPuUmiGkvCHHK4R0OfN3CeYPpladZr4dZ5MPx7dM9jrAdCMPP7xrsn97fEBVT-E64HHy7IVn2WfddoP0oQO2WQMXClIhkk-I_znqZYzXZsrqVPbe7wYpuOJYY-ybDsUUOFhA1dv4sYWMvLyy3S5gyJQTHQKkVQAb0CY3xrYTgvjQfbPBY3-vEThDYfpAMJ_rj9JRQ-n61NKrneUuWVayiH0YuZckjcLFpLx3eVD5-t0",
+    backgroundImage:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuBqBKnC1iFzRCrpxblgAR9g7ApfnIcuxXVrJqPuUmiGkvCHHK4R0OfN3CeYPpladZr4dZ5MPx7dM9jrAdCMPP7xrsn97fEBVT-E64HHy7IVn2WfddoP0oQO2WQMXClIhkk-I_znqZYzXZsrqVPbe7wYpuOJYY-ybDsUUOFhA1dv4sYWMvLyy3S5gyJQTHQKkVQAb0CY3xrYTgvjQfbPBY3-vEThDYfpAMJ_rj9JRQ-n61NKrneUuWVayiH0YuZckjcLFpLx3eVD5-t0",
     backgroundColor: "hsl(262 91% 61% / 0.9)",
     tagColor: "bg-white/20",
   },
@@ -22,7 +23,8 @@ const carouselSlides = [
     title: "Streetwear Urbano",
     description: "As tendências que definem a nova geração.",
     buttonText: "Descobrir",
-    backgroundImage: "https://lh3.googleusercontent.com/aida-public/AB6AXuAwWNRSRV-vhDK_O-WwxrH4mER9ke5XEZdkhLjjGj7ZKpR4spPOICV9S2orOaCJEZ7vX4j639Y_5szAWdMUMv29XQ86s-83v_K5K35JGhSPv16yqJHjLT1FqWI499MkcY49u9PrEAf47-HEH-c6vel5-XZNB_yC8iMVQv8Ajcz7uyF7K02AA6DDN3QuuRejeEsOsQycQhip9eWEVNFTI7jbSVkxBTerZ1QBiYMYMX3kKB72p0NW7VV8SLXCioZq2zeXz6PHiI-wbO1w",
+    backgroundImage:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuAwWNRSRV-vhDK_O-WwxrH4mER9ke5XEZdkhLjjGj7ZKpR4spPOICV9S2orOaCJEZ7vX4j639Y_5szAWdMUMv29XQ86s-83v_K5K35JGhSPv16yqJHjLT1FqWI499MkcY49u9PrEAf47-HEH-c6vel5-XZNB_yC8iMVQv8Ajcz7uyF7K02AA6DDN3QuuRejeEsOsQycQhip9eWEVNFTI7jbSVkxBTerZ1QBiYMYMX3kKB72p0NW7VV8SLXCioZq2zeXz6PHiI-wbO1w",
     backgroundColor: "#0f172a",
     tagColor: "bg-primary",
   },
@@ -32,17 +34,19 @@ const carouselSlides = [
     title: "Kicks de Elite",
     description: "Stock limitado dos modelos mais desejados.",
     buttonText: "Ver Modelos",
-    backgroundImage: "https://lh3.googleusercontent.com/aida-public/AB6AXuDbLs-oQQ8uPfpiFlz5Vb7UiOi9wcT0EAXXGlEtLF5ph5vi3N_Dszys--bS4mLVO9DZl_GiEbIxKh3FnQTVn35xkXJ-m1ovS5_ftpH1svw0f6AdXIYFzbLi-u-uwSl5DvddJ6AS4VDwMHuSZi8QOBOrob8wnNf2yfAR1NWe4Zq1NY_BSmwbYdnfV66w8CXRlQrY8T5Xc2h4NQq46r0gJRSg7EEuxGmmN-2eVHn4XBtKY1Qkse5u6WwdGwI-NaX_-ilma79qBnKWcCjq",
+    backgroundImage:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuDbLs-oQQ8uPfpiFlz5Vb7UiOi9wcT0EAXXGlEtLF5ph5vi3N_Dszys--bS4mLVO9DZl_GiEbIxKh3FnQTVn35xkXJ-m1ovS5_ftpH1svw0f6AdXIYFzbLi-u-uwSl5DvddJ6AS4VDwMHuSZi8QOBOrob8wnNf2yfAR1NWe4Zq1NY_BSmwbYdnfV66w8CXRlQrY8T5Xc2h4NQq46r0gJRSg7EEuxGmmN-2eVHn4XBtKY1Qkse5u6WwdGwI-NaX_-ilma79qBnKWcCjq",
     backgroundColor: "#ea580c",
     tagColor: "bg-black/20",
     buttonColor: "bg-white text-orange-600",
   },
 ];
 
-const products = [
+const productsData = [
   {
     id: "1",
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDbLs-oQQ8uPfpiFlz5Vb7UiOi9wcT0EAXXGlEtLF5ph5vi3N_Dszys--bS4mLVO9DZl_GiEbIxKh3FnQTVn35xkXJ-m1ovS5_ftpH1svw0f6AdXIYFzbLi-u-uwSl5DvddJ6AS4VDwMHuSZi8QOBOrob8wnNf2yfAR1NWe4Zq1NY_BSmwbYdnfV66w8CXRlQrY8T5Xc2h4NQq46r0gJRSg7EEuxGmmN-2eVHn4XBtKY1Qkse5u6WwdGwI-NaX_-ilma79qBnKWcCjq",
+    image:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuDbLs-oQQ8uPfpiFlz5Vb7UiOi9wcT0EAXXGlEtLF5ph5vi3N_Dszys--bS4mLVO9DZl_GiEbIxKh3FnQTVn35xkXJ-m1ovS5_ftpH1svw0f6AdXIYFzbLi-u-uwSl5DvddJ6AS4VDwMHuSZi8QOBOrob8wnNf2yfAR1NWe4Zq1NY_BSmwbYdnfV66w8CXRlQrY8T5Xc2h4NQq46r0gJRSg7EEuxGmmN-2eVHn4XBtKY1Qkse5u6WwdGwI-NaX_-ilma79qBnKWcCjq",
     category: "Sneakers",
     name: "Nike Air Jordan 1 Premium",
     price: 85000,
@@ -50,7 +54,8 @@ const products = [
   },
   {
     id: "2",
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAjRZUH48UJYiL4CrfML4i1XH6hr9AeLn1xw8IRmjr5P1ypgXsGhVmMT0EGWzK2Ofz9pqeYWN9gFBIeHTSy39J3gpqakwHQ8UUMWV1QlbNeybITdHmE5rTxUAWFGDQpjarY0V4-0gYNS2r9oT1gvJLD6H3IgQKZwiZxgBvJyExLoNJkbSU8rVytr3qHAiKQMMKhT8dHofAsKOJd6b6rv1WbJcAr18oOEy7ZwIEz5VUO5SFpUW5NtcPZL1qFRYUnWNU_8vk3vlvtwWMx",
+    image:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuAjRZUH48UJYiL4CrfML4i1XH6hr9AeLn1xw8IRmjr5P1ypgXsGhVmMT0EGWzK2Ofz9pqeYWN9gFBIeHTSy39J3gpqakwHQ8UUMWV1QlbNeybITdHmE5rTxUAWFGDQpjarY0V4-0gYNS2r9oT1gvJLD6H3IgQKZwiZxgBvJyExLoNJkbSU8rVytr3qHAiKQMMKhT8dHofAsKOJd6b6rv1WbJcAr18oOEy7ZwIEz5VUO5SFpUW5NtcPZL1qFRYUnWNU_8vk3vlvtwWMx",
     category: "Acessórios",
     name: "Smart Watch Pro Series 7",
     price: 120000,
@@ -58,7 +63,8 @@ const products = [
   },
   {
     id: "3",
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAwWNRSRV-vhDK_O-WwxrH4mER9ke5XEZdkhLjjGj7ZKpR4spPOICV9S2orOaCJEZ7vX4j639Y_5szAWdMUMv29XQ86s-83v_K5K35JGhSPv16yqJHjLT1FqWI499MkcY49u9PrEAf47-HEH-c6vel5-XZNB_yC8iMVQv8Ajcz7uyF7K02AA6DDN3QuuRejeEsOsQycQhip9eWEVNFTI7jbSVkxBTerZ1QBiYMYMX3kKB72p0NW7VV8SLXCioZq2zeXz6PHiI-wbO1w",
+    image:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuAwWNRSRV-vhDK_O-WwxrH4mER9ke5XEZdkhLjjGj7ZKpR4spPOICV9S2orOaCJEZ7vX4j639Y_5szAWdMUMv29XQ86s-83v_K5K35JGhSPv16yqJHjLT1FqWI499MkcY49u9PrEAf47-HEH-c6vel5-XZNB_yC8iMVQv8Ajcz7uyF7K02AA6DDN3QuuRejeEsOsQycQhip9eWEVNFTI7jbSVkxBTerZ1QBiYMYMX3kKB72p0NW7VV8SLXCioZq2zeXz6PHiI-wbO1w",
     category: "Roupas",
     name: "Hoodie Oversized Cotton",
     price: 25500,
@@ -66,70 +72,166 @@ const products = [
   },
   {
     id: "4",
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCmr9NDsI9Q0DxgYhcZpxCmfHQjaggFgJFUPHTSDlPuzS9BY_rcmIU7YXsmXNEQ8BA91Q-dwq1re6OZdTYe9MlGc5DM8gMKnv0fimxY2JpIVDa_59ANbaF9D2MqtFcKF_sUuPgfz3sNcaVpYLAF0fWbB1WxKY388JjAXQaEZiXH-OVlN_IadIvMJt3-bCk7FDq_fkT2-n-Yilsn3rsp7E8VZt9OvJmP3oDocDd2R5ryEv2QrCpifVBiFKZirl51qIlO5ABRtiIqxqfK",
+    image:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuCmr9NDsI9Q0DxgYhcZpxCmfHQjaggFgJFUPHTSDlPuzS9BY_rcmIU7YXsmXNEQ8BA91Q-dwq1re6OZdTYe9MlGc5DM8gMKnv0fimxY2JpIVDa_59ANbaF9D2MqtFcKF_sUuPgfz3sNcaVpYLAF0fWbB1WxKY388JjAXQaEZiXH-OVlN_IadIvMJt3-bCk7FDq_fkT2-n-Yilsn3rsp7E8VZt9OvJmP3oDocDd2R5ryEv2QrCpifVBiFKZirl51qIlO5ABRtiIqxqfK",
     category: "Tech",
     name: "Wireless Noise Cancelling",
     price: 45000,
     isFavorite: false,
     discount: 15,
   },
+  {
+    id: "5",
+    image:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuBqBKnC1iFzRCrpxblgAR9g7ApfnIcuxXVrJqPuUmiGkvCHHK4R0OfN3CeYPpladZr4dZ5MPx7dM9jrAdCMPP7xrsn97fEBVT-E64HHy7IVn2WfddoP0oQO2WQMXClIhkk-I_znqZYzXZsrqVPbe7wYpuOJYY-ybDsUUOFhA1dv4sYWMvLyy3S5gyJQTHQKkVQAb0CY3xrYTgvjQfbPBY3-vEThDYfpAMJ_rj9JRQ-n61NKrneUuWVayiH0YuZckjcLFpLx3eVD5-t0",
+    category: "Sneakers",
+    name: "Adidas Forum Low",
+    price: 62000,
+    isFavorite: false,
+  },
+  {
+    id: "6",
+    image:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuAwWNRSRV-vhDK_O-WwxrH4mER9ke5XEZdkhLjjGj7ZKpR4spPOICV9S2orOaCJEZ7vX4j639Y_5szAWdMUMv29XQ86s-83v_K5K35JGhSPv16yqJHjLT1FqWI499MkcY49u9PrEAf47-HEH-c6vel5-XZNB_yC8iMVQv8Ajcz7uyF7K02AA6DDN3QuuRejeEsOsQycQhip9eWEVNFTI7jbSVkxBTerZ1QBiYMYMX3kKB72p0NW7VV8SLXCioZq2zeXz6PHiI-wbO1w",
+    category: "Roupas",
+    name: "T-Shirt Minimalist Black",
+    price: 12500,
+    isFavorite: false,
+  },
+  {
+    id: "7",
+    image:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuDbLs-oQQ8uPfpiFlz5Vb7UiOi9wcT0EAXXGlEtLF5ph5vi3N_Dszys--bS4mLVO9DZl_GiEbIxKh3FnQTVn35xkXJ-m1ovS5_ftpH1svw0f6AdXIYFzbLi-u-uwSl5DvddJ6AS4VDwMHuSZi8QOBOrob8wnNf2yfAR1NWe4Zq1NY_BSmwbYdnfV66w8CXRlQrY8T5Xc2h4NQq46r0gJRSg7EEuxGmmN-2eVHn4XBtKY1Qkse5u6WwdGwI-NaX_-ilma79qBnKWcCjq",
+    category: "Acessórios",
+    name: "Óculos de Sol Retro",
+    price: 18000,
+    isFavorite: true,
+  },
+  {
+    id: "8",
+    image:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuAjRZUH48UJYiL4CrfML4i1XH6hr9AeLn1xw8IRmjr5P1ypgXsGhVmMT0EGWzK2Ofz9pqeYWN9gFBIeHTSy39J3gpqakwHQ8UUMWV1QlbNeybITdHmE5rTxUAWFGDQpjarY0V4-0gYNS2r9oT1gvJLD6H3IgQKZwiZxgBvJyExLoNJkbSU8rVytr3qHAiKQMMKhT8dHofAsKOJd6b6rv1WbJcAr18oOEy7ZwIEz5VUO5SFpUW5NtcPZL1qFRYUnWNU_8vk3vlvtwWMx",
+    category: "Tech",
+    name: "Coluna Bluetooth Portable",
+    price: 35000,
+    isFavorite: false,
+  },
+  {
+    id: "9",
+    image:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuCmr9NDsI9Q0DxgYhcZpxCmfHQjaggFgJFUPHTSDlPuzS9BY_rcmIU7YXsmXNEQ8BA91Q-dwq1re6OZdTYe9MlGc5DM8gMKnv0fimxY2JpIVDa_59ANbaF9D2MqtFcKF_sUuPgfz3sNcaVpYLAF0fWbB1WxKY388JjAXQaEZiXH-OVlN_IadIvMJt3-bCk7FDq_fkT2-n-Yilsn3rsp7E8VZt9OvJmP3oDocDd2R5ryEv2QrCpifVBiFKZirl51qIlO5ABRtiIqxqfK",
+    category: "Sneakers",
+    name: "New Balance 550",
+    price: 75000,
+    isFavorite: false,
+    discount: 10,
+  },
+  {
+    id: "10",
+    image:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuBqBKnC1iFzRCrpxblgAR9g7ApfnIcuxXVrJqPuUmiGkvCHHK4R0OfN3CeYPpladZr4dZ5MPx7dM9jrAdCMPP7xrsn97fEBVT-E64HHy7IVn2WfddoP0oQO2WQMXClIhkk-I_znqZYzXZsrqVPbe7wYpuOJYY-ybDsUUOFhA1dv4sYWMvLyy3S5gyJQTHQKkVQAb0CY3xrYTgvjQfbPBY3-vEThDYfpAMJ_rj9JRQ-n61NKrneUuWVayiH0YuZckjcLFpLx3eVD5-t0",
+    category: "Casa",
+    name: "Vela Aromática Premium",
+    price: 9500,
+    isFavorite: false,
+  },
+  {
+    id: "11",
+    image:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuAwWNRSRV-vhDK_O-WwxrH4mER9ke5XEZdkhLjjGj7ZKpR4spPOICV9S2orOaCJEZ7vX4j639Y_5szAWdMUMv29XQ86s-83v_K5K35JGhSPv16yqJHjLT1FqWI499MkcY49u9PrEAf47-HEH-c6vel5-XZNB_yC8iMVQv8Ajcz7uyF7K02AA6DDN3QuuRejeEsOsQycQhip9eWEVNFTI7jbSVkxBTerZ1QBiYMYMX3kKB72p0NW7VV8SLXCioZq2zeXz6PHiI-wbO1w",
+    category: "Roupas",
+    name: "Calças Cargo Khaki",
+    price: 28000,
+    isFavorite: true,
+  },
+  {
+    id: "12",
+    image:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuDbLs-oQQ8uPfpiFlz5Vb7UiOi9wcT0EAXXGlEtLF5ph5vi3N_Dszys--bS4mLVO9DZl_GiEbIxKh3FnQTVn35xkXJ-m1ovS5_ftpH1svw0f6AdXIYFzbLi-u-uwSl5DvddJ6AS4VDwMHuSZi8QOBOrob8wnNf2yfAR1NWe4Zq1NY_BSmwbYdnfV66w8CXRlQrY8T5Xc2h4NQq46r0gJRSg7EEuxGmmN-2eVHn4XBtKY1Qkse5u6WwdGwI-NaX_-ilma79qBnKWcCjq",
+    category: "Acessórios",
+    name: "Mochila Urban Explorer",
+    price: 42000,
+    isFavorite: false,
+  },
+];
+
+const categories = [
+  { name: "Todos", icon: "grid_view" },
+  { name: "Sneakers", icon: "splitscreen" },
+  { name: "Tech", icon: "devices" },
+  { name: "Roupas", icon: "apparel" },
+  { name: "Acessórios", icon: "watch" },
+  { name: "Casa", icon: "home_pin" },
+  { name: "Beleza", icon: "content_cut" },
 ];
 
 const Home: React.FC = () => {
+  const [activeCategory, setActiveCategory] = useState("Todos");
+
+  const filteredProducts = useMemo(() => {
+    if (activeCategory === "Todos") return productsData;
+    return productsData.filter((p) => p.category === activeCategory);
+  }, [activeCategory]);
+
   return (
     <MobileLayout showBottomNav>
       <Header showSearch />
-      
-      <main className="mt-2">
-        {/* Carousel Section */}
+
+      <main className="mt-2 pb-24">
+        {/* Carousel */}
         <div className="px-4 md:px-5 lg:px-5 py-4">
           <Carousel slides={carouselSlides} />
         </div>
 
-        {/* Categories - horizontal scroll */}
-        <div className="px-4 md:px-6 lg:px-8 py-4">
-          <h3 className="text-sm font-bold text-muted-foreground mb-3 uppercase tracking-wider">Categorias</h3>
-          <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
-            {['Sneakers', 'Tech', 'Roupas', 'Acessórios', 'Casa', 'Beleza'].map((cat) => (
-              <button key={cat} className="shrink-0 px-4 py-2 rounded-xl bg-card border border-border text-sm font-semibold">
-                {cat}
+        {/* Filtro de Categorias */}
+        <div className="px-4 md:px-6 lg:px-8 py-6 text-center">
+          <h3 className="text-[11px] font-black text-slate-400 mb-6 uppercase tracking-[0.2em]">
+            Explorar Categorias
+          </h3>
+
+          {/* pt-2 adicionado para evitar o corte do translate-y no topo */}
+          <div className="flex gap-4 overflow-x-auto pb-4 pt-2 no-scrollbar justify-start md:justify-center">
+            {categories.map((cat) => (
+              <button
+                key={cat.name}
+                onClick={() => setActiveCategory(cat.name)}
+                className="group shrink-0 flex flex-col items-center gap-2 focus:outline-none"
+              >
+                <div
+                  className={`w-16 h-16 rounded-2xl border transition-all duration-300 flex items-center justify-center shadow-sm 
+                  ${
+                    activeCategory === cat.name
+                      ? "border-primary/30 bg-primary/5 shadow-primary/10 -translate-y-1.5"
+                      : "border-slate-100 bg-white group-hover:shadow-md group-hover:-translate-y-1"
+                  }`}
+                >
+                  <div
+                    className={`w-full h-full rounded-2xl flex items-center justify-center bg-gradient-to-br from-transparent to-white/50
+                    ${activeCategory === cat.name ? "from-primary/10" : "group-hover:from-primary/5"}`}
+                  >
+                    <span
+                      className={`material-symbols-outlined text-2xl transition-colors duration-300
+                      ${activeCategory === cat.name ? "text-primary" : "text-slate-600 group-hover:text-primary"}`}
+                    >
+                      {cat.icon}
+                    </span>
+                  </div>
+                </div>
+
+                <span
+                  className={`text-[11px] font-bold transition-colors
+                  ${activeCategory === cat.name ? "text-primary" : "text-slate-500 group-hover:text-slate-900"}`}
+                >
+                  {cat.name}
+                </span>
               </button>
             ))}
           </div>
         </div>
 
-        {/* New Arrivals */}
-        <div className="px-4 md:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-lg font-bold">Novidades</h2>
-            <button className="text-primary text-sm font-semibold hover:underline">Ver todos</button>
-          </div>
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
-            {products.slice(0,4).map((p) => (
-              <ProductCard
-                key={`new-${p.id}`}
-                id={p.id}
-                image={p.image}
-                category={p.category}
-                name={p.name}
-                price={p.price}
-                isFavorite={p.isFavorite}
-                onFavoriteToggle={() => console.log(`Toggle favorite: ${p.id}`)}
-                onAddToCart={() => console.log(`Add to cart: ${p.id}`)}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* Featured Products Section */}
-        <div className="px-4 md:px-6 lg:px-8 pt-4 pb-4 flex items-center justify-between">
-          <h2 className="text-xl md:text-2xl font-bold clash-style">Destaques Para Ti</h2>
-          <button className="text-primary text-sm font-semibold hover:underline">Ver todos</button>
-        </div>
-
-        {/* Product Grid - Responsive */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 px-4 md:px-6 lg:px-8">
-          {products.map((product) => (
+        {/* Grid de Produtos Dinâmico */}
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4 md:px-6 lg:px-8 py-4">
+          {filteredProducts.map((product) => (
             <ProductCard
               key={product.id}
               id={product.id}
@@ -137,21 +239,21 @@ const Home: React.FC = () => {
               category={product.category}
               name={product.name}
               price={product.price}
-              isFavorite={product.isFavorite}
               discount={product.discount}
-              onFavoriteToggle={() => console.log(`Toggle favorite: ${product.id}`)}
               onAddToCart={() => console.log(`Add to cart: ${product.id}`)}
             />
           ))}
         </div>
 
-        {/* Local Brands CTA */}
+        {/* Banner Marcas Locais */}
         <div className="px-4 md:px-6 lg:px-8 py-8">
-          <div className="bg-foreground rounded-xl p-6 md:p-8 text-background flex items-center justify-between overflow-hidden relative">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 rounded-full blur-3xl -mr-10 -mt-10" />
+          <div className="bg-slate-900 rounded-3xl p-6 md:p-8 text-white flex items-center justify-between overflow-hidden relative border border-white/5 shadow-2xl">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 rounded-full blur-[80px] -mr-10 -mt-10" />
             <div className="relative z-10 flex-1">
-              <h3 className="text-xl md:text-2xl font-bold mb-1 clash-style">Marcas Locais</h3>
-              <p className="text-xs md:text-sm text-muted-foreground mb-4">
+              <h3 className="text-xl md:text-2xl font-bold mb-1">
+                Marcas Locais
+              </h3>
+              <p className="text-xs md:text-sm text-slate-400 mb-4">
                 Descobre o melhor do Made in Angola
               </p>
               <button className="text-primary text-sm font-bold flex items-center gap-1 group">
@@ -161,8 +263,10 @@ const Home: React.FC = () => {
                 </span>
               </button>
             </div>
-            <div className="relative z-10 w-24 h-24 md:w-32 md:h-32 bg-card/5 rounded-full flex items-center justify-center border border-card/10">
-              <span className="material-symbols-outlined text-4xl md:text-5xl text-primary">verified_user</span>
+            <div className="relative z-10 w-20 h-20 md:w-28 md:h-28 bg-white/5 rounded-2xl flex items-center justify-center border border-white/10 backdrop-blur-sm">
+              <span className="material-symbols-outlined text-4xl md:text-5xl text-primary/80">
+                verified_user
+              </span>
             </div>
           </div>
         </div>
