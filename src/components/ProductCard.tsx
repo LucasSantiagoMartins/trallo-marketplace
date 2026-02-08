@@ -64,11 +64,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
         <button
           onClick={onAddToCart}
-          className="shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center relative overflow-hidden transition-all duration-300 active:scale-90 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-primary/10 hover:border-primary/20"
+          className="shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center relative overflow-hidden transition-all duration-300 active:scale-95 border-2 border-primary bg-transparent group"
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/5 opacity-50" />
-          <span className="material-symbols-outlined text-xl text-primary relative z-10 drop-shadow-[0_2px_4px_rgba(0,0,0,0.05)]">
-            add_shopping_cart
+          <span className="material-symbols-outlined text-xl text-primary  relative z-10">
+            shopping_cart
           </span>
         </button>
       </div>
