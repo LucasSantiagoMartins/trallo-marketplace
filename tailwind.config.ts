@@ -57,33 +57,42 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        // TRALLO specific colors
+        trallo: {
+          dark: "hsl(var(--trallo-dark))",
+          pink: "hsl(var(--trallo-accent-pink))",
+        },
+      },
+      fontFamily: {
+        display: ["Plus Jakarta Sans", "Inter", "sans-serif"],
+        body: ["Inter", "sans-serif"],
+        price: ["Space Grotesk", "sans-serif"],
+        grotesk: ["Space Grotesk", "sans-serif"],
       },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        xl: "1rem",
+        "2xl": "1.5rem",
       },
       keyframes: {
         "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
+        },
+        "ping-slow": {
+          "75%, 100%": { transform: "scale(2)", opacity: "0" },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "ping-slow": "ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite",
       },
     },
   },
