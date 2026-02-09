@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import MobileLayout from "@/layouts/MobileLayout";
 import TralloInput from "@/components/TralloInput";
 import TralloButton from "@/components/TralloButton";
+import PasswordTooltip from "@/components/PasswordTooltip";
 import { register } from "@/api/auth.service";
 import { useAppToast } from "@/hooks/useAppToast";
 
@@ -11,6 +12,7 @@ type UserRole = "buyer" | "seller";
 const Register: React.FC = () => {
   const [role, setRole] = useState<UserRole>("buyer");
   const [loading, setLoading] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -18,11 +20,21 @@ const Register: React.FC = () => {
     password: "",
     address: "",
   });
+
   const { showToast } = useAppToast();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{6,}$/;
+    if (!passwordRegex.test(formData.password)) {
+      showToast(
+        "error",
+        "A senha não cumpre todos os requisitos de segurança.",
+      );
+      return;
+    }
 
     if (
       !formData.fullName ||
@@ -176,15 +188,23 @@ const Register: React.FC = () => {
               </div>
 
               <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-                <TralloInput
-                  label="Palavra-passe"
-                  type="password"
-                  placeholder="••••••••"
-                  icon="lock"
-                  showPasswordToggle
-                  value={formData.password}
-                  onChange={updateField("password")}
-                />
+                <div className="relative">
+                  <PasswordTooltip
+                    password={formData.password}
+                    isVisible={showTooltip}
+                  />
+                  <TralloInput
+                    label="Palavra-passe"
+                    type="password"
+                    placeholder="••••••••"
+                    icon="lock"
+                    showPasswordToggle
+                    value={formData.password}
+                    onChange={updateField("password")}
+                    onFocus={() => setShowTooltip(true)}
+                    onBlur={() => setShowTooltip(false)}
+                  />
+                </div>
                 <TralloInput
                   label={`Endereço ${role === "seller" ? "(Opcional)" : ""}`}
                   placeholder="Bairro, Rua..."

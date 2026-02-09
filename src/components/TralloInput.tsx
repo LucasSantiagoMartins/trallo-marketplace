@@ -8,6 +8,8 @@ interface TralloInputProps {
   placeholder?: string;
   value?: string;
   onChange?: (value: string) => void;
+  onFocus?: () => void;
+  onBlur?: () => void;
   icon?: string;
   showPasswordToggle?: boolean;
   optional?: boolean;
@@ -21,6 +23,8 @@ const TralloInput: React.FC<TralloInputProps> = ({
   placeholder,
   value = "",
   onChange,
+  onFocus,
+  onBlur,
   icon,
   showPasswordToggle = false,
   optional = false,
@@ -44,9 +48,12 @@ const TralloInput: React.FC<TralloInputProps> = ({
   const currentInputType = isPasswordField && showPassword ? "text" : type;
 
   const borderStyles: Record<ValidationState, string> = {
-    default: "border-border focus:border-primary focus:ring-4 focus:ring-primary/10",
-    error: "border-red-500 focus:border-red-500 focus:ring-4 focus:ring-red-500/10",
-    valid: "border-green-500 focus:border-green-500 focus:ring-4 focus:ring-green-500/10",
+    default:
+      "border-border focus:border-primary focus:ring-4 focus:ring-primary/10",
+    error:
+      "border-red-500 focus:border-red-500 focus:ring-4 focus:ring-red-500/10",
+    valid:
+      "border-green-500 focus:border-green-500 focus:ring-4 focus:ring-green-500/10",
   };
 
   return (
@@ -57,7 +64,9 @@ const TralloInput: React.FC<TralloInputProps> = ({
             {label}
           </label>
           {optional && (
-            <span className="text-[10px] text-muted-foreground italic">Opcional</span>
+            <span className="text-[10px] text-muted-foreground italic">
+              Opcional
+            </span>
           )}
         </div>
       )}
@@ -71,6 +80,8 @@ const TralloInput: React.FC<TralloInputProps> = ({
           type={currentInputType}
           value={inputValue}
           onChange={handleChange}
+          onFocus={onFocus}
+          onBlur={onBlur}
           placeholder={placeholder}
           className={`
             w-full py-4 rounded-xl 
@@ -78,8 +89,8 @@ const TralloInput: React.FC<TralloInputProps> = ({
             ${borderStyles[validation]}
             transition-all outline-none 
             text-muted-foreground/100 placeholder:text-muted-foreground/60
-            ${icon ? 'pl-11 pr-4' : 'px-4'}
-            ${showPasswordToggle ? 'pr-12' : ''}
+            ${icon ? "pl-11 pr-4" : "px-4"}
+            ${showPasswordToggle ? "pr-12" : ""}
           `}
         />
         {showPasswordToggle && isPasswordField && (
