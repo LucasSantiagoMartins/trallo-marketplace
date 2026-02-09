@@ -15,6 +15,7 @@ import TransactionHistoryScreen from "./components/TransactionHistory";
 import OrdersHistory from "./pages/OrdersHistory";
 import OrderDetail from "./pages/OrderDetail";
 import CartPage from "./pages/CartPage";
+import SettingsScreen from "./pages/Settings";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +39,7 @@ const App = () => (
           <Route path="/carteira" element={<WalletScreen />} />
           <Route path="/transacoes" element={<TransactionHistoryScreen />} />
           <Route path="/detalhe-pedido" element={<OrderDetail />} />
+          <Route path="/configuracoes" element={<SettingsScreen />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

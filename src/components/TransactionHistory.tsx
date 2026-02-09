@@ -111,14 +111,6 @@ const HistoryScreen: React.FC = () => {
       <PageHeader
         title="Histórico"
         backTo={-1}
-        rightElement={
-          <button className="size-10 flex items-center justify-center rounded-2xl bg-primary/10 relative">
-            <span className="material-symbols-outlined text-xl text-primary">
-              notifications
-            </span>
-            <span className="absolute top-2 right-2 size-2 bg-red-500 rounded-full border-2 border-white dark:border-[#111118]"></span>
-          </button>
-        }
       />
 
       <main className="max-w-6xl mx-auto px-4 md:px-6 pt-24 pb-32">

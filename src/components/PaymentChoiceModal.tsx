@@ -46,9 +46,10 @@ const PaymentChoiceModal: React.FC<Props> = ({ onSelect, onClose }) => {
             </div>
           </button>
         </div>
+
         <button
           onClick={onClose}
-          className="w-full mt-4 py-3 text-gray-400 font-bold"
+          className="w-full mt-6 py-3 rounded-2xl border-2 border-[#6d3ff8] text-[#6d3ff8] font-bold hover:bg-[#6d3ff8] hover:text-white transition-all"
         >
           Cancelar
         </button>

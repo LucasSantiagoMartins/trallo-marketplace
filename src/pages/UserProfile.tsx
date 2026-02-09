@@ -13,14 +13,6 @@ const UserProfileScreen: React.FC = () => {
         <PageHeader
           title="Perfil"
           backTo={-1}
-          rightElement={
-            <button
-              onClick={() => navigate(-1)}
-              className="text-sm font-semibold text-primary hover:opacity-70 transition-opacity"
-            >
-              Cancelar
-            </button>
-          }
         />
 
         <main className="px-6 lg:px-0 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start pt-20 lg:pt-24">
@@ -90,7 +82,7 @@ const UserProfileScreen: React.FC = () => {
               <div className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700">
                 <MenuLink icon="help_center" label="Ajuda e Suporte" to="/support" />
                 <div className="mx-4 border-t border-gray-50 dark:border-gray-700" />
-                <MenuLink icon="settings" label="Configurações" to="/settings" />
+                <MenuLink icon="settings" label="Configurações" to="/configuracoes" />
               </div>
             </section>
 

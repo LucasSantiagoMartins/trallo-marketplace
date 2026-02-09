@@ -11,9 +11,9 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { icon: "home", label: "Início", path: "/" },
-  { icon: "explore", label: "Explorar", path: "/explorar" },
+  { icon: "wallet", label: "Carteira", path: "/carteira" },
   { icon: "shopping_cart", label: "Carrinho", path: "/carrinho", isCenter: true, badge: 3 },
-  { icon: "favorite", label: "Desejos", path: "/lista-de-desejos" },
+  { icon: "package_2", label: "Meus pedidos", path: "/meus-pedidos" },
   { icon: "person", label: "Perfil", path: "/perfil" },
 ];
 
