@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 interface TralloInputProps {
   label?: string;
@@ -26,13 +26,18 @@ const TralloInput: React.FC<TralloInputProps> = ({
   const [showPassword, setShowPassword] = useState(false);
   const [inputValue, setInputValue] = useState(value);
 
+  useEffect(() => {
+    setInputValue(value);
+  }, [value]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     setInputValue(newValue);
     onChange?.(newValue);
   };
 
-  const inputType = showPasswordToggle && showPassword ? "text" : type;
+  const isPasswordField = type === "password";
+  const currentInputType = isPasswordField && showPassword ? "text" : type;
 
   return (
     <div className={`flex flex-col gap-2 ${className}`}>
@@ -53,7 +58,7 @@ const TralloInput: React.FC<TralloInputProps> = ({
           </span>
         )}
         <input
-          type={inputType}
+          type={currentInputType}
           value={inputValue}
           onChange={handleChange}
           placeholder={placeholder}
@@ -62,19 +67,19 @@ const TralloInput: React.FC<TralloInputProps> = ({
             bg-card border border-border
             focus:border-primary focus:ring-4 focus:ring-primary/10 
             transition-all outline-none 
-            text-foreground placeholder:text-muted-foreground
+            text-muted-foreground/100 placeholder:text-muted-foreground/60
             ${icon ? 'pl-11 pr-4' : 'px-4'}
             ${showPasswordToggle ? 'pr-12' : ''}
           `}
         />
-        {showPasswordToggle && (
+        {showPasswordToggle && isPasswordField && (
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
             className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary transition-colors"
           >
             <span className="material-symbols-outlined text-lg">
-              {showPassword ? "visibility_off" : "visibility"}
+              {showPassword ? "visibility" : "visibility_off"}
             </span>
           </button>
         )}

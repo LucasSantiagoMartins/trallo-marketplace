@@ -10,104 +10,110 @@ const Login: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // navigate to home
     console.log("Login submitted", { email, password });
   };
 
   return (
-    <MobileLayout className="p-6">
-      <div className="flex items-center justify-center min-h-screen w-full">
-        <div className="w-full max-w-md lg:max-w-lg">
-          {/* Top Section / Branding */}
-          <div className="flex flex-col items-center pt-8 md:pt-12 pb-8 md:pb-10">
-            <div className="mb-6 md:mb-8 p-3 bg-card rounded-2xl shadow-sm">
-              <div className="text-primary flex size-12 shrink-0 items-center justify-center">
-                <span className="material-symbols-outlined !text-4xl">
-                  shopping_bag
-                </span>
+    <MobileLayout className="bg-background">
+      <div className="flex items-center justify-center min-h-screen w-full bg-background/50 md:py-12">
+        <div className="w-full max-w-full lg:max-w-5xl min-h-screen md:min-h-0 md:h-fit bg-card shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)] border-border/50 md:border md:rounded-[40px] overflow-hidden transition-all flex flex-col lg:grid lg:grid-cols-2">
+          
+          {/* Coluna da Esquerda: Branding/Info */}
+          <div className="p-8 md:p-12 lg:p-16 bg-muted/30 border-b lg:border-b-0 lg:border-r border-border/50 flex flex-col justify-center relative overflow-hidden">
+            <div className="relative z-10">
+              <div className="mb-6 md:mb-8 p-3 bg-card rounded-2xl shadow-sm w-fit">
+                <div className="text-primary flex size-12 items-center justify-center">
+                  <span className="material-symbols-outlined !text-4xl">
+                    shopping_bag
+                  </span>
+                </div>
               </div>
+              <h1 className="text-foreground text-4xl md:text-5xl lg:text-6xl clash-style leading-none mb-6">
+                Bem-vindo <br /> de Volta
+              </h1>
+              <p className="text-muted-foreground text-base md:text-lg max-w-xs leading-relaxed">
+                Acesse sua conta para gerenciar suas compras e vendas no maior marketplace de Angola.
+              </p>
             </div>
-            <h1 className="clash-style text-foreground text-2xl md:text-3xl font-bold leading-tight text-center">
-              Entrar no TRALLO
-            </h1>
-            <p className="text-muted-foreground text-sm font-normal leading-normal pt-2 text-center max-w-[280px]">
-              Bem-vindo de volta ao marketplace favorito de Angola
-            </p>
+            {/* Elemento decorativo interno */}
+            <div className="absolute top-[-10%] right-[-10%] w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
           </div>
 
-          {/* Login Form */}
-          <form onSubmit={handleSubmit} className="w-full space-y-5">
-            <TralloInput
-              label="E-mail"
-              type="email"
-              placeholder="exemplo@gmail.com"
-              value={email}
-              onChange={setEmail}
-            />
+          {/* Coluna da Direita: Formulário */}
+          <div className="p-8 md:p-12 lg:p-16 flex flex-col justify-center bg-card">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-5">
+                <TralloInput
+                  label="E-mail"
+                  type="email"
+                  placeholder="exemplo@gmail.com"
+                  icon="mail"
+                  value={email}
+                  onChange={setEmail}
+                />
 
-            <TralloInput
-              label="Senha"
-              type="password"
-              placeholder="Sua senha"
-              value={password}
-              onChange={setPassword}
-              showPasswordToggle
-            />
+                <div className="space-y-2">
+                  <TralloInput
+                    label="Senha"
+                    type="password"
+                    placeholder="Sua senha"
+                    icon="lock"
+                    value={password}
+                    onChange={setPassword}
+                    showPasswordToggle
+                  />
+                  <div className="flex justify-end">
+                    <Link
+                      to="/forgot-password"
+                      className="text-primary text-xs font-bold hover:underline"
+                    >
+                      Esqueceu a senha?
+                    </Link>
+                  </div>
+                </div>
+              </div>
 
-            {/* Forgot Password */}
-            <div className="flex justify-end">
-              <Link
-                to="/forgot-password"
-                className="text-primary text-sm font-semibold hover:underline"
-              >
-                Esqueceu a senha?
-              </Link>
-            </div>
+              <TralloButton type="submit" fullWidth icon="arrow_forward" className="py-4 shadow-xl shadow-primary/20">
+                Entrar na Conta
+              </TralloButton>
 
-            {/* Main Login Button */}
-            <TralloButton type="submit" fullWidth icon="arrow_forward">
-              <Link to="/"> Entrar</Link>
-            </TralloButton>
-          </form>
+              <div className="flex items-center gap-4 py-2">
+                <div className="h-[1px] flex-1 bg-border" />
+                <span className="text-muted-foreground text-[10px] font-black uppercase tracking-widest">
+                  Ou continuar com
+                </span>
+                <div className="h-[1px] flex-1 bg-border" />
+              </div>
 
-          {/* Divider */}
-          <div className="flex items-center gap-4 py-6 md:py-8">
-            <div className="h-[1px] flex-1 bg-border" />
-            <span className="text-muted-foreground text-xs font-medium uppercase tracking-wider">
-              Ou entrar com
-            </span>
-            <div className="h-[1px] flex-1 bg-border" />
-          </div>
+              <div className="grid grid-cols-2 gap-4">
+                <TralloButton variant="social" fullWidth className="bg-muted/50 border-border/50">
+                  <img
+                    src="https://www.google.com/favicon.ico"
+                    alt="Google"
+                    className="w-4 h-4"
+                  />
+                  <span className="text-xs font-bold">Google</span>
+                </TralloButton>
+                <TralloButton variant="social" fullWidth className="bg-muted/50 border-border/50">
+                  <span className="material-symbols-outlined !text-xl">
+                    phone_iphone
+                  </span>
+                  <span className="text-xs font-bold">Apple</span>
+                </TralloButton>
+              </div>
 
-          {/* Social Logins */}
-          <div className="grid grid-cols-2 gap-4">
-            <TralloButton variant="social" fullWidth>
-              <img
-                src="https://www.google.com/favicon.ico"
-                alt="Google"
-                className="w-5 h-5"
-              />
-              <span>Google</span>
-            </TralloButton>
-            <TralloButton variant="social" fullWidth>
-              <span className="material-symbols-outlined !text-xl">
-                phone_iphone
-              </span>
-              <span>Apple</span>
-            </TralloButton>
-          </div>
-
-          {/* Footer Link */}
-          <div className="pt-8 md:pt-10 pb-6 text-center">
-            <p className="text-muted-foreground text-sm">
-              Ainda não tem uma conta?{" "}
-              <Link
-                to="/registrar"
-                className="text-primary font-bold hover:underline ml-1"
-              >
-                Criar conta
-              </Link>
-            </p>
+              <div className="pt-6 text-center">
+                <p className="text-sm text-muted-foreground">
+                  Ainda não tem conta?{" "}
+                  <Link
+                    to="/registrar"
+                    className="text-primary font-black ml-1 hover:underline"
+                  >
+                    Criar conta agora
+                  </Link>
+                </p>
+              </div>
+            </form>
           </div>
         </div>
       </div>
