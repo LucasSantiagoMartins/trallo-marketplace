@@ -245,20 +245,18 @@ const CreateProduct: React.FC = () => {
           <label className="text-xs font-bold text-muted-foreground uppercase tracking-tight ml-1">
             Preço de Venda
           </label>
-          <div className="group relative w-full py-8 rounded-2xl bg-card border border-border focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/10 transition-all flex flex-col items-center justify-center">
-            <div className="flex items-center justify-center gap-3 w-full px-4">
-              <span className="font-grotesk text-2xl font-bold text-muted-foreground">
-                AOA
-              </span>
-              <input
-                type="text"
-                inputMode="numeric"
-                value={formData.price}
-                onChange={handlePriceChange}
-                placeholder="0.00"
-                className="font-grotesk text-4xl md:text-5xl font-bold bg-transparent border-none focus:ring-0 text-center w-full max-w-[400px] md:max-w-[500px] text-zinc-600 placeholder:text-muted-foreground outline-none caret-zinc-500"
-              />
-            </div>
+          <div className="group relative w-full py-8 rounded-2xl bg-card border border-border focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/10 transition-all flex items-center justify-center">
+            <input
+              type="text"
+              inputMode="numeric"
+              value={formData.price}
+              onChange={handlePriceChange}
+              placeholder="0.00"
+              className="font-grotesk text-4xl md:text-5xl font-bold bg-transparent border-none focus:ring-0 text-center w-full text-zinc-600 placeholder:text-muted-foreground outline-none caret-zinc-500 px-24"
+            />
+            <span className="absolute right-8 font-grotesk text-2xl font-bold text-muted-foreground pointer-events-none">
+              AOA
+            </span>
           </div>
         </section>
 
