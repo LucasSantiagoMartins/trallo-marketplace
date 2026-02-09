@@ -86,10 +86,10 @@ const Header: React.FC<HeaderProps> = ({
               Explorar
             </Link>
             <Link
-              to="/wishlist"
+              to="/meus-pedidos"
               className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
             >
-              Favoritos
+              Meus Pedidos
             </Link>
             <Link
               to="/adicionar-produto"
