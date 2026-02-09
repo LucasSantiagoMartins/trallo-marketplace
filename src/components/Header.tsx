@@ -101,7 +101,7 @@ const Header: React.FC<HeaderProps> = ({
 
           <div className="flex items-center gap-2">
             <Link
-              to="/cart"
+              to="/carrinho"
               className="flex items-center gap-2 px-4 py-2 rounded-full bg-card hover:bg-muted transition-colors active:scale-95"
             >
               <span className="material-symbols-outlined">shopping_cart</span>
