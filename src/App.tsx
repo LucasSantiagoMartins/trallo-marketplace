@@ -13,6 +13,7 @@ import UserProfileScreen from "./pages/UserProfile";
 import WalletScreen from "./pages/Wallet";
 import TransactionHistoryScreen from "./components/TransactionHistory";
 import OrdersHistory from "./pages/OrdersHistory";
+import OrderDetail from "./pages/OrderDetail";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,7 @@ const App = () => (
           <Route path="/meus-pedidos" element={<OrdersHistory />} />
           <Route path="/carteira" element={<WalletScreen />} />
           <Route path="/transacoes" element={<TransactionHistoryScreen />} />
+          <Route path="/detalhe-pedido" element={<OrderDetail />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

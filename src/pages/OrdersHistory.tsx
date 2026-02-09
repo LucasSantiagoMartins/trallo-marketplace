@@ -166,7 +166,7 @@ const OrdersHistory: React.FC = () => {
               </p>
 
               <div className="pt-6 border-t border-gray-100 dark:border-white/5">
-                <div className="flex items-center gap-3 text-[#6d3ff8]">
+                <div className="flex items-center gap-1 text-[#6d3ff8]">
                   <span className="material-symbols-outlined">
                     shield
                   </span>

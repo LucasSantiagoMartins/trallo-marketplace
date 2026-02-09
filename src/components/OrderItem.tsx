@@ -1,5 +1,6 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 interface OrderItemProps {
   id: string;
@@ -23,6 +24,7 @@ const OrderItem: React.FC<OrderItemProps> = ({
   active,
 }) => {
   const [isOpen, setIsOpen] = React.useState(false);
+  const navigate = useNavigate();
 
   const getStatusColor = () => {
     switch (status) {
@@ -74,7 +76,10 @@ const OrderItem: React.FC<OrderItemProps> = ({
 
         <div className="flex gap-2">
           {active && (
-            <button className="flex-[2] bg-[#6d3ff8] text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 text-sm shadow-lg shadow-[#6d3ff8]/25">
+            <button
+              onClick={() => navigate("/detalhe-pedido")}
+              className="flex-[2] bg-[#6d3ff8] text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 text-sm shadow-lg shadow-[#6d3ff8]/25"
+            >
               <span className="material-symbols-outlined text-lg">
                 local_shipping
               </span>
