@@ -1,8 +1,10 @@
 import React, { useState, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import TransactionItem, { TransactionType } from "./TransactionItem";
 import BottomNavigation from "./BottomNavigation";
 import PageHeader from "./PageHeader";
+import SummaryCard from "./SummaryCard";
+import FilterModal from "./FilterModal";
 
 interface Transaction {
   id: number;
@@ -120,32 +122,30 @@ const HistoryScreen: React.FC = () => {
       />
 
       <main className="max-w-6xl mx-auto px-4 md:px-6 pt-24 pb-32">
-        {/* Cards de Resumo */}
         <section className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-6 mb-10">
           <SummaryCard
             title="Vendas"
             value={stats.venda.toLocaleString()}
-            color="from-emerald-500 to-teal-600"
+            color="from-emerald-400 via-emerald-500 to-teal-700" // 3 cores
             icon="payments"
           />
           <SummaryCard
             title="Compras"
             value={stats.compra.toLocaleString()}
-            color="from-orange-400 to-red-500"
+            color="from-orange-400 via-red-500 to-red-700" // 3 cores
             icon="shopping_basket"
           />
           <div className="col-span-2 md:col-span-1">
+            {/* Este usará o padrão Índigo de 3 cores definido no componente */}
             <SummaryCard
               title="Levantamentos"
               value={stats.levantamento.toLocaleString()}
-              color="from-blue-500 to-indigo-600"
               icon="account_balance"
             />
           </div>
         </section>
 
         <div className="flex flex-col lg:flex-row gap-8 items-start">
-          {/* Coluna Esquerda: Transações */}
           <div className="flex-1 w-full lg:max-w-[65%]">
             <div className="flex items-center justify-between mb-8">
               <h2 className="text-xl md:text-2xl font-black tracking-tight">
@@ -184,7 +184,6 @@ const HistoryScreen: React.FC = () => {
             </div>
           </div>
 
-          {/* Coluna Direita: Info Card (Sticky) */}
           <aside className="hidden lg:block lg:w-[35%] sticky top-24">
             <div className="p-8 bg-gradient-to-b from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-[2.5rem] border border-gray-100 dark:border-gray-700 shadow-sm relative overflow-hidden">
               <div className="size-12 rounded-2xl bg-gradient-to-br from-[#8B5CF6] to-[#6D28D9] flex items-center justify-center text-white mb-6 shadow-lg shadow-purple-500/20">
@@ -197,9 +196,7 @@ const HistoryScreen: React.FC = () => {
 
               <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
                 Algumas vendas e levantamentos podem levar um tempo para serem
-                processados. Para vendas de produtos, o valor fica retido por
-                segurança até a confirmação de entrega. O valor é liberado
-                automaticamente após{" "}
+                processados. O valor é liberado automaticamente após{" "}
                 <span className="text-[#7C3AED] dark:text-[#A78BFA] font-bold">
                   24h
                 </span>{" "}
@@ -225,7 +222,7 @@ const HistoryScreen: React.FC = () => {
 
       <AnimatePresence>
         {isFilterOpen && (
-          <FilterComponent
+          <FilterModal
             currentFilters={activeFilters}
             onApply={(newFilters: any) => {
               setActiveFilters(newFilters);
@@ -238,135 +235,6 @@ const HistoryScreen: React.FC = () => {
     </div>
   );
 };
-
-const FilterComponent = ({ onClose, currentFilters, onApply }: any) => {
-  const [tempFilters, setTempFilters] = useState({ ...currentFilters });
-
-  const sections = [
-    {
-      title: "Tipo",
-      key: "type",
-      options: [
-        { id: "todas", label: "Todas" },
-        { id: "venda", label: "Venda" },
-        { id: "compra", label: "Compra" },
-        { id: "levantamento", label: "Levant." },
-      ],
-    },
-    {
-      title: "Período",
-      key: "period",
-      options: [
-        { id: "todos", label: "Tudo" },
-        { id: "semana", label: "Semana" },
-        { id: "mes", label: "Mês" },
-        { id: "ano", label: "Ano" },
-      ],
-    },
-    {
-      title: "Estado",
-      key: "status",
-      options: [
-        { id: "todos", label: "Todos" },
-        { id: "Concluído", label: "Concl." },
-        { id: "Pendente", label: "Pend." },
-        { id: "Cancelado", label: "Canc." },
-      ],
-    },
-  ];
-
-  return (
-    <div className="fixed inset-0 z-[60] flex items-end lg:items-center lg:justify-center">
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-        onClick={onClose}
-      />
-
-      <motion.div
-        initial={{ y: "100%" }}
-        animate={{ y: 0 }}
-        exit={{ y: "100%" }}
-        transition={{ type: "spring", damping: 25, stiffness: 200 }}
-        drag="y"
-        dragConstraints={{ top: 0 }}
-        dragElastic={0.2}
-        onDragEnd={(_, info) => {
-          if (info.offset.y > 150) onClose();
-        }}
-        className="relative w-full lg:max-w-md bg-white dark:bg-[#16161E] rounded-t-[2.5rem] lg:rounded-[2.5rem] p-6 shadow-2xl overflow-hidden"
-      >
-        <div className="w-12 h-1.5 bg-gray-200 dark:bg-gray-700 mx-auto rounded-full mb-6 cursor-grab active:cursor-grabbing"></div>
-
-        <div className="flex justify-between items-center mb-6">
-          <h3 className="text-xl font-black tracking-tight text-[#121118] dark:text-white">
-            Filtros
-          </h3>
-          <button onClick={onClose} className="text-gray-400 font-bold text-sm">
-            Cancelar
-          </button>
-        </div>
-
-        <div className="space-y-5">
-          {sections.map((section) => (
-            <div key={section.key}>
-              <h4 className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">
-                {section.title}
-              </h4>
-              <div className="grid grid-cols-4 gap-2">
-                {section.options.map((opt) => (
-                  <button
-                    key={opt.id}
-                    onClick={() =>
-                      setTempFilters({ ...tempFilters, [section.key]: opt.id })
-                    }
-                    className={`py-2.5 px-1 rounded-xl text-[10px] font-bold transition-all border-2 ${
-                      tempFilters[section.key] === opt.id
-                        ? "border-primary bg-primary text-white"
-                        : "border-gray-50 dark:border-gray-800 text-gray-400"
-                    }`}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <button
-          onClick={() => onApply(tempFilters)}
-          className="w-full py-4 bg-primary text-white font-black rounded-2xl mt-8 active:scale-95 transition-all shadow-lg shadow-primary/20"
-        >
-          Aplicar Filtros
-        </button>
-      </motion.div>
-    </div>
-  );
-};
-
-const SummaryCard = ({ title, value, color, icon }: any) => (
-  <div
-    className={`p-4 md:p-6 rounded-[2rem] md:rounded-[2.5rem] bg-gradient-to-br ${color} text-white shadow-xl relative overflow-hidden h-32 md:h-44 flex flex-col justify-between`}
-  >
-    <div className="size-8 md:size-12 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center">
-      <span className="material-symbols-outlined text-lg md:text-2xl">
-        {icon}
-      </span>
-    </div>
-    <div className="relative z-10">
-      <p className="text-white/80 text-[10px] font-bold uppercase">{title}</p>
-      <div className="flex items-baseline gap-1">
-        <span className="text-xs font-bold opacity-80">Kz</span>
-        <h3 className="text-lg md:text-3xl font-black tracking-tight truncate">
-          {value}
-        </h3>
-      </div>
-    </div>
-  </div>
-);
 
 const TransactionGroup = ({ label, children }: any) => (
   <div className="w-full">
