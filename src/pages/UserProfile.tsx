@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import BottomNavigation from "../components/BottomNavigation";
 import PageHeader from "../components/PageHeader";
 
@@ -9,11 +9,7 @@ const UserProfileScreen: React.FC = () => {
   return (
     <div className="bg-background-light dark:bg-background-dark text-[#111118] dark:text-white min-h-screen transition-colors">
       <div className="relative mx-auto min-h-screen flex flex-col pb-24 lg:pb-10 lg:max-w-4xl lg:px-8">
-        
-        <PageHeader
-          title="Perfil"
-          backTo={-1}
-        />
+        <PageHeader title="Perfil" backTo={-1} />
 
         <main className="px-6 lg:px-0 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start pt-20 lg:pt-24">
           <div className="lg:col-span-5 space-y-6">
@@ -63,12 +59,16 @@ const UserProfileScreen: React.FC = () => {
                 Gerenciamento
               </h3>
               <div className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700">
-                <MenuLink icon="person_edit" label="Editar Perfil" to="/edit-profile" />
+                <MenuLink
+                  icon="person_edit"
+                  label="Editar Perfil"
+                  to="/edit-profile"
+                />
                 <div className="mx-4 border-t border-gray-50 dark:border-gray-700" />
                 <MenuLink
                   icon="account_balance_wallet"
                   label="Carteira TRALLO"
-                  sublabel="85.400,00 Kz" 
+                  sublabel="85.400,00 Kz"
                   isWallet
                   to="/carteira"
                 />
@@ -80,9 +80,17 @@ const UserProfileScreen: React.FC = () => {
                 Suporte & App
               </h3>
               <div className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700">
-                <MenuLink icon="help_center" label="Ajuda e Suporte" to="/support" />
+                <MenuLink
+                  icon="help_center"
+                  label="Ajuda e Suporte"
+                  to="/support"
+                />
                 <div className="mx-4 border-t border-gray-50 dark:border-gray-700" />
-                <MenuLink icon="settings" label="Configurações" to="/configuracoes" />
+                <MenuLink
+                  icon="settings"
+                  label="Configurações"
+                  to="/configuracoes"
+                />
               </div>
             </section>
 
@@ -90,7 +98,7 @@ const UserProfileScreen: React.FC = () => {
               <span className="material-symbols-outlined text-[20px]">
                 logout
               </span>
-              Terminar Sessão
+              <Link to='/entrar'>Terminar Sessão</Link>
             </button>
           </div>
         </main>
@@ -121,9 +129,9 @@ const StatItem = ({ label, value, showBorder, hasStar }: any) => (
 
 const MenuLink = ({ icon, label, sublabel, isWallet, to }: any) => {
   const navigate = useNavigate();
-  
+
   return (
-    <button 
+    <button
       onClick={() => to && navigate(to)}
       className="w-full flex items-center gap-4 p-5 hover:bg-gray-50 dark:hover:bg-gray-700/30 active:bg-gray-100 transition-colors group text-left"
     >
