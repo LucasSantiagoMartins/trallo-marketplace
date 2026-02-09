@@ -1,16 +1,40 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import MobileLayout from "@/layouts/MobileLayout";
 import TralloInput from "@/components/TralloInput";
 import TralloButton from "@/components/TralloButton";
+import { login } from "@/api/auth.service";
+import { useAppToast } from "@/hooks/useAppToast";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { showToast } = useAppToast();
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Login submitted", { email, password });
+
+    if (!email || !password) {
+      showToast("error", "Preencha todos os campos.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await login(email, password);
+      if (res.success) {
+        showToast("success", res.message || "Login realizado com sucesso!");
+        navigate("/");
+      } else {
+        showToast("error", res.message || "Credenciais inválidas.");
+      }
+    } catch (err) {
+      showToast("error", err instanceof Error ? err.message : "Erro ao conectar ao servidor.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -35,7 +59,6 @@ const Login: React.FC = () => {
                 Acesse sua conta para gerenciar suas compras e vendas no maior marketplace de Angola.
               </p>
             </div>
-            {/* Elemento decorativo interno */}
             <div className="absolute top-[-10%] right-[-10%] w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
           </div>
 
@@ -73,8 +96,8 @@ const Login: React.FC = () => {
                 </div>
               </div>
 
-              <TralloButton type="submit" fullWidth icon="arrow_forward" className="py-4 shadow-xl shadow-primary/20">
-                Entrar na Conta
+              <TralloButton type="submit" fullWidth icon="arrow_forward" className="py-4 shadow-xl shadow-primary/20" disabled={loading}>
+                {loading ? "Entrando..." : "Entrar na Conta"}
               </TralloButton>
 
               <div className="flex items-center gap-4 py-2">
