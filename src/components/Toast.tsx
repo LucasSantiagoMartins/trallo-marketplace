@@ -10,28 +10,31 @@ const iconMap: Record<string, string> = {
   info: "info",
 };
 
-const toastStyles: Record<string, { bg: string; bar: string; icon: string }> = {
+const toastStyles: Record<
+  string,
+  { bg: string; bar: string; iconColor: string }
+> = {
   success: {
-    bg: "from-emerald-500/10 via-emerald-500/5 to-transparent",
-    bar: "from-emerald-400 to-emerald-600",
-    icon: "from-emerald-400 to-emerald-600",
+    bg: "from-emerald-500/15 via-emerald-500/5 to-transparent",
+    bar: "bg-emerald-500",
+    iconColor: "text-emerald-500",
   },
   error: {
-    bg: "from-rose-500/10 via-rose-500/5 to-transparent",
-    bar: "from-rose-400 to-rose-600",
-    icon: "from-rose-400 to-rose-600",
+    bg: "from-rose-500/15 via-rose-500/5 to-transparent",
+    bar: "bg-rose-500",
+    iconColor: "text-rose-500",
   },
   info: {
-    bg: "from-sky-500/10 via-sky-500/5 to-transparent",
-    bar: "from-sky-400 to-sky-600",
-    icon: "from-sky-400 to-sky-600",
+    bg: "from-sky-500/15 via-sky-500/5 to-transparent",
+    bar: "bg-sky-500",
+    iconColor: "text-sky-500",
   },
 };
 
-const SingleToast: React.FC<{ toast: ToastData; onRemove: (id: number) => void }> = ({
-  toast,
-  onRemove,
-}) => {
+const SingleToast: React.FC<{
+  toast: ToastData;
+  onRemove: (id: number) => void;
+}> = ({ toast, onRemove }) => {
   const [visible, setVisible] = useState(false);
   const [progress, setProgress] = useState(100);
   const intervalRef = useRef<ReturnType<typeof setInterval>>();
@@ -41,10 +44,7 @@ const SingleToast: React.FC<{ toast: ToastData; onRemove: (id: number) => void }
 
     const step = 100 / (TOAST_DURATION / 50);
     intervalRef.current = setInterval(() => {
-      setProgress((prev) => {
-        if (prev <= 0) return 0;
-        return prev - step;
-      });
+      setProgress((prev) => (prev <= 0 ? 0 : prev - step));
     }, 50);
 
     const timer = setTimeout(() => {
@@ -60,29 +60,38 @@ const SingleToast: React.FC<{ toast: ToastData; onRemove: (id: number) => void }
 
   return (
     <div
-      className={`relative overflow-hidden bg-gradient-to-r ${toastStyles[toast.type].bg} bg-white/90 backdrop-blur-xl rounded-2xl shadow-xl border border-white/40 transition-all duration-300 ${
-        visible ? "opacity-100 translate-x-0 scale-100" : "opacity-0 translate-x-8 scale-95"
+      className={`relative overflow-hidden bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl rounded-xl shadow-lg border border-zinc-200/50 dark:border-zinc-800/50 transition-all duration-400 ease-out ${
+        visible
+          ? "opacity-100 translate-y-0 scale-100"
+          : "opacity-0 -translate-y-4 scale-95"
       }`}
     >
-      <div className="flex items-center gap-3 px-4 py-3.5">
-        <div
-          className={`w-10 h-10 rounded-xl bg-gradient-to-br ${toastStyles[toast.type].icon} flex items-center justify-center shrink-0 shadow-md`}
+      <div
+        className={`absolute inset-0 bg-gradient-to-r ${toastStyles[toast.type].bg} pointer-events-none`}
+      />
+
+      <div className="relative flex items-center gap-3 px-4 py-3">
+        <span
+          className={`material-symbols-outlined text-2xl font-light ${toastStyles[toast.type].iconColor}`}
         >
-          <span className="material-symbols-outlined text-white text-xl font-medium">
-            {iconMap[toast.type]}
-          </span>
-        </div>
-        <span className="flex-1 text-sm font-semibold text-zinc-800 leading-snug">{toast.message}</span>
+          {iconMap[toast.type]}
+        </span>
+
+        <span className="flex-1 text-sm font-medium text-zinc-600 dark:text-zinc-300 leading-snug">
+          {toast.message}
+        </span>
+
         <button
           onClick={() => onRemove(toast.id)}
-          className="text-zinc-300 hover:text-zinc-500 transition-colors p-1"
+          className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors p-1"
         >
           <span className="material-symbols-outlined text-lg">close</span>
         </button>
       </div>
-      <div className="h-1 w-full bg-zinc-100/50">
+
+      <div className="h-1 w-full bg-zinc-100 dark:bg-zinc-800/30">
         <div
-          className={`h-full bg-gradient-to-r ${toastStyles[toast.type].bar} rounded-full transition-none`}
+          className={`h-full ${toastStyles[toast.type].bar} transition-none`}
           style={{ width: `${Math.max(progress, 0)}%` }}
         />
       </div>
@@ -96,7 +105,7 @@ const ToastContainer: React.FC = () => {
   if (toasts.length === 0) return null;
 
   return (
-    <div className="fixed top-4 right-4 z-[9999] flex flex-col gap-2 max-w-sm w-full pointer-events-auto">
+    <div className="fixed top-4 left-1/2 -translate-x-1/2 sm:left-auto sm:right-6 sm:translate-x-0 z-[9999] flex flex-col gap-2 w-[calc(100%-2rem)] max-w-[320px] pointer-events-auto">
       {toasts.map((t) => (
         <SingleToast key={t.id} toast={t} onRemove={removeToast} />
       ))}

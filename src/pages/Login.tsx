@@ -7,7 +7,7 @@ import { login } from "@/api/auth.service";
 import { useAppToast } from "@/hooks/useAppToast";
 
 const Login: React.FC = () => {
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { showToast } = useAppToast();
@@ -16,14 +16,14 @@ const Login: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!email || !password) {
+    if (!identifier || !password) {
       showToast("error", "Preencha todos os campos.");
       return;
     }
 
     setLoading(true);
     try {
-      const res = await login(email, password);
+      const res = await login(identifier, password);
       if (res.success) {
         showToast("success", res.message || "Login realizado com sucesso!");
         navigate("/");
@@ -68,12 +68,12 @@ const Login: React.FC = () => {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-5">
                 <TralloInput
-                  label="E-mail"
-                  type="email"
-                  placeholder="exemplo@gmail.com"
-                  icon="mail"
-                  value={email}
-                  onChange={setEmail}
+                  label="Identificação"
+                  type="text"
+                  placeholder="E-mail ou Telefone"
+                  icon="person"
+                  value={identifier}
+                  onChange={setIdentifier}
                 />
 
                 <div className="space-y-2">

@@ -3,7 +3,7 @@ import { http } from "./http";
 import { endpoints } from "./endpoints";
 
 interface LoginPayload {
-  email: string;
+  identifier: string;
   password: string;
 }
 
@@ -13,8 +13,8 @@ interface RegisterPayload {
   password: string;
 }
 
-export function login(email: string, password: string): Promise<ApiResponse<User>> {
-  return http.post<User, LoginPayload>(endpoints.auth.login, { email, password });
+export function login(identifier: string, password: string): Promise<ApiResponse<User>> {
+  return http.post<User, LoginPayload>(endpoints.auth.login, { identifier, password });
 }
 
 export function register(name: string, email: string, password: string): Promise<ApiResponse<User>> {
