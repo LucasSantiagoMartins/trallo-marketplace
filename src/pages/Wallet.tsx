@@ -14,7 +14,29 @@ const WalletScreen: React.FC = () => {
       {/* Header */}
       <div className="fixed top-0 left-0 right-0 z-50 bg-white/70 dark:bg-[#111118]/70 backdrop-blur-md px-6 py-4 border-b border-gray-100/50 dark:border-gray-800/50">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
+          {/* Lado Esquerdo: Botão Voltar */}
+          <button
+            onClick={() => navigate(-1)}
+            className="size-10 flex items-center justify-center rounded-full bg-white dark:bg-gray-800 shadow-soft border border-gray-100 dark:border-gray-700 active:scale-90 transition-transform"
+          >
+            <span className="material-symbols-outlined text-xl text-foreground">
+              arrow_back
+            </span>
+          </button>
+
+          {/* Centro: Título (Opcional, para manter o equilíbrio visual) */}
+         
+
+          {/* Lado Direito: Info do Usuário */}
           <div className="flex items-center gap-3">
+            <div className="text-right">
+              <p className="text-[10px] text-[#8c5f67] dark:text-gray-400 font-bold uppercase tracking-wider">
+                Olá, Nelson
+              </p>
+              <p className="text-[10px] font-black text-primary uppercase tracking-tight">
+                Nível Prata
+              </p>
+            </div>
             <div className="size-10 rounded-full border-2 border-primary/20 p-0.5 shadow-sm">
               <div
                 className="w-full h-full rounded-full bg-cover bg-center"
@@ -24,20 +46,7 @@ const WalletScreen: React.FC = () => {
                 }}
               />
             </div>
-            <div>
-              <p className="text-[10px] text-[#8c5f67] dark:text-gray-400 font-bold uppercase tracking-wider">
-                Olá, Nelson
-              </p>
-              <h1 className="text-base font-black leading-tight tracking-tight">
-                Carteira TRALLO
-              </h1>
-            </div>
           </div>
-          <button className="size-10 flex items-center justify-center rounded-full bg-white dark:bg-gray-800 shadow-soft border border-gray-100 dark:border-gray-700 active:scale-90 transition-transform">
-            <span className="material-symbols-outlined text-xl text-primary">
-              notifications
-            </span>
-          </button>
         </div>
       </div>
 
