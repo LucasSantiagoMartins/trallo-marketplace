@@ -32,7 +32,9 @@ const Header: React.FC<HeaderProps> = ({
 
   if (showBack) {
     return (
-      <header className={`fixed top-0 left-0 right-0 z-50 glass-header px-4 md:px-6 lg:px-8 py-3 flex items-center justify-between border-b border-border/5 animate-in fade-in duration-500`}>
+      <header
+        className={`fixed top-0 left-0 right-0 z-50 glass-header px-4 md:px-6 lg:px-8 py-3 flex items-center justify-between border-b border-border/5 animate-in fade-in duration-500`}
+      >
         <div className="w-full flex items-center justify-between">
           <button
             onClick={onBack}
@@ -54,7 +56,9 @@ const Header: React.FC<HeaderProps> = ({
   }
 
   return (
-    <header className={`${headerStyles} px-4 md:px-6 lg:px-8 transition-all duration-300`}>
+    <header
+      className={`${headerStyles} px-4 md:px-6 lg:px-8 transition-all duration-300`}
+    >
       <div className="w-full max-w-[75.5rem] mx-auto">
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2 group">
@@ -69,29 +73,57 @@ const Header: React.FC<HeaderProps> = ({
           </Link>
 
           <nav className="hidden lg:flex items-center gap-8">
-            <Link to="/" className="text-sm font-semibold text-foreground hover:text-primary transition-colors">Início</Link>
-            <Link to="/explore" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Explorar</Link>
-            <Link to="/wishlist" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Favoritos</Link>
-            <Link to="/adicionar-produto" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Vender</Link>
+            <Link
+              to="/"
+              className="text-sm font-semibold text-foreground hover:text-primary transition-colors"
+            >
+              Início
+            </Link>
+            <Link
+              to="/explore"
+              className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+            >
+              Explorar
+            </Link>
+            <Link
+              to="/wishlist"
+              className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+            >
+              Favoritos
+            </Link>
+            <Link
+              to="/adicionar-produto"
+              className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+            >
+              Vender
+            </Link>
           </nav>
 
           <div className="flex items-center gap-2">
-            <Link to="/cart" className="hidden lg:flex items-center gap-2 px-4 py-2 rounded-full bg-card hover:bg-muted transition-colors">
+            <Link
+              to="/cart"
+              className="flex items-center gap-2 px-4 py-2 rounded-full bg-card hover:bg-muted transition-colors active:scale-95"
+            >
               <span className="material-symbols-outlined">shopping_cart</span>
-              <span className="bg-primary text-primary-foreground text-xs font-bold px-2 py-0.5 rounded-full">3</span>
+              <span className="bg-primary text-primary-foreground text-xs font-bold px-2 py-0.5 rounded-full">
+                3
+              </span>
             </Link>
 
-            <div className="relative">
-              <button className="p-2 rounded-full hover:bg-muted transition-colors active:scale-90">
-                <span className="material-symbols-outlined">notifications</span>
-              </button>
-              <span className="absolute top-2 right-2 flex h-2.5 w-2.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary" />
+            <Link
+              to="/notifications"
+              className="flex items-center gap-2 px-4 py-2 rounded-full bg-card hover:bg-muted transition-colors active:scale-95"
+            >
+              <span className="material-symbols-outlined">notifications</span>
+              <span className="bg-primary text-primary-foreground text-xs font-bold px-2 py-0.5 rounded-full">
+                +3
               </span>
-            </div>
+            </Link>
 
-            <Link to="/perfil" className="size-10 flex items-center justify-center rounded-full bg-card hover:bg-muted transition-colors active:scale-90">
+            <Link
+              to="/perfil"
+              className="size-10 flex items-center justify-center rounded-full bg-card hover:bg-muted transition-colors active:scale-90"
+            >
               <span className="material-symbols-outlined">person</span>
             </Link>
           </div>

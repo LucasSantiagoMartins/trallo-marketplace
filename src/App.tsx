@@ -9,6 +9,9 @@ import Register from "./pages/Register";
 import ProductDetails from "./pages/ProductDetails";
 import CreateProduct from "./pages/CreateProduct";
 import NotFound from "./pages/NotFound";
+import UserProfileScreen from "./pages/UserProfile";
+import WalletScreen from "./pages/Wallet";
+import TransactionHistoryScreen from "./components/TransactionHistory";
 
 const queryClient = new QueryClient();
 
@@ -27,7 +30,9 @@ const App = () => (
           {/* Placeholder routes for bottom nav */}
           <Route path="/explorar" element={<Home />} />
           <Route path="/carrinho" element={<Home />} />
-          <Route path="/perfil" element={<Login />} />
+          <Route path="/perfil" element={<UserProfileScreen />} />
+          <Route path="/carteira" element={<WalletScreen />} />
+          <Route path="/transacoes" element={<TransactionHistoryScreen />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
