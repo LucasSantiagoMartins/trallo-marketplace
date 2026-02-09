@@ -1,13 +1,16 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import MobileLayout from "@/layouts/MobileLayout";
 import TralloInput from "@/components/TralloInput";
 import TralloButton from "@/components/TralloButton";
+import { register } from "@/api/auth.service";
+import { useAppToast } from "@/hooks/useAppToast";
 
 type UserRole = "buyer" | "seller";
 
 const Register: React.FC = () => {
   const [role, setRole] = useState<UserRole>("buyer");
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -15,10 +18,31 @@ const Register: React.FC = () => {
     password: "",
     address: "",
   });
+  const { showToast } = useAppToast();
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Register submitted", { role, ...formData });
+
+    if (!formData.name || !formData.email || !formData.password) {
+      showToast("error", "Preencha os campos obrigatórios.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await register(formData.name, formData.email, formData.password);
+      if (res.success) {
+        showToast("success", res.message || "Conta criada com sucesso!");
+        navigate("/entrar");
+      } else {
+        showToast("error", res.message || "Erro ao criar conta.");
+      }
+    } catch (err) {
+      showToast("error", err instanceof Error ? err.message : "Erro ao conectar ao servidor.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const updateField = (field: string) => (value: string) => {
@@ -190,8 +214,9 @@ const Register: React.FC = () => {
                   type="submit"
                   fullWidth
                   className="py-4 shadow-xl shadow-primary/20 text-base"
+                  disabled={loading}
                 >
-                  Criar Minha Conta
+                  {loading ? "Criando..." : "Criar Minha Conta"}
                 </TralloButton>
               </div>
 
