@@ -8,15 +8,55 @@ interface LoginPayload {
 }
 
 interface RegisterPayload {
-  name: string;
+  fullName: string;
+  phoneNumber: string;
   email: string;
   password: string;
+  address?: string;
+  role: "BUYER" | "SELLER";
 }
 
-export function login(identifier: string, password: string): Promise<ApiResponse<User>> {
-  return http.post<User, LoginPayload>(endpoints.auth.login, { identifier, password });
+export async function login(
+  identifier: string,
+  password: string,
+): Promise<ApiResponse<User>> {
+  const res = await http.post<User, LoginPayload>(endpoints.auth.login, {
+    identifier,
+    password,
+  });
+
+  if (res.success && res.data) {
+    localStorage.setItem("user_session", JSON.stringify(res.data));
+  }
+
+  return res;
 }
 
-export function register(name: string, email: string, password: string): Promise<ApiResponse<User>> {
-  return http.post<User, RegisterPayload>(endpoints.auth.register, { name, email, password });
+export async function register(
+  fullName: string,
+  phoneNumber: string,
+  email: string,
+  password: string,
+  role: "BUYER" | "SELLER",
+  address?: string,
+): Promise<ApiResponse<User>> {
+  const res = await http.post<User, RegisterPayload>(endpoints.auth.register, {
+    fullName,
+    phoneNumber,
+    email,
+    password,
+    address,
+    role,
+  });
+
+  if (res.success && res.data) {
+    localStorage.setItem("user_session", JSON.stringify(res.data));
+  }
+
+  return res;
+}
+
+export function logout() {
+  localStorage.removeItem("user_session");
+  window.location.href = "/entrar";
 }

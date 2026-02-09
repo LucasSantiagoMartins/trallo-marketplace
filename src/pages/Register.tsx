@@ -12,9 +12,9 @@ const Register: React.FC = () => {
   const [role, setRole] = useState<UserRole>("buyer");
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    name: "",
+    fullName: "",
     email: "",
-    phone: "",
+    phoneNumber: "",
     password: "",
     address: "",
   });
@@ -24,22 +24,45 @@ const Register: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.name || !formData.email || !formData.password) {
+    if (
+      !formData.fullName ||
+      !formData.email ||
+      !formData.password ||
+      !formData.phoneNumber
+    ) {
       showToast("error", "Preencha os campos obrigatórios.");
+      return;
+    }
+
+    if (role === "buyer" && !formData.address) {
+      showToast("error", "O endereço é obrigatório para compradores.");
       return;
     }
 
     setLoading(true);
     try {
-      const res = await register(formData.name, formData.email, formData.password);
+      const apiRole = role.toUpperCase() as "BUYER" | "SELLER";
+
+      const res = await register(
+        formData.fullName,
+        formData.phoneNumber,
+        formData.email,
+        formData.password,
+        apiRole,
+        formData.address || undefined,
+      );
+
       if (res.success) {
         showToast("success", res.message || "Conta criada com sucesso!");
-        navigate("/entrar");
+        navigate("/");
       } else {
         showToast("error", res.message || "Erro ao criar conta.");
       }
     } catch (err) {
-      showToast("error", err instanceof Error ? err.message : "Erro ao conectar ao servidor.");
+      showToast(
+        "error",
+        err instanceof Error ? err.message : "Erro ao conectar ao servidor.",
+      );
     } finally {
       setLoading(false);
     }
@@ -67,28 +90,7 @@ const Register: React.FC = () => {
                 Junte-se ao marketplace de elite que está a transformar o
                 comércio em Angola.
               </p>
-
-              <div className="mt-16 hidden lg:block">
-                <div className="flex items-center gap-4 text-sm text-muted-foreground bg-card/50 p-4 rounded-2xl border border-border/50 w-fit">
-                  <div className="flex -space-x-3">
-                    {[1, 2, 3].map((i) => (
-                      <div
-                        key={i}
-                        className="w-10 h-10 rounded-full border-2 border-card bg-muted flex items-center justify-center"
-                      >
-                        <span className="material-symbols-outlined text-xs">
-                          person
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                  <p className="font-medium">
-                    +500 empreendedores aderiram hoje.
-                  </p>
-                </div>
-              </div>
             </div>
-            <div className="absolute top-[-10%] right-[-10%] w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
           </div>
 
           <div className="p-8 md:p-12 lg:p-16 flex flex-col justify-center bg-card">
@@ -150,8 +152,8 @@ const Register: React.FC = () => {
                 label="Nome Completo"
                 placeholder="Ex: Adilson Manuel"
                 icon="person"
-                value={formData.name}
-                onChange={updateField("name")}
+                value={formData.fullName}
+                onChange={updateField("fullName")}
               />
 
               <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
@@ -163,31 +165,14 @@ const Register: React.FC = () => {
                   value={formData.email}
                   onChange={updateField("email")}
                 />
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-muted-foreground ml-1 uppercase tracking-tight">
-                    Telemóvel
-                  </label>
-                  <div className="flex gap-2">
-                    <div className="flex items-center gap-1.5 px-3 py-3.5 rounded-xl bg-muted border border-border shrink-0">
-                      <img
-                        src="https://flagcdn.com/ao.svg"
-                        alt="AO"
-                        className="w-4 h-auto"
-                      />
-                      <span className="text-foreground text-xs font-bold">
-                        +244
-                      </span>
-                    </div>
-
-                    <TralloInput
-                      type="tel"
-                      value={formData.phone}
-                      onChange={updateField("phone")}
-                      placeholder="9XX..."
-                      className="flex-1"
-                    />
-                  </div>
-                </div>
+                <TralloInput
+                  label="Telemóvel"
+                  type="tel"
+                  placeholder="9XX..."
+                  icon="call"
+                  value={formData.phoneNumber}
+                  onChange={updateField("phoneNumber")}
+                />
               </div>
 
               <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
@@ -201,7 +186,7 @@ const Register: React.FC = () => {
                   onChange={updateField("password")}
                 />
                 <TralloInput
-                  label="Endereço (Opcional)"
+                  label={`Endereço ${role === "seller" ? "(Opcional)" : ""}`}
                   placeholder="Bairro, Rua..."
                   icon="location_on"
                   value={formData.address}
@@ -209,36 +194,16 @@ const Register: React.FC = () => {
                 />
               </div>
 
-              <div className="pt-2">
-                <TralloButton
-                  type="submit"
-                  fullWidth
-                  className="py-4 shadow-xl shadow-primary/20 text-base"
-                  disabled={loading}
-                >
-                  {loading ? "Criando..." : "Criar Minha Conta"}
-                </TralloButton>
-              </div>
+              <TralloButton type="submit" fullWidth disabled={loading}>
+                {loading ? "Criando..." : "Criar Minha Conta"}
+              </TralloButton>
 
-              <div className="text-center space-y-4 pb-10">
-                <p className="text-[10px] text-muted-foreground leading-relaxed px-6">
-                  Ao clicar em continuar, você aceita os{" "}
-                  <span className="text-primary font-bold">
-                    Termos de Serviço
-                  </span>{" "}
-                  e a{" "}
-                  <span className="text-primary font-bold">Privacidade</span>.
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Já tem conta?{" "}
-                  <Link
-                    to="/entrar"
-                    className="text-primary font-black ml-1 hover:underline"
-                  >
-                    Entrar agora
-                  </Link>
-                </p>
-              </div>
+              <p className="text-center text-sm text-muted-foreground">
+                Já tem conta?{" "}
+                <Link to="/entrar" className="text-primary font-black">
+                  Entrar agora
+                </Link>
+              </p>
             </form>
           </div>
         </div>
