@@ -31,7 +31,10 @@ const Login: React.FC = () => {
         showToast("error", res.message || "Credenciais inválidas.");
       }
     } catch (err) {
-      showToast("error", err instanceof Error ? err.message : "Erro ao conectar ao servidor.");
+      showToast(
+        "error",
+        err instanceof Error ? err.message : "Erro ao conectar ao servidor.",
+      );
     } finally {
       setLoading(false);
     }
@@ -41,8 +44,6 @@ const Login: React.FC = () => {
     <MobileLayout className="bg-background">
       <div className="flex items-center justify-center min-h-screen w-full bg-background/50 md:py-12">
         <div className="w-full max-w-full lg:max-w-5xl min-h-screen md:min-h-0 md:h-fit bg-card shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)] border-border/50 md:border md:rounded-[40px] overflow-hidden transition-all flex flex-col lg:grid lg:grid-cols-2">
-          
-          {/* Coluna da Esquerda: Branding/Info */}
           <div className="p-8 md:p-12 lg:p-16 bg-muted/30 border-b lg:border-b-0 lg:border-r border-border/50 flex flex-col justify-center relative overflow-hidden">
             <div className="relative z-10">
               <div className="mb-6 md:mb-8 p-3 bg-card rounded-2xl shadow-sm w-fit">
@@ -56,13 +57,13 @@ const Login: React.FC = () => {
                 Bem-vindo <br /> de Volta
               </h1>
               <p className="text-muted-foreground text-base md:text-lg max-w-xs leading-relaxed">
-                Acesse sua conta para gerenciar suas compras e vendas no maior marketplace de Angola.
+                Acesse sua conta para gerenciar suas compras e vendas no maior
+                marketplace de Angola.
               </p>
             </div>
             <div className="absolute top-[-10%] right-[-10%] w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
           </div>
 
-          {/* Coluna da Direita: Formulário */}
           <div className="p-8 md:p-12 lg:p-16 flex flex-col justify-center bg-card">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-5">
@@ -96,8 +97,15 @@ const Login: React.FC = () => {
                 </div>
               </div>
 
-              <TralloButton type="submit" fullWidth icon="arrow_forward" className="py-4 shadow-xl shadow-primary/20" disabled={loading}>
-                {loading ? "Entrando..." : "Entrar na Conta"}
+              <TralloButton
+                type="submit"
+                fullWidth
+                icon="arrow_forward"
+                className="py-4 shadow-xl shadow-primary/20"
+                disabled={loading}
+                isLoading={loading}
+              >
+                Entrar na Conta
               </TralloButton>
 
               <div className="flex items-center gap-4 py-2">
@@ -109,7 +117,11 @@ const Login: React.FC = () => {
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <TralloButton variant="social" fullWidth className="bg-muted/50 border-border/50">
+                <TralloButton
+                  variant="social"
+                  fullWidth
+                  className="bg-muted/50 border-border/50"
+                >
                   <img
                     src="https://www.google.com/favicon.ico"
                     alt="Google"
@@ -117,7 +129,11 @@ const Login: React.FC = () => {
                   />
                   <span className="text-xs font-bold">Google</span>
                 </TralloButton>
-                <TralloButton variant="social" fullWidth className="bg-muted/50 border-border/50">
+                <TralloButton
+                  variant="social"
+                  fullWidth
+                  className="bg-muted/50 border-border/50"
+                >
                   <span className="material-symbols-outlined !text-xl">
                     phone_iphone
                   </span>
