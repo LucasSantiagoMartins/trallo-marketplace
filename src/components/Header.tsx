@@ -102,7 +102,7 @@ const Header: React.FC<HeaderProps> = ({
           <div className="flex items-center gap-2">
             <Link
               to="/carrinho"
-              className="flex items-center gap-2 px-4 py-2 rounded-full bg-card hover:bg-muted transition-colors active:scale-95"
+              className="hidden lg:flex items-center gap-2 px-4 py-2 rounded-full bg-card hover:bg-muted transition-colors active:scale-95"
             >
               <span className="material-symbols-outlined">shopping_cart</span>
               <span className="bg-primary text-primary-foreground text-xs font-bold px-2 py-0.5 rounded-full">
@@ -122,7 +122,7 @@ const Header: React.FC<HeaderProps> = ({
 
             <Link
               to="/perfil"
-              className="size-10 flex items-center justify-center rounded-full bg-card hover:bg-muted transition-colors active:scale-90"
+              className="hidden lg:flex size-10 items-center justify-center rounded-full bg-card hover:bg-muted transition-colors active:scale-90"
             >
               <span className="material-symbols-outlined">person</span>
             </Link>
