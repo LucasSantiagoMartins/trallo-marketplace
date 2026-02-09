@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 
+type ValidationState = "default" | "error" | "valid";
+
 interface TralloInputProps {
   label?: string;
   type?: string;
@@ -10,6 +12,7 @@ interface TralloInputProps {
   showPasswordToggle?: boolean;
   optional?: boolean;
   className?: string;
+  validation?: ValidationState;
 }
 
 const TralloInput: React.FC<TralloInputProps> = ({
@@ -22,6 +25,7 @@ const TralloInput: React.FC<TralloInputProps> = ({
   showPasswordToggle = false,
   optional = false,
   className = "",
+  validation = "default",
 }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [inputValue, setInputValue] = useState(value);
@@ -38,6 +42,12 @@ const TralloInput: React.FC<TralloInputProps> = ({
 
   const isPasswordField = type === "password";
   const currentInputType = isPasswordField && showPassword ? "text" : type;
+
+  const borderStyles: Record<ValidationState, string> = {
+    default: "border-border focus:border-primary focus:ring-4 focus:ring-primary/10",
+    error: "border-red-500 focus:border-red-500 focus:ring-4 focus:ring-red-500/10",
+    valid: "border-green-500 focus:border-green-500 focus:ring-4 focus:ring-green-500/10",
+  };
 
   return (
     <div className={`flex flex-col gap-2 ${className}`}>
@@ -64,8 +74,8 @@ const TralloInput: React.FC<TralloInputProps> = ({
           placeholder={placeholder}
           className={`
             w-full py-4 rounded-xl 
-            bg-card border border-border
-            focus:border-primary focus:ring-4 focus:ring-primary/10 
+            bg-card border
+            ${borderStyles[validation]}
             transition-all outline-none 
             text-muted-foreground/100 placeholder:text-muted-foreground/60
             ${icon ? 'pl-11 pr-4' : 'px-4'}
