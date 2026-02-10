@@ -57,8 +57,6 @@ const MyProductsPage: React.FC = () => {
     }
   };
 
-  
-
   return (
     <div className="bg-background-light dark:bg-background-dark min-h-screen flex flex-col">
       <PageHeader title="Meus Produtos" />
@@ -95,14 +93,18 @@ const MyProductsPage: React.FC = () => {
             />
           </div>
 
-          <div 
+          <div
             onClick={() => navigate("/adicionar-produto")}
             className="hidden lg:flex flex-col cursor-pointer hover:scale-[1.02] transition-transform p-6 bg-gradient-to-b from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-[2.5rem] border border-gray-100 dark:border-gray-700 shadow-sm max-w-sm"
           >
             <div className="size-12 rounded-2xl bg-gradient-to-br from-[#8B5CF6] to-[#6D28D9] flex items-center justify-center text-white mb-4 shadow-lg shadow-purple-500/20">
-              <span className="material-symbols-outlined font-bold">inventory_2</span>
+              <span className="material-symbols-outlined font-bold">
+                inventory_2
+              </span>
             </div>
-            <h4 className="font-black text-lg mb-2 tracking-tight">Novo Produto</h4>
+            <h4 className="font-black text-lg mb-2 tracking-tight">
+              Novo Produto
+            </h4>
             <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
               Expanda sua vitrine e comece a vender novos itens agora mesmo.
             </p>
@@ -216,13 +218,13 @@ const DeleteConfirmPopup = ({ productName, onClose, onConfirm }: any) => (
 );
 
 const SummaryCard = ({ icon, value, label, color }: any) => (
-  <div className="flex-shrink-0 w-40 md:w-44 bg-white dark:bg-gray-800/60 p-6 rounded-[2.5rem] border border-gray-100 dark:border-gray-700/50 shadow-sm">
+  <div className="flex-shrink-0 w-48 md:w-52 bg-white dark:bg-gray-800/60 p-6 rounded-[2rem] border border-gray-100 dark:border-gray-700/50 shadow-sm">
     <div
       className={`text-${color}-500 mb-4 bg-${color}-500/10 size-12 rounded-2xl flex items-center justify-center`}
     >
       <span className="material-symbols-outlined text-2xl">{icon}</span>
     </div>
-    <div className="text-3xl font-black mb-1">{value}</div>
+    <div className="text-3xl font-black mb-1 truncate">{value}</div>
     <div className="text-[10px] text-slate-400 font-black uppercase tracking-[0.15em]">
       {label}
     </div>
