@@ -7,19 +7,21 @@ export interface Product {
   name: string;
   price: string;
   stock: number;
-  status: "Ativo" | "Sem Stock" | "Verificando";
+  status: "Ativo" | "Sem Stock" | "Verificando" | "Pendente";
   image: string;
 }
 
 interface OwnProductCardProps {
   product: Product;
   onDelete?: (product: Product) => void;
+  onSendToVerify?: (product: Product) => void;
 }
 
 const OwnProductCard = forwardRef<HTMLDivElement, OwnProductCardProps>(
-  ({ product, onDelete }, ref) => {
+  ({ product, onDelete, onSendToVerify }, ref) => {
     const navigate = useNavigate();
     const isVerifying = product.status === "Verificando";
+    const isPending = product.status === "Pendente";
 
     return (
       <motion.div
@@ -30,12 +32,14 @@ const OwnProductCard = forwardRef<HTMLDivElement, OwnProductCardProps>(
         exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
         className={`p-4 rounded-[2rem] flex gap-5 border transition-all duration-300 ${
           isVerifying
-            ? "bg-amber-50/30 dark:bg-amber-500/5 border-dashed border-amber-200 dark:border-amber-900/50"
-            : "bg-white dark:bg-gray-800/40 border-gray-100 dark:border-gray-700/50 shadow-sm hover:shadow-md"
+            ? "bg-amber-50/30 dark:bg-amber-500/5 border-dashed border-amber-200 dark:border-amber-900/50 opacity-80"
+            : isPending
+              ? "bg-blue-50/30 dark:bg-blue-500/5 border-blue-100 dark:border-blue-900/30"
+              : "bg-white dark:bg-gray-800/40 border-gray-100 dark:border-gray-700/50 shadow-sm hover:shadow-md"
         }`}
       >
         <div
-          className={`size-24 md:size-28 rounded-2xl overflow-hidden bg-gray-100 flex-shrink-0 ${isVerifying ? "opacity-60" : ""}`}
+          className={`size-24 md:size-28 rounded-2xl overflow-hidden bg-gray-100 flex-shrink-0 ${isVerifying ? "grayscale opacity-50" : ""}`}
         >
           <img
             src={product.image}
@@ -48,7 +52,7 @@ const OwnProductCard = forwardRef<HTMLDivElement, OwnProductCardProps>(
           <div className="relative">
             <div className="flex justify-between items-start gap-2 mb-1">
               <h4
-                className={`font-bold text-base md:text-lg truncate ${isVerifying ? "text-amber-700/70 dark:text-amber-500/70" : "text-foreground"}`}
+                className={`font-bold text-base md:text-lg truncate ${isVerifying ? "text-slate-400" : "text-foreground"}`}
               >
                 {product.name}
               </h4>
@@ -58,12 +62,16 @@ const OwnProductCard = forwardRef<HTMLDivElement, OwnProductCardProps>(
                     ? "bg-emerald-500/10 text-emerald-500"
                     : product.status === "Sem Stock"
                       ? "bg-red-500/10 text-red-500"
-                      : "bg-amber-500/10 text-amber-600"
+                      : product.status === "Verificando"
+                        ? "bg-amber-500/10 text-amber-600"
+                        : "bg-blue-500/10 text-blue-600"
                 }`}
               >
                 {product.status === "Verificando"
-                  ? "Aguardando Verificação"
-                  : product.status}
+                  ? "Em Verificação"
+                  : product.status === "Pendente"
+                    ? "Pendente de Envio"
+                    : product.status}
               </span>
             </div>
             <p
@@ -86,21 +94,38 @@ const OwnProductCard = forwardRef<HTMLDivElement, OwnProductCardProps>(
             </div>
 
             <div className="flex gap-2">
-              <button
-                onClick={() => navigate("/editar-produto")}
-                className="size-10 flex items-center justify-center bg-gray-100 dark:bg-gray-700/50 rounded-xl text-gray-500 hover:text-primary transition-colors active:scale-90"
-              >
-                <span className="material-symbols-outlined text-xl">edit</span>
-              </button>
               {!isVerifying && (
-                <button
-                  onClick={() => onDelete?.(product)}
-                  className="size-10 flex items-center justify-center bg-red-50 dark:bg-red-500/10 rounded-xl text-red-500 active:scale-90"
-                >
-                  <span className="material-symbols-outlined text-xl">
-                    delete
-                  </span>
-                </button>
+                <>
+                  <button
+                    onClick={() => navigate("/editar-produto")}
+                    className="size-10 flex items-center justify-center bg-gray-100 dark:bg-gray-700/50 rounded-xl text-gray-500 hover:text-primary transition-colors active:scale-90"
+                  >
+                    <span className="material-symbols-outlined text-xl">
+                      edit
+                    </span>
+                  </button>
+
+                  {isPending ? (
+                    <button
+                      onClick={() => navigate("/submeter-produto")}
+                      className="size-10 flex items-center justify-center bg-blue-500 text-white rounded-xl shadow-lg shadow-blue-500/20 active:scale-90"
+                      title="Enviar para verificação"
+                    >
+                      <span className="material-symbols-outlined text-xl">
+                        rocket_launch
+                      </span>
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => onDelete?.(product)}
+                      className="size-10 flex items-center justify-center bg-red-50 dark:bg-red-500/10 rounded-xl text-red-500 active:scale-90"
+                    >
+                      <span className="material-symbols-outlined text-xl">
+                        delete
+                      </span>
+                    </button>
+                  )}
+                </>
               )}
             </div>
           </div>
@@ -111,5 +136,4 @@ const OwnProductCard = forwardRef<HTMLDivElement, OwnProductCardProps>(
 );
 
 OwnProductCard.displayName = "OwnProductCard";
-
 export default OwnProductCard;

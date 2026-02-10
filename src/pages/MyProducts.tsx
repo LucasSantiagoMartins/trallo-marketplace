@@ -18,7 +18,8 @@ const MyProductsPage: React.FC = () => {
       price: "45.000 Kz",
       stock: 12,
       status: "Ativo",
-      image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=300",
+      image:
+        "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=300",
     },
     {
       id: 2,
@@ -26,7 +27,8 @@ const MyProductsPage: React.FC = () => {
       price: "125.000 Kz",
       stock: 0,
       status: "Sem Stock",
-      image: "https://images.unsplash.com/photo-1546868871-7041f2a55e12?q=80&w=300",
+      image:
+        "https://images.unsplash.com/photo-1546868871-7041f2a55e12?q=80&w=300",
     },
     {
       id: 3,
@@ -34,23 +36,17 @@ const MyProductsPage: React.FC = () => {
       price: "22.500 Kz",
       stock: 5,
       status: "Verificando",
-      image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?q=80&w=300",
+      image:
+        "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?q=80&w=300",
     },
     {
-      id: 4,
-      name: "iPhone 15 Pro Max",
-      price: "1.200.000 Kz",
-      stock: 3,
-      status: "Ativo",
-      image: "https://images.unsplash.com/photo-1695048133142-1a20484d2569?q=80&w=300",
-    },
-    {
-      id: 5,
-      name: "Fone Sony WH-1000XM5",
-      price: "210.000 Kz",
-      stock: 8,
-      status: "Ativo",
-      image: "https://images.unsplash.com/photo-1695048133142-1a20484d2569?q=80&w=300",
+      id: 6,
+      name: "Câmara DSLR Canon",
+      price: "450.000 Kz",
+      stock: 2,
+      status: "Pendente",
+      image:
+        "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?q=80&w=300",
     },
   ]);
 
@@ -61,32 +57,77 @@ const MyProductsPage: React.FC = () => {
     }
   };
 
+  const handleSendToVerify = (product: Product) => {
+    setProducts((prev) =>
+      prev.map((p) =>
+        p.id === product.id ? { ...p, status: "Verificando" } : p,
+      ),
+    );
+  };
+
   return (
     <div className="bg-background-light dark:bg-background-dark min-h-screen flex flex-col">
       <PageHeader title="Meus Produtos" />
 
       <main className="max-w-6xl mx-auto w-full px-6 pt-24 pb-20">
         <header className="mb-8">
-          <h2 className="font-black text-3xl tracking-tight">Centro de Produtos</h2>
+          <h2 className="font-black text-3xl tracking-tight">
+            Centro de Produtos
+          </h2>
           <p className="text-slate-500 dark:text-slate-400 text-base">
             Controle total dos seus itens à venda
           </p>
         </header>
 
-        <div className="flex gap-4 overflow-x-auto pb-8 no-scrollbar">
-          <SummaryCard icon="check_circle" value="12" label="Ativos" color="emerald" />
-          <SummaryCard icon="error" value="3" label="Sem Stock" color="red" />
-          <SummaryCard icon="verified_user" value="5" label="Verificando" color="amber" />
+        <div className="flex flex-col lg:flex-row gap-6 mb-8">
+          <div className="flex gap-4 overflow-x-auto pb-4 lg:pb-0 no-scrollbar flex-1">
+            <SummaryCard
+              icon="check_circle"
+              value="12"
+              label="Ativos"
+              color="emerald"
+            />
+            <SummaryCard
+              icon="history"
+              value="2"
+              label="Pendentes"
+              color="blue"
+            />
+            <SummaryCard
+              icon="verified_user"
+              value="5"
+              label="Verificando"
+              color="amber"
+            />
+          </div>
+
+          <div 
+            onClick={() => navigate("/adicionar-produto")}
+            className="hidden lg:flex flex-col cursor-pointer hover:scale-[1.02] transition-transform p-6 bg-gradient-to-b from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-[2.5rem] border border-gray-100 dark:border-gray-700 shadow-sm max-w-sm"
+          >
+            <div className="size-12 rounded-2xl bg-gradient-to-br from-[#8B5CF6] to-[#6D28D9] flex items-center justify-center text-white mb-4 shadow-lg shadow-purple-500/20">
+              <span className="material-symbols-outlined font-bold">inventory_2</span>
+            </div>
+            <h4 className="font-black text-lg mb-2 tracking-tight">Novo Produto</h4>
+            <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
+              Expanda sua vitrine e comece a vender novos itens agora mesmo.
+            </p>
+          </div>
         </div>
 
         <div className="space-y-6">
           <div className="flex items-center justify-between">
-            <h3 className="text-xl font-bold tracking-tight">Lista de Produtos</h3>
+            <h3 className="text-xl font-bold tracking-tight">
+              Lista de Produtos
+            </h3>
             <button
               onClick={() => setShowFilters(true)}
               className="text-primary text-xs font-black flex items-center gap-2 bg-primary/5 px-4 py-2.5 rounded-2xl uppercase tracking-widest hover:bg-primary/10 transition-colors"
             >
-              Filtrar <span className="material-symbols-outlined text-base">filter_list</span>
+              Filtrar{" "}
+              <span className="material-symbols-outlined text-base">
+                filter_list
+              </span>
             </button>
           </div>
 
@@ -97,10 +138,10 @@ const MyProductsPage: React.FC = () => {
                   key={product.id}
                   product={product}
                   onDelete={(p) => setProductToDelete(p)}
+                  onSendToVerify={handleSendToVerify}
                 />
               ))}
             </AnimatePresence>
-            {/* Espaçamento para o botão flutuante não cobrir o último card */}
             <div className="h-20 lg:hidden" />
           </div>
         </div>
@@ -108,16 +149,20 @@ const MyProductsPage: React.FC = () => {
 
       <button
         onClick={() => navigate("/adicionar-produto")}
-        className="fixed bottom-24 right-6 bg-primary text-white flex items-center gap-3 pl-5 pr-6 py-4 rounded-[2rem] shadow-xl shadow-primary/40 z-40 active:scale-90 transition-all group"
+        className="lg:hidden fixed bottom-24 right-6 bg-primary text-white flex items-center gap-3 pl-5 pr-6 py-4 rounded-[2rem] shadow-xl shadow-primary/40 z-40 active:scale-90 transition-all group"
       >
         <span className="material-symbols-outlined font-bold group-hover:rotate-90 transition-transform">
           add_circle
         </span>
-        <span className="font-black text-sm uppercase tracking-wider">Novo Produto</span>
+        <span className="font-black text-sm uppercase tracking-wider">
+          Novo Produto
+        </span>
       </button>
 
       <AnimatePresence>
-        {showFilters && <OwnProductFilterDrawer onClose={() => setShowFilters(false)} />}
+        {showFilters && (
+          <OwnProductFilterDrawer onClose={() => setShowFilters(false)} />
+        )}
 
         {productToDelete && (
           <DeleteConfirmPopup
@@ -147,12 +192,16 @@ const DeleteConfirmPopup = ({ productName, onClose, onConfirm }: any) => (
       className="relative w-full max-w-sm bg-white dark:bg-gray-900 rounded-[2.5rem] p-8 shadow-2xl flex flex-col items-center text-center border border-border/50"
     >
       <div className="size-20 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mb-6">
-        <span className="material-symbols-outlined text-4xl">delete_forever</span>
+        <span className="material-symbols-outlined text-4xl">
+          delete_forever
+        </span>
       </div>
 
       <h3 className="text-xl font-black mb-2">Eliminar Produto?</h3>
       <p className="text-slate-500 dark:text-slate-400 text-sm mb-8 leading-relaxed">
-        Tem certeza que deseja remover <span className="font-bold text-foreground">"{productName}"</span>? Esta ação não pode ser desfeita.
+        Tem certeza que deseja remover{" "}
+        <span className="font-bold text-foreground">"{productName}"</span>? Esta
+        ação não pode ser desfeita.
       </p>
 
       <div className="flex flex-col w-full gap-3">
