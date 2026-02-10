@@ -2,6 +2,7 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import BottomNavigation from "../components/BottomNavigation";
 import PageHeader from "../components/PageHeader";
+import { logout } from "../api/auth.service";
 
 const UserProfileScreen: React.FC = () => {
   const navigate = useNavigate();
@@ -94,11 +95,14 @@ const UserProfileScreen: React.FC = () => {
               </div>
             </section>
 
-            <button className="w-full flex items-center justify-center gap-2 p-4 text-red-500 font-bold clash-font text-sm bg-red-50 dark:bg-red-900/10 rounded-2xl hover:bg-red-100 dark:hover:bg-red-900/20 transition-all">
+            <button
+              onClick={() => logout()}
+              className="w-full flex items-center justify-center gap-2 p-4 text-red-500 font-bold clash-font text-sm bg-red-50 dark:bg-red-900/10 rounded-2xl hover:bg-red-100 dark:hover:bg-red-900/20 transition-all"
+            >
               <span className="material-symbols-outlined text-[20px]">
                 logout
               </span>
-              <Link to='/entrar'>Terminar Sessão</Link>
+              <span>Terminar Sessão</span>
             </button>
           </div>
         </main>

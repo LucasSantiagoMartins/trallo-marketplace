@@ -19,14 +19,25 @@ interface RegisterPayload {
 export async function login(
   identifier: string,
   password: string,
-): Promise<ApiResponse<User>> {
-  const res = await http.post<User, LoginPayload>(endpoints.auth.login, {
-    identifier,
-    password,
-  });
+): Promise<ApiResponse<{ token: string; role: string }>> {
+  const res = await http.post<{ token: string; role: string }, LoginPayload>(
+    endpoints.auth.login,
+    {
+      identifier,
+      password,
+    },
+  );
+
 
   if (res.success && res.data) {
-    localStorage.setItem("user_session", JSON.stringify(res.data));
+    const sessionData = {
+      role: res.data.role,
+      token: res.data.token,
+    };
+
+    localStorage.setItem("user_session", JSON.stringify(sessionData));
+    localStorage.setItem("auth_token", res.data.token);
+
   }
 
   return res;
@@ -39,18 +50,21 @@ export async function register(
   password: string,
   role: "BUYER" | "SELLER",
   address?: string,
-): Promise<ApiResponse<User>> {
-  const res = await http.post<User, RegisterPayload>(endpoints.auth.register, {
-    fullName,
-    phoneNumber,
-    email,
-    password,
-    address,
-    role,
-  });
-
+): Promise<ApiResponse<User & { token: string }>> {
+  const res = await http.post<User & { token: string }, RegisterPayload>(
+    endpoints.auth.register,
+    {
+      fullName,
+      phoneNumber,
+      email,
+      password,
+      address,
+      role,
+    },
+  );
   if (res.success && res.data) {
     localStorage.setItem("user_session", JSON.stringify(res.data));
+    localStorage.setItem("auth_token", res.data.token);
   }
 
   return res;
@@ -58,5 +72,6 @@ export async function register(
 
 export function logout() {
   localStorage.removeItem("user_session");
+  localStorage.removeItem("auth_token");
   window.location.href = "/entrar";
 }

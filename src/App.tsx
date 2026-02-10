@@ -3,6 +3,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ToastProvider } from "@/context/ToastContext";
 import ToastContainer from "@/components/Toast";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
+
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -22,29 +24,68 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <ToastProvider>
-    <TooltipProvider>
-      <ToastContainer />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/entrar" element={<Login />} />
-          <Route path="/registrar" element={<Register />} />
-          <Route path="/produto/:id" element={<ProductDetails />} />
-          <Route path="/adicionar-produto" element={<CreateProduct />} />
-          {/* Placeholder routes for bottom nav */}
-          <Route path="/explorar" element={<Home />} />
-        <Route path="/carrinho" element={<CartPage />} />
-          <Route path="/perfil" element={<UserProfileScreen />} />
-          <Route path="/meus-pedidos" element={<OrdersHistory />} />
-          <Route path="/carteira" element={<WalletScreen />} />
-          <Route path="/transacoes" element={<TransactionHistoryScreen />} />
-          <Route path="/detalhe-pedido" element={<OrderDetail />} />
-          <Route path="/configuracoes" element={<SettingsScreen />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+      <TooltipProvider>
+        <ToastContainer />
+        <BrowserRouter>
+          <Routes>
+            {/* --- ROTAS PÚBLICAS --- */}
+            <Route path="/" element={<Home />} />
+            <Route path="/entrar" element={<Login />} />
+            <Route path="/registrar" element={<Register />} />
+            <Route path="/produto/:id" element={<ProductDetails />} />
+
+            {/* --- ROTAS PRIVADAS (Qualquer user logado) --- */}
+            <Route path="/carrinho" element={
+              <ProtectedRoute>
+                <CartPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/perfil" element={
+              <ProtectedRoute>
+                <UserProfileScreen />
+              </ProtectedRoute>
+            } />
+            <Route path="/meus-pedidos" element={
+              <ProtectedRoute>
+                <OrdersHistory />
+              </ProtectedRoute>
+            } />
+            <Route path="/detalhe-pedido" element={
+              <ProtectedRoute>
+                <OrderDetail />
+              </ProtectedRoute>
+            } />
+            <Route path="/carteira" element={
+              <ProtectedRoute>
+                <WalletScreen />
+              </ProtectedRoute>
+            } />
+            <Route path="/transacoes" element={
+              <ProtectedRoute>
+                <TransactionHistoryScreen />
+              </ProtectedRoute>
+            } />
+            <Route path="/configuracoes" element={
+              <ProtectedRoute>
+                <SettingsScreen />
+              </ProtectedRoute>
+            } />
+
+            {/* --- ROTAS RESTRITAS (SELLER OU ADMIN) --- */}
+            <Route 
+              path="/adicionar-produto" 
+              element={
+                <ProtectedRoute allowedRoles={["SELLER", "ADMIN"]}>
+                  <CreateProduct /> 
+                </ProtectedRoute>
+              } 
+            />
+
+            {/* CATCH-ALL */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
     </ToastProvider>
   </QueryClientProvider>
 );
