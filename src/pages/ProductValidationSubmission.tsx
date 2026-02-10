@@ -1,18 +1,30 @@
 import React, { useState, useEffect } from "react";
 import PageHeader from "@/components/PageHeader";
 import TralloButton from "@/components/TralloButton";
+import VideoChecklistModal from "@/components/VideoChecklistModal";
 
-const ProductValidation: React.FC = () => {
+const ProductValidationSubmission: React.FC = () => {
   const [currentStep] = useState(2);
   const [notes, setNotes] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imagesLoaded, setImagesLoaded] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [showVideoChecklist, setShowVideoChecklist] = useState(false);
+  const [selectedVideo, setSelectedVideo] = useState<File | null>(null);
 
   const maxChars = 300;
 
+  const productData = {
+    name: "Samsung Galaxy S21 Ultra",
+    price: "450.000",
+    currency: "Kz",
+    category: "Tech",
+    condition: "Semi-novo",
+  };
+
   const colors = {
     primary: "hsl(262 91% 61%)",
+    success: "#22c55e",
     background: "#f6f5f8",
     darkBackground: "#141022",
   };
@@ -39,7 +51,17 @@ const ProductValidation: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#f6f5f8] dark:bg-[#141022] text-slate-900 dark:text-white transition-colors duration-300">
-      <PageHeader title="Validar Produto" backTo={-1} />
+      <PageHeader title="Enviar para Análise" backTo={-1} />
+
+      <VideoChecklistModal
+        isOpen={showVideoChecklist}
+        onClose={() => setShowVideoChecklist(false)}
+        category={productData.category}
+        onVideoSelected={(file) => {
+          setSelectedVideo(file);
+          setShowVideoChecklist(false);
+        }}
+      />
 
       {selectedImage && (
         <div
@@ -60,7 +82,6 @@ const ProductValidation: React.FC = () => {
       )}
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 pt-24 pb-12">
-        {/* STEPS RECUPERADOS */}
         <div className="flex items-center gap-3 mb-10 max-w-[400px] mx-auto">
           {[1, 2].map((step) => (
             <div key={step} className="flex-1 flex flex-col gap-2">
@@ -94,7 +115,6 @@ const ProductValidation: React.FC = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            {/* Resumo do Produto */}
             <section className="bg-white dark:bg-slate-900/50 p-6 rounded-3xl shadow-sm flex items-center gap-5 border border-white/5 backdrop-blur-sm">
               <div className="w-24 h-24 rounded-2xl overflow-hidden flex-shrink-0 bg-slate-100 dark:bg-slate-800 ring-1 ring-slate-200 dark:ring-white/10">
                 {!imagesLoaded ? (
@@ -112,13 +132,16 @@ const ProductValidation: React.FC = () => {
                   className="text-[10px] font-bold text-primary uppercase"
                   style={{ color: colors.primary }}
                 >
-                  Tech • Semi-novo
+                  {productData.category} • {productData.condition}
                 </span>
                 <h2 className="text-xl font-bold leading-tight mt-1">
-                  Samsung Galaxy S21 Ultra
+                  {productData.name}
                 </h2>
                 <p className="text-2xl font-black mt-1">
-                  450.000 <span className="text-sm font-medium">Kz</span>
+                  {productData.price}{" "}
+                  <span className="text-sm font-medium">
+                    {productData.currency}
+                  </span>
                 </p>
               </div>
             </section>
@@ -154,21 +177,20 @@ const ProductValidation: React.FC = () => {
                 ))}
               </div>
 
-              {/* CARD INFORMATIVO ESTILO WALLET */}
               <div className="p-6 bg-gradient-to-b from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-[2.5rem] border border-gray-100 dark:border-gray-700 shadow-sm mt-6">
                 <div className="size-12 rounded-2xl bg-gradient-to-br from-[#8B5CF6] to-[#6D28D9] flex items-center justify-center text-white mb-4 shadow-lg shadow-purple-500/20">
                   <span className="material-symbols-outlined">
-                    rocket_launch
+                    verified_user
                   </span>
                 </div>
                 <h4 className="font-black text-lg mb-2 tracking-tight">
-                  Pronto para publicar?
+                  Validação e Credibilidade
                 </h4>
                 <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
-                  Ao submeter estas evidências, o seu produto entra na fase
-                  final de verificação. Garanta que tudo está correto para
-                  acelerar a aprovação e colocar o seu item em destaque no
-                  mercado o quanto antes.
+                  Estas provas garantem a sua aprovação na plataforma e aumentam
+                  as suas chances de venda. Com elas, os compradores podem
+                  atestar a qualidade do produto, gerando a segurança necessária
+                  para concluir a compra.
                 </p>
               </div>
             </section>
@@ -179,18 +201,41 @@ const ProductValidation: React.FC = () => {
               <h3 className="text-sm font-bold uppercase tracking-widest text-slate-500">
                 Vídeo de Demonstração
               </h3>
-              <div className="relative group cursor-pointer overflow-hidden rounded-3xl border-2 border-dashed border-slate-300 dark:border-white/10 hover:border-primary transition-all bg-white dark:bg-white/5 p-8 text-center">
-                <div className="size-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-500">
+              <div
+                onClick={() => setShowVideoChecklist(true)}
+                className={`relative group cursor-pointer overflow-hidden rounded-3xl border-2 border-dashed transition-all bg-white dark:bg-white/5 p-8 text-center ${
+                  selectedVideo
+                    ? "border-green-500 bg-green-50/30 dark:bg-green-500/5"
+                    : "border-slate-300 dark:border-white/10 hover:border-primary"
+                }`}
+              >
+                <div
+                  className={`size-20 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-500 ${
+                    selectedVideo
+                      ? "bg-green-100 dark:bg-green-500/20"
+                      : "bg-primary/10"
+                  }`}
+                >
                   <span
                     className="material-symbols-outlined text-4xl"
-                    style={{ color: colors.primary }}
+                    style={{
+                      color: selectedVideo ? colors.success : colors.primary,
+                    }}
                   >
-                    videocam
+                    {selectedVideo ? "check_circle" : "videocam"}
                   </span>
                 </div>
-                <h4 className="font-bold">Adicionar Prova em Vídeo</h4>
-                <p className="text-xs text-slate-400 mt-2">
-                  Opcional - Máximo 30 segundos
+                <h4 className="font-bold">
+                  {selectedVideo
+                    ? "Vídeo Selecionado"
+                    : "Adicionar Prova em Vídeo"}
+                </h4>
+                <p
+                  className={`text-xs mt-2 font-medium ${selectedVideo ? "text-green-600 dark:text-green-400" : "text-slate-400"}`}
+                >
+                  {selectedVideo
+                    ? selectedVideo.name
+                    : "Opcional - Máximo 30 segundos"}
                 </p>
               </div>
             </section>
@@ -219,11 +264,11 @@ const ProductValidation: React.FC = () => {
             <TralloButton
               variant="primary"
               fullWidth
-              icon="send"
+              icon="published_with_changes"
               isLoading={isSubmitting}
               onClick={handleSubmit}
             >
-              Submeter para Aprovação
+              Submeter
             </TralloButton>
           </div>
         </div>
@@ -232,4 +277,4 @@ const ProductValidation: React.FC = () => {
   );
 };
 
-export default ProductValidation;
+export default ProductValidationSubmission;

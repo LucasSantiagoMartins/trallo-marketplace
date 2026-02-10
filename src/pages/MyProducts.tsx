@@ -57,13 +57,7 @@ const MyProductsPage: React.FC = () => {
     }
   };
 
-  const handleSendToVerify = (product: Product) => {
-    setProducts((prev) =>
-      prev.map((p) =>
-        p.id === product.id ? { ...p, status: "Verificando" } : p,
-      ),
-    );
-  };
+  
 
   return (
     <div className="bg-background-light dark:bg-background-dark min-h-screen flex flex-col">
@@ -138,7 +132,6 @@ const MyProductsPage: React.FC = () => {
                   key={product.id}
                   product={product}
                   onDelete={(p) => setProductToDelete(p)}
-                  onSendToVerify={handleSendToVerify}
                 />
               ))}
             </AnimatePresence>

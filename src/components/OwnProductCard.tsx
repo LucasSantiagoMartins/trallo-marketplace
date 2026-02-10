@@ -14,11 +14,10 @@ export interface Product {
 interface OwnProductCardProps {
   product: Product;
   onDelete?: (product: Product) => void;
-  onSendToVerify?: (product: Product) => void;
 }
 
 const OwnProductCard = forwardRef<HTMLDivElement, OwnProductCardProps>(
-  ({ product, onDelete, onSendToVerify }, ref) => {
+  ({ product, onDelete }, ref) => {
     const navigate = useNavigate();
     const isVerifying = product.status === "Verificando";
     const isPending = product.status === "Pendente";
@@ -112,7 +111,7 @@ const OwnProductCard = forwardRef<HTMLDivElement, OwnProductCardProps>(
                       title="Enviar para verificação"
                     >
                       <span className="material-symbols-outlined text-xl">
-                        rocket_launch
+                        published_with_changes
                       </span>
                     </button>
                   ) : (

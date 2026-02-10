@@ -79,7 +79,14 @@ const Header: React.FC<HeaderProps> = ({
             >
               Início
             </Link>
-            
+
+            <Link
+              to="/meus-produtos"
+              className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+            >
+              Produtos adicionados
+            </Link>
+
             <Link
               to="/meus-pedidos"
               className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
