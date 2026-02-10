@@ -14,36 +14,63 @@ const ClassificationDetails: React.FC<ClassificationDetailsProps> = ({
   onOpenCondition,
 }) => {
   return (
-    <section className="bg-card rounded-2xl p-4 shadow-sm border border-border/50 space-y-3">
-      <h2 className="font-bold text-base px-1">Detalhes de Classificação</h2>
-      <div
-        onClick={onOpenCategory}
-        className="flex items-center justify-between p-4 bg-muted/30 rounded-xl cursor-pointer hover:bg-muted/60 transition-colors"
-      >
-        <div className="flex items-center gap-3">
-          <span className="material-symbols-outlined text-primary">
-            category
-          </span>
-          <span className="text-sm font-semibold">Categoria</span>
-        </div>
-        <span className="text-sm font-medium text-muted-foreground">
-          {category || "Selecionar"}
-        </span>
+    <section className="bg-white dark:bg-slate-900/40 rounded-[2rem] p-6 shadow-sm border border-slate-100 dark:border-white/5 space-y-4">
+      <div className="flex items-center gap-2 mb-2 px-1">
+        <h2 className="font-black text-sm uppercase tracking-wider text-slate-500">
+          Categoria & Estado do produto
+        </h2>
       </div>
 
-      <div
-        onClick={onOpenCondition}
-        className="flex items-center justify-between p-4 bg-muted/30 rounded-xl cursor-pointer hover:bg-muted/60 transition-colors"
-      >
-        <div className="flex items-center gap-3">
-          <span className="material-symbols-outlined text-primary">
-            history_edu
+      <div className="grid gap-3">
+        {/* Categoria */}
+        <button
+          onClick={onOpenCategory}
+          className="flex items-center justify-between p-4 bg-slate-50 dark:bg-white/5 rounded-2xl group hover:ring-2 hover:ring-primary/20 transition-all active:scale-[0.98] text-left"
+        >
+          <div className="flex items-center gap-4">
+            <div className="size-10 rounded-xl bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center group-hover:text-primary transition-colors">
+              <span className="material-symbols-outlined text-[22px]">
+                widgets
+              </span>
+            </div>
+            <div>
+              <p className="text-[10px] uppercase font-bold text-slate-400 tracking-tight">
+                Categoria
+              </p>
+              <p className="text-sm font-bold text-slate-700 dark:text-slate-200">
+                {category || "Não definida"}
+              </p>
+            </div>
+          </div>
+          <span className="material-symbols-outlined text-slate-300 group-hover:translate-x-1 transition-transform">
+            chevron_right
           </span>
-          <span className="text-sm font-semibold">Estado</span>
-        </div>
-        <span className="text-sm font-medium text-muted-foreground">
-          {condition}
-        </span>
+        </button>
+
+        {/* Estado/Condição */}
+        <button
+          onClick={onOpenCondition}
+          className="flex items-center justify-between p-4 bg-slate-50 dark:bg-white/5 rounded-2xl group hover:ring-2 hover:ring-primary/20 transition-all active:scale-[0.98] text-left"
+        >
+          <div className="flex items-center gap-4">
+            <div className="size-10 rounded-xl bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center group-hover:text-primary transition-colors">
+              <span className="material-symbols-outlined text-[22px]">
+                sell
+              </span>
+            </div>
+            <div>
+              <p className="text-[10px] uppercase font-bold text-slate-400 tracking-tight">
+                Condição
+              </p>
+              <p className="text-sm font-bold text-slate-700 dark:text-slate-200">
+                {condition || "Selecionar estado"}
+              </p>
+            </div>
+          </div>
+          <span className="material-symbols-outlined text-slate-300 group-hover:translate-x-1 transition-transform">
+            chevron_right
+          </span>
+        </button>
       </div>
     </section>
   );

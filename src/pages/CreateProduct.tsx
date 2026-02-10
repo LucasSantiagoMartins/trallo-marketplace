@@ -121,9 +121,10 @@ const CreateProduct: React.FC = () => {
     <MobileLayout className="pb-10">
       <PageHeader title="Criar Novo Produto" backTo={-1} />
 
-      <main className="px-4 md:px-6 lg:px-8 max-w-4xl mx-auto pt-32 md:pt-28">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-6">
+      <main className="px-4 md:px-6 lg:px-8 max-w-6xl mx-auto pt-32 md:pt-28">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-start">
+          {/* Coluna da Esquerda */}
+          <div className="space-y-8">
             <ImageUpload
               images={images}
               fileInputRef={fileInputRef}
@@ -143,27 +144,42 @@ const CreateProduct: React.FC = () => {
               onOpenCategory={openCategoryDrawer}
               onOpenCondition={openConditionModal}
             />
+
+            {/* Card Informativo para preencher o espaço */}
+            <div className="p-8 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800/40 dark:to-gray-900/40 rounded-[2.5rem] border border-gray-100 dark:border-white/5 shadow-sm">
+              <div className="size-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white mb-5 shadow-lg shadow-purple-500/20">
+                <span className="material-symbols-outlined">rocket_launch</span>
+              </div>
+              <h4 className="font-black text-xl mb-3 tracking-tight">
+                Destaque o seu produto
+              </h4>
+              <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
+                Produtos com boas fotos e descrições detalhadas têm até 3x mais
+                chances de serem vendidos rapidamente. Capriche nos detalhes!
+              </p>
+            </div>
           </div>
 
-          <div className="space-y-6">
+          {/* Coluna da Direita */}
+          <div className="space-y-6 bg-white dark:bg-slate-900/20 p-4 md:p-6 rounded-[2.5rem]">
             <TralloInput
-              label="Nome"
-              placeholder="Nome do produto"
+              label="Nome do Item"
+              placeholder="Ex: iPhone 13 Pro Max - 256GB"
               value={formData.name}
               onChange={(val) => updateField("name", val)}
             />
 
             <TralloInput
-              label="Descrição"
-              placeholder="Descreve o teu produto..."
+              label="Descrição Detalhada"
+              placeholder="Fale sobre o uso, acessórios inclusos e estado do item..."
               value={formData.description}
               onChange={(val) => updateField("description", val)}
               multiline
-              rows={5}
-              className="min-h-[150px]"
+              rows={6}
+              className="min-h-[180px]"
             />
 
-            <div className="flex flex-col md:flex-row md:items-end gap-4 w-full">
+            <div className="flex flex-col sm:flex-row sm:items-end gap-6 w-full">
               <div className="flex-1 w-full">
                 <PriceInput
                   value={formData.price}
@@ -179,12 +195,12 @@ const CreateProduct: React.FC = () => {
               </div>
 
               <div className="flex flex-col gap-2 shrink-0">
-                <label className="text-xs font-bold text-muted-foreground uppercase ml-1">
-                  Quantidade
+                <label className="text-[10px] font-black text-slate-400 uppercase ml-1 tracking-widest">
+                  Estoque Disponível
                 </label>
                 <QuantitySelector
                   value={formData.stockQuantity}
-                  className="h-[50px] w-full md:min-w-[130px]"
+                  className="h-[56px] w-full sm:min-w-[140px]"
                   onChange={(d) =>
                     updateField(
                       "stockQuantity",
@@ -195,15 +211,19 @@ const CreateProduct: React.FC = () => {
               </div>
             </div>
 
-            <div className="pt-2">
+            <div className="pt-6">
               <TralloButton
                 onClick={handleSubmit}
                 fullWidth
                 isLoading={loading}
-                className="py-4"
+                className="py-5 text-lg font-bold shadow-xl shadow-primary/20"
+                icon="add_circle"
               >
-                Adicionar produto
+                Publicar Produto
               </TralloButton>
+              <p className="text-[10px] text-center text-slate-400 mt-4 uppercase font-bold tracking-widest">
+                Ao publicar, você concorda com nossos termos de venda.
+              </p>
             </div>
           </div>
         </div>
