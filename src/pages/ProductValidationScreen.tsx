@@ -41,7 +41,6 @@ const ProductValidation: React.FC = () => {
     <div className="min-h-screen bg-[#f6f5f8] dark:bg-[#141022] text-slate-900 dark:text-white transition-colors duration-300">
       <PageHeader title="Validar Produto" backTo={-1} />
 
-      {/* Overlay de Preview (Lightbox) conforme solicitado */}
       {selectedImage && (
         <div
           className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-300"
@@ -61,9 +60,41 @@ const ProductValidation: React.FC = () => {
       )}
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 pt-24 pb-12">
+        {/* STEPS RECUPERADOS */}
+        <div className="flex items-center gap-3 mb-10 max-w-[400px] mx-auto">
+          {[1, 2].map((step) => (
+            <div key={step} className="flex-1 flex flex-col gap-2">
+              <div
+                className={`h-2 rounded-full transition-all duration-500 overflow-hidden ${
+                  step <= currentStep ? "" : "bg-slate-200 dark:bg-slate-800"
+                }`}
+                style={{
+                  backgroundColor:
+                    step <= currentStep ? colors.primary : undefined,
+                }}
+              >
+                {step === currentStep && (
+                  <div
+                    className="h-full bg-white/30 animate-in slide-in-from-left duration-1000"
+                    style={{ width: "100%" }}
+                  />
+                )}
+              </div>
+              <span
+                className="text-[10px] font-bold uppercase text-center"
+                style={{
+                  color: step === currentStep ? colors.primary : "gray",
+                }}
+              >
+                {step === 1 ? "Cadastro" : "Validação Final"}
+              </span>
+            </div>
+          ))}
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            {/* O resumo do produto permanece como você tinha */}
+            {/* Resumo do Produto */}
             <section className="bg-white dark:bg-slate-900/50 p-6 rounded-3xl shadow-sm flex items-center gap-5 border border-white/5 backdrop-blur-sm">
               <div className="w-24 h-24 rounded-2xl overflow-hidden flex-shrink-0 bg-slate-100 dark:bg-slate-800 ring-1 ring-slate-200 dark:ring-white/10">
                 {!imagesLoaded ? (
@@ -92,7 +123,6 @@ const ProductValidation: React.FC = () => {
               </div>
             </section>
 
-            {/* A Galeria permanece com a função de setSelectedImage para o Preview */}
             <section className="space-y-4">
               <h3 className="text-sm font-bold uppercase tracking-widest text-slate-500">
                 Fotos Submetidas
@@ -124,24 +154,26 @@ const ProductValidation: React.FC = () => {
                 ))}
               </div>
 
-              {/* CARD INFORMATIVO IGUAL AO DA WALLET (abaixo das fotos) */}
+              {/* CARD INFORMATIVO ESTILO WALLET */}
               <div className="p-6 bg-gradient-to-b from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-[2.5rem] border border-gray-100 dark:border-gray-700 shadow-sm mt-6">
                 <div className="size-12 rounded-2xl bg-gradient-to-br from-[#8B5CF6] to-[#6D28D9] flex items-center justify-center text-white mb-4 shadow-lg shadow-purple-500/20">
-                  <span className="material-symbols-outlined">verified</span>
+                  <span className="material-symbols-outlined">
+                    rocket_launch
+                  </span>
                 </div>
                 <h4 className="font-black text-lg mb-2 tracking-tight">
-                  Porquê estas fotos?
+                  Pronto para publicar?
                 </h4>
                 <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
-                  As imagens submetidas são essenciais para que a nossa equipa
-                  de curadoria confirme a autenticidade e o estado real do seu
-                  produto antes da venda ser finalizada.
+                  Ao submeter estas evidências, o seu produto entra na fase
+                  final de verificação. Garanta que tudo está correto para
+                  acelerar a aprovação e colocar o seu item em destaque no
+                  mercado o quanto antes.
                 </p>
               </div>
             </section>
           </div>
 
-          {/* Coluna Direita (Sticky) */}
           <div className="space-y-8 lg:sticky lg:top-24">
             <section className="space-y-4">
               <h3 className="text-sm font-bold uppercase tracking-widest text-slate-500">
