@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import FilterDrawer from "./FilterDrawer";
+import { Link, useLocation } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 interface HeaderProps {
   showBack?: boolean;
@@ -16,7 +16,8 @@ const Header: React.FC<HeaderProps> = ({
   onBack,
 }) => {
   const [isScrolled, setIsScrolled] = useState(false);
-
+  const { user, isAuthenticated } = useAuth();
+  const location = useLocation();
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
@@ -26,15 +27,45 @@ const Header: React.FC<HeaderProps> = ({
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const menuConfig = {
+    ADMIN: [
+      { name: "Dashboard", path: "/admin" },
+      { name: "Usuários", path: "/admin/users" },
+      { name: "Relatórios", path: "/admin/reports" },
+    ],
+    SELLER: [
+      { name: "Início", path: "/" },
+      { name: "Produtos adicionados", path: "/meus-produtos" },
+      { name: "Publicar produto", path: "/adicionar-produto" },
+      { name: "Minha carteira", path: "/carteira" },
+    ],
+    BUYER: [
+      { name: "Início", path: "/" },
+      { name: "Meus Pedidos", path: "/meus-pedidos" },
+      { name: "Favoritos", path: "/favoritos" },
+    ],
+    OPERATOR: [
+      { name: "Pedidos Pendentes", path: "/operacao/pedidos" },
+      { name: "Estoque", path: "/operacao/estoque" },
+    ],
+    DELIVERER: [
+      { name: "Minhas Entregas", path: "/entregas" },
+      { name: "Mapa de Rotas", path: "/rotas" },
+    ],
+  };
+
+  const navItems =
+    isAuthenticated && user
+      ? menuConfig[user.role]
+      : [{ name: "Início", path: "/" }];
+
   const headerStyles = isScrolled
     ? "fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg shadow-md border-b border-border/10 py-3 animate-in slide-in-from-top duration-300"
     : "relative bg-background border-b border-transparent py-4";
 
   if (showBack) {
     return (
-      <header
-        className={`fixed top-0 left-0 right-0 z-50 glass-header px-4 md:px-6 lg:px-8 py-3 flex items-center justify-between border-b border-border/5 animate-in fade-in duration-500`}
-      >
+      <header className="fixed top-0 left-0 right-0 z-50 glass-header px-4 md:px-6 lg:px-8 py-3 flex items-center justify-between border-b border-border/5 animate-in fade-in duration-500">
         <div className="w-full flex items-center justify-between">
           <button
             onClick={onBack}
@@ -73,32 +104,19 @@ const Header: React.FC<HeaderProps> = ({
           </Link>
 
           <nav className="hidden lg:flex items-center gap-8">
-            <Link
-              to="/"
-              className="text-sm font-semibold text-foreground hover:text-primary transition-colors"
-            >
-              Início
-            </Link>
-
-            <Link
-              to="/meus-produtos"
-              className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
-            >
-              Produtos adicionados
-            </Link>
-
-            <Link
-              to="/meus-pedidos"
-              className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
-            >
-              Meus Pedidos
-            </Link>
-            <Link
-              to="/adicionar-produto"
-              className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
-            >
-              Publicar produto
-            </Link>
+            {navItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`text-sm transition-colors ${
+                  location.pathname === item.path
+                    ? "font-semibold text-primary"
+                    : "font-medium text-muted-foreground hover:text-primary"
+                }`}
+              >
+                {item.name}
+              </Link>
+            ))}
           </nav>
 
           <div className="flex items-center gap-2">

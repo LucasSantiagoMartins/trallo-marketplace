@@ -16,7 +16,6 @@ interface CreateProductPayload {
 export async function createProduct(
   productData: CreateProductPayload
 ): Promise<ApiResponse<any>> {
-  console.log(productData)
   const res = await http.post<any, CreateProductPayload>(
     endpoints.products.create, 
     productData

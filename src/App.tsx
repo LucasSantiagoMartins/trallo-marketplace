@@ -2,6 +2,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ToastProvider } from "@/context/ToastContext";
+import { AuthProvider } from "@/context/AuthContext";
 import ToastContainer from "@/components/Toast";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 
@@ -27,106 +28,112 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <ToastProvider>
-      <TooltipProvider>
-        <ToastContainer />
-        <BrowserRouter>
-          <Routes>
-            {/* --- ROTAS PÚBLICAS --- */}
-            <Route path="/" element={<Home />} />
-            <Route path="/entrar" element={<Login />} />
-            <Route path="/registrar" element={<Register />} />
-            <Route path="/produto/:id" element={<ProductDetails />} />
-            <Route
-              path="/submeter-produto"
-              element={<ProductValidationSubmission />}
-            />
-            <Route path="/fila-validacao" element={<ValidationQueuePage />} />
-            <Route path="/validar-produto/:id" element={<ReviewProductPage />} />
+    {/* O AuthProvider deve envolver tudo o que precisa de dados do usuário */}
+    <AuthProvider>
+      <ToastProvider>
+        <TooltipProvider>
+          <ToastContainer />
+          <BrowserRouter>
+            <Routes>
+              {/* --- ROTAS PÚBLICAS --- */}
+              <Route path="/" element={<Home />} />
+              <Route path="/entrar" element={<Login />} />
+              <Route path="/registrar" element={<Register />} />
+              <Route path="/produto/:id" element={<ProductDetails />} />
+              <Route
+                path="/submeter-produto"
+                element={<ProductValidationSubmission />}
+              />
+              <Route path="/fila-validacao" element={<ValidationQueuePage />} />
+              <Route
+                path="/validar-produto/:id"
+                element={<ReviewProductPage />}
+              />
 
-            {/* --- ROTAS PRIVADAS (Qualquer user logado) --- */}
-            <Route
-              path="/carrinho"
-              element={
-                <ProtectedRoute>
-                  <CartPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/perfil"
-              element={
-                <ProtectedRoute>
-                  <UserProfileScreen />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/meus-pedidos"
-              element={
-                <ProtectedRoute>
-                  <OrdersHistory />
-                </ProtectedRoute>
-              }
-            />
+              {/* --- ROTAS PRIVADAS (Qualquer user logado) --- */}
+              <Route
+                path="/carrinho"
+                element={
+                  <ProtectedRoute>
+                    <CartPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/perfil"
+                element={
+                  <ProtectedRoute>
+                    <UserProfileScreen />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/meus-pedidos"
+                element={
+                  <ProtectedRoute>
+                    <OrdersHistory />
+                  </ProtectedRoute>
+                }
+              />
 
-            <Route
-              path="/meus-produtos"
-              element={
-                <ProtectedRoute>
-                  <MyProductsScreen />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/detalhe-pedido"
-              element={
-                <ProtectedRoute>
-                  <OrderDetail />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/carteira"
-              element={
-                <ProtectedRoute>
-                  <WalletScreen />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/transacoes"
-              element={
-                <ProtectedRoute>
-                  <TransactionHistoryScreen />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/configuracoes"
-              element={
-                <ProtectedRoute>
-                  <SettingsScreen />
-                </ProtectedRoute>
-              }
-            />
+              <Route
+                path="/meus-produtos"
+                element={
+                  <ProtectedRoute>
+                    <MyProductsScreen />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/detalhe-pedido"
+                element={
+                  <ProtectedRoute>
+                    <OrderDetail />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/carteira"
+                element={
+                  <ProtectedRoute>
+                    <WalletScreen />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/transacoes"
+                element={
+                  <ProtectedRoute>
+                    <TransactionHistoryScreen />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/configuracoes"
+                element={
+                  <ProtectedRoute>
+                    <SettingsScreen />
+                  </ProtectedRoute>
+                }
+              />
 
-            {/* --- ROTAS RESTRITAS (SELLER OU ADMIN) --- */}
-            <Route
-              path="/adicionar-produto"
-              element={
-                <ProtectedRoute allowedRoles={["SELLER", "ADMIN"]}>
-                  <CreateProduct />
-                </ProtectedRoute>
-              }
-            />
+              {/* --- ROTAS RESTRITAS (SELLER OU ADMIN) --- */}
+              <Route
+                path="/adicionar-produto"
+                element={
+                  <ProtectedRoute allowedRoles={["SELLER", "ADMIN"]}>
+                    <CreateProduct />
+                  </ProtectedRoute>
+                }
+              />
 
-            {/* CATCH-ALL */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
-    </ToastProvider>
+              {/* CATCH-ALL */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </ToastProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 

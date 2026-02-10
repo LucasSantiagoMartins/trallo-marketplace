@@ -16,6 +16,7 @@ import {
   PRODUCT_CATEGORIES,
   PRODUCT_CONDITIONS,
 } from "@/constants/product-options";
+import BottomNavigation from "@/components/BottomNavigation";
 
 const CreateProduct: React.FC = () => {
   const navigate = useNavigate();
@@ -228,6 +229,8 @@ const CreateProduct: React.FC = () => {
           </div>
         </div>
       </main>
+      <BottomNavigation />
+
 
       <ConditionModal
         isOpen={showConditionModal}

@@ -3,9 +3,11 @@ import { Link, useNavigate } from "react-router-dom";
 import BottomNavigation from "../components/BottomNavigation";
 import PageHeader from "../components/PageHeader";
 import { logout } from "../api/auth.service";
+import { useAuth } from "../context/AuthContext"; // Importação do contexto
 
 const UserProfileScreen: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAuth(); // Acessando os dados do usuário logado
 
   return (
     <div className="bg-background-light dark:bg-background-dark text-[#111118] dark:text-white min-h-screen transition-colors">
@@ -35,7 +37,8 @@ const UserProfileScreen: React.FC = () => {
 
                 <div className="mt-5 text-center">
                   <h2 className="clash-font text-2xl lg:text-3xl font-extrabold">
-                    Abraão Silva
+                    {/* Exibindo o userName do contexto ou um fallback */}
+                    {user?.userName || "Usuário"}
                   </h2>
                   <div className="flex items-center justify-center gap-1 text-gray-500 dark:text-gray-400 mt-1">
                     <span className="material-symbols-outlined text-sm">
@@ -136,7 +139,9 @@ const MenuLink = ({ icon, label, sublabel, isWallet, to }: any) => {
 
   return (
     <button
-      onClick={() => to && navigate(to)}
+      onClick={() => {
+        if (to) navigate(to);
+      }}
       className="w-full flex items-center gap-4 p-5 hover:bg-gray-50 dark:hover:bg-gray-700/30 active:bg-gray-100 transition-colors group text-left"
     >
       <div

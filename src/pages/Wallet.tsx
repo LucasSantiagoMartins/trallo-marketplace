@@ -3,11 +3,13 @@ import TransactionItem from "../components/TransactionItem";
 import BottomNavigation from "@/components/BottomNavigation";
 import PerformanceCard from "../components/PerformanceCard";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
 
 const WalletScreen: React.FC = () => {
   const [isVisible, setIsVisible] = useState(true);
   const navigate = useNavigate();
   const toggleVisibility = () => setIsVisible(!isVisible);
+  const { user } = useAuth(); // Acessando os dados do usuário logado
 
   return (
     <div className="bg-background-light dark:bg-background-dark min-h-screen font-display text-[#181112] dark:text-white antialiased">
@@ -26,10 +28,10 @@ const WalletScreen: React.FC = () => {
           <div className="flex items-center gap-3">
             <div className="text-right">
               <p className="text-[10px] text-[#8c5f67] dark:text-gray-400 font-bold uppercase tracking-wider">
-                Olá, Nelson
+                Olá, {user.userName}
               </p>
               <p className="text-[10px] font-black text-primary uppercase tracking-tight">
-                Nível Prata
+                vendedor
               </p>
             </div>
             <div className="size-10 rounded-full border-2 border-primary/20 p-0.5 shadow-sm">
@@ -47,7 +49,6 @@ const WalletScreen: React.FC = () => {
 
       <main className="max-w-6xl mx-auto px-6 pt-28 pb-32">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-          
           {/* Coluna Esquerda: Carteira FIXA */}
           <div className="lg:col-span-5">
             <div className="lg:fixed lg:w-[calc((1152px-40px)*5/12-2.5rem)] max-w-[440px] space-y-6">
@@ -56,24 +57,35 @@ const WalletScreen: React.FC = () => {
 
                 <div className="relative z-10">
                   <div>
-                    <p className="text-white/80 text-sm font-medium">Saldo Disponível</p>
+                    <p className="text-white/80 text-sm font-medium">
+                      Saldo Disponível
+                    </p>
                     <h2 className="text-white text-3xl font-bold mt-1">
                       {isVisible ? "1.250.000,00" : "••••••••"}{" "}
                       <span className="text-sm font-medium">Kz</span>
                     </h2>
                   </div>
                   <div className="mt-4 flex items-center gap-2 text-white/70">
-                    <span className="material-symbols-outlined text-sm">lock</span>
+                    <span className="material-symbols-outlined text-sm">
+                      lock
+                    </span>
                     <p className="text-xs font-medium uppercase tracking-wider">
-                      Saldo Retido: <span className="text-white font-bold">{isVisible ? "45.000,00 Kz" : "••••"}</span>
+                      Saldo Retido:{" "}
+                      <span className="text-white font-bold">
+                        {isVisible ? "45.000,00 Kz" : "••••"}
+                      </span>
                     </p>
                   </div>
                 </div>
 
                 <div className="relative z-10 flex justify-between items-end mt-6">
                   <div>
-                    <p className="text-white/60 text-[10px] uppercase tracking-widest">Número da Conta</p>
-                    <p className="text-white tracking-widest font-mono">**** **** 4829</p>
+                    <p className="text-white/60 text-[10px] uppercase tracking-widest">
+                      Número da Conta
+                    </p>
+                    <p className="text-white tracking-widest font-mono">
+                      **** **** 4829
+                    </p>
                   </div>
                   <button
                     onClick={toggleVisibility}
@@ -95,9 +107,12 @@ const WalletScreen: React.FC = () => {
                 <div className="size-12 rounded-2xl bg-gradient-to-br from-[#8B5CF6] to-[#6D28D9] flex items-center justify-center text-white mb-4 shadow-lg shadow-purple-500/20">
                   <span className="material-symbols-outlined">lock_clock</span>
                 </div>
-                <h4 className="font-black text-lg mb-2 tracking-tight">Por que o saldo está retido?</h4>
+                <h4 className="font-black text-lg mb-2 tracking-tight">
+                  Por que o saldo está retido?
+                </h4>
                 <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
-                  Este montante corresponde a pedidos já pagos e aguardando apenas a entrega ao cliente.
+                  Este montante corresponde a pedidos já pagos e aguardando
+                  apenas a entrega ao cliente.
                 </p>
               </div>
             </div>
@@ -108,7 +123,9 @@ const WalletScreen: React.FC = () => {
             <PerformanceCard />
 
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold tracking-tight">Transações Recentes</h3>
+              <h3 className="text-xl font-bold tracking-tight">
+                Transações Recentes
+              </h3>
               <button
                 onClick={() => navigate("/transacoes")}
                 className="text-primary text-sm font-bold hover:underline"
@@ -123,7 +140,9 @@ const WalletScreen: React.FC = () => {
                 <TransactionItem
                   key={i}
                   type={i % 2 === 0 ? "venda" : "compra"}
-                  title={i % 2 === 0 ? "Venda de Produto" : "Compra de Material"}
+                  title={
+                    i % 2 === 0 ? "Venda de Produto" : "Compra de Material"
+                  }
                   date="Hoje, 14:20"
                   amount={i % 2 === 0 ? 450000 : -85000}
                   status="Concluído"

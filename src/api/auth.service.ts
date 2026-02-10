@@ -19,25 +19,24 @@ interface RegisterPayload {
 export async function login(
   identifier: string,
   password: string,
-): Promise<ApiResponse<{ token: string; role: string }>> {
-  const res = await http.post<{ token: string; role: string }, LoginPayload>(
-    endpoints.auth.login,
-    {
-      identifier,
-      password,
-    },
-  );
-
+): Promise<ApiResponse<{ token: string; role: string; userName: string }>> {
+  const res = await http.post<
+    { token: string; role: string; userName: string },
+    LoginPayload
+  >(endpoints.auth.login, {
+    identifier,
+    password,
+  });
 
   if (res.success && res.data) {
     const sessionData = {
       role: res.data.role,
       token: res.data.token,
+      userName: res.data.userName,
     };
 
     localStorage.setItem("user_session", JSON.stringify(sessionData));
     localStorage.setItem("auth_token", res.data.token);
-
   }
 
   return res;
