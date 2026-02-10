@@ -20,6 +20,8 @@ import CartPage from "./pages/CartPage";
 import SettingsScreen from "./pages/Settings";
 import MyProductsScreen from "./pages/MyProducts";
 import ProductValidationSubmission from "./pages/ProductValidationSubmission";
+import ValidationQueuePage from "./pages/ValidationQueuePage";
+import ReviewProductPage from "./pages/ReviewProductPage";
 
 const queryClient = new QueryClient();
 
@@ -39,6 +41,8 @@ const App = () => (
               path="/submeter-produto"
               element={<ProductValidationSubmission />}
             />
+            <Route path="/validacao" element={<ValidationQueuePage />} />
+            <Route path="/validar-produto/:id" element={<ReviewProductPage />} />
 
             {/* --- ROTAS PRIVADAS (Qualquer user logado) --- */}
             <Route
