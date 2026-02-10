@@ -18,6 +18,7 @@ import OrdersHistory from "./pages/OrdersHistory";
 import OrderDetail from "./pages/OrderDetail";
 import CartPage from "./pages/CartPage";
 import SettingsScreen from "./pages/Settings";
+import ProductValidationScreen from "./pages/ProductValidationScreen";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,7 @@ const App = () => (
             <Route path="/entrar" element={<Login />} />
             <Route path="/registrar" element={<Register />} />
             <Route path="/produto/:id" element={<ProductDetails />} />
+            <Route path="/submeter-produto" element={<ProductValidationScreen />} />
 
             {/* --- ROTAS PRIVADAS (Qualquer user logado) --- */}
             <Route path="/carrinho" element={
