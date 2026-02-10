@@ -79,7 +79,6 @@ const ValidationQueuePage: React.FC = () => {
 
   const filters = ["Tudo", "Eletrónicos", "Moda", "Imobiliário"];
 
-  // Lógica de Filtro e Paginação
   const filteredQueue = activeFilter === "Tudo"
     ? queue
     : queue.filter(item => item.category === activeFilter);
@@ -91,7 +90,7 @@ const ValidationQueuePage: React.FC = () => {
 
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: 'auto' }); // Scroll instantâneo
   };
 
   return (
@@ -140,8 +139,8 @@ const ValidationQueuePage: React.FC = () => {
               <button
                 key={filter}
                 onClick={() => { setActiveFilter(filter); setCurrentPage(1); }}
-                className={`px-6 py-2.5 rounded-2xl text-xs font-black uppercase tracking-widest transition-all ${activeFilter === filter
-                  ? "bg-slate-900 dark:bg-[#6C3EF8] text-white shadow-lg shadow-[#6C3EF8]/20"
+                className={`px-6 py-2.5 rounded-2xl text-xs font-black uppercase tracking-widest transition-all duration-200 ${activeFilter === filter
+                  ? "bg-slate-900 dark:bg-[#6C3EF8] text-white shadow-lg"
                   : "bg-white dark:bg-slate-800/40 text-slate-500 border border-slate-100 dark:border-slate-800"
                   }`}
               >
@@ -152,7 +151,7 @@ const ValidationQueuePage: React.FC = () => {
 
           {/* Grid de Cards de Validação */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 relative">
-            <AnimatePresence mode="popLayout">
+            <AnimatePresence mode="wait">
               {currentItems.map((item) => (
                 <ValidationCard
                   key={item.id}
@@ -169,7 +168,7 @@ const ValidationQueuePage: React.FC = () => {
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
-                className="size-12 rounded-2xl bg-white dark:bg-slate-800 flex items-center justify-center border border-slate-200 dark:border-slate-700 disabled:opacity-30 transition-all"
+                className="size-12 rounded-2xl bg-white dark:bg-slate-800 flex items-center justify-center border border-slate-200 dark:border-slate-700 disabled:opacity-30 transition-colors"
               >
                 <span className="material-symbols-outlined">chevron_left</span>
               </button>
@@ -179,9 +178,9 @@ const ValidationQueuePage: React.FC = () => {
                   <button
                     key={i + 1}
                     onClick={() => handlePageChange(i + 1)}
-                    className={`size-12 rounded-2xl font-black text-xs transition-all ${currentPage === i + 1
-                        ? "bg-[#6C3EF8] text-white shadow-lg shadow-[#6C3EF8]/20"
-                        : "bg-white dark:bg-slate-800 text-slate-500 border border-slate-200 dark:border-slate-700"
+                    className={`size-12 rounded-2xl font-black text-xs transition-colors ${currentPage === i + 1
+                      ? "bg-[#6C3EF8] text-white shadow-lg shadow-[#6C3EF8]/20"
+                      : "bg-white dark:bg-slate-800 text-slate-500 border border-slate-200 dark:border-slate-700"
                       }`}
                   >
                     {i + 1}
@@ -192,7 +191,7 @@ const ValidationQueuePage: React.FC = () => {
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
-                className="size-12 rounded-2xl bg-white dark:bg-slate-800 flex items-center justify-center border border-slate-200 dark:border-slate-700 disabled:opacity-30 transition-all"
+                className="size-12 rounded-2xl bg-white dark:bg-slate-800 flex items-center justify-center border border-slate-200 dark:border-slate-700 disabled:opacity-30 transition-colors"
               >
                 <span className="material-symbols-outlined">chevron_right</span>
               </button>
@@ -209,7 +208,7 @@ const ValidationQueuePage: React.FC = () => {
 /* Componentes Auxiliares */
 
 const StatCard = ({ label, value, icon, color }: any) => (
-  <div className="flex-shrink-0 w-40 bg-white dark:bg-slate-800/60 p-6 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 shadow-sm">
+  <div className="flex-shrink-0 w-40 bg-white dark:bg-slate-800/60 p-6 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 shadow-sm transition-colors">
     <div className={`mb-4 size-12 rounded-2xl flex items-center justify-center ${color === 'primary' ? 'bg-[#6C3EF8]/10 text-[#6C3EF8]' : 'bg-slate-100 dark:bg-slate-700 text-slate-500'
       }`}>
       <span className="material-symbols-outlined font-bold">{icon}</span>
@@ -225,11 +224,11 @@ const StatCard = ({ label, value, icon, color }: any) => (
 
 const ValidationCard = ({ item, onOpen }: { item: ValidationItem; onOpen: () => void }) => (
   <motion.div
-    layout
-    initial={{ opacity: 0, scale: 0.9 }}
-    animate={{ opacity: 1, scale: 1 }}
-    exit={{ opacity: 0, scale: 0.9 }}
-    className={`bg-white dark:bg-slate-800/40 rounded-[2.5rem] p-5 border shadow-sm relative overflow-hidden transition-all hover:shadow-md ${item.isUrgent ? "border-[#6C3EF8]/40" : "border-slate-100 dark:border-slate-800"
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
+    transition={{ duration: 0.2 }} // Animação de opacidade curta e rápida
+    className={`bg-white dark:bg-slate-800/40 rounded-[2.5rem] p-5 border shadow-sm relative overflow-hidden transition-shadow ${item.isUrgent ? "border-[#6C3EF8]/40" : "border-slate-100 dark:border-slate-800"
       }`}
   >
     {item.isUrgent && (
