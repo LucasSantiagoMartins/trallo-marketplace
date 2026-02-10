@@ -41,7 +41,7 @@ const App = () => (
               path="/submeter-produto"
               element={<ProductValidationSubmission />}
             />
-            <Route path="/validacao" element={<ValidationQueuePage />} />
+            <Route path="/fila-validacao" element={<ValidationQueuePage />} />
             <Route path="/validar-produto/:id" element={<ReviewProductPage />} />
 
             {/* --- ROTAS PRIVADAS (Qualquer user logado) --- */}
