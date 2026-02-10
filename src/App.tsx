@@ -18,6 +18,7 @@ import OrdersHistory from "./pages/OrdersHistory";
 import OrderDetail from "./pages/OrderDetail";
 import CartPage from "./pages/CartPage";
 import SettingsScreen from "./pages/Settings";
+import MyProductsScreen from "./pages/MyProducts";
 
 const queryClient = new QueryClient();
 
@@ -35,50 +36,80 @@ const App = () => (
             <Route path="/produto/:id" element={<ProductDetails />} />
 
             {/* --- ROTAS PRIVADAS (Qualquer user logado) --- */}
-            <Route path="/carrinho" element={
-              <ProtectedRoute>
-                <CartPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/perfil" element={
-              <ProtectedRoute>
-                <UserProfileScreen />
-              </ProtectedRoute>
-            } />
-            <Route path="/meus-pedidos" element={
-              <ProtectedRoute>
-                <OrdersHistory />
-              </ProtectedRoute>
-            } />
-            <Route path="/detalhe-pedido" element={
-              <ProtectedRoute>
-                <OrderDetail />
-              </ProtectedRoute>
-            } />
-            <Route path="/carteira" element={
-              <ProtectedRoute>
-                <WalletScreen />
-              </ProtectedRoute>
-            } />
-            <Route path="/transacoes" element={
-              <ProtectedRoute>
-                <TransactionHistoryScreen />
-              </ProtectedRoute>
-            } />
-            <Route path="/configuracoes" element={
-              <ProtectedRoute>
-                <SettingsScreen />
-              </ProtectedRoute>
-            } />
+            <Route
+              path="/carrinho"
+              element={
+                <ProtectedRoute>
+                  <CartPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/perfil"
+              element={
+                <ProtectedRoute>
+                  <UserProfileScreen />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/meus-pedidos"
+              element={
+                <ProtectedRoute>
+                  <OrdersHistory />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/meus-produtos"
+              element={
+                <ProtectedRoute>
+                  <MyProductsScreen />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/detalhe-pedido"
+              element={
+                <ProtectedRoute>
+                  <OrderDetail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/carteira"
+              element={
+                <ProtectedRoute>
+                  <WalletScreen />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/transacoes"
+              element={
+                <ProtectedRoute>
+                  <TransactionHistoryScreen />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/configuracoes"
+              element={
+                <ProtectedRoute>
+                  <SettingsScreen />
+                </ProtectedRoute>
+              }
+            />
 
             {/* --- ROTAS RESTRITAS (SELLER OU ADMIN) --- */}
-            <Route 
-              path="/adicionar-produto" 
+            <Route
+              path="/adicionar-produto"
               element={
                 <ProtectedRoute allowedRoles={["SELLER", "ADMIN"]}>
-                  <CreateProduct /> 
+                  <CreateProduct />
                 </ProtectedRoute>
-              } 
+              }
             />
 
             {/* CATCH-ALL */}

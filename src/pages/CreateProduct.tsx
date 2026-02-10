@@ -101,7 +101,7 @@ const CreateProduct: React.FC = () => {
       const res = await createProduct(payload);
       if (res.success) {
         showToast("success", "Produto criado!");
-        navigate("/my-products");
+        navigate("/meus-produtos");
       }
     } catch (err) {
       showToast("error", "Erro ao conectar ao servidor.");
