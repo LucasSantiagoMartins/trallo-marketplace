@@ -1,22 +1,70 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import { motion } from "framer-motion";
 
 const NotFound = () => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     console.error("404 Error: User attempted to access non-existent route:", location.pathname);
   }, [location.pathname]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">404</h1>
-        <p className="mb-4 text-xl text-muted-foreground">Oops! Page not found</p>
-        <a href="/" className="text-primary underline hover:text-primary/90">
-          Return to Home
-        </a>
-      </div>
+    <div className="min-h-[100dvh] w-full flex items-center justify-center p-6 bg-gray-50 dark:bg-[#0B0F1A]">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="max-w-md w-full"
+      >
+        <div className="bg-white dark:bg-gray-800/40 border border-gray-100 dark:border-gray-700/50 p-10 rounded-[2.5rem] shadow-xl shadow-gray-200/50 dark:shadow-none text-center relative overflow-hidden">
+          
+          <div className="mb-8 flex justify-center">
+            <div className="size-24 rounded-3xl bg-gradient-to-br from-primary/20 to-blue-500/20 flex items-center justify-center text-primary relative">
+              <span className="material-symbols-outlined text-5xl">
+                explore_off
+              </span>
+              <div className="absolute -top-2 -right-2 size-8 bg-red-500 text-white rounded-full flex items-center justify-center text-xs font-black shadow-lg">
+                404
+              </div>
+            </div>
+          </div>
+
+          <h1 className="text-3xl font-black text-foreground mb-3">
+            Página Não Encontrada
+          </h1>
+          
+          <p className="text-slate-500 dark:text-slate-400 mb-8 leading-relaxed">
+            A página acessado não foi encontrada.
+          </p>
+
+          <div className="flex flex-col gap-3">
+            <button
+              onClick={() => navigate("/")}
+              className="w-full py-4 bg-primary hover:bg-primary/90 text-white font-bold rounded-2xl shadow-lg shadow-primary/20 transition-all active:scale-95 flex items-center justify-center gap-2"
+            >
+              <span className="material-symbols-outlined text-xl">home</span>
+              Voltar ao Início
+            </button>
+            
+            <button
+              onClick={() => navigate(-1)}
+              className="w-full py-4 bg-gray-100 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 font-bold rounded-2xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-all active:scale-95"
+            >
+              Voltar Anterior
+            </button>
+          </div>
+        </div>
+
+        <div className="text-center mt-8">
+          <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">
+            TRALLO — Marketplace de Angola
+          </p>
+          <p className="text-slate-400/60 text-[10px] mt-1">
+            Compre e venda de forma segura.
+          </p>
+        </div>
+      </motion.div>
     </div>
   );
 };
