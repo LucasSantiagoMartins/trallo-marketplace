@@ -25,13 +25,16 @@ const TralloButton: React.FC<TralloButtonProps> = ({
   disabled = false,
   isLoading = false,
 }) => {
-  const baseStyles = "h-14 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none";
-  
+  const baseStyles =
+    "h-14 rounded-full font-bold text-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none";
+
   const variants = {
     primary: "btn-gradient text-primary-foreground shadow-lg shadow-primary/25",
     secondary: "bg-card text-foreground border border-border hover:bg-muted",
-    outline: "bg-transparent text-primary border-2 border-primary hover:bg-primary/10",
-    social: "bg-card border border-border hover:bg-muted text-foreground text-sm font-semibold",
+    outline:
+      "bg-transparent text-primary border-2 border-primary hover:bg-primary/10",
+    social:
+      "bg-card border border-border hover:bg-muted text-foreground text-sm font-semibold",
   };
 
   const isDisabled = disabled || isLoading;
@@ -44,7 +47,7 @@ const TralloButton: React.FC<TralloButtonProps> = ({
       className={`
         ${baseStyles}
         ${variants[variant]}
-        ${fullWidth ? 'w-full' : 'px-6'}
+        ${fullWidth ? "w-full" : "px-6"}
         ${className}
       `}
     >
@@ -56,8 +59,19 @@ const TralloButton: React.FC<TralloButtonProps> = ({
             fill="none"
             viewBox="0 0 24 24"
           >
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            />
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+            />
           </svg>
           <span>Carregando...</span>
         </>

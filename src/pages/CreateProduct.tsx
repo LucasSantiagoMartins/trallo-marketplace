@@ -3,35 +3,33 @@ import { useNavigate } from "react-router-dom";
 import MobileLayout from "@/layouts/MobileLayout";
 import PageHeader from "@/components/PageHeader";
 import TralloInput from "@/components/TralloInput";
+import TralloButton from "@/components/TralloButton";
 import ImageUpload from "@/components/ImageUpload";
 import ClassificationDetails from "@/components/ClassificationDetails";
 import PriceInput from "@/components/PriceInput";
-
-const CATEGORIES = [
-  "Eletrónicos",
-  "Moda",
-  "Casa",
-  "Lazer",
-  "Imóveis",
-  "Veículos",
-  "Saúde & Beleza",
-  "Desporto",
-  "Crianças",
-  "Serviços",
-  "Emprego",
-  "Outros",
-];
+import QuantitySelector from "@/components/QuantitySelector";
+import ConditionModal from "@/components/ConditionModal";
+import CategoryDrawer from "@/components/CategoryDrawer";
+import { createProduct } from "@/api/product.service";
+import { useAppToast } from "@/hooks/useAppToast";
+import {
+  PRODUCT_CATEGORIES,
+  PRODUCT_CONDITIONS,
+} from "@/constants/product-options";
 
 const CreateProduct: React.FC = () => {
   const navigate = useNavigate();
+  const { showToast } = useAppToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
     price: "",
     category: "",
-    condition: "Novo",
+    condition: "NEW",
+    stockQuantity: 1,
   });
 
   const [images, setImages] = useState<string[]>([]);
@@ -43,11 +41,8 @@ const CreateProduct: React.FC = () => {
   const [isOpeningCondition, setIsOpeningCondition] = useState(false);
 
   useEffect(() => {
-    if (showConditionModal || showCategoryDrawer) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
-    }
+    document.body.style.overflow =
+      showConditionModal || showCategoryDrawer ? "hidden" : "unset";
     return () => {
       document.body.style.overflow = "unset";
     };
@@ -63,21 +58,6 @@ const CreateProduct: React.FC = () => {
     setShowConditionModal(true);
     setIsOpeningCondition(true);
     setTimeout(() => setIsOpeningCondition(false), 10);
-  };
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    const remainingSlots = 4 - images.length;
-    const filesToProcess = files.slice(0, remainingSlots);
-    const newImageUrls = filesToProcess.map((file) =>
-      URL.createObjectURL(file),
-    );
-    setImages((prev) => [...prev, ...newImageUrls]);
-    if (fileInputRef.current) fileInputRef.current.value = "";
-  };
-
-  const removeImage = (indexToRemove: number) => {
-    setImages((prev) => prev.filter((_, index) => index !== indexToRemove));
   };
 
   const closeCategoryDrawer = () => {
@@ -96,182 +76,156 @@ const CreateProduct: React.FC = () => {
     }, 500);
   };
 
-  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value.replace(/\D/g, "");
-    value = value.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
-    setFormData({ ...formData, price: value });
-  };
-
-  const updateField = (field: string, value: string) => {
+  const updateField = (field: string, value: string | number) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = () => {
-    console.log("Product submitted:", { ...formData, images });
+  const handleSubmit = async () => {
+    if (
+      !formData.name ||
+      !formData.price ||
+      !formData.category ||
+      images.length === 0
+    ) {
+      showToast("error", "Preencha os campos obrigatórios.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const payload = {
+        ...formData,
+        price: parseFloat(formData.price.replace(/\./g, "")),
+        images,
+      };
+      const res = await createProduct(payload);
+      if (res.success) {
+        showToast("success", "Produto criado!");
+        navigate("/my-products");
+      }
+    } catch (err) {
+      showToast("error", "Erro ao conectar ao servidor.");
+    } finally {
+      setLoading(false);
+    }
   };
+
+  const selectedCategoryLabel =
+    PRODUCT_CATEGORIES.find((c) => c.value === formData.category)?.label ||
+    "Selecionar";
+  const selectedConditionLabel =
+    PRODUCT_CONDITIONS.find((c) => c.value === formData.condition)?.label ||
+    "Selecionar";
 
   return (
     <MobileLayout className="pb-10">
-      <PageHeader
-        title="Criar Novo Produto"
-        backTo={-1}
-        rightElement={
-          <button
-            onClick={() => navigate(-1)}
-            className="text-sm font-semibold text-primary"
-          >
-            Cancelar
-          </button>
-        }
-      />
+      <PageHeader title="Criar Novo Produto" backTo={-1} />
 
-      <main className="px-4 md:px-6 lg:px-8 max-w-4xl mx-auto pt-24 md:pt-20">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+      <main className="px-4 md:px-6 lg:px-8 max-w-4xl mx-auto pt-32 md:pt-28">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-6">
             <ImageUpload
               images={images}
               fileInputRef={fileInputRef}
-              onUpload={handleImageUpload}
-              onRemove={removeImage}
+              onUpload={(e) => {
+                const files = Array.from(e.target.files || []);
+                const urls = files.map((f) => URL.createObjectURL(f));
+                setImages((prev) => [...prev, ...urls]);
+              }}
+              onRemove={(idx) =>
+                setImages((prev) => prev.filter((_, i) => i !== idx))
+              }
             />
 
             <ClassificationDetails
-              category={formData.category}
-              condition={formData.condition}
+              category={selectedCategoryLabel}
+              condition={selectedConditionLabel}
               onOpenCategory={openCategoryDrawer}
               onOpenCondition={openConditionModal}
             />
           </div>
 
           <div className="space-y-6">
-            <section className="space-y-4">
-              <TralloInput
-                label="Nome do Artigo"
-                placeholder="Ex: iPhone 15 Pro Max Titanium"
-                value={formData.name}
-                onChange={(val) => updateField("name", val)}
-              />
-              <div className="flex flex-col gap-2">
-                <label className="text-xs font-bold text-muted-foreground uppercase ml-1">
-                  Descrição
-                </label>
-                <textarea
-                  value={formData.description}
-                  onChange={(e) => updateField("description", e.target.value)}
-                  placeholder="Descreve o estado, cor, e detalhes técnicos..."
-                  rows={6}
-                  className="w-full p-4 rounded-xl bg-card border border-border focus:border-primary transition-all outline-none text-sm font-medium resize-none"
+            <TralloInput
+              label="Nome"
+              placeholder="Nome do produto"
+              value={formData.name}
+              onChange={(val) => updateField("name", val)}
+            />
+
+            <TralloInput
+              label="Descrição"
+              placeholder="Descreve o teu produto..."
+              value={formData.description}
+              onChange={(val) => updateField("description", val)}
+              multiline
+              rows={5}
+              className="min-h-[150px]"
+            />
+
+            <div className="flex flex-col md:flex-row md:items-end gap-4 w-full">
+              <div className="flex-1 w-full">
+                <PriceInput
+                  value={formData.price}
+                  onChange={(e) =>
+                    updateField(
+                      "price",
+                      e.target.value
+                        .replace(/\D/g, "")
+                        .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1."),
+                    )
+                  }
                 />
               </div>
-            </section>
 
-            <PriceInput value={formData.price} onChange={handlePriceChange} />
+              <div className="flex flex-col gap-2 shrink-0">
+                <label className="text-xs font-bold text-muted-foreground uppercase ml-1">
+                  Quantidade
+                </label>
+                <QuantitySelector
+                  value={formData.stockQuantity}
+                  className="h-[50px] w-full md:min-w-[130px]"
+                  onChange={(d) =>
+                    updateField(
+                      "stockQuantity",
+                      Math.max(1, formData.stockQuantity + d),
+                    )
+                  }
+                />
+              </div>
+            </div>
 
             <div className="pt-2">
-              <button
+              <TralloButton
                 onClick={handleSubmit}
-                className="w-full bg-primary text-primary-foreground font-bold py-4 rounded-xl shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-transform"
+                fullWidth
+                isLoading={loading}
+                className="py-4"
               >
-                <span className="material-symbols-outlined">add_circle</span>
-                <span>Adicionar produto</span>
-              </button>
+                Adicionar produto
+              </TralloButton>
             </div>
           </div>
         </div>
       </main>
 
-      {showConditionModal && (
-        <div
-          className={`fixed inset-0 z-[100] flex items-end md:items-center justify-center p-0 md:p-4 bg-black/60 backdrop-blur-[4px] transition-opacity duration-500 ${isClosingCondition || isOpeningCondition ? "opacity-0" : "opacity-100"}`}
-          onClick={closeConditionModal}
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className={`bg-card w-full max-w-sm rounded-t-[32px] md:rounded-[32px] p-6 space-y-6 shadow-2xl transition-all duration-500 ${isClosingCondition || isOpeningCondition ? "translate-y-full opacity-0" : "translate-y-0 opacity-100"}`}
-          >
-            <button
-              onClick={closeConditionModal}
-              className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-muted/50 hover:bg-muted text-muted-foreground transition-colors"
-            >
-              <span className="material-symbols-outlined text-lg">close</span>
-            </button>
-            <div className="text-center pt-2">
-              <h3 className="text-xl font-bold">Estado do Artigo</h3>
-              <p className="text-sm text-muted-foreground">
-                Como classificas a conservação?
-              </p>
-            </div>
-            <div className="grid gap-3">
-              {["Novo", "Semi-novo", "Usado"].map((opt) => (
-                <div
-                  key={opt}
-                  onClick={() => updateField("condition", opt)}
-                  className={`p-4 rounded-2xl cursor-pointer border flex items-center justify-between transition-all duration-200 ${formData.condition === opt ? "bg-primary/10 border-primary text-primary" : "bg-muted/30 border-transparent hover:bg-muted/50"}`}
-                >
-                  <span className="font-bold">{opt}</span>
-                  {formData.condition === opt && (
-                    <span className="material-symbols-outlined">
-                      check_circle
-                    </span>
-                  )}
-                </div>
-              ))}
-            </div>
-            <button
-              onClick={closeConditionModal}
-              className="w-full py-4 bg-primary text-primary-foreground font-bold rounded-2xl active:scale-95 transition-transform"
-            >
-              Confirmar
-            </button>
-          </div>
-        </div>
-      )}
+      <ConditionModal
+        isOpen={showConditionModal}
+        isOpening={isOpeningCondition}
+        isClosing={isClosingCondition}
+        selectedCondition={formData.condition}
+        onClose={closeConditionModal}
+        onSelect={(val) => updateField("condition", val)}
+      />
 
-      {showCategoryDrawer && (
-        <div
-          className={`fixed inset-0 z-[100] flex justify-end transition-opacity duration-500 ${isClosingCategory || isOpeningCategory ? "opacity-0" : "opacity-100"}`}
-        >
-          <div
-            className="absolute inset-0 bg-black/60 backdrop-blur-[4px]"
-            onClick={closeCategoryDrawer}
-          />
-          <div
-            className={`relative w-[85%] md:w-[400px] h-full bg-card shadow-2xl flex flex-col p-6 transition-transform duration-500 ${isClosingCategory || isOpeningCategory ? "translate-x-full" : "translate-x-0"}`}
-          >
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-2xl font-bold">Categorias</h3>
-              <button
-                onClick={closeCategoryDrawer}
-                className="w-10 h-10 flex items-center justify-center rounded-full bg-muted/50 hover:bg-muted text-muted-foreground transition-colors"
-              >
-                <span className="material-symbols-outlined">close</span>
-              </button>
-            </div>
-            <div className="flex-1 overflow-y-auto space-y-3 pr-1 custom-scrollbar">
-              {CATEGORIES.map((cat) => (
-                <div
-                  key={cat}
-                  onClick={() => updateField("category", cat)}
-                  className={`p-5 rounded-2xl cursor-pointer border flex items-center justify-between transition-all duration-200 ${formData.category === cat ? "bg-primary/10 border-primary text-primary" : "bg-muted/30 border-transparent hover:bg-muted/50"}`}
-                >
-                  <span className="font-bold">{cat}</span>
-                  {formData.category === cat && (
-                    <span className="material-symbols-outlined">
-                      check_circle
-                    </span>
-                  )}
-                </div>
-              ))}
-            </div>
-            <button
-              onClick={closeCategoryDrawer}
-              className="mt-4 py-4 bg-primary text-primary-foreground font-bold rounded-2xl active:scale-95 transition-transform"
-            >
-              Confirmar
-            </button>
-          </div>
-        </div>
-      )}
+      <CategoryDrawer
+        isOpen={showCategoryDrawer}
+        isOpening={isOpeningCategory}
+        isClosing={isClosingCategory}
+        selectedCategory={formData.category}
+        onClose={closeCategoryDrawer}
+        onSelect={(val) => updateField("category", val)}
+      />
     </MobileLayout>
   );
 };

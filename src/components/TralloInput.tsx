@@ -15,6 +15,8 @@ interface TralloInputProps {
   optional?: boolean;
   className?: string;
   validation?: ValidationState;
+  multiline?: boolean;
+  rows?: number;
 }
 
 const TralloInput: React.FC<TralloInputProps> = ({
@@ -30,6 +32,8 @@ const TralloInput: React.FC<TralloInputProps> = ({
   optional = false,
   className = "",
   validation = "default",
+  multiline = false,
+  rows = 4,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [inputValue, setInputValue] = useState(value);
@@ -38,7 +42,9 @@ const TralloInput: React.FC<TralloInputProps> = ({
     setInputValue(value);
   }, [value]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     const newValue = e.target.value;
     setInputValue(newValue);
     onChange?.(newValue);
@@ -56,6 +62,17 @@ const TralloInput: React.FC<TralloInputProps> = ({
       "border-green-500 focus:border-green-500 focus:ring-4 focus:ring-green-500/10",
   };
 
+  const commonClasses = `
+    w-full py-4 rounded-xl 
+    bg-card border
+    ${borderStyles[validation]}
+    transition-all outline-none 
+    text-muted-foreground/100 placeholder:text-muted-foreground/60
+    ${icon ? "pl-11 pr-4" : "px-4"}
+    ${showPasswordToggle ? "pr-12" : ""}
+    ${multiline ? "resize-none" : ""}
+  `;
+
   return (
     <div className={`flex flex-col gap-2 ${className}`}>
       {label && (
@@ -72,28 +89,36 @@ const TralloInput: React.FC<TralloInputProps> = ({
       )}
       <div className="relative">
         {icon && (
-          <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-muted-foreground text-lg">
+          <span
+            className={`absolute left-4 material-symbols-outlined text-muted-foreground text-lg ${multiline ? "top-5" : "top-1/2 -translate-y-1/2"}`}
+          >
             {icon}
           </span>
         )}
-        <input
-          type={currentInputType}
-          value={inputValue}
-          onChange={handleChange}
-          onFocus={onFocus}
-          onBlur={onBlur}
-          placeholder={placeholder}
-          className={`
-            w-full py-4 rounded-xl 
-            bg-card border
-            ${borderStyles[validation]}
-            transition-all outline-none 
-            text-muted-foreground/100 placeholder:text-muted-foreground/60
-            ${icon ? "pl-11 pr-4" : "px-4"}
-            ${showPasswordToggle ? "pr-12" : ""}
-          `}
-        />
-        {showPasswordToggle && isPasswordField && (
+
+        {multiline ? (
+          <textarea
+            value={inputValue}
+            onChange={handleChange}
+            onFocus={onFocus}
+            onBlur={onBlur}
+            placeholder={placeholder}
+            rows={rows}
+            className={commonClasses}
+          />
+        ) : (
+          <input
+            type={currentInputType}
+            value={inputValue}
+            onChange={handleChange}
+            onFocus={onFocus}
+            onBlur={onBlur}
+            placeholder={placeholder}
+            className={commonClasses}
+          />
+        )}
+
+        {showPasswordToggle && isPasswordField && !multiline && (
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}

@@ -1,5 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
+import QuantitySelector from "./QuantitySelector";
 
 interface CartItem {
   id: number;
@@ -54,23 +55,10 @@ const CartItemCard: React.FC<CartItemCardProps> = ({
           <span className="font-bold text-sm md:text-lg text-[#6d3ff8] whitespace-nowrap">
             {item.price.toLocaleString("pt-AO")} Kz
           </span>
-          <div className="flex items-center bg-gray-100 dark:bg-white/5 rounded-full p-1 gap-3">
-            <button
-              onClick={() => onUpdateQty(item.id, -1)}
-              className="size-8 flex items-center justify-center rounded-full bg-white dark:bg-white/10 shadow-sm text-[#6d3ff8]"
-            >
-              <span className="material-symbols-outlined text-sm">remove</span>
-            </button>
-            <span className="font-bold text-sm w-4 text-center">
-              {item.qty}
-            </span>
-            <button
-              onClick={() => onUpdateQty(item.id, 1)}
-              className="size-8 flex items-center justify-center rounded-full bg-[#6d3ff8] text-white shadow-sm"
-            >
-              <span className="material-symbols-outlined text-sm">add</span>
-            </button>
-          </div>
+          <QuantitySelector
+            value={item.qty}
+            onChange={(delta) => onUpdateQty(item.id, delta)}
+          />
         </div>
       </div>
     </motion.div>

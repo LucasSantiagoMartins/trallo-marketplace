@@ -11,14 +11,19 @@ async function request<T>(
   method: string,
   path: string,
   body?: unknown,
-  options?: RequestOptions
+  options?: RequestOptions,
 ): Promise<ApiResponse<T>> {
   const url = `${BASE_URL}${path}`;
+  const token = localStorage.getItem("auth_token");
 
   const headers: HttpHeaders = {
     "Content-Type": "application/json",
     ...options?.headers,
   };
+
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
 
   const config: RequestInit = {
     method,
@@ -45,11 +50,19 @@ export const http = {
     return request<T>("GET", path, undefined, options);
   },
 
-  post<T, B = unknown>(path: string, body: B, options?: RequestOptions): Promise<ApiResponse<T>> {
+  post<T, B = unknown>(
+    path: string,
+    body: B,
+    options?: RequestOptions,
+  ): Promise<ApiResponse<T>> {
     return request<T>("POST", path, body, options);
   },
 
-  patch<T, B = unknown>(path: string, body: B, options?: RequestOptions): Promise<ApiResponse<T>> {
+  patch<T, B = unknown>(
+    path: string,
+    body: B,
+    options?: RequestOptions,
+  ): Promise<ApiResponse<T>> {
     return request<T>("PATCH", path, body, options);
   },
 
