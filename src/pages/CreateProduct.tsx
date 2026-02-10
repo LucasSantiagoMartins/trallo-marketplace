@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 import MobileLayout from "@/layouts/MobileLayout";
 import PageHeader from "@/components/PageHeader";
 import TralloInput from "@/components/TralloInput";
+import ImageUpload from "@/components/ImageUpload";
+import ClassificationDetails from "@/components/ClassificationDetails";
+import PriceInput from "@/components/PriceInput";
 
 const CATEGORIES = [
   "Eletrónicos",
@@ -66,15 +69,11 @@ const CreateProduct: React.FC = () => {
     const files = Array.from(e.target.files || []);
     const remainingSlots = 4 - images.length;
     const filesToProcess = files.slice(0, remainingSlots);
-
     const newImageUrls = filesToProcess.map((file) =>
       URL.createObjectURL(file),
     );
     setImages((prev) => [...prev, ...newImageUrls]);
-
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const removeImage = (indexToRemove: number) => {
@@ -98,13 +97,9 @@ const CreateProduct: React.FC = () => {
   };
 
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value;
-    value = value.replace(/\D/g, "");
+    let value = e.target.value.replace(/\D/g, "");
     value = value.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
-    setFormData({
-      ...formData,
-      price: value,
-    });
+    setFormData({ ...formData, price: value });
   };
 
   const updateField = (field: string, value: string) => {
@@ -133,96 +128,19 @@ const CreateProduct: React.FC = () => {
       <main className="px-4 md:px-6 lg:px-8 max-w-4xl mx-auto pt-24 md:pt-20">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
           <div className="space-y-6">
-            <section className="bg-card rounded-2xl p-5 shadow-sm border border-border/50">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="font-bold text-base">Fotos do Produto</h2>
-                <span
-                  className={`text-xs font-medium px-2 py-1 rounded-full ${images.length === 4 ? "bg-primary/20 text-primary" : "bg-muted text-muted-foreground"}`}
-                >
-                  {images.length} / 4
-                </span>
-              </div>
+            <ImageUpload
+              images={images}
+              fileInputRef={fileInputRef}
+              onUpload={handleImageUpload}
+              onRemove={removeImage}
+            />
 
-              <div className="grid grid-cols-2 gap-3">
-                {images.map((src, index) => (
-                  <div
-                    key={index}
-                    className="relative aspect-square rounded-xl overflow-hidden border border-border"
-                  >
-                    <img
-                      src={src}
-                      alt={`Preview ${index}`}
-                      className="w-full h-full object-cover"
-                    />
-                    <button
-                      onClick={() => removeImage(index)}
-                      className="absolute top-1 right-1 bg-black/50 text-white rounded-full w-6 h-6 flex items-center justify-center backdrop-blur-sm"
-                    >
-                      <span className="material-symbols-outlined text-sm">
-                        close
-                      </span>
-                    </button>
-                  </div>
-                ))}
-
-                {images.length < 4 && (
-                  <div
-                    onClick={() => fileInputRef.current?.click()}
-                    className="aspect-square rounded-xl border-2 border-dashed border-border flex flex-col items-center justify-center bg-muted/30 cursor-pointer hover:bg-muted/50 transition-colors"
-                  >
-                    <span className="material-symbols-outlined text-primary text-2xl mb-1">
-                      add_a_photo
-                    </span>
-                    <span className="text-[9px] font-bold text-primary uppercase tracking-wider">
-                      Adicionar
-                    </span>
-                  </div>
-                )}
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  className="hidden"
-                  accept="image/*"
-                  multiple
-                  onChange={handleImageUpload}
-                />
-              </div>
-            </section>
-
-            <section className="bg-card rounded-2xl p-4 shadow-sm border border-border/50 space-y-3">
-              <h2 className="font-bold text-base px-1">
-                Detalhes de Classificação
-              </h2>
-              <div
-                onClick={openCategoryDrawer}
-                className="flex items-center justify-between p-4 bg-muted/30 rounded-xl cursor-pointer hover:bg-muted/60 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="material-symbols-outlined text-primary">
-                    category
-                  </span>
-                  <span className="text-sm font-semibold">Categoria</span>
-                </div>
-                <span className="text-sm font-medium text-muted-foreground">
-                  {formData.category || "Selecionar"}
-                </span>
-              </div>
-
-              <div
-                onClick={openConditionModal}
-                className="flex items-center justify-between p-4 bg-muted/30 rounded-xl cursor-pointer hover:bg-muted/60 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="material-symbols-outlined text-primary">
-                    history_edu
-                  </span>
-                  <span className="text-sm font-semibold">Estado</span>
-                </div>
-                <span className="text-sm font-medium text-muted-foreground">
-                  {formData.condition}
-                </span>
-              </div>
-            </section>
+            <ClassificationDetails
+              category={formData.category}
+              condition={formData.condition}
+              onOpenCategory={openCategoryDrawer}
+              onOpenCondition={openConditionModal}
+            />
           </div>
 
           <div className="space-y-6">
@@ -247,24 +165,7 @@ const CreateProduct: React.FC = () => {
               </div>
             </section>
 
-            <section className="flex flex-col gap-2">
-              <label className="text-xs font-bold text-muted-foreground uppercase ml-1">
-                Preço de Venda
-              </label>
-              <div className="relative w-full py-6 rounded-2xl bg-card border border-border focus-within:border-primary transition-all flex items-center justify-center">
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  value={formData.price}
-                  onChange={handlePriceChange}
-                  placeholder="0.00"
-                  className="text-3xl font-bold bg-transparent border-none text-center w-full outline-none"
-                />
-                <span className="absolute right-6 font-bold text-muted-foreground">
-                  AOA
-                </span>
-              </div>
-            </section>
+            <PriceInput value={formData.price} onChange={handlePriceChange} />
 
             <div className="pt-2">
               <button
@@ -281,12 +182,12 @@ const CreateProduct: React.FC = () => {
 
       {showConditionModal && (
         <div
-          className={`fixed inset-0 z-[100] flex items-end md:items-center justify-center p-0 md:p-4 bg-black/60 backdrop-blur-[4px] transition-opacity duration-500 cubic-bezier(0.4, 0, 0.2, 1) ${isClosingCondition || isOpeningCondition ? "opacity-0" : "opacity-100"}`}
+          className={`fixed inset-0 z-[100] flex items-end md:items-center justify-center p-0 md:p-4 bg-black/60 backdrop-blur-[4px] transition-opacity duration-500 ${isClosingCondition || isOpeningCondition ? "opacity-0" : "opacity-100"}`}
           onClick={closeConditionModal}
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className={`bg-card w-full max-w-sm rounded-t-[32px] md:rounded-[32px] p-6 space-y-6 shadow-2xl transition-all duration-500 cubic-bezier(0.34, 1.56, 0.64, 1) relative ${isClosingCondition || isOpeningCondition ? "translate-y-full opacity-0" : "translate-y-0 opacity-100"}`}
+            className={`bg-card w-full max-w-sm rounded-t-[32px] md:rounded-[32px] p-6 space-y-6 shadow-2xl transition-all duration-500 ${isClosingCondition || isOpeningCondition ? "translate-y-full opacity-0" : "translate-y-0 opacity-100"}`}
           >
             <button
               onClick={closeConditionModal}
@@ -328,14 +229,14 @@ const CreateProduct: React.FC = () => {
 
       {showCategoryDrawer && (
         <div
-          className={`fixed inset-0 z-[100] flex justify-end transition-opacity duration-500 cubic-bezier(0.4, 0, 0.2, 1) ${isClosingCategory || isOpeningCategory ? "opacity-0" : "opacity-100"}`}
+          className={`fixed inset-0 z-[100] flex justify-end transition-opacity duration-500 ${isClosingCategory || isOpeningCategory ? "opacity-0" : "opacity-100"}`}
         >
           <div
             className="absolute inset-0 bg-black/60 backdrop-blur-[4px]"
             onClick={closeCategoryDrawer}
           />
           <div
-            className={`relative w-[85%] md:w-[400px] h-full bg-card shadow-2xl flex flex-col p-6 transition-transform duration-500 cubic-bezier(0.4, 0, 0.2, 1) ${isClosingCategory || isOpeningCategory ? "translate-x-full" : "translate-x-0"}`}
+            className={`relative w-[85%] md:w-[400px] h-full bg-card shadow-2xl flex flex-col p-6 transition-transform duration-500 ${isClosingCategory || isOpeningCategory ? "translate-x-full" : "translate-x-0"}`}
           >
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-2xl font-bold">Categorias</h3>
