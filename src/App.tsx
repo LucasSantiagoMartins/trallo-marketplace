@@ -21,7 +21,7 @@ import SettingsScreen from "./pages/Settings";
 import MyProductsScreen from "./pages/MyProducts";
 import ProductValidationSubmission from "./pages/ProductValidationSubmission";
 import ValidationQueuePage from "./pages/ValidationQueuePage";
-import ReviewProductPage from "./pages/ReviewProductPage";
+import ReviewProductPage from "./pages/ProductReviewPage";
 
 const queryClient = new QueryClient();
 
