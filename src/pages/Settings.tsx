@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import PageHeader from "@/components/PageHeader";
 import BottomNavigation from "@/components/BottomNavigation";
+import { Link } from "react-router-dom";
 
 const SettingsScreen: React.FC = () => {
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
@@ -75,7 +76,7 @@ const SettingsScreen: React.FC = () => {
                   </span>
                 </div>
                 <div className="flex-1 text-base font-medium">
-                  Alterar Palavra-passe
+                  <Link to="/alterar-senha">Alterar Senha</Link>
                 </div>
                 <div className="shrink-0 text-gray-400">
                   <span className="material-symbols-outlined">

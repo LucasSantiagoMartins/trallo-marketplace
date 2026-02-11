@@ -88,7 +88,7 @@ const Login: React.FC = () => {
                   />
                   <div className="flex justify-end">
                     <Link
-                      to="/forgot-password"
+                      to="/esqueceu-senha"
                       className="text-primary text-xs font-bold hover:underline"
                     >
                       Esqueceu a senha?

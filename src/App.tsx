@@ -23,6 +23,8 @@ import MyProductsScreen from "./pages/MyProducts";
 import ProductValidationSubmission from "./pages/ProductValidationSubmission";
 import ValidationQueuePage from "./pages/ValidationQueuePage";
 import ReviewProductPage from "./pages/ProductReviewPage";
+import ChangePassword from "./components/ChangePassword";
+import ResetPassword from "./pages/ResetPassword";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +42,8 @@ const App = () => (
               <Route path="/entrar" element={<Login />} />
               <Route path="/registrar" element={<Register />} />
               <Route path="/produto/:id" element={<ProductDetails />} />
+              <Route path="/alterar-senha" element={<ChangePassword />} />
+              <Route path="/esqueceu-senha" element={<ResetPassword />} />
               <Route
                 path="/submeter-produto"
                 element={<ProductValidationSubmission />}

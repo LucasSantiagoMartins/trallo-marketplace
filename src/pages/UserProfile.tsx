@@ -3,11 +3,11 @@ import { Link, useNavigate } from "react-router-dom";
 import BottomNavigation from "../components/BottomNavigation";
 import PageHeader from "../components/PageHeader";
 import { logout } from "../api/auth.service";
-import { useAuth } from "../context/AuthContext"; // Importação do contexto
+import { useAuth } from "../context/AuthContext"; 
 
 const UserProfileScreen: React.FC = () => {
   const navigate = useNavigate();
-  const { user } = useAuth(); // Acessando os dados do usuário logado
+  const { user } = useAuth(); 
 
   return (
     <div className="bg-background-light dark:bg-background-dark text-[#111118] dark:text-white min-h-screen transition-colors">
@@ -66,7 +66,7 @@ const UserProfileScreen: React.FC = () => {
                 <MenuLink
                   icon="person_edit"
                   label="Editar Perfil"
-                  to="/edit-profile"
+                  to="/editar-perfil"
                 />
                 <div className="mx-4 border-t border-gray-50 dark:border-gray-700" />
                 <MenuLink

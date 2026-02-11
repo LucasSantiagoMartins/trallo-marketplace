@@ -61,7 +61,9 @@ export async function register(
       role,
     },
   );
+
   if (res.success && res.data) {
+    
     localStorage.setItem("user_session", JSON.stringify(res.data));
     localStorage.setItem("auth_token", res.data.token);
   }
