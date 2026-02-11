@@ -25,6 +25,7 @@ import ValidationQueuePage from "./pages/ValidationQueuePage";
 import ReviewProductPage from "./pages/ProductReviewPage";
 import ChangePassword from "./components/ChangePassword";
 import ResetPassword from "./pages/ResetPassword";
+import EditProfile from "./pages/EditProfile";
 
 const queryClient = new QueryClient();
 
@@ -44,6 +45,7 @@ const App = () => (
               <Route path="/produto/:id" element={<ProductDetails />} />
               <Route path="/alterar-senha" element={<ChangePassword />} />
               <Route path="/esqueceu-senha" element={<ResetPassword />} />
+              <Route path="/editar-perfil" element={<EditProfile />} />
               <Route
                 path="/submeter-produto"
                 element={<ProductValidationSubmission />}
