@@ -31,18 +31,50 @@ async function request<T>(
     ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
   };
 
-  const response = await fetch(url, config);
+  try {
+    const response = await fetch(url, config);
 
-  if (!response.ok) {
-    const errorBody = await response.json().catch(() => null);
-    const message =
-      (errorBody as { message?: string })?.message ??
-      `Erro HTTP ${response.status}`;
-    throw new Error(message);
+    if (!response.ok) {
+      const errorBody = await response.json().catch(() => null);
+      
+      console.log("Erro na requisição:", {
+        status: response.status,
+        path,
+        error: errorBody
+      });
+
+      if (response.status === 401) {
+        throw new Error("Sua sessão expirou. Por favor, faça login novamente.");
+      }
+
+      if (response.status === 403) {
+        throw new Error("Você não tem permissão para realizar esta ação.");
+      }
+
+      if (response.status >= 500) {
+        throw new Error("O sistema está temporariamente indisponível. Tente novamente mais tarde.");
+      }
+
+      throw new Error("Não foi possível processar sua solicitação no momento.");
+    }
+
+    const data: ApiResponse<T> = await response.json();
+    return data;
+
+  } catch (error) {
+    if (error instanceof Error && !error.message.includes("HTTP")) {
+      console.log("Erro técnico detalhado:", error.message);
+      
+      if (error.message.includes("fetch") || error.message.includes("NetworkError")) {
+        throw new Error("Parece que você está sem internet ou o servidor está offline.");
+      }
+      
+      throw error;
+    }
+
+    console.log("Erro desconhecido:", error);
+    throw new Error("Ocorreu um erro inesperado. Verifique sua conexão.");
   }
-
-  const data: ApiResponse<T> = await response.json();
-  return data;
 }
 
 export const http = {
