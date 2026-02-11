@@ -1,24 +1,13 @@
 import { http } from "./http";
 import { endpoints } from "./endpoints";
 import type { ApiResponse } from "@/types/api";
-import { getUniqPayload } from "recharts/types/util/payload/getUniqPayload";
-
-interface CreateProductPayload {
-  name: string;
-  description: string;
-  price: number;
-  condition: string;
-  images: string[];
-  stockQuantity: number;
-  category?: string; /* Opcional por agora */
-}
 
 export async function createProduct(
-  productData: CreateProductPayload
+  productData: FormData,
 ): Promise<ApiResponse<any>> {
-  const res = await http.post<any, CreateProductPayload>(
-    endpoints.products.create, 
-    productData
+  const res = await http.post<any, FormData>(
+    endpoints.products.create,
+    productData,
   );
 
   return res;

@@ -34,6 +34,7 @@ const CreateProduct: React.FC = () => {
   });
 
   const [images, setImages] = useState<string[]>([]);
+  const [fileObjects, setFileObjects] = useState<File[]>([]); // Estado para os arquivos reais
   const [showConditionModal, setShowConditionModal] = useState(false);
   const [showCategoryDrawer, setShowCategoryDrawer] = useState(false);
   const [isClosingCategory, setIsClosingCategory] = useState(false);
@@ -86,26 +87,33 @@ const CreateProduct: React.FC = () => {
       !formData.name ||
       !formData.price ||
       !formData.category ||
-      images.length === 0
+      fileObjects.length === 0
     ) {
-      showToast("error", "Preencha os campos obrigatórios.");
+      showToast("error", "Preencha os campos obrigatórios e adicione imagens.");
       return;
     }
 
     setLoading(true);
     try {
-      const payload = {
-        ...formData,
-        price: parseFloat(formData.price.replace(/\./g, "")),
-        images,
-      };
-      const res = await createProduct(payload);
+      const data = new FormData();
+      data.append("category", formData.category);
+      data.append("name", formData.name);
+      data.append("description", formData.description);
+      data.append("price", formData.price.replace(/\D/g, ""));
+      data.append("condition", formData.condition);
+      data.append("stockQuantity", String(formData.stockQuantity));
+
+      fileObjects.forEach((file) => {
+        data.append("images", file);
+      });
+
+      const res = await createProduct(data);
       if (res.success) {
-        showToast("success", "Produto criado!");
+        showToast("success", res.message ?? "Produto criado.");
         navigate("/meus-produtos");
       }
     } catch (err) {
-      showToast("error", "Erro ao conectar ao servidor.");
+      showToast("error", err.message ?? "Erro ao conectar ao servidor.");
     } finally {
       setLoading(false);
     }
@@ -131,12 +139,14 @@ const CreateProduct: React.FC = () => {
               fileInputRef={fileInputRef}
               onUpload={(e) => {
                 const files = Array.from(e.target.files || []);
+                setFileObjects((prev) => [...prev, ...files]); // Salva binários
                 const urls = files.map((f) => URL.createObjectURL(f));
-                setImages((prev) => [...prev, ...urls]);
+                setImages((prev) => [...prev, ...urls]); // Salva visualização
               }}
-              onRemove={(idx) =>
-                setImages((prev) => prev.filter((_, i) => i !== idx))
-              }
+              onRemove={(idx) => {
+                setImages((prev) => prev.filter((_, i) => i !== idx));
+                setFileObjects((prev) => prev.filter((_, i) => i !== idx));
+              }}
             />
 
             <ClassificationDetails
@@ -230,7 +240,6 @@ const CreateProduct: React.FC = () => {
         </div>
       </main>
       <BottomNavigation />
-
 
       <ConditionModal
         isOpen={showConditionModal}

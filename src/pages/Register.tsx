@@ -6,6 +6,7 @@ import TralloButton from "@/components/TralloButton";
 import PasswordTooltip from "@/components/PasswordTooltip";
 import { register } from "@/api/auth.service";
 import { useAppToast } from "@/hooks/useAppToast";
+import { useAuth } from "@/context/AuthContext";
 
 type UserRole = "buyer" | "seller";
 
@@ -20,6 +21,7 @@ const Register: React.FC = () => {
     password: "",
     address: "",
   });
+  const {setUser} = useAuth();
 
   const { showToast } = useAppToast();
   const navigate = useNavigate();
@@ -63,9 +65,13 @@ const Register: React.FC = () => {
         apiRole,
         formData.address || undefined,
       );
-
       if (res.success) {
         showToast("success", res.message || "Conta criada com sucesso!");
+        setUser({
+          userName: res.data.userName,
+          role: res.data.role as any,
+          token: res.data.token,
+        });
         navigate("/");
       } else {
         showToast("error", res.message || "Erro ao criar conta.");

@@ -7,7 +7,7 @@ import React, {
 } from "react";
 
 interface User {
-  userName: string; 
+  userName: string;
   role: "ADMIN" | "SELLER" | "BUYER" | "OPERATOR" | "DELIVERER";
   token?: string;
 }
@@ -17,23 +17,42 @@ interface AuthContextType {
   isAuthenticated: boolean;
   setUser: (user: User | null) => void;
   loading: boolean;
+  logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUserState] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const setUser = (userData: User | null) => {
+    setUserState(userData);
+    if (userData) {
+      localStorage.setItem("user_session", JSON.stringify(userData));
+      if (userData.token) {
+        localStorage.setItem("auth_token", userData.token);
+      }
+    } else {
+      localStorage.removeItem("user_session");
+      localStorage.removeItem("auth_token");
+    }
+  };
+
+  const logout = () => {
+    setUser(null);
+    window.location.href = "/entrar";
+  };
+
   useEffect(() => {
-    // A chave deve ser a mesma usada na função de login
     const storedUser = localStorage.getItem("user_session");
 
     if (storedUser) {
       try {
-        setUser(JSON.parse(storedUser));
+        setUserState(JSON.parse(storedUser));
       } catch (error) {
         console.error("Erro ao parsear usuário", error);
+        localStorage.removeItem("user_session");
       }
     }
 
@@ -47,6 +66,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         isAuthenticated: !!user,
         setUser,
         loading,
+        logout,
       }}
     >
       {!loading && children}

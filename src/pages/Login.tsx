@@ -5,6 +5,7 @@ import TralloInput from "@/components/TralloInput";
 import TralloButton from "@/components/TralloButton";
 import { login } from "@/api/auth.service";
 import { useAppToast } from "@/hooks/useAppToast";
+import { useAuth } from "@/context/AuthContext";
 
 const Login: React.FC = () => {
   const [identifier, setIdentifier] = useState("");
@@ -12,10 +13,10 @@ const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const { showToast } = useAppToast();
   const navigate = useNavigate();
+  const { setUser } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!identifier || !password) {
       showToast("error", "Preencha todos os campos.");
       return;
@@ -26,6 +27,11 @@ const Login: React.FC = () => {
       const res = await login(identifier, password);
       if (res.success) {
         showToast("success", res.message || "Login realizado com sucesso!");
+        setUser({
+          userName: res.data.userName,
+          role: res.data.role as any,
+          token: res.data.token,
+        });
         navigate("/");
       } else {
         showToast("error", res.message || "Credenciais inválidas.");

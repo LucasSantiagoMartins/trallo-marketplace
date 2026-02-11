@@ -6,7 +6,6 @@ type HttpHeaders = Record<string, string>;
 interface RequestOptions {
   headers?: HttpHeaders;
 }
-
 async function request<T>(
   method: string,
   path: string,
@@ -16,10 +15,15 @@ async function request<T>(
   const url = `${BASE_URL}${path}`;
   const token = localStorage.getItem("auth_token");
 
+  const isFormData = body instanceof FormData;
+
   const headers: HttpHeaders = {
-    "Content-Type": "application/json",
     ...options?.headers,
   };
+
+  if (!isFormData) {
+    headers["Content-Type"] = "application/json";
+  }
 
   if (token) {
     headers["Authorization"] = `Bearer ${token}`;
@@ -28,20 +32,23 @@ async function request<T>(
   const config: RequestInit = {
     method,
     headers,
-    ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
+    body: isFormData
+      ? (body as FormData)
+      : body !== undefined
+        ? JSON.stringify(body)
+        : undefined,
   };
-
   try {
+    console.log(config);
     const response = await fetch(url, config);
 
     if (!response.ok) {
       const errorBody = await response.json().catch(() => null);
-      
-      console.log("Erro na requisição:", {
-        status: response.status,
-        path,
-        error: errorBody
-      });
+
+      const errorMessage =
+        errorBody?.message ||
+        errorBody?.error ||
+        "Não foi possível processar sua solicitação no momento.";
 
       if (response.status === 401) {
         throw new Error("Sua sessão expirou. Por favor, faça login novamente.");
@@ -52,27 +59,29 @@ async function request<T>(
       }
 
       if (response.status >= 500) {
-        throw new Error("O sistema está temporariamente indisponível. Tente novamente mais tarde.");
+        throw new Error(
+          "O sistema está temporariamente indisponível. Tente novamente mais tarde.",
+        );
       }
 
-      throw new Error("Não foi possível processar sua solicitação no momento.");
+      throw new Error(errorMessage);
     }
 
     const data: ApiResponse<T> = await response.json();
     return data;
-
   } catch (error) {
-    if (error instanceof Error && !error.message.includes("HTTP")) {
-      console.log("Erro técnico detalhado:", error.message);
-      
-      if (error.message.includes("fetch") || error.message.includes("NetworkError")) {
-        throw new Error("Parece que você está sem internet ou o servidor está offline.");
+    if (error instanceof Error) {
+      if (
+        error.message.includes("fetch") ||
+        error.message.includes("NetworkError")
+      ) {
+        throw new Error(
+          "Parece que você está sem internet ou o servidor está offline.",
+        );
       }
-      
       throw error;
     }
 
-    console.log("Erro desconhecido:", error);
     throw new Error("Ocorreu um erro inesperado. Verifique sua conexão.");
   }
 }

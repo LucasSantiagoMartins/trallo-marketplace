@@ -49,21 +49,20 @@ export async function register(
   password: string,
   role: "BUYER" | "SELLER",
   address?: string,
-): Promise<ApiResponse<User & { token: string }>> {
-  const res = await http.post<User & { token: string }, RegisterPayload>(
-    endpoints.auth.register,
-    {
-      fullName,
-      phoneNumber,
-      email,
-      password,
-      address,
-      role,
-    },
-  );
+): Promise<ApiResponse<{ token: string; role: string; userName: string }>> {
+  const res = await http.post<
+    { token: string; role: string; userName: string },
+    RegisterPayload
+  >(endpoints.auth.register, {
+    fullName,
+    phoneNumber,
+    email,
+    password,
+    address,
+    role,
+  });
 
   if (res.success && res.data) {
-    
     localStorage.setItem("user_session", JSON.stringify(res.data));
     localStorage.setItem("auth_token", res.data.token);
   }
