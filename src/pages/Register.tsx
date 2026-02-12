@@ -4,7 +4,7 @@ import MobileLayout from "@/layouts/MobileLayout";
 import TralloInput from "@/components/TralloInput";
 import TralloButton from "@/components/TralloButton";
 import PasswordTooltip from "@/components/PasswordTooltip";
-import { register } from "@/api/auth.service";
+import { register } from "@/services/auth.service";
 import { useAppToast } from "@/hooks/useAppToast";
 import { useAuth } from "@/context/AuthContext";
 

@@ -1,27 +1,33 @@
 import React, { forwardRef } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-
-export interface Product {
-  id: number;
-  name: string;
-  price: string;
-  stock: number;
-  status: "Ativo" | "Sem Stock" | "Verificando" | "Pendente";
-  image: string;
-}
+import { ProductDTO, ProductStatus } from "@/types/product";
+import { getProductStatusLabel } from "@/utils/mappers/productMapper";
+import { BASE_UPLOAD_URL } from "@/api/endpoints";
 
 interface OwnProductCardProps {
-  product: Product;
-  onDelete?: (product: Product) => void;
+  product: ProductDTO;
+  onDelete?: (product: ProductDTO) => void;
 }
 
 const OwnProductCard = forwardRef<HTMLDivElement, OwnProductCardProps>(
   ({ product, onDelete }, ref) => {
     const navigate = useNavigate();
-    const isVerifying = product.status === "Verificando";
-    const isPending = product.status === "Pendente";
 
+    const isVerifying =
+      product.status === ProductStatus.SUBMITTED ||
+      product.status === ProductStatus.TRALLO_VERIFIED;
+
+    const isPending = product.status === ProductStatus.AWAITING_SUBMISSION;
+
+    const isOutOfStock = product.stock.availableQuantity === 0;
+
+    const formatPrice = (price: number) => {
+      return new Intl.NumberFormat("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+      }).format(price / 100);
+    };
     return (
       <motion.div
         ref={ref}
@@ -41,7 +47,7 @@ const OwnProductCard = forwardRef<HTMLDivElement, OwnProductCardProps>(
           className={`size-24 md:size-28 rounded-2xl overflow-hidden bg-gray-100 flex-shrink-0 ${isVerifying ? "grayscale opacity-50" : ""}`}
         >
           <img
-            src={product.image}
+            src={BASE_UPLOAD_URL + product.coverImage}
             alt={product.name}
             className="w-full h-full object-cover"
           />
@@ -57,26 +63,22 @@ const OwnProductCard = forwardRef<HTMLDivElement, OwnProductCardProps>(
               </h4>
               <span
                 className={`px-2 py-1 text-[9px] font-black rounded-lg uppercase whitespace-nowrap ${
-                  product.status === "Ativo"
+                  product.status === ProductStatus.ONLINE_VERIFIED
                     ? "bg-emerald-500/10 text-emerald-500"
-                    : product.status === "Sem Stock"
+                    : isOutOfStock
                       ? "bg-red-500/10 text-red-500"
-                      : product.status === "Verificando"
+                      : isVerifying
                         ? "bg-amber-500/10 text-amber-600"
                         : "bg-blue-500/10 text-blue-600"
                 }`}
               >
-                {product.status === "Verificando"
-                  ? "Em Verificação"
-                  : product.status === "Pendente"
-                    ? "Pendente de Envio"
-                    : product.status}
+                {getProductStatusLabel(product.status)}
               </span>
             </div>
             <p
               className={`text-lg font-black ${isVerifying ? "text-gray-400" : "text-primary"}`}
             >
-              {product.price}
+              {formatPrice(product.price)}
             </p>
           </div>
 
@@ -84,11 +86,11 @@ const OwnProductCard = forwardRef<HTMLDivElement, OwnProductCardProps>(
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-slate-400 flex items-center gap-1.5">
                 <span
-                  className={`material-symbols-outlined text-sm ${product.stock === 0 ? "text-red-500" : ""}`}
+                  className={`material-symbols-outlined text-sm ${isOutOfStock ? "text-red-500" : ""}`}
                 >
                   inventory_2
                 </span>
-                {product.stock} unidades
+                {product.stock.availableQuantity} unidades
               </span>
             </div>
 
@@ -96,7 +98,7 @@ const OwnProductCard = forwardRef<HTMLDivElement, OwnProductCardProps>(
               {!isVerifying && (
                 <>
                   <button
-                    onClick={() => navigate("/editar-produto")}
+                    onClick={() => navigate(`/editar-produto/${product.id}`)}
                     className="size-10 flex items-center justify-center bg-gray-100 dark:bg-gray-700/50 rounded-xl text-gray-500 hover:text-primary transition-colors active:scale-90"
                   >
                     <span className="material-symbols-outlined text-xl">
@@ -106,7 +108,9 @@ const OwnProductCard = forwardRef<HTMLDivElement, OwnProductCardProps>(
 
                   {isPending ? (
                     <button
-                      onClick={() => navigate("/submeter-produto")}
+                      onClick={() =>
+                        navigate(`/submeter-produto/${product.id}`)
+                      }
                       className="size-10 flex items-center justify-center bg-blue-500 text-white rounded-xl shadow-lg shadow-blue-500/20 active:scale-90"
                       title="Enviar para verificação"
                     >

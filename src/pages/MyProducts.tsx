@@ -1,60 +1,61 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "../components/PageHeader";
 import BottomNavigation from "@/components/BottomNavigation";
-import OwnProductCard, { Product } from "../components/OwnProductCard";
+import OwnProductCard from "../components/OwnProductCard";
 import { AnimatePresence, motion } from "framer-motion";
 import OwnProductFilterDrawer from "../components/OwnProductFilterDrawer";
+import { ProductDTO, ProductStatus } from "@/types/product";
+import { getMyProducts } from "@/services/product.service";
 
 const MyProductsPage: React.FC = () => {
   const navigate = useNavigate();
   const [showFilters, setShowFilters] = useState(false);
-  const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+  const [productToDelete, setProductToDelete] = useState<ProductDTO | null>(
+    null,
+  );
 
-  const [products, setProducts] = useState<Product[]>([
-    {
-      id: 1,
-      name: "Tênis Nike Air Force 1",
-      price: "45.000 Kz",
-      stock: 12,
-      status: "Ativo",
-      image:
-        "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=300",
-    },
-    {
-      id: 2,
-      name: "Apple Watch SE 2024",
-      price: "125.000 Kz",
-      stock: 0,
-      status: "Sem Stock",
-      image:
-        "https://images.unsplash.com/photo-1546868871-7041f2a55e12?q=80&w=300",
-    },
-    {
-      id: 3,
-      name: "Mochila Urban Style",
-      price: "22.500 Kz",
-      stock: 5,
-      status: "Verificando",
-      image:
-        "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?q=80&w=300",
-    },
-    {
-      id: 6,
-      name: "Câmara DSLR Canon",
-      price: "450.000 Kz",
-      stock: 2,
-      status: "Pendente",
-      image:
-        "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?q=80&w=300",
-    },
-  ]);
+  const [products, setProducts] = useState<ProductDTO[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    setIsLoading(true);
+    try {
+      const response = await getMyProducts();
+      if (response.data) {
+        setProducts(response.data);
+      }
+    } catch (error) {
+      console.error("Erro ao carregar produtos:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleConfirmDelete = () => {
     if (productToDelete) {
+      // Aqui você chamaria o service de delete futuramente
       setProducts((prev) => prev.filter((p) => p.id !== productToDelete.id));
       setProductToDelete(null);
     }
+  };
+
+  // Contadores baseados nos status reais do DTO
+  const stats = {
+    active: products.filter((p) => p.status === ProductStatus.ONLINE_VERIFIED)
+      .length,
+    pending: products.filter(
+      (p) => p.status === ProductStatus.AWAITING_SUBMISSION,
+    ).length,
+    verifying: products.filter(
+      (p) =>
+        p.status === ProductStatus.SUBMITTED ||
+        p.status === ProductStatus.TRALLO_VERIFIED,
+    ).length,
   };
 
   return (
@@ -75,19 +76,19 @@ const MyProductsPage: React.FC = () => {
           <div className="flex gap-4 overflow-x-auto pb-4 lg:pb-0 no-scrollbar flex-1">
             <SummaryCard
               icon="check_circle"
-              value="12"
+              value={stats.active.toString()}
               label="Ativos"
               color="emerald"
             />
             <SummaryCard
               icon="history"
-              value="2"
+              value={stats.pending.toString()}
               label="Pendentes"
               color="blue"
             />
             <SummaryCard
               icon="verified_user"
-              value="5"
+              value={stats.verifying.toString()}
               label="Verificando"
               color="amber"
             />
@@ -128,15 +129,27 @@ const MyProductsPage: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 relative">
-            <AnimatePresence mode="popLayout">
-              {products.map((product) => (
-                <OwnProductCard
-                  key={product.id}
-                  product={product}
-                  onDelete={(p) => setProductToDelete(p)}
-                />
-              ))}
-            </AnimatePresence>
+            {isLoading ? (
+              <div className="col-span-full flex justify-center py-20">
+                <div className="animate-spin size-8 border-4 border-primary border-t-transparent rounded-full" />
+              </div>
+            ) : (
+              <AnimatePresence mode="popLayout">
+                {products.length > 0 ? (
+                  products.map((product) => (
+                    <OwnProductCard
+                      key={product.id}
+                      product={product}
+                      onDelete={(p) => setProductToDelete(p)}
+                    />
+                  ))
+                ) : (
+                  <div className="col-span-full text-center py-20 opacity-50">
+                    <p className="font-bold">Nenhum produto encontrado.</p>
+                  </div>
+                )}
+              </AnimatePresence>
+            )}
             <div className="h-20 lg:hidden" />
           </div>
         </div>

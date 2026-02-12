@@ -2,7 +2,7 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import BottomNavigation from "../components/BottomNavigation";
 import PageHeader from "../components/PageHeader";
-import { logout } from "../api/auth.service";
+import { logout } from "../services/auth.service";
 import { useAuth } from "../context/AuthContext"; 
 
 const UserProfileScreen: React.FC = () => {

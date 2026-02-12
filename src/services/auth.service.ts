@@ -1,6 +1,6 @@
 import type { ApiResponse, User } from "@/types/api";
-import { http } from "./http";
-import { endpoints } from "./endpoints";
+import { http } from "../api/http";
+import { endpoints } from "../api/endpoints";
 
 interface LoginPayload {
   identifier: string;

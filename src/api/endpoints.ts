@@ -1,4 +1,5 @@
-export const BASE_URL = "http://localhost:9000";
+export const BASE_URL = "http://localhost:9090";
+export const BASE_UPLOAD_URL = "http://localhost:9090/uploads/";
 
 export const endpoints = {
   auth: {
@@ -7,7 +8,7 @@ export const endpoints = {
   },
   products: {
     create: "/products",
-    list: "/products",
+    myProducts: "/products/my",
     details: (id: string) => `/products/${id}`,
   },
 };

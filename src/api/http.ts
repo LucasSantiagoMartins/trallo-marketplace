@@ -39,7 +39,6 @@ async function request<T>(
         : undefined,
   };
   try {
-    console.log(config);
     const response = await fetch(url, config);
 
     if (!response.ok) {

@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import MobileLayout from "@/layouts/MobileLayout";
 import TralloInput from "@/components/TralloInput";
 import TralloButton from "@/components/TralloButton";
-import { login } from "@/api/auth.service";
+import { login } from "@/services/auth.service";
 import { useAppToast } from "@/hooks/useAppToast";
 import { useAuth } from "@/context/AuthContext";
 

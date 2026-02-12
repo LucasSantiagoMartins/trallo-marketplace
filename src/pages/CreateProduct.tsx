@@ -10,7 +10,7 @@ import PriceInput from "@/components/PriceInput";
 import QuantitySelector from "@/components/QuantitySelector";
 import ConditionModal from "@/components/ConditionModal";
 import CategoryDrawer from "@/components/CategoryDrawer";
-import { createProduct } from "@/api/product.service";
+import { createProduct } from "@/services/product.service";
 import { useAppToast } from "@/hooks/useAppToast";
 import {
   PRODUCT_CATEGORIES,
