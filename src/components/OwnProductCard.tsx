@@ -23,7 +23,6 @@ const OwnProductCard = forwardRef<HTMLDivElement, OwnProductCardProps>(
 
     const isOutOfStock = product.stock.availableQuantity === 0;
 
-   
     return (
       <motion.div
         ref={ref}
@@ -94,7 +93,11 @@ const OwnProductCard = forwardRef<HTMLDivElement, OwnProductCardProps>(
               {!isVerifying && (
                 <>
                   <button
-                    onClick={() => navigate(`/editar-produto/${product.id}`)}
+                    onClick={() =>
+                      navigate(`/editar-produto`, {
+                        state: { product },
+                      })
+                    }
                     className="size-10 flex items-center justify-center bg-gray-100 dark:bg-gray-700/50 rounded-xl text-gray-500 hover:text-primary transition-colors active:scale-90"
                   >
                     <span className="material-symbols-outlined text-xl">

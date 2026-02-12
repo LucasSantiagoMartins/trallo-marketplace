@@ -10,7 +10,6 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ProductDetails from "./pages/ProductDetails";
-import CreateProduct from "./pages/CreateProduct";
 import NotFound from "./pages/NotFound";
 import UserProfileScreen from "./pages/UserProfile";
 import WalletScreen from "./pages/Wallet";
@@ -26,6 +25,8 @@ import ReviewProductPage from "./pages/ProductVerification";
 import ChangePassword from "./components/ChangePassword";
 import ResetPassword from "./pages/ResetPassword";
 import EditProfile from "./pages/EditProfile";
+import CreateProduct from "./pages/CreateProduct";
+import EditProduct from "./pages/EditProduct";
 
 const queryClient = new QueryClient();
 
@@ -129,6 +130,16 @@ const App = () => (
                 element={
                   <ProtectedRoute allowedRoles={["SELLER", "ADMIN"]}>
                     <CreateProduct />
+                  </ProtectedRoute>
+                }
+              />
+
+               {/* --- ROTAS RESTRITAS (SELLER OU ADMIN) --- */}
+              <Route
+                path="/editar-produto"
+                element={
+                  <ProtectedRoute allowedRoles={["SELLER", "ADMIN"]}>
+                    <EditProduct />
                   </ProtectedRoute>
                 }
               />
