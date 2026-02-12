@@ -83,20 +83,30 @@ const CreateProduct: React.FC = () => {
   };
 
   const handleSubmit = async () => {
-    if (
-      !formData.name ||
-      !formData.price ||
-      !formData.category ||
-      fileObjects.length === 0
-    ) {
-      showToast("error", "Preencha os campos obrigatórios e adicione imagens.");
+    if (!formData.name) {
+      showToast("error", "Por favor, informe o nome do produto.");
+      return;
+    }
+
+    if (!formData.price) {
+      showToast("error", "Faltou definir o preço de venda do produto.");
+      return;
+    }
+
+    // if (!formData.category) {
+    //   showToast("error", "Escolha uma categoria para continuar.");
+    //   return;
+    // }
+
+    if (fileObjects.length === 0) {
+      showToast("error", "Adicione pelo menos uma foto do produto.");
       return;
     }
 
     setLoading(true);
     try {
       const data = new FormData();
-      data.append("category", formData.category);
+      // data.append("category", formData.category);
       data.append("name", formData.name);
       data.append("description", formData.description);
       data.append("price", formData.price.replace(/\D/g, ""));
@@ -174,7 +184,7 @@ const CreateProduct: React.FC = () => {
           {/* Coluna da Direita */}
           <div className="space-y-6 bg-white dark:bg-slate-900/20 p-4 md:p-6 rounded-[2.5rem]">
             <TralloInput
-              label="Nome do Item"
+              label="Nome do Produto"
               placeholder="Ex: iPhone 13 Pro Max - 256GB"
               value={formData.name}
               onChange={(val) => updateField("name", val)}

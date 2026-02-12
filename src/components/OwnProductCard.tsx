@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { ProductDTO, ProductStatus } from "@/types/product";
 import { getProductStatusLabel } from "@/utils/mappers/productMapper";
 import { BASE_UPLOAD_URL } from "@/api/endpoints";
+import { formatPrice } from "@/utils/currency";
 
 interface OwnProductCardProps {
   product: ProductDTO;
@@ -22,12 +23,7 @@ const OwnProductCard = forwardRef<HTMLDivElement, OwnProductCardProps>(
 
     const isOutOfStock = product.stock.availableQuantity === 0;
 
-    const formatPrice = (price: number) => {
-      return new Intl.NumberFormat("pt-BR", {
-        style: "currency",
-        currency: "BRL",
-      }).format(price / 100);
-    };
+   
     return (
       <motion.div
         ref={ref}
@@ -109,7 +105,9 @@ const OwnProductCard = forwardRef<HTMLDivElement, OwnProductCardProps>(
                   {isPending ? (
                     <button
                       onClick={() =>
-                        navigate(`/submeter-produto/${product.id}`)
+                        navigate(`/submeter-produto`, {
+                          state: { product },
+                        })
                       }
                       className="size-10 flex items-center justify-center bg-blue-500 text-white rounded-xl shadow-lg shadow-blue-500/20 active:scale-90"
                       title="Enviar para verificação"

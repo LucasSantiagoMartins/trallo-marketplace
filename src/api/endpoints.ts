@@ -9,6 +9,7 @@ export const endpoints = {
   products: {
     create: "/products",
     myProducts: "/products/my",
+    submitValidation: (id: string) => `/products/${id}/submit-for-verification`,
     details: (id: string) => `/products/${id}`,
   },
 };

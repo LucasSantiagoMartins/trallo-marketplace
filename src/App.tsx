@@ -47,7 +47,7 @@ const App = () => (
               <Route path="/esqueceu-senha" element={<ResetPassword />} />
               <Route path="/editar-perfil" element={<EditProfile />} />
               <Route
-                path="/submeter-produto"
+                path="/submeter-produto" 
                 element={<ProductValidationSubmission />}
               />
               <Route path="/fila-validacao" element={<ValidationQueuePage />} />

@@ -28,5 +28,6 @@ export interface ProductDTO {
   status: ProductStatus;
   createdAt: string;
   coverImage: string;
+  images: string[];
   stock: ProductStockDTO;
 }

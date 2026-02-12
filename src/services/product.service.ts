@@ -18,3 +18,20 @@ export async function getMyProducts(): Promise<ApiResponse<ProductDTO[]>> {
   const res = await http.get<ProductDTO[]>(endpoints.products.myProducts);
   return res;
 }
+
+export async function submitProductForValidation(
+  productId: string,
+  notes: string,
+  videoFile: File,
+): Promise<ApiResponse<any>> {
+  const formData = new FormData();
+  formData.append("notes", notes);
+  formData.append("video", videoFile);
+
+  const res = await http.post<any, FormData>(
+    endpoints.products.submitValidation(productId),
+    formData,
+  );
+
+  return res;
+}
