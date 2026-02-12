@@ -31,3 +31,18 @@ export interface ProductDTO {
   images: string[];
   stock: ProductStockDTO;
 }
+
+export interface PendingVerificationDTO {
+  verificationId: string;
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  condition: ProductCondition;
+  status: ProductStatus;
+  createdAt: string;
+  videoUrl?: string;
+  coverImage: string;
+  images: string[];
+  stock: ProductStockDTO;
+}

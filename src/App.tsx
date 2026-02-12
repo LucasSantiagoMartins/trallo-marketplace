@@ -21,8 +21,8 @@ import CartPage from "./pages/CartPage";
 import SettingsScreen from "./pages/Settings";
 import MyProductsScreen from "./pages/MyProducts";
 import ProductValidationSubmission from "./pages/ProductValidationSubmission";
-import ValidationQueuePage from "./pages/ValidationQueuePage";
-import ReviewProductPage from "./pages/ProductReviewPage";
+import PendingVerificationsPage from "./pages/PendingVerifications";
+import ReviewProductPage from "./pages/ProductVerification";
 import ChangePassword from "./components/ChangePassword";
 import ResetPassword from "./pages/ResetPassword";
 import EditProfile from "./pages/EditProfile";
@@ -50,9 +50,9 @@ const App = () => (
                 path="/submeter-produto" 
                 element={<ProductValidationSubmission />}
               />
-              <Route path="/fila-validacao" element={<ValidationQueuePage />} />
+              <Route path="/verificacoes-pendentes" element={<PendingVerificationsPage />} />
               <Route
-                path="/validar-produto/:id"
+                path="/validar-produto"
                 element={<ReviewProductPage />}
               />
 

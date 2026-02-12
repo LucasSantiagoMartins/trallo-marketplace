@@ -1,7 +1,7 @@
 import { http } from "../api/http";
 import { endpoints } from "../api/endpoints";
 import type { ApiResponse } from "@/types/api";
-import { ProductDTO } from "@/types/product";
+import { PendingVerificationDTO, ProductDTO } from "@/types/product";
 
 export async function createProduct(
   productData: FormData,
@@ -16,6 +16,15 @@ export async function createProduct(
 
 export async function getMyProducts(): Promise<ApiResponse<ProductDTO[]>> {
   const res = await http.get<ProductDTO[]>(endpoints.products.myProducts);
+  return res;
+}
+
+export async function pendingVerifications(): Promise<
+  ApiResponse<PendingVerificationDTO[]>
+> {
+  const res = await http.get<PendingVerificationDTO[]>(
+    endpoints.products.pendingVerifications,
+  );
   return res;
 }
 

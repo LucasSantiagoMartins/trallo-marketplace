@@ -38,13 +38,11 @@ const MyProductsPage: React.FC = () => {
 
   const handleConfirmDelete = () => {
     if (productToDelete) {
-      // Aqui você chamaria o service de delete futuramente
       setProducts((prev) => prev.filter((p) => p.id !== productToDelete.id));
       setProductToDelete(null);
     }
   };
 
-  // Contadores baseados nos status reais do DTO
   const stats = {
     active: products.filter((p) => p.status === ProductStatus.ONLINE_VERIFIED)
       .length,
