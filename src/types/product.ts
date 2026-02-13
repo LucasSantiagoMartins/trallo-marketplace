@@ -5,8 +5,8 @@ export enum ProductCondition {
 }
 
 export enum ProductVerificationType {
-  ONLINE = 'ONLINE',
-  TRALLO = 'TRALLO',
+  ONLINE = "ONLINE",
+  TRALLO = "TRALLO",
 }
 
 export enum ProductStatus {
@@ -52,4 +52,35 @@ export interface PendingVerificationDTO {
   coverImage: string;
   images: string[];
   stock: ProductStockDTO;
+}
+
+export interface UpdateProductDTO extends Partial<
+  Omit<ProductDTO, "id" | "stock" | "coverImage" | "status" | "createdAt">
+> {
+  stockQuantity?: number;
+}
+
+export interface SearchedProductDTO {
+  id: string;
+  name: string;
+  description: string;
+  category?: string; // Opcional conforme o JSON
+  price: number;
+  condition: ProductCondition;
+  status: ProductStatus;
+  coverImage: string;
+  seller: SellerDTO; // Adicionado conforme o JSON
+  images: ProductImageDTO[]; // Agora é um array de objetos, não de strings
+  stock: ProductStockDTO;
+  createdAt: string;
+}
+
+export interface ProductImageDTO {
+  url: string;
+  position: number;
+}
+
+export interface SellerDTO {
+  id: number;
+  fullName: string;
 }

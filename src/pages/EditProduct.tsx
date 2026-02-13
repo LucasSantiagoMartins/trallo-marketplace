@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate, useParams, useLocation } from "react-router-dom"; // Importe useLocation
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import MobileLayout from "@/layouts/MobileLayout";
 import PageHeader from "@/components/PageHeader";
 import TralloInput from "@/components/TralloInput";
@@ -11,18 +11,18 @@ import QuantitySelector from "@/components/QuantitySelector";
 import ConditionModal from "@/components/ConditionModal";
 import CategoryDrawer from "@/components/CategoryDrawer";
 import { useAppToast } from "@/hooks/useAppToast";
-import { BASE_UPLOAD_URL } from "@/api/endpoints"; // Importe para as imagens
+import { BASE_UPLOAD_URL } from "@/api/endpoints";
 import {
   PRODUCT_CATEGORIES,
   PRODUCT_CONDITIONS,
 } from "@/constants/product-options";
 import BottomNavigation from "@/components/BottomNavigation";
 import { ProductDTO } from "@/types/product";
+import { updateProduct } from "@/services/product.service";
 
 const EditProduct: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const location = useLocation(); // Hook para pegar o estado enviado
+  const location = useLocation();
   const { showToast } = useAppToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -48,9 +48,7 @@ const EditProduct: React.FC = () => {
   const [isOpeningCondition, setIsOpeningCondition] = useState(false);
 
   useEffect(() => {
-    // Tenta pegar o produto vindo da navegação (state)
     const productFromState = location.state?.product as ProductDTO;
-
     if (productFromState) {
       setFormData({
         name: productFromState.name,
@@ -61,16 +59,12 @@ const EditProduct: React.FC = () => {
         stockQuantity: productFromState.stock.availableQuantity,
       });
 
-      // Se houver imagens, mapeia com a URL base
       if (productFromState.images && productFromState.images.length > 0) {
         const fullImageUrls = productFromState.images.map(
           (img) => BASE_UPLOAD_URL + img,
         );
         setImages(fullImageUrls);
-        setFileObjects(productFromState.images); // Mantém as strings originais para o backend saber quais são
-      } else if (productFromState.coverImage) {
-        setImages([BASE_UPLOAD_URL + productFromState.coverImage]);
-        setFileObjects([productFromState.coverImage]);
+        setFileObjects(productFromState.images);
       }
     }
   }, [location.state]);
@@ -116,12 +110,102 @@ const EditProduct: React.FC = () => {
   };
 
   const handleSubmit = async () => {
+    const productFromState = location.state?.product as ProductDTO;
+
+    if (!productFromState) {
+      showToast("error", "Erro ao recuperar dados do produto.");
+      return;
+    }
+
+    if (!formData.name) {
+      showToast("error", "Por favor, informe o nome do produto.");
+      return;
+    }
+
+    if (!formData.price) {
+      showToast("error", "Faltou definir o preço de venda do produto.");
+      return;
+    }
+
     setLoading(true);
-    setTimeout(() => {
-      showToast("success", "Alterações salvas (Simulação)");
+    try {
+      const form = new FormData();
+      let hasChanges = false;
+
+      if (formData.name !== productFromState.name) {
+        form.append("name", formData.name);
+        hasChanges = true;
+      }
+
+      if (formData.description !== (productFromState.description || "")) {
+        form.append("description", formData.description);
+        hasChanges = true;
+      }
+
+      const numericPrice = Number(formData.price.replace(/\D/g, ""));
+      if (numericPrice !== productFromState.price) {
+        form.append("price", String(numericPrice));
+        hasChanges = true;
+      }
+
+      if (formData.category !== productFromState.category) {
+        form.append("category", formData.category);
+        hasChanges = true;
+      }
+
+      if (formData.condition !== productFromState.condition) {
+        form.append("condition", formData.condition);
+        hasChanges = true;
+      }
+
+      if (formData.stockQuantity !== productFromState.stock.availableQuantity) {
+        form.append("stockQuantity", String(formData.stockQuantity));
+        hasChanges = true;
+      }
+
+      const newFiles = fileObjects.filter(
+        (file) => file instanceof File,
+      ) as File[];
+
+      const existingImagesRemaining = fileObjects.filter(
+        (file) => typeof file === "string",
+      ) as string[];
+
+      const originalImages = productFromState.images || [];
+
+      if (newFiles.length > 0) {
+        newFiles.forEach((file) => {
+          form.append("images", file);
+        });
+        hasChanges = true;
+      }
+
+      const imagesChanged =
+        existingImagesRemaining.length !== originalImages.length ||
+        !existingImagesRemaining.every((img) => originalImages.includes(img));
+
+      if (imagesChanged) {
+        form.append("existingImages", JSON.stringify(existingImagesRemaining));
+        hasChanges = true;
+      }
+
+      if (!hasChanges) {
+        showToast("info", "Nenhuma alteração detectada.");
+        setLoading(false);
+        return;
+      }
+
+      const res = await updateProduct(productFromState.id, form as any);
+
+      if (res.success) {
+        showToast("success", res.message ?? "Produto atualizado com sucesso.");
+        navigate("/meus-produtos");
+      }
+    } catch (err: any) {
+      showToast("error", err.message ?? "Erro ao conectar ao servidor.");
+    } finally {
       setLoading(false);
-      navigate("/meus-produtos");
-    }, 1000);
+    }
   };
 
   const selectedCategoryLabel =
@@ -168,8 +252,7 @@ const EditProduct: React.FC = () => {
                 Modo de Edição
               </h4>
               <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
-                Editando:{" "}
-                <span className="font-bold">{formData.name || id}</span>. As
+                Editando: <span className="font-bold">{formData.name}</span>. As
                 alterações só serão aplicadas após salvar.
               </p>
             </div>

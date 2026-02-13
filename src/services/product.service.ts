@@ -5,6 +5,8 @@ import {
   PendingVerificationDTO,
   ProductDTO,
   ProductVerificationType,
+  SearchedProductDTO,
+  UpdateProductDTO,
 } from "@/types/product";
 
 export async function createProduct(
@@ -59,4 +61,20 @@ export async function verifyProduct(
 ): Promise<ApiResponse<any>> {
   const res = await http.patch<any>(endpoints.products.verify(productId), data);
   return res;
+}
+export async function updateProduct(
+  productId: string,
+  data: FormData,
+): Promise<ApiResponse<ProductDTO>> {
+  const res = await http.patch<ProductDTO>(
+    endpoints.products.update(productId),
+    data,
+  );
+  return res;
+}
+
+export async function searchProducts(): Promise<
+  ApiResponse<SearchedProductDTO[]>
+> {
+  return await http.get<SearchedProductDTO[]>(`${endpoints.products.search}`);
 }

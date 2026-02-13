@@ -7,7 +7,7 @@ import { BASE_UPLOAD_URL } from "@/api/endpoints";
 import { formatPrice } from "@/utils/currency";
 
 interface OwnProductCardProps {
-  product: ProductDTO;
+    product: ProductDTO;
   onDelete?: (product: ProductDTO) => void;
 }
 
@@ -15,9 +15,7 @@ const OwnProductCard = forwardRef<HTMLDivElement, OwnProductCardProps>(
   ({ product, onDelete }, ref) => {
     const navigate = useNavigate();
 
-    const isVerifying =
-      product.status === ProductStatus.SUBMITTED ||
-      product.status === ProductStatus.TRALLO_VERIFIED;
+    const isVerifying = product.status === ProductStatus.SUBMITTED;
 
     const isPending = product.status === ProductStatus.AWAITING_SUBMISSION;
 
