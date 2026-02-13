@@ -2,7 +2,7 @@ import { ProductCondition, ProductStatus } from "@/types/product";
 
 export const productConditionLabel: Record<ProductCondition, string> = {
   [ProductCondition.NEW]: "Novo",
-  [ProductCondition.SEMI_NEW]: "Seminovo",
+  [ProductCondition.SEMI_NEW]: "Quase novo",
   [ProductCondition.USED]: "Usado",
 };
 

@@ -64,13 +64,13 @@ export interface SearchedProductDTO {
   id: string;
   name: string;
   description: string;
-  category?: string; // Opcional conforme o JSON
+  category?: string; 
   price: number;
   condition: ProductCondition;
   status: ProductStatus;
   coverImage: string;
-  seller: SellerDTO; // Adicionado conforme o JSON
-  images: string[]; // Agora é um array de objetos, não de strings
+  seller: SellerDTO;
+  images: string[]; 
   stock: ProductStockDTO;
   createdAt: string;
 }
@@ -83,4 +83,5 @@ export interface ProductImageDTO {
 export interface SellerDTO {
   id: number;
   fullName: string;
+  profilePicture: string;
 }

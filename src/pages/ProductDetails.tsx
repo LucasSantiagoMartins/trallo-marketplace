@@ -1,46 +1,33 @@
 import React, { useState, useRef } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import MobileLayout from "@/layouts/MobileLayout";
 import PageHeader from "@/components/PageHeader";
+import { SearchedProductDTO } from "@/types/product";
+import { BASE_UPLOAD_URL } from "@/api/endpoints";
+import { formatPrice } from "@/utils/currency";
+import { getProductConditionLabel } from "@/utils/mappers/productMapper";
 
 const ProductDetails: React.FC = () => {
-  const navigate = useNavigate();
   const { id } = useParams();
+  const location = useLocation();
+
+  const product = location.state?.product as SearchedProductDTO;
+
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const touchStartX = useRef<number | null>(null);
   const touchEndX = useRef<number | null>(null);
 
-  const product = {
-    id: id || "1",
-    name: "Sneakers Limited Edition 2024",
-    price: 75000,
-    currency: "Kz",
-    location: "Talatona, Luanda",
-    postedAt: "2 horas",
-    images: [
-      "https://images.unsplash.com/photo-1542291026-7eec264c27ff",
-      "https://images.unsplash.com/photo-1560769629-975ec94e6a86",
-      "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a",
-      "https://images.unsplash.com/photo-1508138221679-760a23a2285b",
-    ],
-    seller: {
-      name: "Mauro dos Santos",
-      avatar:
-        "https://lh3.googleusercontent.com/aida-public/AB6AXuAGHeFky3iv08zPVeviYh1KRqWNEpy09Fe5yBuVTQ_xQxPC-ZckE78MsjiuuFxAcXukgqfThQGXleH-ER8KZ64QdofUmL9km0sEv9Kzxh_vesIeHRoxPh-suj_N8r7Bu5bBZK0HHaO6KW084buPltCKRZUCTS4gwe3YOeCaOXo75D07YVqn3LfDHlON8PXdExEe1gWTK_JMnsxr5wb7SxR-P_a8HyvHzwBhThSpu5fsnrPnCRkU-1VMK7PEjbjHu5xWQJF_5PbxEG36",
-      rating: 4.9,
-      sales: 124,
-      verified: true,
-    },
-    description: `Estes ténis representam o auge do design urbano para 2024. Construídos com materiais de alta performance, oferecem conforto inigualável para o dia-a-dia em Luanda.
+  if (!product) {
+    return (
+      <MobileLayout>
+        <div className="flex items-center justify-center h-screen text-muted-foreground">
+          Produto não encontrado.
+        </div>
+      </MobileLayout>
+    );
+  }
 
-• Tamanhos disponíveis: 40-44
-• Cor: Phantom Black & Purple
-• Inclui caixa original e certificado de autenticidade.`,
-  };
-
-  const formatPrice = (value: number) => {
-    return value.toLocaleString("pt-AO");
-  };
+  const allImages = [product.coverImage, ...(product.images || [])];
 
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.targetTouches[0].clientX;
@@ -53,7 +40,7 @@ const ProductDetails: React.FC = () => {
   const handleTouchEnd = () => {
     if (!touchStartX.current || !touchEndX.current) return;
     const distance = touchStartX.current - touchEndX.current;
-    if (distance > 50 && currentImageIndex < product.images.length - 1) {
+    if (distance > 50 && currentImageIndex < allImages.length - 1) {
       setCurrentImageIndex((prev) => prev + 1);
     } else if (distance < -50 && currentImageIndex > 0) {
       setCurrentImageIndex((prev) => prev - 1);
@@ -80,39 +67,36 @@ const ProductDetails: React.FC = () => {
         <div className="lg:grid lg:grid-cols-2 lg:gap-12 lg:max-w-7xl lg:mx-auto lg:px-8">
           <div
             className="relative w-full h-[420px] md:h-[500px] lg:h-[600px] bg-card overflow-hidden lg:rounded-2xl touch-pan-y"
-            onPointerDown={(e) => {
-              if (e.pointerType === "touch") {
-                touchStartX.current = e.clientX;
-              }
-            }}
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
           >
             <img
               key={currentImageIndex}
-              src={product.images[currentImageIndex]}
+              src={`${BASE_UPLOAD_URL}${allImages[currentImageIndex]}`}
               alt={product.name}
               className="w-full h-full object-cover animate-in fade-in zoom-in-95 duration-500"
             />
 
-            <div className="absolute bottom-12 lg:bottom-6 left-0 right-0 flex justify-center gap-3 z-20">
-              {product.images.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentImageIndex(index)}
-                  className={`h-1.5 rounded-full transition-all duration-300 ${
-                    currentImageIndex === index
-                      ? "w-8 bg-white shadow-lg"
-                      : "w-1.5 bg-white/40"
-                  }`}
-                />
-              ))}
-            </div>
+            {allImages.length > 1 && (
+              <div className="absolute bottom-12 lg:bottom-6 left-0 right-0 flex justify-center gap-3 z-20">
+                {allImages.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentImageIndex(index)}
+                    className={`h-1.5 rounded-full transition-all duration-300 ${
+                      currentImageIndex === index
+                        ? "w-8 bg-white shadow-lg"
+                        : "w-1.5 bg-white/40"
+                    }`}
+                  />
+                ))}
+              </div>
+            )}
 
             <div className="absolute top-6 left-4">
               <span className="bg-primary text-primary-foreground text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
-                Edição limitada
+                {product.category || "Produto"}
               </span>
             </div>
           </div>
@@ -124,24 +108,28 @@ const ProductDetails: React.FC = () => {
                   {product.name}
                 </h1>
                 <div className="bg-primary/10 text-primary px-3 py-1 rounded-lg">
-                  <span className="text-xs font-bold">NOVO</span>
+                  <span className="text-xs font-bold uppercase">
+                    {getProductConditionLabel(product.condition)}
+                  </span>
                 </div>
               </div>
               <div className="flex items-baseline gap-1">
                 <span className="text-3xl md:text-4xl font-price font-bold text-primary">
-                  {formatPrice(product.price)}
+                  {formatPrice(product.price, false)}
                 </span>
                 <span className="text-lg md:text-xl font-price font-bold text-primary">
-                  {product.currency}
+                  Kz
                 </span>
               </div>
               <div className="mt-4 flex items-center gap-2 text-muted-foreground text-sm">
                 <span className="material-symbols-outlined text-sm">
-                  location_on
+                  inventory_2
                 </span>
-                <span>{product.location}</span>
+                <span>
+                  {product.stock.availableQuantity} unidades disponíveis
+                </span>
                 <span className="mx-1">•</span>
-                <span>Publicado há {product.postedAt}</span>
+                <span>ID: {product.id.substring(0, 8)}</span>
               </div>
             </div>
 
@@ -149,28 +137,30 @@ const ProductDetails: React.FC = () => {
               <div className="flex items-center gap-3">
                 <div className="relative">
                   <img
-                    src={product.seller.avatar}
-                    alt={product.seller.name}
+                    src={
+                      product.seller.profilePicture
+                        ? `${BASE_UPLOAD_URL}${product.seller.profilePicture}`
+                        : "/placeholder-user.png"
+                    }
+                    alt={product.seller.fullName}
                     className="size-12 rounded-full object-cover border-2 border-primary/20"
                   />
-                  {product.seller.verified && (
-                    <div className="absolute -bottom-1 -right-1 bg-blue-500 text-primary-foreground size-5 rounded-full flex items-center justify-center border-2 border-card">
-                      <span className="material-symbols-outlined text-[10px] font-bold">
-                        verified
-                      </span>
-                    </div>
-                  )}
+                  <div className="absolute -bottom-1 -right-1 bg-blue-500 text-primary-foreground size-5 rounded-full flex items-center justify-center border-2 border-card">
+                    <span className="material-symbols-outlined text-[10px] font-bold">
+                      verified
+                    </span>
+                  </div>
                 </div>
                 <div>
                   <h3 className="font-bold text-foreground">
-                    {product.seller.name}
+                    {product.seller.fullName}
                   </h3>
                   <div className="flex items-center gap-1">
                     <span className="material-symbols-outlined text-yellow-500 text-xs">
                       star
                     </span>
                     <span className="text-xs text-muted-foreground">
-                      {product.seller.rating} ({product.seller.sales} vendas)
+                      Vendedor
                     </span>
                   </div>
                 </div>
@@ -193,11 +183,11 @@ const ProductDetails: React.FC = () => {
               </span>
               <div>
                 <h4 className="text-sm font-bold text-primary">
-                  Pagamento Presencial TRALLO
+                  Compra Segura TRALLO
                 </h4>
                 <p className="text-xs text-primary/80 leading-tight">
-                  No pagamento presencial, o pedido fica reservado e o cliente
-                  efetua o pagamento diretamente nas instalações.
+                  Este produto está coberto pelo sistema de proteção ao
+                  comprador. Pagamento seguro e garantia de entrega.
                 </p>
               </div>
             </div>

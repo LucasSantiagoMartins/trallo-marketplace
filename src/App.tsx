@@ -80,7 +80,7 @@ const App = () => (
                 element={<AdminSettings />}
               />
               <Route path="/registrar" element={<Register />} />
-              <Route path="/produto/:id" element={<ProductDetails />} />
+              <Route path="/detalhes-produto" element={<ProductDetails />} />
               <Route path="/alterar-senha" element={<ChangePassword />} />
               <Route path="/esqueceu-senha" element={<ResetPassword />} />
               <Route path="/editar-perfil" element={<EditProfile />} />
