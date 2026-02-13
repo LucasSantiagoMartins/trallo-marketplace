@@ -1,19 +1,34 @@
 import React, { useState, useRef } from "react";
 import { useLocation, useParams } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import MobileLayout from "@/layouts/MobileLayout";
 import PageHeader from "@/components/PageHeader";
 import { SearchedProductDTO } from "@/types/product";
-import { BASE_UPLOAD_URL } from "@/api/endpoints";
 import { formatPrice } from "@/utils/currency";
-import { getProductConditionLabel } from "@/utils/mappers/productMapper";
+import {
+  getProductConditionLabel,
+  getProductStatusColor,
+  getProductStatusLabel,
+} from "@/utils/mappers/productMapper";
+import ProductImageGallery from "@/components/ProductImageGallery";
+import ProductDetailSellerInfo from "@/components/ProductDetailSellerInfo";
+import PaymentChoiceModal from "@/components/PaymentChoiceModal";
+import CheckoutModal from "@/components/CheckoutModal";
 
 const ProductDetails: React.FC = () => {
   const { id } = useParams();
   const location = useLocation();
-
   const product = location.state?.product as SearchedProductDTO;
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [modalType, setModalType] = useState<
+    "payment_choice" | "checkout" | null
+  >(null);
+  const [paymentType, setPaymentType] = useState<"online" | "presencial">(
+    "online",
+  );
+  const [paymentMethod, setPaymentMethod] = useState<"mcx" | "transfer">("mcx");
+
   const touchStartX = useRef<number | null>(null);
   const touchEndX = useRef<number | null>(null);
 
@@ -49,6 +64,11 @@ const ProductDetails: React.FC = () => {
     touchEndX.current = null;
   };
 
+  const closeModal = () => setModalType(null);
+
+  const deliveryFee = paymentType === "presencial" ? 0 : 2500;
+  const total = product.price + deliveryFee;
+
   return (
     <MobileLayout>
       <PageHeader
@@ -63,56 +83,32 @@ const ProductDetails: React.FC = () => {
         }
       />
 
-      <main className="pb-10 pt-16 md:pt-24">
+      <main className="pb-32 pt-16 md:pt-24">
         <div className="lg:grid lg:grid-cols-2 lg:gap-12 lg:max-w-7xl lg:mx-auto lg:px-8">
-          <div
-            className="relative w-full h-[420px] md:h-[500px] lg:h-[600px] bg-card overflow-hidden lg:rounded-2xl touch-pan-y"
+          <ProductImageGallery
+            images={allImages}
+            currentIndex={currentImageIndex}
+            productName={product.name}
+            category={product.category}
+            onIndexChange={setCurrentImageIndex}
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
-          >
-            <img
-              key={currentImageIndex}
-              src={`${BASE_UPLOAD_URL}${allImages[currentImageIndex]}`}
-              alt={product.name}
-              className="w-full h-full object-cover animate-in fade-in zoom-in-95 duration-500"
-            />
-
-            {allImages.length > 1 && (
-              <div className="absolute bottom-12 lg:bottom-6 left-0 right-0 flex justify-center gap-3 z-20">
-                {allImages.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentImageIndex(index)}
-                    className={`h-1.5 rounded-full transition-all duration-300 ${
-                      currentImageIndex === index
-                        ? "w-8 bg-white shadow-lg"
-                        : "w-1.5 bg-white/40"
-                    }`}
-                  />
-                ))}
-              </div>
-            )}
-
-            <div className="absolute top-6 left-4">
-              <span className="bg-primary text-primary-foreground text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
-                {product.category || "Produto"}
-              </span>
-            </div>
-          </div>
+          />
 
           <div className="px-4 md:px-6 lg:px-0 -mt-8 lg:mt-0 space-y-4 relative z-10">
             <div className="bg-card p-6 rounded-xl shadow-soft border border-border">
-              <div className="flex justify-between items-start mb-2">
+              <div className="flex justify-between items-start mb-2 gap-4">
                 <h1 className="text-2xl md:text-3xl font-bold leading-tight flex-1">
                   {product.name}
                 </h1>
-                <div className="bg-primary/10 text-primary px-3 py-1 rounded-lg">
+                <div className="bg-primary/10 text-primary px-3 py-1 rounded-lg shrink-0">
                   <span className="text-xs font-bold uppercase">
                     {getProductConditionLabel(product.condition)}
                   </span>
                 </div>
               </div>
+
               <div className="flex items-baseline gap-1">
                 <span className="text-3xl md:text-4xl font-price font-bold text-primary">
                   {formatPrice(product.price, false)}
@@ -121,54 +117,31 @@ const ProductDetails: React.FC = () => {
                   Kz
                 </span>
               </div>
-              <div className="mt-4 flex items-center gap-2 text-muted-foreground text-sm">
-                <span className="material-symbols-outlined text-sm">
-                  inventory_2
-                </span>
-                <span>
-                  {product.stock.availableQuantity} unidades disponíveis
-                </span>
-                <span className="mx-1">•</span>
-                <span>ID: {product.id.substring(0, 8)}</span>
+
+              <div className="mt-4 flex flex-wrap items-center gap-y-2 text-muted-foreground text-sm">
+                <div className="flex items-center gap-1">
+                  <span className="material-symbols-outlined text-sm">
+                    inventory_2
+                  </span>
+                  <span>{product.stock.availableQuantity} disponíveis</span>
+                </div>
+
+                <span className="mx-2 text-border">•</span>
+
+                <div
+                  className={`flex items-center gap-1 ${getProductStatusColor(product.status)} bg-transparent font-bold`}
+                >
+                  <span className="material-symbols-outlined text-[16px]">
+                    check_circle
+                  </span>
+                  <span className="text-xs uppercase tracking-wide">
+                    {getProductStatusLabel(product.status)}
+                  </span>
+                </div>
               </div>
             </div>
 
-            <div className="bg-card p-4 rounded-xl shadow-soft border border-border flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="relative">
-                  <img
-                    src={
-                      product.seller.profilePicture
-                        ? `${BASE_UPLOAD_URL}${product.seller.profilePicture}`
-                        : "/placeholder-user.png"
-                    }
-                    alt={product.seller.fullName}
-                    className="size-12 rounded-full object-cover border-2 border-primary/20"
-                  />
-                  <div className="absolute -bottom-1 -right-1 bg-blue-500 text-primary-foreground size-5 rounded-full flex items-center justify-center border-2 border-card">
-                    <span className="material-symbols-outlined text-[10px] font-bold">
-                      verified
-                    </span>
-                  </div>
-                </div>
-                <div>
-                  <h3 className="font-bold text-foreground">
-                    {product.seller.fullName}
-                  </h3>
-                  <div className="flex items-center gap-1">
-                    <span className="material-symbols-outlined text-yellow-500 text-xs">
-                      star
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      Vendedor
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <button className="bg-muted px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-muted/80 transition-colors">
-                Perfil
-              </button>
-            </div>
+            <ProductDetailSellerInfo seller={product.seller} />
 
             <div className="bg-card p-6 rounded-xl shadow-soft border border-border">
               <h3 className="font-bold text-lg mb-4">Descrição</h3>
@@ -193,7 +166,10 @@ const ProductDetails: React.FC = () => {
             </div>
 
             <div className="pt-4 lg:pt-6">
-              <button className="w-full buy-gradient text-primary-foreground font-semibold text-lg rounded-xl shadow-lg shadow-primary/20 flex items-center justify-center gap-2 active:scale-[0.98] transition-transform py-4 lg:py-5">
+              <button
+                onClick={() => setModalType("payment_choice")}
+                className="w-full buy-gradient text-primary-foreground font-semibold text-lg rounded-full shadow-lg shadow-primary/20 flex items-center justify-center gap-2 active:scale-[0.98] transition-transform py-4 lg:py-5"
+              >
                 Comprar Agora
                 <span className="material-symbols-outlined">arrow_forward</span>
               </button>
@@ -201,6 +177,29 @@ const ProductDetails: React.FC = () => {
           </div>
         </div>
       </main>
+
+      <AnimatePresence>
+        {modalType === "payment_choice" && (
+          <PaymentChoiceModal
+            onClose={closeModal}
+            onSelect={(type) => {
+              setPaymentType(type);
+              setModalType("checkout");
+            }}
+          />
+        )}
+
+        {modalType === "checkout" && (
+          <CheckoutModal
+            paymentType={paymentType}
+            paymentMethod={paymentMethod}
+            setPaymentMethod={setPaymentMethod}
+            deliveryFee={deliveryFee}
+            total={total}
+            onClose={closeModal}
+          />
+        )}
+      </AnimatePresence>
     </MobileLayout>
   );
 };
