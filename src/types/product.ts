@@ -70,7 +70,7 @@ export interface SearchedProductDTO {
   status: ProductStatus;
   coverImage: string;
   seller: SellerDTO; // Adicionado conforme o JSON
-  images: ProductImageDTO[]; // Agora é um array de objetos, não de strings
+  images: string[]; // Agora é um array de objetos, não de strings
   stock: ProductStockDTO;
   createdAt: string;
 }

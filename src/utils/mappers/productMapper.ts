@@ -6,6 +6,12 @@ export const productConditionLabel: Record<ProductCondition, string> = {
   [ProductCondition.USED]: "Usado",
 };
 
+export const productConditionColor: Record<ProductCondition, string> = {
+  [ProductCondition.NEW]: "text-emerald-600",
+  [ProductCondition.SEMI_NEW]: "text-blue-600",
+  [ProductCondition.USED]: "text-orange-600",
+};
+
 export const productStatusLabel: Record<ProductStatus, string> = {
   [ProductStatus.AWAITING_SUBMISSION]: "Aguardando envio",
   [ProductStatus.SUBMITTED]: "Enviado",
@@ -26,6 +32,10 @@ export const productStatusColor: Record<ProductStatus, string> = {
 
 export function getProductConditionLabel(condition: ProductCondition): string {
   return productConditionLabel[condition] || condition;
+}
+
+export function getProductConditionColor(condition: ProductCondition): string {
+  return productConditionColor[condition] || "text-slate-400";
 }
 
 export function getProductStatusLabel(status: ProductStatus): string {
