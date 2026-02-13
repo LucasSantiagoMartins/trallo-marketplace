@@ -72,7 +72,7 @@ const ProductVerification: React.FC = () => {
           res.message ||
             `Produto ${isApproved ? "aprovado" : "rejeitado"} com sucesso.`,
         );
-        navigate("/admin/verificacoes-pendentes");
+        navigate("/area-operacional/verificacoes-pendentes");
       }
     } catch (err: any) {
       showToast("error", err.message || "Erro ao processar verificação.");

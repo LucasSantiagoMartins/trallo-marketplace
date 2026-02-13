@@ -57,7 +57,7 @@ const BottomNavigation: React.FC = () => {
       {
         icon: "pending_actions",
         label: "Pendentes",
-        path: "/verificacoes-pendentes",
+        path: "/area-operacional/verificacoes-pendentes",
       },
       {
         icon: "inventory",

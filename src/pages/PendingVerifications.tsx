@@ -39,7 +39,7 @@ const PendingVerificationsPage: React.FC = () => {
   );
 
   const handleStartVerification = (product: PendingVerificationDTO) => {
-    navigate(`/validar-produto`, { state: { product } });
+    navigate(`/area-operacional/validar-produto`, { state: { product } });
   };
 
   return (

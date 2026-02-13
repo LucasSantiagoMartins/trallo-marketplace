@@ -6,6 +6,7 @@ import Carousel from "@/components/Carousel";
 import ProductCard from "@/components/ProductCard";
 import TralloInput from "@/components/TralloInput";
 import FilterDrawer from "@/components/FilterDrawer";
+import Pagination from "@/components/Pagination";
 import { searchProducts } from "@/services/product.service";
 import { SearchedProductDTO } from "@/types/product";
 
@@ -53,6 +54,9 @@ const Home: React.FC = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -98,6 +102,18 @@ const Home: React.FC = () => {
     return result;
   }, [activeCategory, products, searchQuery]);
 
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+
+  const currentProducts = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return filteredProducts.slice(startIndex, startIndex + itemsPerPage);
+  }, [filteredProducts, currentPage]);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
     <MobileLayout showBottomNav>
       <Header />
@@ -112,6 +128,10 @@ const Home: React.FC = () => {
                 icon="search"
                 className="mb-0"
                 value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e);
+                  setCurrentPage(1);
+                }}
               />
               <button
                 onClick={() => setIsFilterOpen(true)}
@@ -134,7 +154,7 @@ const Home: React.FC = () => {
               A carregar produtos...
             </div>
           ) : (
-            filteredProducts.map((product) => (
+            currentProducts.map((product) => (
               <ProductCard
                 key={product.id}
                 product={product}
@@ -145,30 +165,51 @@ const Home: React.FC = () => {
         </div>
 
         <div className="px-4 md:px-6 lg:px-8 py-8">
-          <div className="bg-slate-900 rounded-3xl p-6 md:p-8 text-white flex items-center justify-between overflow-hidden relative border border-white/5 shadow-2xl">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 rounded-full blur-[80px] -mr-10 -mt-10" />
+          <div className="bg-white/70 dark:bg-slate-900/40 backdrop-blur-xl rounded-3xl p-6 md:p-8 flex items-center justify-between overflow-hidden relative border border-white/40 shadow-[0_8px_32px_0_rgba(108,62,248,0.15)]">
+            {/* Esferas de cor suaves para o efeito de vidro */}
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[#6C3EF8]/10 rounded-full blur-[50px] -mr-10 -mt-10" />
+            <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#6C3EF8]/5 rounded-full blur-[40px] -ml-10 -mb-10" />
+
             <div className="relative z-10 flex-1">
-              <h3 className="text-xl md:text-2xl font-bold mb-1">
-                Marcas Locais
+              <div className="flex items-center gap-2 mb-3">
+                <span className="bg-[#6C3EF8]/10 text-[#6C3EF8] text-[10px] font-extrabold uppercase tracking-widest px-2.5 py-1 rounded-lg border border-[#6C3EF8]/10">
+                  Experiência Trallo
+                </span>
+              </div>
+
+              <h3 className="text-xl md:text-2xl font-black mb-2 leading-tight text-slate-900 dark:text-white">
+                Compras Inteligentes, <br />
+                <span className="text-[#6C3EF8]">Entrega Veloz.</span>
               </h3>
-              <p className="text-xs md:text-sm text-slate-400 mb-4">
-                Descobre o melhor do Made in Angola
+
+              <p className="text-xs md:text-sm text-slate-600 dark:text-slate-400 mb-5 max-w-[220px] md:max-w-none font-medium">
+                A melhor curadoria de produtos com a segurança que só o Trallo
+                oferece.
               </p>
-              <button className="text-primary text-sm font-bold flex items-center gap-1 group">
-                Explorar agora
-                <span className="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">
-                  arrow_forward
+
+              <button className="bg-[#6C3EF8] text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 group hover:shadow-lg hover:shadow-[#6C3EF8]/30 transition-all active:scale-95">
+                Ver Novidades
+                <span className="material-symbols-outlined text-sm group-hover:rotate-12 transition-transform">
+                  local_mall
                 </span>
               </button>
             </div>
-            <div className="relative z-10 w-20 h-20 md:w-28 md:h-28 bg-white/5 rounded-2xl flex items-center justify-center border border-white/10 backdrop-blur-sm">
-              <span className="material-symbols-outlined text-4xl md:text-5xl text-primary/80">
-                verified_user
+
+            {/* Ícone flutuante com glassmorphism reverso */}
+            <div className="relative z-10 w-24 h-24 md:w-32 md:h-32 bg-gradient-to-br from-white/40 to-[#6C3EF8]/10 rounded-[2rem] flex items-center justify-center border border-white/50 backdrop-blur-2xl rotate-6 shadow-xl">
+              <span className="material-symbols-outlined text-5xl md:text-6xl text-[#6C3EF8] drop-shadow-sm animate-pulse">
+                auto_awesome
               </span>
             </div>
           </div>
         </div>
       </main>
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+      />
 
       <FilterDrawer
         isOpen={isFilterOpen}

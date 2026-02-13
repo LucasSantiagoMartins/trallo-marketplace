@@ -18,7 +18,7 @@ const ProductVerificationCard: React.FC<ProductVerificationCardProps> = ({ produ
 
   const handleVerifyClick = () => {
     if (onAction) onAction(product);
-    navigate(`/validar-produto`, { state: { product } });
+    navigate(`/area-operacional/validar-produto`, { state: { product } });
   };
 
   return (

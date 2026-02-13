@@ -89,10 +89,10 @@ const App = () => (
                 element={<ProductValidationSubmission />}
               />
               <Route
-                path="/verificacoes-pendentes"
+                path="/area-operacional/verificacoes-pendentes"
                 element={<PendingVerificationsPage />}
               />
-              <Route path="/validar-produto" element={<ReviewProductPage />} />
+              <Route path="/area-operacional/validar-produto" element={<ReviewProductPage />} />
 
               {/* --- ROTAS PRIVADAS (Qualquer user logado) --- */}
               <Route

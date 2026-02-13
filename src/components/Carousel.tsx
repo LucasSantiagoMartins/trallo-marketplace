@@ -26,12 +26,12 @@ const Carousel: React.FC<CarouselProps> = ({ slides, activeIndex = 0 }) => {
   const scrollTo = (index: number) => {
     const container = containerRef.current;
     if (!container) return;
-    const child = container.children[index] as HTMLElement | undefined;
-    if (child) {
-      // Use container.scrollTo to only scroll the carousel, not the page
-      const scrollLeft = child.offsetLeft - container.offsetLeft;
-      container.scrollTo({ left: scrollLeft, behavior: "smooth" });
-    }
+
+    const slideWidth = container.offsetWidth;
+    container.scrollTo({
+      left: slideWidth * index,
+      behavior: "smooth",
+    });
   };
 
   useEffect(() => {
@@ -40,7 +40,6 @@ const Carousel: React.FC<CarouselProps> = ({ slides, activeIndex = 0 }) => {
         setCurrent((prev) => (prev + 1) % slides.length);
       }
     }, 5000);
-
     return () => clearInterval(interval);
   }, [slides.length]);
 
@@ -48,12 +47,16 @@ const Carousel: React.FC<CarouselProps> = ({ slides, activeIndex = 0 }) => {
     scrollTo(current);
   }, [current]);
 
-  const handleIndicatorClick = (index: number) => {
+  const handlePrev = () => {
     isPaused.current = true;
-    setCurrent(index);
-    setTimeout(() => {
-      isPaused.current = false;
-    }, 1000);
+    setCurrent((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
+    setTimeout(() => (isPaused.current = false), 2500);
+  };
+
+  const handleNext = () => {
+    isPaused.current = true;
+    setCurrent((prev) => (prev + 1) % slides.length);
+    setTimeout(() => (isPaused.current = false), 2500);
   };
 
   const onTouchStart = (e: React.TouchEvent) => {
@@ -67,21 +70,16 @@ const Carousel: React.FC<CarouselProps> = ({ slides, activeIndex = 0 }) => {
     const delta = endX - touchStartX.current;
 
     if (Math.abs(delta) > 50) {
-      if (delta < 0 && current < slides.length - 1) {
-        setCurrent(current + 1);
-      } else if (delta > 0 && current > 0) {
-        setCurrent(current - 1);
-      }
+      if (delta < 0) handleNext();
+      else handlePrev();
     }
 
     touchStartX.current = null;
-    setTimeout(() => {
-      isPaused.current = false;
-    }, 1000);
+    setTimeout(() => (isPaused.current = false), 1500);
   };
 
   return (
-    <div className="relative w-full overflow-hidden">
+    <div className="relative w-full group">
       <div
         ref={containerRef}
         className="flex overflow-x-hidden snap-x snap-mandatory no-scrollbar"
@@ -89,32 +87,33 @@ const Carousel: React.FC<CarouselProps> = ({ slides, activeIndex = 0 }) => {
         onTouchEnd={onTouchEnd}
       >
         {slides.map((slide) => (
-          <div key={slide.id} className="min-w-full snap-start p-2">
+          <div key={slide.id} className="min-w-full snap-start px-1 md:p-2">
             <div
-              className="relative w-full h-56 md:h-64 lg:h-80 rounded-2xl overflow-hidden flex items-center"
+              className="relative w-full h-60 md:h-64 lg:h-80 rounded-2xl md:rounded-[3rem] overflow-hidden flex items-center shadow-md border border-white/5"
               style={{ backgroundColor: slide.backgroundColor }}
             >
               <div
-                className="absolute inset-0 bg-cover bg-center mix-blend-overlay opacity-40"
+                className="absolute inset-0 bg-cover bg-center mix-blend-overlay opacity-50 transition-transform duration-1000"
                 style={{ backgroundImage: `url('${slide.backgroundImage}')` }}
               />
-              <div className="relative z-10 p-6 md:p-10 lg:p-12 w-full md:w-2/3 lg:w-1/2 flex flex-col items-start">
+
+              <div className="relative z-10 p-6 md:p-14 lg:p-16 w-full md:w-3/4 flex flex-col items-start">
                 <span
-                  className={`text-primary-foreground text-[10px] md:text-xs font-bold px-2 py-1 rounded-full uppercase tracking-widest mb-3 inline-block ${
-                    slide.tagColor || "bg-white/20"
+                  className={`text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-[0.2em] mb-4 shadow-sm backdrop-blur-md ${
+                    slide.tagColor || "bg-white/20 border border-white/10"
                   }`}
                 >
                   {slide.tag}
                 </span>
-                <h3 className="text-primary-foreground text-2xl md:text-3xl lg:text-4xl font-bold leading-tight mb-2">
+                <h3 className="text-white text-2xl md:text-4xl lg:text-5xl font-black leading-[1.1] mb-3 leading-tight">
                   {slide.title}
                 </h3>
-                <p className="text-white/80 text-sm md:text-base mb-5 line-clamp-2 md:line-clamp-none">
+                <p className="text-white/90 text-xs md:text-base mb-6 line-clamp-2 max-w-md font-medium">
                   {slide.description}
                 </p>
                 <button
-                  className={`px-4 py-2 md:px-6 md:py-3 rounded-lg text-sm md:text-base font-bold shadow-lg transition-transform active:scale-95 ${
-                    slide.buttonColor || "bg-white text-primary"
+                  className={`px-5 py-2.5 md:px-6 md:py-3 rounded-xl md:rounded-2xl text-xs md:text-sm font-black shadow-sm transition-all active:scale-95 ${
+                    slide.buttonColor || "bg-white text-slate-900"
                   }`}
                 >
                   {slide.buttonText}
@@ -125,15 +124,34 @@ const Carousel: React.FC<CarouselProps> = ({ slides, activeIndex = 0 }) => {
         ))}
       </div>
 
-      <div className="absolute bottom-6 right-0 left-0 flex items-center justify-center gap-1.5 z-20">
+      <div className="absolute inset-y-0 left-6 md:left-8 right-6 md:right-8 flex items-center justify-between z-30 pointer-events-none">
+        <button
+          onClick={handlePrev}
+          className="size-9 md:size-10 rounded-full bg-white/10 md:bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center text-white pointer-events-auto opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all hover:bg-white/40 active:scale-90 shadow-lg"
+        >
+          <span className="material-symbols-outlined text-xl md:text-2xl font-bold">
+            chevron_left
+          </span>
+        </button>
+        <button
+          onClick={handleNext}
+          className="size-9 md:size-10 rounded-full bg-white/10 md:bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center text-white pointer-events-auto opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all hover:bg-white/40 active:scale-90 shadow-lg"
+        >
+          <span className="material-symbols-outlined text-xl md:text-2xl font-bold">
+            chevron_right
+          </span>
+        </button>
+      </div>
+
+      {/* Indicadores - Agora 100% decorativos (div sem clique) */}
+      <div className="absolute bottom-4 md:bottom-8 right-0 left-0 flex items-center justify-center gap-2 z-20 pointer-events-none">
         {slides.map((_, index) => (
-          <button
+          <div
             key={index}
-            onClick={() => handleIndicatorClick(index)}
-            className={`rounded-full transition-all duration-300 focus:outline-none ${
+            className={`rounded-full transition-all duration-500 ${
               index === current
-                ? "w-8 h-2 bg-white shadow-sm"
-                : "w-2 h-2 bg-white/40"
+                ? "w-8 md:w-10 h-1 md:h-1.5 bg-white shadow-sm"
+                : "w-1 md:w-1.5 h-1 md:h-1.5 bg-white/30"
             }`}
           />
         ))}
