@@ -1,3 +1,4 @@
+import { getProductConditionLabel } from "@/utils/mappers/productMapper";
 import React from "react";
 
 interface ProductCardProps {
@@ -36,7 +37,7 @@ const ProductReviewCard: React.FC<ProductCardProps> = ({
             className="text-[10px] font-bold uppercase"
             style={{ color: primaryColor }}
           >
-            {productData.category} • {productData.condition}
+            {productData.category} • {getProductConditionLabel(productData.condition)}
           </span>
           <h2 className="text-lg font-bold leading-tight">
             {productData.name}

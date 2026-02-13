@@ -4,6 +4,11 @@ export enum ProductCondition {
   USED = "USED",
 }
 
+export enum ProductVerificationType {
+  ONLINE = 'ONLINE',
+  TRALLO = 'TRALLO',
+}
+
 export enum ProductStatus {
   AWAITING_SUBMISSION = "AWAITING_SUBMISSION",
   SUBMITTED = "SUBMITTED",
@@ -43,6 +48,7 @@ export interface PendingVerificationDTO {
   status: ProductStatus;
   createdAt: string;
   videoUrl?: string;
+  notes?: string;
   coverImage: string;
   images: string[];
   stock: ProductStockDTO;

@@ -10,7 +10,8 @@ export const endpoints = {
     create: "/products",
     myProducts: "/products/my",
     submitValidation: (id: string) => `/products/${id}/submit-for-verification`,
-    pendingVerifications:"/products/verifications/pending",
+    pendingVerifications: "/products/verifications/pending",
     details: (id: string) => `/products/${id}`,
+    verify: (id: string) => `/products/${id}/verification`,
   },
 };

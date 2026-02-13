@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { ProductVerificationType } from "@/types/product";
 
 interface ValidationModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSelectType: (type: ProductVerificationType) => void;
+  loading?: boolean;
   translateY: number;
   touchStart: number | null;
   handlers: {
@@ -15,13 +18,14 @@ interface ValidationModalProps {
 const ValidationModal: React.FC<ValidationModalProps> = ({
   isOpen,
   onClose,
+  onSelectType,
+  loading = false,
   translateY,
   touchStart,
   handlers,
 }) => {
-  const [selectedType, setSelectedType] = useState<
-    "online" | "presencial" | null
-  >(null);
+  const [selectedType, setSelectedType] =
+    useState<ProductVerificationType | null>(null);
   const [shouldRender, setShouldRender] = useState(isOpen);
   const [isAnimating, setIsAnimating] = useState(false);
 
@@ -40,8 +44,8 @@ const ValidationModal: React.FC<ValidationModalProps> = ({
   if (!shouldRender) return null;
 
   const handleConfirm = () => {
-    if (selectedType) {
-      onClose();
+    if (selectedType && !loading) {
+      onSelectType(selectedType);
     }
   };
 
@@ -53,13 +57,13 @@ const ValidationModal: React.FC<ValidationModalProps> = ({
     >
       <div
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-        onClick={onClose}
+        onClick={!loading ? onClose : undefined}
       />
 
       <div
-        onTouchStart={handlers.onStart}
-        onTouchMove={handlers.onMove}
-        onTouchEnd={handlers.onEnd}
+        onTouchStart={!loading ? handlers.onStart : undefined}
+        onTouchMove={!loading ? handlers.onMove : undefined}
+        onTouchEnd={!loading ? handlers.onEnd : undefined}
         style={{
           transform:
             translateY > 0
@@ -82,7 +86,8 @@ const ValidationModal: React.FC<ValidationModalProps> = ({
 
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 size-14 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-white/10 transition-colors"
+          disabled={loading}
+          className="absolute top-4 right-4 size-14 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-white/10 transition-colors disabled:opacity-50"
         >
           <span className="material-symbols-outlined text-2xl">close</span>
         </button>
@@ -97,16 +102,17 @@ const ValidationModal: React.FC<ValidationModalProps> = ({
 
           <div className="grid gap-4 mb-8">
             <button
-              onClick={() => setSelectedType("online")}
+              disabled={loading}
+              onClick={() => setSelectedType(ProductVerificationType.ONLINE)}
               className={`flex items-center gap-4 p-5 rounded-3xl border-2 transition-all group text-left ${
-                selectedType === "online"
+                selectedType === ProductVerificationType.ONLINE
                   ? "bg-primary/5 border-primary"
                   : "bg-slate-50 dark:bg-white/5 border-transparent"
               }`}
             >
               <div
                 className={`size-12 rounded-2xl flex items-center justify-center transition-colors ${
-                  selectedType === "online"
+                  selectedType === ProductVerificationType.ONLINE
                     ? "bg-primary text-white"
                     : "bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white"
                 }`}
@@ -119,7 +125,7 @@ const ValidationModal: React.FC<ValidationModalProps> = ({
                   Aprovação digital imediata
                 </p>
               </div>
-              {selectedType === "online" && (
+              {selectedType === ProductVerificationType.ONLINE && (
                 <span className="material-symbols-outlined text-primary">
                   check_circle
                 </span>
@@ -127,16 +133,17 @@ const ValidationModal: React.FC<ValidationModalProps> = ({
             </button>
 
             <button
-              onClick={() => setSelectedType("presencial")}
+              disabled={loading}
+              onClick={() => setSelectedType(ProductVerificationType.TRALLO)}
               className={`flex items-center gap-4 p-5 rounded-3xl border-2 transition-all group text-left ${
-                selectedType === "presencial"
+                selectedType === ProductVerificationType.TRALLO
                   ? "bg-primary/5 border-primary"
                   : "bg-slate-50 dark:bg-white/5 border-transparent"
               }`}
             >
               <div
                 className={`size-12 rounded-2xl flex items-center justify-center transition-colors ${
-                  selectedType === "presencial"
+                  selectedType === ProductVerificationType.TRALLO
                     ? "bg-primary text-white"
                     : "bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white"
                 }`}
@@ -146,12 +153,12 @@ const ValidationModal: React.FC<ValidationModalProps> = ({
                 </span>
               </div>
               <div className="flex-1">
-                <p className="font-bold">Presencial</p>
+                <p className="font-bold">Presencial (Trallo)</p>
                 <p className="text-xs text-slate-500">
                   Agendar verificação física
                 </p>
               </div>
-              {selectedType === "presencial" && (
+              {selectedType === ProductVerificationType.TRALLO && (
                 <span className="material-symbols-outlined text-primary">
                   check_circle
                 </span>
@@ -161,14 +168,21 @@ const ValidationModal: React.FC<ValidationModalProps> = ({
 
           <button
             onClick={handleConfirm}
-            disabled={!selectedType}
-            className={`w-full py-4 rounded-2xl font-bold transition-all ${
-              selectedType
+            disabled={!selectedType || loading}
+            className={`w-full py-4 rounded-2xl font-bold transition-all flex items-center justify-center gap-2 ${
+              selectedType && !loading
                 ? "bg-primary text-white shadow-lg shadow-primary/25 active:scale-[0.98]"
                 : "bg-slate-100 dark:bg-white/5 text-slate-400 cursor-not-allowed"
             }`}
           >
-            Concluir Verificação
+            {loading ? (
+              <>
+                <div className="size-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                Processando...
+              </>
+            ) : (
+              "Concluir Verificação"
+            )}
           </button>
         </div>
       </div>

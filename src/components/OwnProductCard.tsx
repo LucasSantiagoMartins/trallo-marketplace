@@ -2,7 +2,7 @@ import React, { forwardRef } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { ProductDTO, ProductStatus } from "@/types/product";
-import { getProductStatusLabel } from "@/utils/mappers/productMapper";
+import { getProductStatusLabel, getProductStatusColor } from "@/utils/mappers/productMapper";
 import { BASE_UPLOAD_URL } from "@/api/endpoints";
 import { formatPrice } from "@/utils/currency";
 
@@ -58,16 +58,12 @@ const OwnProductCard = forwardRef<HTMLDivElement, OwnProductCardProps>(
               </h4>
               <span
                 className={`px-2 py-1 text-[9px] font-black rounded-lg uppercase whitespace-nowrap ${
-                  product.status === ProductStatus.ONLINE_VERIFIED
-                    ? "bg-emerald-500/10 text-emerald-500"
-                    : isOutOfStock
-                      ? "bg-red-500/10 text-red-500"
-                      : isVerifying
-                        ? "bg-amber-500/10 text-amber-600"
-                        : "bg-blue-500/10 text-blue-600"
+                  isOutOfStock 
+                    ? "bg-red-500/10 text-red-500" 
+                    : getProductStatusColor(product.status)
                 }`}
               >
-                {getProductStatusLabel(product.status)}
+                {isOutOfStock ? "Esgotado" : getProductStatusLabel(product.status)}
               </span>
             </div>
             <p

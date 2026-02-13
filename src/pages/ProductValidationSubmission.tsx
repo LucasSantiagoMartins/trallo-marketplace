@@ -6,7 +6,7 @@ import VideoChecklistModal from "@/components/VideoChecklistModal";
 import { ProductDTO } from "@/types/product";
 import { BASE_UPLOAD_URL } from "@/api/endpoints";
 import { formatPrice } from "@/utils/currency";
-import { submitProductForValidation } from "@/services/product.service";
+import { submitProductForVerification } from "@/services/product.service";
 import { useAppToast } from "@/hooks/useAppToast";
 
 const ProductValidationSubmission: React.FC = () => {
@@ -59,7 +59,7 @@ const ProductValidationSubmission: React.FC = () => {
 
     setIsSubmitting(true);
     try {
-      const res = await submitProductForValidation(
+      const res = await submitProductForVerification(
         product.id,
         notes,
         selectedVideo,

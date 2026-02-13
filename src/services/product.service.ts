@@ -1,7 +1,11 @@
 import { http } from "../api/http";
 import { endpoints } from "../api/endpoints";
 import type { ApiResponse } from "@/types/api";
-import { PendingVerificationDTO, ProductDTO } from "@/types/product";
+import {
+  PendingVerificationDTO,
+  ProductDTO,
+  ProductVerificationType,
+} from "@/types/product";
 
 export async function createProduct(
   productData: FormData,
@@ -28,7 +32,7 @@ export async function pendingVerifications(): Promise<
   return res;
 }
 
-export async function submitProductForValidation(
+export async function submitProductForVerification(
   productId: string,
   notes: string,
   videoFile: File,
@@ -42,5 +46,17 @@ export async function submitProductForValidation(
     formData,
   );
 
+  return res;
+}
+
+export async function verifyProduct(
+  productId: string,
+  data: {
+    isApproved: boolean;
+    verificationType: ProductVerificationType;
+    description?: string;
+  },
+): Promise<ApiResponse<any>> {
+  const res = await http.patch<any>(endpoints.products.verify(productId), data);
   return res;
 }
