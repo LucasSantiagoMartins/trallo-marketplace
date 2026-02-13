@@ -98,7 +98,10 @@ const WalletScreen: React.FC = () => {
                 </div>
               </div>
 
-              <button className="w-full bg-primary text-white h-14 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-primary/30 active:scale-[0.98]">
+              <button
+                onClick={() => navigate("/realizar-levantamento")}
+                className="w-full bg-primary text-white h-14 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-primary/30 active:scale-[0.98]"
+              >
                 <span className="material-symbols-outlined">add_circle</span>
                 <span>Realizar levantamento</span>
               </button>

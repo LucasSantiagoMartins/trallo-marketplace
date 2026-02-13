@@ -27,6 +27,14 @@ import ResetPassword from "./pages/ResetPassword";
 import EditProfile from "./pages/EditProfile";
 import CreateProduct from "./pages/CreateProduct";
 import EditProduct from "./pages/EditProduct";
+import WithdrawScreen from "./pages/WithdrawScreen";
+import AdminDashboard from "./pages/AdminDashboard";
+import UsersManagement from "./pages/UsersManagement";
+import TransactionsManagement from "./pages/TransactionsManagement";
+import PaymentsManagement from "./pages/PaymentsManagement";
+import OperatorsManagement from "./pages/OperatorsManagement";
+import CreateStaffForm from "./components/CreateStaffForm";
+import AdminSettings from "./pages/AdminSettings";
 
 const queryClient = new QueryClient();
 
@@ -42,20 +50,49 @@ const App = () => (
               {/* --- ROTAS PÚBLICAS --- */}
               <Route path="/" element={<Home />} />
               <Route path="/entrar" element={<Login />} />
+              <Route path="/area-administrativa" element={<AdminDashboard />} />
+              <Route
+                path="/area-administrativa/usuarios"
+                element={<UsersManagement />}
+              />
+              <Route
+                path="/area-administrativa/transacoes"
+                element={<TransactionsManagement />}
+              />
+              <Route
+                path="/area-administrativa/operadores"
+                element={<OperatorsManagement />}
+              />
+              <Route
+                path="/area-administrativa/adicionar-operador"
+                element={<CreateStaffForm type="OPERATOR" />}
+              />
+              <Route
+                path="/area-administrativa/adicionar-administrador"
+                element={<CreateStaffForm type="ADMIN" />}
+              />
+              <Route
+                path="/area-administrativa/pagamentos"
+                element={<PaymentsManagement />}
+              />
+               <Route
+                path="/area-administrativa/configuracoes"
+                element={<AdminSettings />}
+              />
               <Route path="/registrar" element={<Register />} />
               <Route path="/produto/:id" element={<ProductDetails />} />
               <Route path="/alterar-senha" element={<ChangePassword />} />
               <Route path="/esqueceu-senha" element={<ResetPassword />} />
               <Route path="/editar-perfil" element={<EditProfile />} />
               <Route
-                path="/submeter-produto" 
+                path="/submeter-produto"
                 element={<ProductValidationSubmission />}
               />
-              <Route path="/verificacoes-pendentes" element={<PendingVerificationsPage />} />
               <Route
-                path="/validar-produto"
-                element={<ReviewProductPage />}
+                path="/verificacoes-pendentes"
+                element={<PendingVerificationsPage />}
               />
+              <Route path="/validar-produto" element={<ReviewProductPage />} />
 
               {/* --- ROTAS PRIVADAS (Qualquer user logado) --- */}
               <Route
@@ -134,12 +171,21 @@ const App = () => (
                 }
               />
 
-               {/* --- ROTAS RESTRITAS (SELLER OU ADMIN) --- */}
+              {/* --- ROTAS RESTRITAS (SELLER OU ADMIN) --- */}
               <Route
                 path="/editar-produto"
                 element={
                   <ProtectedRoute allowedRoles={["SELLER", "ADMIN"]}>
                     <EditProduct />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/realizar-levantamento"
+                element={
+                  <ProtectedRoute allowedRoles={["SELLER", "ADMIN"]}>
+                    <WithdrawScreen />
                   </ProtectedRoute>
                 }
               />
