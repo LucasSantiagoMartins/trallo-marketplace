@@ -46,8 +46,11 @@ const Header: React.FC<HeaderProps> = ({
     ],
     OPERATOR: [
       { name: "Pedidos Pendentes", path: "/operacao/pedidos" },
-      { name: "Verificações Pendentes", path: "/area-operacional/verificacoes-pendentes" },
-      { name: "Estoque", path: "/operacao/estoque" },
+      {
+        name: "Verificações Pendentes",
+        path: "/area-operacional/verificacoes-pendentes",
+      },
+      { name: "Estoque", path: "/area-operacional/gestao-estoque" },
     ],
     DELIVERER: [
       { name: "Minhas Entregas", path: "/entregas" },

@@ -35,6 +35,8 @@ import PaymentsManagement from "./pages/PaymentsManagement";
 import OperatorsManagement from "./pages/OperatorsManagement";
 import CreateStaffForm from "./components/CreateStaffForm";
 import AdminSettings from "./pages/AdminSettings";
+import InventoryScreen from "./pages/InventoryScreen";
+ 
 
 const queryClient = new QueryClient();
 
@@ -76,6 +78,8 @@ const App = () => (
                 <Route path="/meus-products" element={<MyProductsScreen />} />
                 <Route path="/adicionar-produto" element={<CreateProduct />} />
                 <Route path="/editar-produto" element={<EditProduct />} />
+               
+
                 <Route
                   path="/submeter-produto"
                   element={<ProductValidationSubmission />}
@@ -101,6 +105,10 @@ const App = () => (
                   element={<ReviewProductPage />}
                 />
               </Route>
+               <Route
+                  path="/area-operacional/gestao-estoque"
+                  element={<InventoryScreen />}
+                />
 
               {/* --- 5. ÁREA ADMINISTRATIVA (ADMIN) --- */}
               <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
