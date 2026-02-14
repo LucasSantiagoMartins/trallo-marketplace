@@ -35,7 +35,7 @@ import PaymentsManagement from "./pages/PaymentsManagement";
 import OperatorsManagement from "./pages/OperatorsManagement";
 import CreateStaffForm from "./components/CreateStaffForm";
 import AdminSettings from "./pages/AdminSettings";
-import InventoryScreen from "./pages/InventoryScreen";
+import InventoryManagement from "./pages/InventoryManagement";
  
 
 const queryClient = new QueryClient();
@@ -107,7 +107,7 @@ const App = () => (
               </Route>
                <Route
                   path="/area-operacional/gestao-estoque"
-                  element={<InventoryScreen />}
+                  element={<InventoryManagement />}
                 />
 
               {/* --- 5. ÁREA ADMINISTRATIVA (ADMIN) --- */}
