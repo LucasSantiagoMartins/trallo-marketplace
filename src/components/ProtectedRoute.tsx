@@ -1,7 +1,7 @@
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate, useLocation, Outlet } from "react-router-dom";
 
 interface ProtectedRouteProps {
-  children: JSX.Element;
+  children?: JSX.Element; 
   allowedRoles?: string[];
 }
 
@@ -26,5 +26,5 @@ export function ProtectedRoute({
     return <Navigate to="/" replace />;
   }
 
-  return children;
+  return children ? children : <Outlet />;
 }

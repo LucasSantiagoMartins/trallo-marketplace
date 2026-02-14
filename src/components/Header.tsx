@@ -29,9 +29,9 @@ const Header: React.FC<HeaderProps> = ({
 
   const menuConfig = {
     ADMIN: [
-      { name: "Dashboard", path: "/admin" },
-      { name: "Usuários", path: "/admin/users" },
-      { name: "Relatórios", path: "/admin/reports" },
+      { name: "Área Administrativa", path: "/area-administrativa" },
+      { name: "Pagamentos", path: "/area-administrativa/pagamentos" },
+      { name: "Transacões", path: "/area-administrativa/transacoes" },
     ],
     SELLER: [
       { name: "Início", path: "/" },

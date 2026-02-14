@@ -40,7 +40,6 @@ async function request<T>(
   };
   try {
     const response = await fetch(url, config);
-
     if (!response.ok) {
       const errorBody = await response.json().catch(() => null);
 
@@ -50,11 +49,19 @@ async function request<T>(
         "Não foi possível processar sua solicitação no momento.";
 
       if (response.status === 401) {
-        throw new Error("Sua sessão expirou. Por favor, faça login novamente.");
+        throw new Error(
+          errorBody?.message ||
+            errorBody?.error ||
+            "Sua sessão expirou. Por favor, faça login novamente.",
+        );
       }
 
       if (response.status === 403) {
-        throw new Error("Você não tem permissão para realizar esta ação.");
+        throw new Error(
+          errorBody?.message ||
+            errorBody?.error ||
+            "Você não tem permissão para realizar esta ação.",
+        );
       }
 
       if (response.status >= 500) {
