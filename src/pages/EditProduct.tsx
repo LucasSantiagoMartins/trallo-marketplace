@@ -277,17 +277,8 @@ const EditProduct: React.FC = () => {
             <div className="flex flex-col sm:flex-row sm:items-end gap-6 w-full">
               <div className="flex-1 w-full">
                 <PriceInput
-                  value={formData.price
-                    .replace(/\D/g, "")
-                    .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.")}
-                  onChange={(e) =>
-                    updateField(
-                      "price",
-                      e.target.value
-                        .replace(/\D/g, "")
-                        .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1."),
-                    )
-                  }
+                  value={formData.price}
+                  onChange={(value) => updateField("price", value)}
                 />
               </div>
 

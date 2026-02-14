@@ -75,7 +75,7 @@ const App = () => (
               <Route
                 element={<ProtectedRoute allowedRoles={["SELLER", "ADMIN"]} />}
               >
-                <Route path="/meus-products" element={<MyProductsScreen />} />
+                <Route path="/meus-produtos" element={<MyProductsScreen />} />
                 <Route path="/adicionar-produto" element={<CreateProduct />} />
                 <Route path="/editar-produto" element={<EditProduct />} />
                

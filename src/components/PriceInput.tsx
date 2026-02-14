@@ -2,10 +2,22 @@ import React from "react";
 
 interface PriceInputProps {
   value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange: (value: string) => void;
 }
 
 const PriceInput: React.FC<PriceInputProps> = ({ value, onChange }) => {
+  const formatValue = (val: string) => {
+    const raw = val.replace(/\D/g, "");
+    if (!raw) return "";
+    if (raw.startsWith("0")) return "";
+    return raw.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/\D/g, "");
+    onChange(raw);
+  };
+
   return (
     <section className="flex flex-col gap-2 w-full max-w-md mx-auto">
       <label className="text-xs font-bold text-muted-foreground uppercase ml-1">
@@ -15,8 +27,8 @@ const PriceInput: React.FC<PriceInputProps> = ({ value, onChange }) => {
         <input
           type="text"
           inputMode="numeric"
-          value={value}
-          onChange={onChange}
+          value={formatValue(value)}
+          onChange={handleChange}
           placeholder="0.00"
           className="text-3xl font-bold bg-transparent border-none text-center w-full outline-none pl-16 pr-20"
         />
