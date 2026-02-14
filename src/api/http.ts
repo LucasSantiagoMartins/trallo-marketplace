@@ -5,6 +5,7 @@ type HttpHeaders = Record<string, string>;
 
 interface RequestOptions {
   headers?: HttpHeaders;
+  params?: Record<string, any>;
 }
 async function request<T>(
   method: string,
@@ -94,7 +95,24 @@ async function request<T>(
 
 export const http = {
   get<T>(path: string, options?: RequestOptions): Promise<ApiResponse<T>> {
-    return request<T>("GET", path, undefined, options);
+    let url = path;
+
+    if (options?.params) {
+      const queryParams = new URLSearchParams();
+
+      Object.entries(options.params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          queryParams.append(key, value.toString());
+        }
+      });
+
+      const queryString = queryParams.toString();
+      if (queryString) {
+        url += `?${queryString}`;
+      }
+    }
+
+    return request<T>("GET", url, undefined, options);
   },
 
   post<T, B = unknown>(

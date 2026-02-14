@@ -10,6 +10,9 @@ interface TralloInputProps {
   onChange?: (value: string) => void;
   onFocus?: () => void;
   onBlur?: () => void;
+  onKeyDown?: (
+    e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => void;
   icon?: string;
   showPasswordToggle?: boolean;
   optional?: boolean;
@@ -27,6 +30,7 @@ const TralloInput: React.FC<TralloInputProps> = ({
   onChange,
   onFocus,
   onBlur,
+  onKeyDown,
   icon,
   showPasswordToggle = false,
   optional = false,
@@ -102,6 +106,7 @@ const TralloInput: React.FC<TralloInputProps> = ({
             onChange={handleChange}
             onFocus={onFocus}
             onBlur={onBlur}
+            onKeyDown={onKeyDown}
             placeholder={placeholder}
             rows={rows}
             className={commonClasses}
@@ -113,6 +118,7 @@ const TralloInput: React.FC<TralloInputProps> = ({
             onChange={handleChange}
             onFocus={onFocus}
             onBlur={onBlur}
+            onKeyDown={onKeyDown}
             placeholder={placeholder}
             className={commonClasses}
           />

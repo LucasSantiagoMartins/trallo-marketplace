@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import MobileLayout from "@/layouts/MobileLayout";
 import Header from "@/components/Header";
 import BottomNavigation from "@/components/BottomNavigation";
@@ -7,8 +7,9 @@ import ProductCard from "@/components/ProductCard";
 import TralloInput from "@/components/TralloInput";
 import FilterDrawer from "@/components/FilterDrawer";
 import Pagination from "@/components/Pagination";
+import TralloButton from "@/components/TralloButton";
 import { searchProducts } from "@/services/product.service";
-import { SearchedProductDTO } from "@/types/product";
+import { ProductCondition, SearchedProductDTO } from "@/types/product";
 
 const carouselSlides = [
   {
@@ -47,21 +48,45 @@ const carouselSlides = [
   },
 ];
 
+const EmptyState = () => (
+  <div className="col-span-full flex flex-col items-center justify-center py-20 px-4 text-center animate-in fade-in zoom-in duration-500">
+    <div className="size-24 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-6">
+      <span className="material-symbols-outlined text-5xl text-muted-foreground">
+        search_off
+      </span>
+    </div>
+    <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
+      Nenhum produto encontrado
+    </h3>
+    <p className="text-muted-foreground max-w-xs mx-auto">
+      Não conseguimos encontrar o que procuras. Tenta escrever de outra forma ou
+      ver os filtros que aplicaste.
+    </p>
+  </div>
+);
+
 const Home: React.FC = () => {
   const [products, setProducts] = useState<SearchedProductDTO[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeCategory, setActiveCategory] = useState("Todos");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [tempSearch, setTempSearch] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
 
-  useEffect(() => {
-    const fetchProducts = async () => {
+  const fetchProductsData = useCallback(
+    async (filters?: {
+      minPrice?: number;
+      maxPrice?: number;
+      condition?: ProductCondition;
+    }) => {
       try {
         setLoading(true);
-        const response = await searchProducts();
+        const params = {
+          search: searchQuery || undefined,
+          ...filters,
+        };
+        const response = await searchProducts(params);
         if (response.data) {
           setProducts(response.data);
         }
@@ -70,10 +95,13 @@ const Home: React.FC = () => {
       } finally {
         setLoading(false);
       }
-    };
+    },
+    [searchQuery],
+  );
 
-    fetchProducts();
-  }, []);
+  useEffect(() => {
+    fetchProductsData();
+  }, [searchQuery, fetchProductsData]);
 
   useEffect(() => {
     if (isFilterOpen) {
@@ -86,28 +114,35 @@ const Home: React.FC = () => {
     };
   }, [isFilterOpen]);
 
-  const filteredProducts = useMemo(() => {
-    let result = products;
+  const handleSearchClick = () => {
+    setSearchQuery(tempSearch);
+    setCurrentPage(1);
+  };
 
-    if (activeCategory !== "Todos") {
-      result = result.filter((p) => p.category === activeCategory);
-    }
+  const handleApplyFilters = (filters: any) => {
+    let result = [...products];
+    if (filters.minPrice)
+      result = result.filter((p) => p.price >= filters.minPrice);
+    if (filters.maxPrice)
+      result = result.filter((p) => p.price <= filters.maxPrice);
+    if (filters.condition)
+      result = result.filter((p) => p.condition === filters.condition);
+    setProducts(result);
+    setIsFilterOpen(false);
+  };
 
-    if (searchQuery) {
-      result = result.filter((p) =>
-        p.name.toLowerCase().includes(searchQuery.toLowerCase()),
-      );
-    }
+  const handleSearchWithFilters = (filters: any) => {
+    fetchProductsData(filters);
+    setIsFilterOpen(false);
+    setCurrentPage(1);
+  };
 
-    return result;
-  }, [activeCategory, products, searchQuery]);
-
-  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+  const totalPages = Math.ceil(products.length / itemsPerPage);
 
   const currentProducts = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
-    return filteredProducts.slice(startIndex, startIndex + itemsPerPage);
-  }, [filteredProducts, currentPage]);
+    return products.slice(startIndex, startIndex + itemsPerPage);
+  }, [products, currentPage]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -121,25 +156,36 @@ const Home: React.FC = () => {
       <main className="mt-2 pb-24">
         <div className="px-4 md:px-6 lg:px-8 pt-4">
           <div className="relative max-w-[75.5rem] mx-auto animate-in fade-in slide-in-from-top-2 duration-700">
-            <div className="relative group">
-              <TralloInput
-                label=""
-                placeholder="O que procuras hoje?"
-                icon="search"
-                className="mb-0"
-                value={searchQuery}
-                onChange={(e) => {
-                  setSearchQuery(e);
-                  setCurrentPage(1);
-                }}
-              />
-              <button
-                onClick={() => setIsFilterOpen(true)}
-                type="button"
-                className="absolute right-2 top-[50%] -translate-y-1/2 size-10 flex items-center justify-center rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all duration-300"
+            <div className="flex gap-2 items-center">
+              <div className="relative flex-1 group">
+                <TralloInput
+                  label=""
+                  placeholder="O que procuras hoje?"
+                  className="mb-0"
+                  value={tempSearch}
+                  onChange={(e) => setTempSearch(e)}
+                  onKeyDown={(e: React.KeyboardEvent) => {
+                    if (e.key === "Enter") {
+                      handleSearchClick();
+                    }
+                  }}
+                />
+                <button
+                  onClick={() => setIsFilterOpen(true)}
+                  type="button"
+                  className="absolute right-2 top-[50%] -translate-y-1/2 size-10 flex items-center justify-center rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all duration-300"
+                >
+                  <span className="material-symbols-outlined text-xl">
+                    tune
+                  </span>
+                </button>
+              </div>
+              <TralloButton
+                className="h-[52px] px-6"
+                onClick={handleSearchClick}
               >
-                <span className="material-symbols-outlined text-xl">tune</span>
-              </button>
+                Pesquisar
+              </TralloButton>
             </div>
           </div>
         </div>
@@ -150,10 +196,11 @@ const Home: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4 md:px-6 lg:px-8 py-4">
           {loading ? (
-            <div className="col-span-full text-center py-10 text-muted-foreground">
-              A carregar produtos...
+            <div className="col-span-full text-center py-20">
+              <div className="animate-spin size-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4" />
+              <p className="text-muted-foreground">A carregar produtos...</p>
             </div>
-          ) : (
+          ) : currentProducts.length > 0 ? (
             currentProducts.map((product) => (
               <ProductCard
                 key={product.id}
@@ -161,12 +208,13 @@ const Home: React.FC = () => {
                 onAddToCart={(id) => console.log(`Add to cart: ${id}`)}
               />
             ))
+          ) : (
+            <EmptyState />
           )}
         </div>
 
         <div className="px-4 md:px-6 lg:px-8 py-8">
           <div className="bg-white/70 dark:bg-slate-900/40 backdrop-blur-xl rounded-3xl p-6 md:p-8 flex items-center justify-between overflow-hidden relative border border-white/40 shadow-[0_8px_32px_0_rgba(108,62,248,0.15)]">
-            {/* Esferas de cor suaves para o efeito de vidro */}
             <div className="absolute top-0 right-0 w-32 h-32 bg-[#6C3EF8]/10 rounded-full blur-[50px] -mr-10 -mt-10" />
             <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#6C3EF8]/5 rounded-full blur-[40px] -ml-10 -mb-10" />
 
@@ -176,17 +224,14 @@ const Home: React.FC = () => {
                   Experiência Trallo
                 </span>
               </div>
-
               <h3 className="text-xl md:text-2xl font-black mb-2 leading-tight text-slate-900 dark:text-white">
                 Compras Inteligentes, <br />
                 <span className="text-[#6C3EF8]">Entrega Veloz.</span>
               </h3>
-
               <p className="text-xs md:text-sm text-slate-600 dark:text-slate-400 mb-5 max-w-[220px] md:max-w-none font-medium">
                 A melhor curadoria de produtos com a segurança que só o Trallo
                 oferece.
               </p>
-
               <button className="bg-[#6C3EF8] text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 group hover:shadow-lg hover:shadow-[#6C3EF8]/30 transition-all active:scale-95">
                 Ver Novidades
                 <span className="material-symbols-outlined text-sm group-hover:rotate-12 transition-transform">
@@ -195,7 +240,6 @@ const Home: React.FC = () => {
               </button>
             </div>
 
-            {/* Ícone flutuante com glassmorphism reverso */}
             <div className="relative z-10 w-24 h-24 md:w-32 md:h-32 bg-gradient-to-br from-white/40 to-[#6C3EF8]/10 rounded-[2rem] flex items-center justify-center border border-white/50 backdrop-blur-2xl rotate-6 shadow-xl">
               <span className="material-symbols-outlined text-5xl md:text-6xl text-[#6C3EF8] drop-shadow-sm animate-pulse">
                 auto_awesome
@@ -205,15 +249,19 @@ const Home: React.FC = () => {
         </div>
       </main>
 
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={handlePageChange}
-      />
+      {products.length > itemsPerPage && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
+      )}
 
       <FilterDrawer
         isOpen={isFilterOpen}
         onClose={() => setIsFilterOpen(false)}
+        onApply={handleApplyFilters}
+        onSearch={handleSearchWithFilters}
       />
 
       <BottomNavigation />
