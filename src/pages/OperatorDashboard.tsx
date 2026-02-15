@@ -4,7 +4,7 @@ import PageHeader from "../components/PageHeader";
 import BottomNavigation from "../components/BottomNavigation";
 import PerformanceCard from "../components/PerformanceCard";
 import StatCard from "../components/StatCard";
-import AdminSidebar from "@/components/AdminSidebar";
+import OperatorSidebar from "@/components/OperatorSidebar"; // Alterado aqui
 import { Link } from "react-router-dom";
 
 const OperatorDashboard: React.FC = () => {
@@ -32,7 +32,7 @@ const OperatorDashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] font-['Inter'] flex">
-      <AdminSidebar activePage="dashboard" />
+      <OperatorSidebar activePage="dashboard" />
 
       <motion.main
         className="flex-1 pb-32 lg:pb-10 overflow-x-hidden"
@@ -62,7 +62,7 @@ const OperatorDashboard: React.FC = () => {
         >
           <div>
             <p className="text-[#6C3EF8] font-bold text-[10px] tracking-[0.2em] mb-1 uppercase">
-              Admin Central
+              Painel Operacional
             </p>
             <h1 className="text-3xl font-semibold text-[#0F172A]">
               Visão Geral
@@ -124,45 +124,45 @@ const OperatorDashboard: React.FC = () => {
             >
               <div className="flex justify-between items-center mb-6">
                 <h3 className="font-bold text-sm uppercase tracking-widest text-slate-400">
-                  Gestão de Acessos
+                  Ações Rápidas
                 </h3>
               </div>
 
               <div className="flex flex-col gap-3">
                 <Link
-                  to="/area-administrativa/adicionar-operador"
+                  to="/area-operacional/verificacoes-pendentes"
                   className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-slate-700/50 hover:bg-[#6C3EF8]/10 hover:text-[#6C3EF8] transition-all border border-dashed border-slate-200 dark:border-slate-600 group"
                 >
                   <div className="size-10 rounded-xl bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm group-hover:bg-[#6C3EF8] group-hover:text-white transition-colors">
                     <span className="material-symbols-outlined">
-                      person_add
+                      pending_actions
                     </span>
                   </div>
                   <div className="text-left">
                     <span className="block text-[12px] font-black uppercase">
-                      Novo Operador
+                      Verificações
                     </span>
                     <span className="text-[10px] text-slate-400">
-                      Criar conta de operador
+                      Produtos aguardando revisão
                     </span>
                   </div>
                 </Link>
 
                 <Link
-                  to="/area-administrativa/adicionar-administrador"
+                  to="/area-operacional/gestao-estoque"
                   className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-slate-700/50 hover:bg-[#6C3EF8]/10 hover:text-[#6C3EF8] transition-all border border-dashed border-slate-200 dark:border-slate-600 group"
                 >
                   <div className="size-10 rounded-xl bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm group-hover:bg-[#6C3EF8] group-hover:text-white transition-colors">
                     <span className="material-symbols-outlined">
-                      admin_panel_settings
+                      inventory_2
                     </span>
                   </div>
                   <div className="text-left">
                     <span className="block text-[12px] font-black uppercase">
-                      Novo Administrador
+                      Gestão de Estoque
                     </span>
                     <span className="text-[10px] text-slate-400">
-                      Acesso total ao sistema
+                      Controlar entrada e saída
                     </span>
                   </div>
                 </Link>
@@ -170,9 +170,7 @@ const OperatorDashboard: React.FC = () => {
             </motion.section>
           </div>
 
-          {/* NOVAS SEÇÕES PARA PREENCHER O FUNDO */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
-            {/* Logs de Atividade Recente */}
             <motion.section
               variants={itemVariants}
               className="lg:col-span-2 bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm"
@@ -232,18 +230,16 @@ const OperatorDashboard: React.FC = () => {
               </div>
             </motion.section>
 
-            {/* Status de Servidores / Segurança */}
             <motion.section
               variants={itemVariants}
               className="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm relative overflow-hidden"
             >
               <div className="relative z-10">
                 <h3 className="font-bold text-sm uppercase tracking-widest text-slate-400 mb-6">
-                  Acessos por Dispositivo
+                  Dispositivos Ativos
                 </h3>
 
                 <div className="space-y-5">
-                  {/* Desktop */}
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
                       <div className="flex items-center gap-2">
@@ -268,7 +264,6 @@ const OperatorDashboard: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Mobile */}
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
                       <div className="flex items-center gap-2">
@@ -295,7 +290,7 @@ const OperatorDashboard: React.FC = () => {
                 </div>
 
                 <button className="w-full mt-8 py-3 bg-slate-50 hover:bg-slate-100 text-slate-500 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 border border-slate-100">
-                  Ver Detalhes Técnicos
+                  Ver Monitoramento
                 </button>
               </div>
 
