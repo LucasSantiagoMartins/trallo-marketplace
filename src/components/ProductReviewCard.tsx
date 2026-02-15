@@ -1,4 +1,4 @@
-import { getProductConditionLabel } from "@/utils/mappers/productMapper";
+import { getProductConditionLabel } from "@/utils/mappers/product.mapper";
 import React from "react";
 
 interface ProductCardProps {

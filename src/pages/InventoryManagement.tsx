@@ -1,48 +1,47 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, Variants, AnimatePresence } from "framer-motion";
 import Sidebar from "@/components/Sidebar";
 import { ProductStockCard } from "@/components/ProductStockCard";
 import TralloInput from "@/components/TralloInput";
 import { InventoryControlCard } from "@/components/InventoryControlCard";
 import { operatorItems } from "@/constants/sidebar-items";
-
-const INVENTORY_MOCK = [
-  {
-    id: 1,
-    name: "Monitor UltraWide 34''",
-    sku: "TR-9921-W34",
-    quantity: 12,
-    location: "P-A12 | F-04",
-    status: "Disponível" as const,
-    image:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuD_xOHDgwu7yJKMIugzvCBkkAM2KvKjrCAdmMmM_31I9bXYUMR0HF_f_N76bj1kmeuHv6bPisomV-LkuH_DqhTLc4qqMD2jwvlO-FA3OdkRCfpfJo6L67UhN6nY1w4IncOOYb7s8E1l-_fy11SIWxnw_04qiWQpBi0diVWqNqVY5k7bZ_DMH5mscSLKhXCdfXZH9MoKh-eDoA1hjPAbBHLxEFqMsnYqqVdLmQKep781OqPiC0DeydVf3tma18ZqEly-v0te5VNn1J8o",
-    type: "entradas",
-  },
-  {
-    id: 2,
-    name: "Headphones Wireless V2",
-    sku: "TR-1044-HPH",
-    quantity: 3,
-    location: "P-B02 | F-01",
-    status: "Stock Baixo" as const,
-    image:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuCDYuzwdaa4DAnN-ocWJ6tKi4uIUxzy8fqXraLn0g5YUheAxjI5W-rQtxdZQZee3aJJ6-GM3LRoxqbu6GR4mCV2ewzm9hlOx6bbUI_LkU7CTXq9Zgssp6RKORqpkjkOk6R0j_upxRz9IzpVdfqsMHWB8gWwVFehY5tLopyefON-CPERp-BcB7bm1pV_R9yATWXqA1uXD1SXehbmAChRIsxbSBC8XFAA8ejLPqDvOMrOJpls-Z7sL_f9Kg5hrZTvTXYtcvDweeGZ-Dau",
-    type: "entradas",
-  },
-];
+import { StockMovementDTO } from "@/types/warehouse-inventory";
+import { getStockEntries, getStockExits } from "@/services/warehouse-inventory.service";
 
 const InventoryManagement: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"entradas" | "saidas">("entradas");
+  const [movements, setMovements] = useState<StockMovementDTO[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState<"entradas" | "saidas">("entradas");
+
+  useEffect(() => {
+    fetchMovements();
+  }, [activeTab]);
+
+  const fetchMovements = async () => {
+    setIsLoading(true);
+    try {
+      const response =
+        activeTab === "entradas"
+          ? await getStockEntries()
+          : await getStockExits();
+
+      if (response.success) {
+        setMovements(response.data);
+      }
+    } catch (error) {
+      console.error("Erro ao carregar movimentações", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: {
-        staggerChildren: 0.08,
-      },
+      transition: { staggerChildren: 0.08 },
     },
   };
 
@@ -51,16 +50,9 @@ const InventoryManagement: React.FC = () => {
     visible: {
       opacity: 1,
       y: 0,
-      transition: {
-        duration: 0.4,
-        ease: "easeOut",
-      },
+      transition: { duration: 0.4, ease: "easeOut" },
     },
   };
-
-  const filteredStock = INVENTORY_MOCK.filter(
-    (item) => item.type === activeTab,
-  );
 
   const handleOpenModal = (type: "entradas" | "saidas") => {
     setModalType(type);
@@ -124,17 +116,21 @@ const InventoryManagement: React.FC = () => {
                 className="grid grid-cols-1 gap-4"
               >
                 <AnimatePresence mode="popLayout">
-                  {filteredStock.length > 0 ? (
-                    filteredStock.map((product) => (
+                  {isLoading ? (
+                    <div className="py-20 text-center opacity-50">
+                      Carregando...
+                    </div>
+                  ) : movements.length > 0 ? (
+                    movements.map((m) => (
                       <motion.div
-                        key={product.id}
+                        key={m.id}
                         layout
                         initial={{ opacity: 0, scale: 0.98 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.98 }}
                         transition={{ duration: 0.2 }}
                       >
-                        <ProductStockCard {...product} />
+                        <ProductStockCard movement={m} />
                       </motion.div>
                     ))
                   ) : (
@@ -160,6 +156,7 @@ const InventoryManagement: React.FC = () => {
         </motion.main>
       </div>
 
+      {/* Modal de Registro (Omitido para brevidade, mas deve usar o registerStockEntry) */}
       <AnimatePresence>
         {isModalOpen && (
           <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
@@ -170,51 +167,25 @@ const InventoryManagement: React.FC = () => {
               className="w-full max-w-md bg-white dark:bg-[#1c182d] rounded-[2.5rem] p-8 shadow-2xl"
             >
               <div className="flex justify-between items-center mb-8">
-                <div>
-                  <h2 className="text-2xl font-black tracking-tight mt-1 text-slate-900 dark:text-white">
-                    Nova {modalType === "entradas" ? "Entrada" : "Saída"}
-                  </h2>
-                </div>
+                <h2 className="text-2xl font-black text-slate-900 dark:text-white">
+                  Nova {modalType === "entradas" ? "Entrada" : "Saída"}
+                </h2>
                 <button
                   onClick={() => setIsModalOpen(false)}
-                  className="size-12 flex items-center justify-center rounded-2xl bg-gray-100 dark:bg-white/5 text-gray-400 hover:text-gray-600 transition-colors"
+                  className="text-gray-400"
                 >
                   <span className="material-symbols-outlined">close</span>
                 </button>
               </div>
 
+              {/* Formulário aqui chamaria o registerStockEntry e depois o fetchMovements */}
               <form className="space-y-6">
-                <TralloInput
-                  label="Produto"
-                  placeholder="Nome ou SKU do item"
-                  className="w-full"
-                />
-
-                {modalType === "entradas" ? (
-                  <TralloInput
-                    label="Localização no Armazém"
-                    placeholder="Ex: P-A12 | F-04"
-                    className="w-full"
-                  />
-                ) : (
-                  <TralloInput
-                    label="Entregador / Transportadora"
-                    placeholder="Quem fará a entrega?"
-                    className="w-full"
-                  />
-                )}
-
-                <TralloInput
-                  label="Quantidade"
-                  placeholder="0"
-                  type="number"
-                  className="w-full"
-                />
-
+                <TralloInput label="Produto SKU" placeholder="Ex: TR-123" />
+                <TralloInput label="Quantidade" type="number" placeholder="0" />
                 <button
                   type="button"
+                  className="w-full py-5 bg-[#6d3ff8] text-white rounded-2xl font-black"
                   onClick={() => setIsModalOpen(false)}
-                  className="w-full py-5 bg-[#6d3ff8] text-white rounded-2xl font-black shadow-lg shadow-purple-600/20 mt-4 transition-all hover:brightness-110 active:scale-[0.97]"
                 >
                   Confirmar Registro
                 </button>

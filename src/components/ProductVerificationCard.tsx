@@ -5,7 +5,7 @@ import TralloButton from "@/components/TralloButton";
 import { PendingVerificationDTO } from "@/types/product";
 import { BASE_UPLOAD_URL } from "@/api/endpoints";
 import { formatPrice } from "@/utils/currency";
-import { getProductStatusLabel } from "@/utils/mappers/productMapper";
+import { getProductStatusLabel } from "@/utils/mappers/product.mapper";
 
 interface ProductVerificationCardProps {
   product: PendingVerificationDTO;

@@ -9,7 +9,7 @@ import {
   getProductConditionLabel,
   getProductStatusColor,
   getProductStatusLabel,
-} from "@/utils/mappers/productMapper";
+} from "@/utils/mappers/product.mapper";
 import ProductImageGallery from "@/components/ProductImageGallery";
 import ProductDetailSellerInfo from "@/components/ProductDetailSellerInfo";
 import PaymentChoiceModal from "@/components/PaymentChoiceModal";

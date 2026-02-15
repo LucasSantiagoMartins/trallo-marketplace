@@ -7,7 +7,7 @@ import {
   getProductConditionColor,
   getProductStatusLabel,
   getProductStatusColor,
-} from "@/utils/mappers/productMapper";
+} from "@/utils/mappers/product.mapper";
 import { formatPrice } from "@/utils/currency";
 
 interface ProductCardProps {

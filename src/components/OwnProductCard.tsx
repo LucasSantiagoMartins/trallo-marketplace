@@ -2,7 +2,7 @@ import React, { forwardRef } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { ProductDTO, ProductStatus } from "@/types/product";
-import { getProductStatusLabel, getProductStatusColor } from "@/utils/mappers/productMapper";
+import { getProductStatusLabel, getProductStatusColor } from "@/utils/mappers/product.mapper";
 import { BASE_UPLOAD_URL } from "@/api/endpoints";
 import { formatPrice } from "@/utils/currency";
 
