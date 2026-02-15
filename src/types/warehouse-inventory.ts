@@ -34,3 +34,10 @@ export interface RegisterEntryDto {
   row: number;
   quantity: number;
 }
+
+export interface RegisterExitDto {
+  productSku: string;
+  quantity: number;
+  delivery: number
+}
+

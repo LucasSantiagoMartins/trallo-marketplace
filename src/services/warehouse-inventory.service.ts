@@ -3,11 +3,21 @@ import { endpoints } from "../api/endpoints";
 import type { ApiResponse } from "@/types/api";
 import {
   RegisterEntryDto,
+  RegisterExitDto,
   StockMovementDTO,
 } from "@/types/warehouse-inventory";
 
 export async function registerStockEntry(
   data: RegisterEntryDto,
+): Promise<ApiResponse<StockMovementDTO>> {
+  const res = await http.post<StockMovementDTO>(
+    endpoints.warehouseInventories.registerEntry,
+    data,
+  );
+  return res;
+}
+export async function registerStockExit(
+  data: RegisterExitDto,
 ): Promise<ApiResponse<StockMovementDTO>> {
   const res = await http.post<StockMovementDTO>(
     endpoints.warehouseInventories.registerEntry,

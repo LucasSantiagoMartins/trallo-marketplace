@@ -2,11 +2,15 @@ import React, { useState, useEffect } from "react";
 import { motion, Variants, AnimatePresence } from "framer-motion";
 import Sidebar from "@/components/Sidebar";
 import { ProductStockCard } from "@/components/ProductStockCard";
-import TralloInput from "@/components/TralloInput";
 import { InventoryControlCard } from "@/components/InventoryControlCard";
 import { operatorItems } from "@/constants/sidebar-items";
 import { StockMovementDTO } from "@/types/warehouse-inventory";
-import { getStockEntries, getStockExits } from "@/services/warehouse-inventory.service";
+import {
+  getStockEntries,
+  getStockExits,
+} from "@/services/warehouse-inventory.service";
+import { RegisterEntryForm } from "@/components/register-entry-form";
+import { RegisterExitForm } from "@/components/register-exit-form";
 
 const InventoryManagement: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"entradas" | "saidas">("entradas");
@@ -37,6 +41,16 @@ const InventoryManagement: React.FC = () => {
     }
   };
 
+  const handleOpenModal = (type: "entradas" | "saidas") => {
+    setModalType(type);
+    setIsModalOpen(true);
+  };
+
+  const handleRegisterSuccess = () => {
+    setIsModalOpen(false);
+    fetchMovements();
+  };
+
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
@@ -52,11 +66,6 @@ const InventoryManagement: React.FC = () => {
       y: 0,
       transition: { duration: 0.4, ease: "easeOut" },
     },
-  };
-
-  const handleOpenModal = (type: "entradas" | "saidas") => {
-    setModalType(type);
-    setIsModalOpen(true);
   };
 
   return (
@@ -118,7 +127,7 @@ const InventoryManagement: React.FC = () => {
                 <AnimatePresence mode="popLayout">
                   {isLoading ? (
                     <div className="py-20 text-center opacity-50">
-                      Carregando...
+                      Carregando movimentações...
                     </div>
                   ) : movements.length > 0 ? (
                     movements.map((m) => (
@@ -139,10 +148,12 @@ const InventoryManagement: React.FC = () => {
                       animate={{ opacity: 0.5 }}
                       className="py-20 text-center"
                     >
-                      <span className="material-symbols-outlined text-6xl mb-2">
+                      <span className="material-symbols-outlined text-6xl mb-2 text-slate-300">
                         inventory_2
                       </span>
-                      <p>Nenhum registro de {activeTab} encontrado.</p>
+                      <p className="font-medium text-slate-400">
+                        Nenhum registro de {activeTab} encontrado.
+                      </p>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -156,7 +167,7 @@ const InventoryManagement: React.FC = () => {
         </motion.main>
       </div>
 
-      {/* Modal de Registro (Omitido para brevidade, mas deve usar o registerStockEntry) */}
+      {/* Modal de Registro */}
       <AnimatePresence>
         {isModalOpen && (
           <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
@@ -164,7 +175,7 @@ const InventoryManagement: React.FC = () => {
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="w-full max-w-md bg-white dark:bg-[#1c182d] rounded-[2.5rem] p-8 shadow-2xl"
+              className="w-full max-w-md bg-white dark:bg-[#1c182d] rounded-[2.5rem] p-8 shadow-2xl relative"
             >
               <div className="flex justify-between items-center mb-8">
                 <h2 className="text-2xl font-black text-slate-900 dark:text-white">
@@ -172,24 +183,23 @@ const InventoryManagement: React.FC = () => {
                 </h2>
                 <button
                   onClick={() => setIsModalOpen(false)}
-                  className="text-gray-400"
+                  className="text-gray-400 hover:text-gray-600 dark:hover:text-white transition-colors"
                 >
                   <span className="material-symbols-outlined">close</span>
                 </button>
               </div>
 
-              {/* Formulário aqui chamaria o registerStockEntry e depois o fetchMovements */}
-              <form className="space-y-6">
-                <TralloInput label="Produto SKU" placeholder="Ex: TR-123" />
-                <TralloInput label="Quantidade" type="number" placeholder="0" />
-                <button
-                  type="button"
-                  className="w-full py-5 bg-[#6d3ff8] text-white rounded-2xl font-black"
-                  onClick={() => setIsModalOpen(false)}
-                >
-                  Confirmar Registro
-                </button>
-              </form>
+              {modalType === "entradas" ? (
+                <RegisterEntryForm
+                  onSuccess={handleRegisterSuccess}
+                  onCancel={() => setIsModalOpen(false)}
+                />
+              ) : (
+                <RegisterExitForm
+                  onSuccess={handleRegisterSuccess}
+                  onCancel={() => setIsModalOpen(false)}
+                />
+              )}
             </motion.div>
           </div>
         )}
