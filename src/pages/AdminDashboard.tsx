@@ -1,11 +1,12 @@
 import React from "react";
 import { motion, Variants } from "framer-motion";
+import { Link } from "react-router-dom";
 import PageHeader from "../components/PageHeader";
 import BottomNavigation from "../components/BottomNavigation";
 import PerformanceCard from "../components/PerformanceCard";
 import StatCard from "../components/StatCard";
-import AdminSidebar from "@/components/AdminSidebar";
-import { Link } from "react-router-dom";
+import Sidebar from "../components/Sidebar";
+import { adminItems } from "@/constants/sidebar-items";
 
 const AdminDashboard: React.FC = () => {
   const containerVariants: Variants = {
@@ -32,7 +33,12 @@ const AdminDashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] font-['Inter'] flex">
-      <AdminSidebar activePage="dashboard" />
+      <Sidebar
+        title="Painel Administrativo"
+        items={adminItems}
+        activePage="dashboard"
+        showSettings={true}
+      />
 
       <motion.main
         className="flex-1 pb-32 lg:pb-10 overflow-x-hidden"
@@ -40,7 +46,6 @@ const AdminDashboard: React.FC = () => {
         animate="visible"
         variants={containerVariants}
       >
-        {/* Header Mobile */}
         <div className="lg:hidden">
           <PageHeader
             title="Visão Geral"
@@ -55,14 +60,13 @@ const AdminDashboard: React.FC = () => {
           />
         </div>
 
-        {/* Header Desktop */}
         <motion.header
           variants={itemVariants}
           className="hidden lg:flex px-8 pt-10 pb-8 justify-between items-end max-w-7xl mx-auto w-full"
         >
           <div>
             <p className="text-[#6C3EF8] font-bold text-[10px] tracking-[0.2em] mb-1 uppercase">
-              Admin Central
+             Gestão Central
             </p>
             <h1 className="text-3xl font-semibold text-[#0F172A]">
               Visão Geral
@@ -71,7 +75,6 @@ const AdminDashboard: React.FC = () => {
         </motion.header>
 
         <div className="max-w-7xl mx-auto px-4 lg:px-8 mt-20 lg:mt-0">
-          {/* Seção de Stats */}
           <section className="mb-8">
             <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <motion.div variants={itemVariants} className="w-full">
@@ -112,7 +115,6 @@ const AdminDashboard: React.FC = () => {
             </div>
           </section>
 
-          {/* Grid Principal */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <motion.div variants={itemVariants} className="lg:col-span-2">
               <PerformanceCard />
@@ -120,7 +122,7 @@ const AdminDashboard: React.FC = () => {
 
             <motion.section
               variants={itemVariants}
-              className="bg-white dark:bg-slate-800/40 p-6 rounded-[2.5rem] border border-slate-100 dark:border-slate-800/50 shadow-sm h-fit"
+              className="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm h-fit"
             >
               <div className="flex justify-between items-center mb-6">
                 <h3 className="font-bold text-sm uppercase tracking-widest text-slate-400">
@@ -131,9 +133,9 @@ const AdminDashboard: React.FC = () => {
               <div className="flex flex-col gap-3">
                 <Link
                   to="/area-administrativa/adicionar-operador"
-                  className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-slate-700/50 hover:bg-[#6C3EF8]/10 hover:text-[#6C3EF8] transition-all border border-dashed border-slate-200 dark:border-slate-600 group"
+                  className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 hover:bg-[#6C3EF8]/10 hover:text-[#6C3EF8] transition-all border border-dashed border-slate-200 group"
                 >
-                  <div className="size-10 rounded-xl bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm group-hover:bg-[#6C3EF8] group-hover:text-white transition-colors">
+                  <div className="size-10 rounded-xl bg-white flex items-center justify-center shadow-sm group-hover:bg-[#6C3EF8] group-hover:text-white transition-colors">
                     <span className="material-symbols-outlined">
                       person_add
                     </span>
@@ -150,9 +152,9 @@ const AdminDashboard: React.FC = () => {
 
                 <Link
                   to="/area-administrativa/adicionar-administrador"
-                  className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-slate-700/50 hover:bg-[#6C3EF8]/10 hover:text-[#6C3EF8] transition-all border border-dashed border-slate-200 dark:border-slate-600 group"
+                  className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 hover:bg-[#6C3EF8]/10 hover:text-[#6C3EF8] transition-all border border-dashed border-slate-200 group"
                 >
-                  <div className="size-10 rounded-xl bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm group-hover:bg-[#6C3EF8] group-hover:text-white transition-colors">
+                  <div className="size-10 rounded-xl bg-white flex items-center justify-center shadow-sm group-hover:bg-[#6C3EF8] group-hover:text-white transition-colors">
                     <span className="material-symbols-outlined">
                       admin_panel_settings
                     </span>
@@ -170,9 +172,7 @@ const AdminDashboard: React.FC = () => {
             </motion.section>
           </div>
 
-          {/* NOVAS SEÇÕES PARA PREENCHER O FUNDO */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
-            {/* Logs de Atividade Recente */}
             <motion.section
               variants={itemVariants}
               className="lg:col-span-2 bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm"
@@ -196,13 +196,13 @@ const AdminDashboard: React.FC = () => {
                   },
                   {
                     user: "Sistema",
-                    action: "backup diário concluído com sucesso",
+                    action: "backup diário concluído",
                     time: "15 min atrás",
                     icon: "cloud_done",
                   },
                   {
                     user: "Operador Sílvia",
-                    action: "redefiniu senha de usuário",
+                    action: "redefiniu senha",
                     time: "1h atrás",
                     icon: "lock_reset",
                   },
@@ -232,7 +232,6 @@ const AdminDashboard: React.FC = () => {
               </div>
             </motion.section>
 
-            {/* Status de Servidores / Segurança */}
             <motion.section
               variants={itemVariants}
               className="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm relative overflow-hidden"
@@ -241,9 +240,7 @@ const AdminDashboard: React.FC = () => {
                 <h3 className="font-bold text-sm uppercase tracking-widest text-slate-400 mb-6">
                   Acessos por Dispositivo
                 </h3>
-
                 <div className="space-y-5">
-                  {/* Desktop */}
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
                       <div className="flex items-center gap-2">
@@ -268,7 +265,6 @@ const AdminDashboard: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Mobile */}
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
                       <div className="flex items-center gap-2">
@@ -293,13 +289,10 @@ const AdminDashboard: React.FC = () => {
                     </div>
                   </div>
                 </div>
-
-                <button className="w-full mt-8 py-3 bg-slate-50 hover:bg-slate-100 text-slate-500 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 border border-slate-100">
+                <button className="w-full mt-8 py-3 bg-slate-50 hover:bg-slate-100 text-slate-500 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border border-slate-100">
                   Ver Detalhes Técnicos
                 </button>
               </div>
-
-              <div className="absolute -right-10 -bottom-10 size-40 bg-[#6C3EF8]/5 rounded-full blur-3xl"></div>
             </motion.section>
           </div>
         </div>

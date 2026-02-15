@@ -2,12 +2,14 @@ import React from "react";
 import { motion, Variants } from "framer-motion";
 import PageHeader from "../components/PageHeader";
 import BottomNavigation from "../components/BottomNavigation";
-import PerformanceCard from "../components/PerformanceCard";
 import StatCard from "../components/StatCard";
-import OperatorSidebar from "@/components/OperatorSidebar";
-import { Link } from "react-router-dom";
+import Sidebar from "@/components/Sidebar";
+import { operatorItems } from "@/constants/sidebar-items";
+import { useAuth } from "@/context/AuthContext";
 
 const OperatorDashboard: React.FC = () => {
+  const { user } = useAuth();
+
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
@@ -30,17 +32,33 @@ const OperatorDashboard: React.FC = () => {
     },
   };
 
+  const menuItems =
+    user?.role === "ADMIN"
+      ? [
+          ...operatorItems,
+          {
+            id: "back-to-admin",
+            icon: "admin_panel_settings",
+            label: "Área Administrativa",
+            path: "/area-administrativa",
+          },
+        ]
+      : operatorItems;
+
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] font-['Inter'] flex">
-      <OperatorSidebar activePage="dashboard" />
-
+      <Sidebar
+        title="Painel Operacional"
+        items={menuItems}
+        activePage="dashboard"
+        showSettings={false}
+      />
       <motion.main
         className="flex-1 pb-32 lg:pb-10 overflow-x-hidden"
         initial="hidden"
         animate="visible"
         variants={containerVariants}
       >
-        {/* Header Mobile */}
         <div className="lg:hidden">
           <PageHeader
             title="Painel Operacional"
@@ -55,7 +73,6 @@ const OperatorDashboard: React.FC = () => {
           />
         </div>
 
-        {/* Header Desktop */}
         <motion.header
           variants={itemVariants}
           className="hidden lg:flex px-8 pt-10 pb-8 justify-between items-end max-w-7xl mx-auto w-full"
@@ -71,7 +88,6 @@ const OperatorDashboard: React.FC = () => {
         </motion.header>
 
         <div className="max-w-7xl mx-auto px-4 lg:px-8 mt-20 lg:mt-0">
-          {/* Seção de Stats - Focada em Operação */}
           <section className="mb-8">
             <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <motion.div variants={itemVariants} className="w-full">
@@ -112,64 +128,7 @@ const OperatorDashboard: React.FC = () => {
             </div>
           </section>
 
-          {/* Grid Principal */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <motion.div variants={itemVariants} className="lg:col-span-2">
-              <PerformanceCard />
-            </motion.div>
-
-            <motion.section
-              variants={itemVariants}
-              className="bg-white dark:bg-slate-800/40 p-6 rounded-[2.5rem] border border-slate-100 dark:border-slate-800/50 shadow-sm h-fit"
-            >
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="font-bold text-sm uppercase tracking-widest text-slate-400">
-                  Ações Rápidas
-                </h3>
-              </div>
-
-              <div className="flex flex-col gap-3">
-                <Link
-                  to="/area-operacional/verificacoes-pendentes"
-                  className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-slate-700/50 hover:bg-[#6C3EF8]/10 hover:text-[#6C3EF8] transition-all border border-dashed border-slate-200 dark:border-slate-600 group"
-                >
-                  <div className="size-10 rounded-xl bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm group-hover:bg-[#6C3EF8] group-hover:text-white transition-colors">
-                    <span className="material-symbols-outlined">
-                      fact_check
-                    </span>
-                  </div>
-                  <div className="text-left">
-                    <span className="block text-[12px] font-black uppercase">
-                      Verificações
-                    </span>
-                    <span className="text-[10px] text-slate-400">
-                      Analisar novos produtos
-                    </span>
-                  </div>
-                </Link>
-
-                <Link
-                  to="/area-operacional/gestao-estoque"
-                  className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-slate-700/50 hover:bg-[#6C3EF8]/10 hover:text-[#6C3EF8] transition-all border border-dashed border-slate-200 dark:border-slate-600 group"
-                >
-                  <div className="size-10 rounded-xl bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm group-hover:bg-[#6C3EF8] group-hover:text-white transition-colors">
-                    <span className="material-symbols-outlined">inventory</span>
-                  </div>
-                  <div className="text-left">
-                    <span className="block text-[12px] font-black uppercase">
-                      Estoque Central
-                    </span>
-                    <span className="text-[10px] text-slate-400">
-                      Gerenciar unidades e SKUs
-                    </span>
-                  </div>
-                </Link>
-              </div>
-            </motion.section>
-          </div>
-
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
-            {/* Atividades Operacionais */}
             <motion.section
               variants={itemVariants}
               className="lg:col-span-2 bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm"
@@ -229,7 +188,6 @@ const OperatorDashboard: React.FC = () => {
               </div>
             </motion.section>
 
-            {/* Monitoramento de Carga/Estoque */}
             <motion.section
               variants={itemVariants}
               className="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm relative overflow-hidden"

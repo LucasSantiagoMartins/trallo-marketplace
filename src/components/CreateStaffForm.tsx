@@ -3,9 +3,9 @@ import { useNavigate } from "react-router-dom";
 import TralloInput from "@/components/TralloInput";
 import TralloButton from "@/components/TralloButton";
 import PasswordTooltip from "@/components/PasswordTooltip";
-import AdminSidebar from "@/components/AdminSidebar";
+import Sidebar from "@/components/Sidebar";
 import { useAppToast } from "@/hooks/useAppToast";
-import PageHeader from "./PageHeader";
+import { adminItems } from "@/constants/sidebar-items";
 
 interface CreateStaffProps {
   type: "OPERATOR" | "ADMIN";
@@ -27,7 +27,6 @@ const CreateStaffForm: React.FC<CreateStaffProps> = ({ type }) => {
 
   const isAdmin = type === "ADMIN";
   const title = isAdmin ? "Novo Administrador" : "Novo Operador";
-
   const badge = isAdmin ? "Acesso Total" : "Acesso Operacional";
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -41,7 +40,7 @@ const CreateStaffForm: React.FC<CreateStaffProps> = ({ type }) => {
     setLoading(true);
     try {
       showToast("success", `${title} criado com sucesso!`);
-      navigate("/operadores");
+      navigate("/area-administrativa");
     } catch (err) {
       showToast("error", "Erro ao processar solicitação.");
     } finally {
@@ -55,12 +54,14 @@ const CreateStaffForm: React.FC<CreateStaffProps> = ({ type }) => {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex font-['Inter']">
-      <AdminSidebar activePage="none" />
+      <Sidebar
+        title="Painel Administrativo"
+        items={adminItems}
+        activePage="dashboard"
+        showSettings={true}
+      />
 
       <main className="flex-1 flex flex-col min-w-0">
-      
-
-        {/* max-w-5xl para deixar um pouco mais largo */}
         <div className="flex-1 p-4 lg:p-12 max-w-5xl mx-auto w-full">
           <header className="mb-10">
             <span
@@ -141,10 +142,16 @@ const CreateStaffForm: React.FC<CreateStaffProps> = ({ type }) => {
             </div>
 
             <div className="pt-4 flex flex-col md:flex-row gap-4">
+              <button
+                type="button"
+                onClick={() => navigate("/area-administrativa")}
+                className="flex-1 py-4 px-6 rounded-2xl text-sm font-bold text-slate-500 hover:bg-slate-50 transition-colors border border-slate-100"
+              >
+                Cancelar
+              </button>
               <TralloButton type="submit" fullWidth disabled={loading}>
                 {loading ? "Processando..." : `Confirmar Cadastro`}
               </TralloButton>
-             
             </div>
           </form>
         </div>

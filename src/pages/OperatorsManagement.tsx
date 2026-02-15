@@ -4,9 +4,10 @@ import PageHeader from "../components/PageHeader";
 import BottomNavigation from "../components/BottomNavigation";
 import UserListItem from "../components/UserListItem";
 import Pagination from "../components/Pagination";
-import AdminSidebar from "../components/AdminSidebar";
 import OperatorListItem from "@/components/OperatorListItem";
 import { Link } from "react-router-dom";
+import { adminItems } from "@/constants/sidebar-items";
+import Sidebar from "@/components/Sidebar";
 
 const OperatorsManagement: React.FC = () => {
   const [filter, setFilter] = useState("Todos");
@@ -76,7 +77,12 @@ const OperatorsManagement: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex font-['Inter']">
-      <AdminSidebar activePage="operadores" />
+      <Sidebar
+        title="Painel Administrativo"
+        items={adminItems}
+        activePage="operadores"
+        showSettings={true}
+      />
 
       <div className="flex-1 flex flex-col min-w-0">
         <motion.main
@@ -105,8 +111,8 @@ const OperatorsManagement: React.FC = () => {
               <span className="material-symbols-outlined text-sm">
                 person_add
               </span>
-              <Link to='/area-administrativa/adicionar-operador'>
-              Novo Operador
+              <Link to="/area-administrativa/adicionar-operador">
+                Novo Operador
               </Link>
             </motion.button>
           </motion.header>

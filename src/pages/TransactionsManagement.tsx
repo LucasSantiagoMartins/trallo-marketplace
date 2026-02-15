@@ -3,8 +3,9 @@ import { motion, Variants } from "framer-motion";
 import PageHeader from "../components/PageHeader";
 import Pagination from "../components/Pagination";
 import TransactionCard from "../components/TransactionCard";
-import AdminSidebar from "@/components/AdminSidebar";
 import BottomNavigation from "../components/BottomNavigation";
+import Sidebar from "@/components/Sidebar";
+import { adminItems } from "@/constants/sidebar-items";
 
 const TransactionsManagement: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -92,7 +93,12 @@ const TransactionsManagement: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex font-['Inter']">
-      <AdminSidebar activePage="transacoes" />
+      <Sidebar
+        title="Painel Administrativo"
+        items={adminItems}
+        activePage="transacoes"
+        showSettings={true}
+      />
 
       <div className="flex-1 flex flex-col min-w-0">
         <motion.main
@@ -140,11 +146,12 @@ const TransactionsManagement: React.FC = () => {
                 </span>
               </div>
               <h4 className="font-black text-base mb-1 tracking-tight">
-                Por que o saldo está retido?
+                Atividade Financeira
               </h4>
               <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
-                Este montante corresponde a pedidos já pagos e aguardando apenas
-                a entrega ao cliente.
+                Aqui você pode acompanhar todos os registros de movimentação
+                financeira, incluindo pagamentos recebidos, retidos e pendentes.
+                Cada transação mostra detalhes como valor, data e status.
               </p>
             </div>
           </motion.section>

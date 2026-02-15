@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import { motion, Variants } from "framer-motion";
 import PageHeader from "../components/PageHeader";
 import Pagination from "../components/Pagination";
-import TransactionCard from "../components/TransactionCard";
-import AdminSidebar from "@/components/AdminSidebar";
 import BottomNavigation from "../components/BottomNavigation";
 import PaymentCard from "@/components/PaymentCard";
+import Sidebar from "@/components/Sidebar";
+import { adminItems } from "@/constants/sidebar-items";
 
 const PaymentsManagement: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -92,7 +92,12 @@ const PaymentsManagement: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex font-['Inter']">
-      <AdminSidebar activePage="pagamentos" />
+      <Sidebar
+        title="Painel Administrativo"
+        items={adminItems}
+        activePage="pagamentos"
+        showSettings={true}
+      />
 
       <div className="flex-1 flex flex-col min-w-0">
         <motion.main
@@ -110,7 +115,6 @@ const PaymentsManagement: React.FC = () => {
             </h1>
           </motion.header>
 
-          {/* Cards de Destaque */}
           <motion.section
             variants={itemVariants}
             className="mb-8 grid grid-cols-1 lg:grid-cols-3 gap-6"
@@ -141,16 +145,15 @@ const PaymentsManagement: React.FC = () => {
                 </span>
               </div>
               <h4 className="font-black text-base mb-1 tracking-tight">
-                Pagamentos Pendentes
+                Controle Financeiro
               </h4>
               <p className="text-xs text-gray-500 leading-relaxed">
-                Existem 12 solicitações de saque aguardando aprovação
-                administrativa.
+                Acompanhe e gerencie todas as operações financeiras da
+                plataforma.
               </p>
             </div>
           </motion.section>
 
-          {/* Filtros e Busca */}
           <motion.div
             variants={itemVariants}
             className="flex flex-col lg:flex-row lg:items-end gap-6 mb-8"
@@ -195,7 +198,6 @@ const PaymentsManagement: React.FC = () => {
             </div>
           </motion.div>
 
-          {/* Listagem de Pagamentos */}
           <div className="space-y-4">
             <motion.div
               variants={itemVariants}

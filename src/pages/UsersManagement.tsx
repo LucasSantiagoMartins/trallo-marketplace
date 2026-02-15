@@ -4,7 +4,8 @@ import PageHeader from "../components/PageHeader";
 import BottomNavigation from "../components/BottomNavigation";
 import UserListItem from "../components/UserListItem";
 import Pagination from "../components/Pagination";
-import AdminSidebar from "../components/AdminSidebar";
+import Sidebar  from "@/components/Sidebar";
+import { adminItems } from "@/constants/sidebar-items";
 
 const UsersManagement: React.FC = () => {
   const [filter, setFilter] = useState("Todos");
@@ -82,7 +83,12 @@ const UsersManagement: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex font-['Inter']">
-      <AdminSidebar activePage="usuarios" />
+      <Sidebar
+        title="Painel Administrativo"
+        items={adminItems}
+        activePage="usuarios"
+        showSettings={true}
+      />
 
       <div className="flex-1 flex flex-col min-w-0">
         <motion.main

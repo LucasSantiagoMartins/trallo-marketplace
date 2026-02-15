@@ -1,14 +1,18 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import AdminSidebar from "@/components/AdminSidebar";
 import TralloInput from "@/components/TralloInput";
 import TralloButton from "@/components/TralloButton";
+import PasswordTooltip from "@/components/PasswordTooltip";
 import { useAppToast } from "@/hooks/useAppToast";
 import { useNavigate } from "react-router-dom";
+import Sidebar from "@/components/Sidebar";
+import { adminItems } from "@/constants/sidebar-items";
 
 const AdminSettings: React.FC = () => {
   const { showToast } = useAppToast();
   const [loading, setLoading] = useState(false);
+  const [password, setPassword] = useState("");
+  const [showTooltip, setShowTooltip] = useState(false);
   const navigate = useNavigate();
 
   const containerVariants = {
@@ -34,7 +38,12 @@ const AdminSettings: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex font-['Inter']">
-      <AdminSidebar activePage="configuracoes" />
+      <Sidebar
+        title="Painel Administrativo"
+        items={adminItems}
+        activePage="configuracoes"
+        showSettings={true}
+      />
 
       <main className="flex-1 flex flex-col min-w-0">
         <motion.div
@@ -54,7 +63,6 @@ const AdminSettings: React.FC = () => {
           </header>
 
           <div className="grid grid-cols-1 gap-8">
-            {/* Seção: Perfil */}
             <motion.section
               variants={itemVariants}
               className="bg-white p-8 rounded-[40px] shadow-sm border border-slate-100"
@@ -94,7 +102,6 @@ const AdminSettings: React.FC = () => {
               </div>
             </motion.section>
 
-            {/* Seção: Segurança */}
             <motion.section
               variants={itemVariants}
               className="bg-white p-8 rounded-[40px] shadow-sm border border-slate-100"
@@ -134,14 +141,23 @@ const AdminSettings: React.FC = () => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <TralloInput
-                    label="Nova Palavra-passe"
-                    type="password"
-                    placeholder="••••••••"
-                    icon="lock"
-                    showPasswordToggle
-                    onChange={() => {}}
-                  />
+                  <div className="relative">
+                    <PasswordTooltip
+                      password={password}
+                      isVisible={showTooltip}
+                    />
+                    <TralloInput
+                      label="Nova Palavra-passe"
+                      type="password"
+                      placeholder="••••••••"
+                      icon="lock"
+                      showPasswordToggle
+                      value={password}
+                      onChange={setPassword}
+                      onFocus={() => setShowTooltip(true)}
+                      onBlur={() => setShowTooltip(false)}
+                    />
+                  </div>
                   <TralloInput
                     label="Confirmar Palavra-passe"
                     type="password"
@@ -154,12 +170,10 @@ const AdminSettings: React.FC = () => {
               </div>
             </motion.section>
 
-            {/* Ações Finais */}
             <motion.div
               variants={itemVariants}
               className="flex justify-end gap-4 pt-4 pb-12"
             >
-             
               <div className="w-full md:w-64">
                 <TralloButton onClick={handleSave} disabled={loading} fullWidth>
                   {loading ? "Salvando..." : "Salvar Alterações"}
