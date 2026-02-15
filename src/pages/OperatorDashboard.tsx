@@ -4,7 +4,7 @@ import PageHeader from "../components/PageHeader";
 import BottomNavigation from "../components/BottomNavigation";
 import PerformanceCard from "../components/PerformanceCard";
 import StatCard from "../components/StatCard";
-import OperatorSidebar from "@/components/OperatorSidebar"; // Alterado aqui
+import OperatorSidebar from "@/components/OperatorSidebar";
 import { Link } from "react-router-dom";
 
 const OperatorDashboard: React.FC = () => {
@@ -43,7 +43,7 @@ const OperatorDashboard: React.FC = () => {
         {/* Header Mobile */}
         <div className="lg:hidden">
           <PageHeader
-            title="Visão Geral"
+            title="Painel Operacional"
             rightElement={
               <button className="relative size-10 flex items-center justify-center bg-card rounded-full shadow-soft">
                 <span className="material-symbols-outlined text-foreground">
@@ -62,7 +62,7 @@ const OperatorDashboard: React.FC = () => {
         >
           <div>
             <p className="text-[#6C3EF8] font-bold text-[10px] tracking-[0.2em] mb-1 uppercase">
-              Painel Operacional
+              Operações e Logística
             </p>
             <h1 className="text-3xl font-semibold text-[#0F172A]">
               Visão Geral
@@ -71,41 +71,41 @@ const OperatorDashboard: React.FC = () => {
         </motion.header>
 
         <div className="max-w-7xl mx-auto px-4 lg:px-8 mt-20 lg:mt-0">
-          {/* Seção de Stats */}
+          {/* Seção de Stats - Focada em Operação */}
           <section className="mb-8">
             <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <motion.div variants={itemVariants} className="w-full">
                 <StatCard
-                  icon="group"
-                  label="Total Usuários"
-                  value="24.8k"
+                  icon="pending_actions"
+                  label="Pendentes"
+                  value="42"
                   color="primary"
                 />
               </motion.div>
 
               <motion.div variants={itemVariants} className="w-full">
                 <StatCard
-                  icon="receipt_long"
-                  label="Transações"
-                  value="1.240"
+                  icon="inventory_2"
+                  label="Itens em Estoque"
+                  value="1.840"
                   color="slate"
                 />
               </motion.div>
 
               <motion.div variants={itemVariants} className="w-full">
                 <StatCard
-                  icon="engineering"
-                  label="Operadores"
-                  value="12"
+                  icon="verified"
+                  label="Validados Hoje"
+                  value="128"
                   color="slate"
                 />
               </motion.div>
 
               <motion.div variants={itemVariants} className="w-full">
                 <StatCard
-                  icon="account_balance_wallet"
-                  label="Receita Total"
-                  value="18.4M KZ"
+                  icon="local_shipping"
+                  label="Saídas (24h)"
+                  value="85"
                   color="slate"
                 />
               </motion.div>
@@ -135,7 +135,7 @@ const OperatorDashboard: React.FC = () => {
                 >
                   <div className="size-10 rounded-xl bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm group-hover:bg-[#6C3EF8] group-hover:text-white transition-colors">
                     <span className="material-symbols-outlined">
-                      pending_actions
+                      fact_check
                     </span>
                   </div>
                   <div className="text-left">
@@ -143,7 +143,7 @@ const OperatorDashboard: React.FC = () => {
                       Verificações
                     </span>
                     <span className="text-[10px] text-slate-400">
-                      Produtos aguardando revisão
+                      Analisar novos produtos
                     </span>
                   </div>
                 </Link>
@@ -153,16 +153,14 @@ const OperatorDashboard: React.FC = () => {
                   className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-slate-700/50 hover:bg-[#6C3EF8]/10 hover:text-[#6C3EF8] transition-all border border-dashed border-slate-200 dark:border-slate-600 group"
                 >
                   <div className="size-10 rounded-xl bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm group-hover:bg-[#6C3EF8] group-hover:text-white transition-colors">
-                    <span className="material-symbols-outlined">
-                      inventory_2
-                    </span>
+                    <span className="material-symbols-outlined">inventory</span>
                   </div>
                   <div className="text-left">
                     <span className="block text-[12px] font-black uppercase">
-                      Gestão de Estoque
+                      Estoque Central
                     </span>
                     <span className="text-[10px] text-slate-400">
-                      Controlar entrada e saída
+                      Gerenciar unidades e SKUs
                     </span>
                   </div>
                 </Link>
@@ -171,38 +169,39 @@ const OperatorDashboard: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
+            {/* Atividades Operacionais */}
             <motion.section
               variants={itemVariants}
               className="lg:col-span-2 bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm"
             >
               <div className="flex items-center justify-between mb-6">
                 <h3 className="font-bold text-sm uppercase tracking-widest text-slate-400">
-                  Atividade do Sistema
+                  Logs de Operação
                 </h3>
-                <span className="text-[10px] bg-green-100 text-green-600 px-2 py-1 rounded-lg font-bold">
-                  LIVE
+                <span className="text-[10px] bg-blue-100 text-blue-600 px-2 py-1 rounded-lg font-bold">
+                  SNC
                 </span>
               </div>
 
               <div className="space-y-4">
                 {[
                   {
-                    user: "Admin Marcos",
-                    action: "aprovou saque de 450.000 KZ",
-                    time: "2 min atrás",
-                    icon: "check_circle",
+                    user: "Produto #882",
+                    action: "validado e movido para o estoque",
+                    time: "5 min atrás",
+                    icon: "inventory_2",
                   },
                   {
-                    user: "Sistema",
-                    action: "backup diário concluído com sucesso",
-                    time: "15 min atrás",
-                    icon: "cloud_done",
+                    user: "Estoque",
+                    action: "baixa de 12 unidades: SKU-990",
+                    time: "22 min atrás",
+                    icon: "remove_shopping_cart",
                   },
                   {
-                    user: "Operador Sílvia",
-                    action: "redefiniu senha de usuário",
+                    user: "Verificação",
+                    action: "produto #102 recusado (fotos inválidas)",
                     time: "1h atrás",
-                    icon: "lock_reset",
+                    icon: "cancel",
                   },
                 ].map((log, i) => (
                   <div
@@ -230,13 +229,14 @@ const OperatorDashboard: React.FC = () => {
               </div>
             </motion.section>
 
+            {/* Monitoramento de Carga/Estoque */}
             <motion.section
               variants={itemVariants}
               className="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm relative overflow-hidden"
             >
               <div className="relative z-10">
                 <h3 className="font-bold text-sm uppercase tracking-widest text-slate-400 mb-6">
-                  Dispositivos Ativos
+                  Capacidade de Estoque
                 </h3>
 
                 <div className="space-y-5">
@@ -244,20 +244,20 @@ const OperatorDashboard: React.FC = () => {
                     <div className="flex justify-between items-center">
                       <div className="flex items-center gap-2">
                         <span className="material-symbols-outlined text-sm text-slate-400">
-                          desktop_windows
+                          warehouse
                         </span>
                         <span className="text-[11px] font-bold uppercase tracking-wider text-slate-600">
-                          Desktop
+                          Ocupação
                         </span>
                       </div>
                       <span className="text-[11px] font-black text-[#6C3EF8]">
-                        75%
+                        82%
                       </span>
                     </div>
                     <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
                       <motion.div
                         initial={{ width: 0 }}
-                        animate={{ width: "75%" }}
+                        animate={{ width: "82%" }}
                         transition={{ duration: 1, delay: 0.5 }}
                         className="h-full bg-[#6C3EF8] rounded-full"
                       />
@@ -268,29 +268,29 @@ const OperatorDashboard: React.FC = () => {
                     <div className="flex justify-between items-center">
                       <div className="flex items-center gap-2">
                         <span className="material-symbols-outlined text-sm text-slate-400">
-                          smartphone
+                          priority_high
                         </span>
                         <span className="text-[11px] font-bold uppercase tracking-wider text-slate-600">
-                          Mobile
+                          Ruptura (Out of Stock)
                         </span>
                       </div>
-                      <span className="text-[11px] font-black text-slate-400">
-                        25%
+                      <span className="text-[11px] font-black text-red-400">
+                        12%
                       </span>
                     </div>
                     <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
                       <motion.div
                         initial={{ width: 0 }}
-                        animate={{ width: "25%" }}
+                        animate={{ width: "12%" }}
                         transition={{ duration: 1, delay: 0.7 }}
-                        className="h-full bg-slate-300 rounded-full"
+                        className="h-full bg-red-400 rounded-full"
                       />
                     </div>
                   </div>
                 </div>
 
                 <button className="w-full mt-8 py-3 bg-slate-50 hover:bg-slate-100 text-slate-500 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 border border-slate-100">
-                  Ver Monitoramento
+                  Relatório de Inventário
                 </button>
               </div>
 
