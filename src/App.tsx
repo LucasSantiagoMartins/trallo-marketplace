@@ -36,6 +36,7 @@ import OperatorsManagement from "./pages/OperatorsManagement";
 import CreateStaffForm from "./components/CreateStaffForm";
 import AdminSettings from "./pages/AdminSettings";
 import InventoryManagement from "./pages/InventoryManagement";
+import OperatorDashboard from "./pages/OperatorDashboard";
  
 
 const queryClient = new QueryClient();
@@ -96,6 +97,10 @@ const App = () => (
                   <ProtectedRoute allowedRoles={["OPERATOR", "ADMIN"]} />
                 }
               >
+                <Route
+                  path="/area-operacional"
+                  element={<OperatorDashboard />}
+                />
                 <Route
                   path="/area-operacional/verificacoes-pendentes"
                   element={<PendingVerificationsPage />}

@@ -27,12 +27,23 @@ const Login: React.FC = () => {
       const res = await login(identifier, password);
       if (res.success) {
         showToast("success", res.message || "Login realizado com sucesso!");
+
+        const userRole = res.data.role;
+
         setUser({
           userName: res.data.userName,
-          role: res.data.role as any,
+          role: userRole as any,
           token: res.data.token,
         });
-        navigate("/");
+
+        const roleRoutes: Record<string, string> = {
+          ADMIN: "/area-administrativa",
+          OPERATOR: "/area-operacional",
+          SELLER: "/meus-produtos",
+          BUYER: "/",
+        };
+
+        navigate(roleRoutes[userRole] || "/");
       } else {
         showToast("error", res.message || "Credenciais inválidas.");
       }
