@@ -32,7 +32,6 @@ import AdminDashboard from "./pages/AdminDashboard";
 import UsersManagement from "./pages/UsersManagement";
 import TransactionsManagement from "./pages/TransactionsManagement";
 import PaymentsManagement from "./pages/PaymentsManagement";
-import OperatorsManagement from "./pages/OperatorsManagement";
 import CreateStaffForm from "./components/CreateStaffForm";
 import AdminSettings from "./pages/AdminSettings";
 import InventoryManagement from "./pages/InventoryManagement";
@@ -129,10 +128,7 @@ const App = () => (
                   path="/area-administrativa/transacoes"
                   element={<TransactionsManagement />}
                 />
-                <Route
-                  path="/area-administrativa/operadores"
-                  element={<OperatorsManagement />}
-                />
+              
                 <Route
                   path="/area-administrativa/pagamentos"
                   element={<PaymentsManagement />}

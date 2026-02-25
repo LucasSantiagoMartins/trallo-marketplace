@@ -24,12 +24,6 @@ export const adminItems = [
     path: "/area-administrativa/transacoes",
   },
   {
-    id: "operadores",
-    icon: "engineering",
-    label: "Operadores",
-    path: "/area-administrativa/operadores",
-  },
-  {
     id: "area-operacional",
     icon: "inventory",
     label: "Área Operacional",
