@@ -18,6 +18,7 @@ const Header: React.FC<HeaderProps> = ({
   const [isScrolled, setIsScrolled] = useState(false);
   const { user, isAuthenticated } = useAuth();
   const location = useLocation();
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
@@ -60,7 +61,7 @@ const Header: React.FC<HeaderProps> = ({
 
   const navItems =
     isAuthenticated && user
-      ? menuConfig[user.role]
+      ? menuConfig[user.role as keyof typeof menuConfig]
       : [{ name: "Início", path: "/" }];
 
   const headerStyles = isScrolled
@@ -112,13 +113,18 @@ const Header: React.FC<HeaderProps> = ({
               <Link
                 key={item.path}
                 to={item.path}
-                className={`text-sm transition-colors ${
-                  location.pathname === item.path
+                className={`relative py-1 text-sm transition-colors group/link ${location.pathname === item.path
                     ? "font-semibold text-primary"
                     : "font-medium text-muted-foreground hover:text-primary"
-                }`}
+                  }`}
               >
                 {item.name}
+                <span
+                  className={`absolute bottom-0 left-0 h-[2px] bg-primary transition-all duration-300 ease-in-out ${location.pathname === item.path
+                      ? "w-full"
+                      : "w-0 group-hover/link:w-full"
+                    }`}
+                />
               </Link>
             ))}
           </nav>

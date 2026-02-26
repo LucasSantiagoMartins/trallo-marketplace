@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import QuantitySelector from "./QuantitySelector";
 
 interface CartItem {
-  id: number;
+  id: string;
   name: string;
   attr: string;
   price: number;
@@ -13,8 +13,8 @@ interface CartItem {
 
 interface CartItemCardProps {
   item: CartItem;
-  onUpdateQty: (id: number, delta: number) => void;
-  onRemove: (id: number) => void;
+  onUpdateQty: (id: string, delta: number) => void;
+  onRemove: (id: string) => void;
 }
 
 const CartItemCard: React.FC<CartItemCardProps> = ({
@@ -41,11 +41,20 @@ const CartItemCard: React.FC<CartItemCardProps> = ({
       <div className="flex flex-col flex-1 justify-between">
         <div>
           <div className="flex justify-between items-start">
-            <h3 className="font-bold text-base leading-tight">{item.name}</h3>
-            <button onClick={() => onRemove(item.id)} className="text-gray-400">
-              <span className="material-symbols-outlined text-xl">close</span>
+            <h3 className="font-bold text-base leading-tight">
+              {item.name}
+            </h3>
+
+            <button
+              onClick={() => onRemove(item.id)}
+              className="text-gray-400"
+            >
+              <span className="material-symbols-outlined text-xl">
+                close
+              </span>
             </button>
           </div>
+
           <p className="text-gray-500 dark:text-gray-400 text-xs mt-1">
             {item.attr}
           </p>
@@ -55,6 +64,7 @@ const CartItemCard: React.FC<CartItemCardProps> = ({
           <span className="font-bold text-sm md:text-lg text-[#6d3ff8] whitespace-nowrap">
             {item.price.toLocaleString("pt-AO")} Kz
           </span>
+
           <QuantitySelector
             value={item.qty}
             onChange={(delta) => onUpdateQty(item.id, delta)}

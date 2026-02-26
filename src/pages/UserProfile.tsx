@@ -1,16 +1,48 @@
-import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import ToastContainer from "@/components/Toast";
 import BottomNavigation from "../components/BottomNavigation";
 import PageHeader from "../components/PageHeader";
+import ConfirmLogoutModal from "../components/ConfirmLogoutModal";
 import { logout } from "../services/auth.service";
-import { useAuth } from "../context/AuthContext"; 
+import { useAuth } from "../context/AuthContext";
 
 const UserProfileScreen: React.FC = () => {
   const navigate = useNavigate();
-  const { user } = useAuth(); 
+  const { user } = useAuth();
+  
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const handleLogout = async () => {
+    try {
+      setIsLoggingOut(true);
+      
+      await logout();
+      
+      ToastContainer("Sessão encerrada com sucesso!");
+      
+      setTimeout(() => {
+        setIsModalOpen(false);
+        navigate("/login");
+      }, 1500);
+      
+    } catch (error) {
+    ToastContainer("Erro ao sair. Tente novamente.");
+      setIsLoggingOut(false);
+    }
+  };
 
   return (
     <div className="bg-background-light dark:bg-background-dark text-[#111118] dark:text-white min-h-screen transition-colors">
+      
+      <ConfirmLogoutModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={handleLogout}
+        isLoading={isLoggingOut}
+      />
+
       <div className="relative mx-auto min-h-screen flex flex-col pb-24 lg:pb-10 lg:max-w-4xl lg:px-8">
         <PageHeader title="Perfil" backTo={-1} />
 
@@ -37,7 +69,6 @@ const UserProfileScreen: React.FC = () => {
 
                 <div className="mt-5 text-center">
                   <h2 className="clash-font text-2xl lg:text-3xl font-extrabold">
-                    {/* Exibindo o userName do contexto ou um fallback */}
                     {user?.userName || "Usuário"}
                   </h2>
                   <div className="flex items-center justify-center gap-1 text-gray-500 dark:text-gray-400 mt-1">
@@ -48,9 +79,7 @@ const UserProfileScreen: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-3 w-full mt-8 pt-6 border-t border-gray-50 dark:border-gray-700">
-                  <StatItem label="Seguindo" value="1.2k" />
-                  <StatItem label="Seguidores" value="850" showBorder />
+                <div className="flex justify-center w-full mt-8 pt-6 border-t border-gray-50 dark:border-gray-700">
                   <StatItem label="Avaliação" value="4.9" hasStar />
                 </div>
               </div>
@@ -99,7 +128,7 @@ const UserProfileScreen: React.FC = () => {
             </section>
 
             <button
-              onClick={() => logout()}
+              onClick={() => setIsModalOpen(true)}
               className="w-full flex items-center justify-center gap-2 p-4 text-red-500 font-bold clash-font text-sm bg-red-50 dark:bg-red-900/10 rounded-2xl hover:bg-red-100 dark:hover:bg-red-900/20 transition-all"
             >
               <span className="material-symbols-outlined text-[20px]">

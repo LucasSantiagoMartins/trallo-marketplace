@@ -1,13 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import PageHeader from "../components/PageHeader";
 import CartItemCard from "../components/CartItemCard";
 import PaymentChoiceModal from "@/components/PaymentChoiceModal";
 import CheckoutModal from "@/components/CheckoutModal";
 import EmptyCartCard from "../components/EmptyCartCard";
+import { getMyCart } from "@/services/cart.service";
+import { BASE_UPLOAD_URL } from "@/api/endpoints";
 
 interface CartItem {
-  id: number;
+  id: string;
   name: string;
   attr: string;
   price: number;
@@ -15,37 +17,38 @@ interface CartItem {
   image: string;
 }
 
-const INITIAL_ITEMS: CartItem[] = [
-  {
-    id: 1,
-    name: "Nike Air Force 1",
-    attr: "Tamanho: 42 • Cor: Branco",
-    price: 25500,
-    qty: 1,
-    image: "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=200",
-  },
-  {
-    id: 2,
-    name: "Camiseta Oversized Trallo",
-    attr: "Tamanho: L • Cor: Preto",
-    price: 12000,
-    qty: 2,
-    image: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=200",
-  },
-];
-
 const CartPage: React.FC = () => {
-  const [items, setItems] = useState<CartItem[]>(INITIAL_ITEMS);
+  const [items, setItems] = useState<CartItem[]>([]);
   const [modalType, setModalType] = useState<
     "single" | "all" | "payment_choice" | "checkout" | null
   >(null);
-  const [idToRemove, setIdToRemove] = useState<number | null>(null);
+  const [idToRemove, setIdToRemove] = useState<string | null>(null);
   const [paymentType, setPaymentType] = useState<"online" | "presencial">(
     "online",
   );
   const [paymentMethod, setPaymentMethod] = useState<"mcx" | "transfer">("mcx");
 
-  const updateQty = (id: number, delta: number) => {
+  useEffect(() => {
+    const fetchCart = async () => {
+      const res = await getMyCart();
+      if (res.success && res.data) {
+        const formattedItems: CartItem[] = res.data.items.map((item) => ({
+          id: item.id,
+          name: item.product.name,
+          attr: item.product.description,
+          price: item.priceSnapshot,
+          qty: item.quantity,
+          image: `${BASE_UPLOAD_URL}/${item.product.coverImage}`,
+        }));
+
+        setItems(formattedItems);
+      }
+    };
+
+    fetchCart();
+  }, []);
+
+  const updateQty = (id: string, delta: number) => {
     setItems((prev) =>
       prev.map((item) =>
         item.id === id ? { ...item, qty: Math.max(1, item.qty + delta) } : item,
@@ -53,7 +56,7 @@ const CartPage: React.FC = () => {
     );
   };
 
-  const handleOpenRemoveModal = (id: number) => {
+  const handleOpenRemoveModal = (id: string) => {
     setIdToRemove(id);
     setModalType("single");
   };

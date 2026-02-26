@@ -10,6 +10,7 @@ import Pagination from "@/components/Pagination";
 import TralloButton from "@/components/TralloButton";
 import { searchProducts } from "@/services/product.service";
 import { ProductCondition, SearchedProductDTO } from "@/types/product";
+import { addToCart } from "@/services/cart.service"; // ✅ Import do service
 
 const carouselSlides = [
   {
@@ -149,6 +150,17 @@ const Home: React.FC = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const handleAddToCart = async (productId: string) => {
+    try {
+      const res = await addToCart(productId);
+      if (res.success) {
+        console.log("Produto adicionado ao carrinho");
+      }
+    } catch (error) {
+      console.error("Erro ao adicionar ao carrinho", error);
+    }
+  };
+
   return (
     <MobileLayout showBottomNav>
       <Header />
@@ -205,7 +217,7 @@ const Home: React.FC = () => {
               <ProductCard
                 key={product.id}
                 product={product}
-                onAddToCart={(id) => console.log(`Add to cart: ${id}`)}
+                onAddToCart={handleAddToCart} // ✅ atualizado
               />
             ))
           ) : (

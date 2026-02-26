@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import TralloInput from "@/components/TralloInput";
 import TralloButton from "@/components/TralloButton";
 import PageHeader from "@/components/PageHeader";
@@ -12,6 +12,9 @@ const EditProfile = () => {
   const [profileType, setProfileType] = useState("Comprador Verificado");
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
+  // Referência para o input de ficheiro escondido
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Salvando perfil...", {
@@ -21,6 +24,10 @@ const EditProfile = () => {
       address,
       profileType,
     });
+  };
+
+  const handleImageClick = () => {
+    fileInputRef.current?.click();
   };
 
   const profileOptions = [
@@ -46,20 +53,31 @@ const EditProfile = () => {
 
       <main className="w-full max-w-2xl bg-white dark:bg-[#1c182d] rounded-[2rem] sm:rounded-[3rem] px-8 sm:px-16 py-8 sm:py-10 shadow-xl dark:shadow-none border border-transparent dark:border-white/5 flex flex-col items-center">
         <div className="relative mb-8 flex flex-col items-center">
-          <div className="relative group">
-            <div className="absolute inset-0 bg-primary/20 rounded-full blur-2xl group-hover:bg-primary/30 transition-colors"></div>
+
+          {/* Container da Foto - Clique e Hover centralizados aqui */}
+          <div
+            className="relative group cursor-pointer"
+            onClick={handleImageClick}
+          >
+            {/* Brilho de fundo no hover */}
+            <div className="absolute inset-0 bg-primary/20 rounded-full blur-2xl group-hover:bg-primary/40 transition-all duration-500"></div>
+
             <div className="relative w-28 h-28 sm:w-32 sm:h-32 rounded-full border-4 border-white dark:border-slate-800 shadow-xl overflow-hidden bg-slate-200">
               <img
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 src="https://api.dicebear.com/7.x/avataaars/svg?seed=Kiara"
                 alt="Profile"
               />
+
+              {/* Overlay estilo LinkedIn/Facebook que aparece no Hover */}
+              <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <span className="material-symbols-outlined text-white text-3xl">photo_camera</span>
+                <span className="text-white text-[10px] font-bold uppercase mt-1 tracking-widest">Alterar</span>
+              </div>
             </div>
-            <button className="absolute bottom-1 right-1 bg-primary text-white p-2 rounded-full shadow-lg border-2 border-white dark:border-slate-800 hover:scale-110 active:scale-95 transition-transform">
-              <span className="material-symbols-outlined text-sm flex items-center justify-center">
-                photo_camera
-              </span>
-            </button>
+
+            {/* Input invisível disparado pelo clique no container */}
+            <input type="file" ref={fileInputRef} className="hidden" accept="image/*" />
           </div>
 
           <div className="mt-4 px-4 py-1 bg-primary/10 border border-primary/20 rounded-full flex items-center gap-2">

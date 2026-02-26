@@ -27,13 +27,10 @@ const WithdrawScreen: React.FC = () => {
     <MobileLayout className="pb-10">
       <PageHeader title="Levantamento" backTo={-1} />
 
-      {/* Ajustado pb-40 para garantir que o conteúdo não fique sob a BottomNavigation no mobile */}
       <main className="px-6 max-w-6xl mx-auto pt-32 pb-40 lg:pb-20">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* LADO ESQUERDO: Status e Dados Bancários (Col 7) */}
           <div className="lg:col-span-7 space-y-4 lg:space-y-6">
-            {/* Card Principal de Saldo - Reduzido padding no mobile */}
-            <div className="bg-gradient-to-br from-[#6C3EF8] to-[#8B5CF6] p-6 lg:p-8 rounded-[2.5rem] text-white shadow-xl shadow-purple-500/20 relative overflow-hidden">
+            <div className="bg-gradient-to-br from-[#6C3EF8] to-[#8B5CF6] p-6 lg:p-8 rounded-[2.1rem] text-white shadow-xl shadow-purple-500/20 relative overflow-hidden">
               <div className="absolute -right-10 -top-10 size-40 bg-white/10 rounded-full blur-3xl" />
               <div className="relative z-10">
                 <p className="text-white/60 text-[10px] lg:text-xs uppercase font-black tracking-[0.2em] mb-1">
@@ -48,7 +45,6 @@ const WithdrawScreen: React.FC = () => {
               </div>
             </div>
 
-            {/* Card de Informações - Mais compacto no mobile */}
             <div className="bg-white dark:bg-slate-900/40 border border-gray-100 dark:border-white/5 rounded-[2.5rem] p-5 lg:p-6 space-y-4 lg:space-y-6">
               <div className="flex items-start gap-4">
                 <div className="size-10 lg:size-12 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center text-blue-600 shrink-0">
@@ -89,7 +85,6 @@ const WithdrawScreen: React.FC = () => {
               </div>
             </div>
 
-            {/* Botão Mobile - Agora mais visível devido ao pb-40 no main e redução de paddings acima */}
             <div className="lg:hidden pt-2">
               <TralloButton
                 onClick={() => setIsSheetOpen(true)}
@@ -102,7 +97,6 @@ const WithdrawScreen: React.FC = () => {
             </div>
           </div>
 
-          {/* LADO DIREITO: Formulário Desktop (Col 5) */}
           <div className="hidden lg:block lg:col-span-5 bg-white dark:bg-slate-900/20 p-8 rounded-[2.5rem] border border-gray-100 dark:border-white/5 sticky top-32">
             <h3 className="text-xl font-black mb-8 tracking-tight">
               Configurar Saque
@@ -113,19 +107,19 @@ const WithdrawScreen: React.FC = () => {
                 <label className="text-[10px] font-black text-slate-400 uppercase ml-1 tracking-[0.15em]">
                   Valor do Levantamento
                 </label>
+
+                {/* CORREÇÃO AQUI: Passamos o valor diretamente se e.target falhar */}
                 <PriceInput
                   value={amount}
-                  onChange={(e) =>
-                    setAmount(
-                      e.target.value
-                        .replace(/\D/g, "")
-                        .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1."),
-                    )
-                  }
+                  onChange={(e: any) => {
+                    const val = e?.target ? e.target.value : e;
+                    setAmount(String(val).replace(/\D/g, ""));
+                  }}
                 />
+
                 <div className="flex justify-between items-center px-1">
                   <button
-                    onClick={() => setAmount("1.250.000")}
+                    onClick={() => setAmount("1250000")}
                     className="text-[10px] font-black text-primary uppercase hover:underline"
                   >
                     Levantar saldo total
@@ -185,13 +179,10 @@ const WithdrawScreen: React.FC = () => {
                   </label>
                   <PriceInput
                     value={amount}
-                    onChange={(e) =>
-                      setAmount(
-                        e.target.value
-                          .replace(/\D/g, "")
-                          .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1."),
-                      )
-                    }
+                    onChange={(e: any) => {
+                      const val = e?.target ? e.target.value : e;
+                      setAmount(String(val).replace(/\D/g, ""));
+                    }}
                   />
                 </div>
 
