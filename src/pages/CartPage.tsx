@@ -7,6 +7,7 @@ import PaymentChoiceModal from "@/components/PaymentChoiceModal";
 import CheckoutModal from "@/components/CheckoutModal";
 import EmptyCartCard from "../components/EmptyCartCard";
 import ConfirmActionModal from "../components/ConfirmActionModal";
+import { useAppToast } from "@/hooks/useAppToast";
 import {
   getMyCart,
   updateCartItemQuantity,
@@ -14,7 +15,10 @@ import {
   clearCart,
 } from "@/services/cart.service";
 import { BASE_UPLOAD_URL } from "@/api/endpoints";
-import { checkoutFromCart, PaymentMethod, PaymentMode } from "@/services/checkout.service";
+import {
+  checkoutFromCart,
+} from "@/services/checkout.service";
+import { PaymentMethod, PaymentMode } from "@/enums/payment";
 
 interface CartItem {
   id: string;
@@ -27,6 +31,7 @@ interface CartItem {
 
 const CartPage: React.FC = () => {
   const navigate = useNavigate();
+  const { showToast } = useAppToast();
   const [items, setItems] = useState<CartItem[]>([]);
   const [modalType, setModalType] = useState<
     "single" | "all" | "payment_choice" | "checkout" | null
@@ -38,17 +43,21 @@ const CartPage: React.FC = () => {
   const [paymentMethod, setPaymentMethod] = useState<"mcx" | "transfer">("mcx");
 
   const fetchCart = async () => {
-    const res = await getMyCart();
-    if (res.success && res.data) {
-      const formattedItems: CartItem[] = res.data.items.map((item) => ({
-        id: item.id,
-        name: item.product.name,
-        attr: item.product.description,
-        price: item.priceSnapshot,
-        qty: item.quantity,
-        image: `${BASE_UPLOAD_URL}/${item.product.coverImage}`,
-      }));
-      setItems(formattedItems);
+    try {
+      const res = await getMyCart();
+      if (res.success && res.data) {
+        const formattedItems: CartItem[] = res.data.items.map((item) => ({
+          id: item.id,
+          name: item.product.name,
+          attr: item.product.description,
+          price: item.priceSnapshot,
+          qty: item.quantity,
+          image: `${BASE_UPLOAD_URL}/${item.product.coverImage}`,
+        }));
+        setItems(formattedItems);
+      }
+    } catch (err) {
+      showToast("error", "Erro ao carregar o carrinho.");
     }
   };
 
@@ -67,6 +76,8 @@ const CartPage: React.FC = () => {
       setItems((prev) =>
         prev.map((i) => (i.id === id ? { ...i, qty: newQty } : i)),
       );
+    } else {
+      showToast("error", res.message || "Erro ao atualizar quantidade.");
     }
   };
 
@@ -81,18 +92,20 @@ const CartPage: React.FC = () => {
         const res = await removeFromCart(idToRemove);
         if (res.success) {
           setItems((prev) => prev.filter((item) => item.id !== idToRemove));
+          showToast("success", "Item removido.");
         }
       } catch (error) {
-        console.error("Erro ao remover item:", error);
+        showToast("error", "Não foi possível remover o item.");
       }
     } else if (modalType === "all") {
       try {
         const res = await clearCart();
         if (res.success) {
           setItems([]);
+          showToast("success", "Carrinho limpo com sucesso.");
         }
       } catch (error) {
-        console.error("Erro ao limpar carrinho:", error);
+        showToast("error", "Erro ao limpar o carrinho.");
       }
     }
     closeModal();
@@ -100,31 +113,36 @@ const CartPage: React.FC = () => {
 
   const handleConfirmCheckout = async () => {
     try {
-      const mode = paymentType === "online"
-        ? PaymentMode.ONLINE_PAYMENT
-        : PaymentMode.ONSITE_PAYMENT;
+      const mode =
+        paymentType === "online"
+          ? PaymentMode.ONLINE_PAYMENT
+          : PaymentMode.ONSITE_PAYMENT;
 
       let method;
       if (paymentType === "online") {
-        method = paymentMethod === "mcx"
-          ? PaymentMethod.MULTICAIXA_EXPRESS
-          : PaymentMethod.REFERENCE;
+        method =
+          paymentMethod === "mcx"
+            ? PaymentMethod.MULTICAIXA_EXPRESS
+            : PaymentMethod.REFERENCE;
       }
 
       const response = await checkoutFromCart({
         paymentMode: mode,
-        paymentMethod: method
+        paymentMethod: method,
       });
 
-      if (response && response.data) {
+      if (response && response.success) {
+        showToast("success", "Pedido realizado com sucesso!");
         navigate("/orders/success", { state: { order: response.data } });
         return response.data;
+      } else {
+        showToast("error", response.message || "Erro ao processar o pedido.");
       }
-
-      return response;
     } catch (error) {
-      console.error("Erro ao finalizar checkout do carrinho", error);
-      throw error;
+      showToast(
+        "error",
+        error instanceof Error ? error.message : "Erro ao finalizar checkout.",
+      );
     }
   };
 

@@ -1,26 +1,8 @@
 import { http } from "../api/http";
 import { endpoints } from "../api/endpoints";
 import type { ApiResponse } from "@/types/api";
-
-export enum OrderStatus {
-    AWAITING_PAYMENT = 'AWAITING_PAYMENT',
-    PAID = 'PAID',
-    PROCESSING = 'PROCESSING',
-    SHIPPED = 'SHIPPED',
-    DELIVERED = 'DELIVERED',
-    CANCELLED = 'CANCELLED',
-}
-
-export enum PaymentMode {
-    ONLINE_PAYMENT = 'ONLINE_PAYMENT',
-    ONSITE_PAYMENT = 'ONSITE_PAYMENT',
-}
-
-export enum PaymentMethod {
-    MULTICAIXA_EXPRESS = 'MULTICAIXA_EXPRESS',
-    REFERENCE = 'REFERENCE',
-    ONSITE_CARD = 'ONSITE_CARD',
-}
+import { OrderStatus } from "@/enums/order-status";
+import { PaymentMethod, PaymentMode } from "@/enums/payment";
 
 export interface CheckoutPayload {
     paymentMode: PaymentMode;

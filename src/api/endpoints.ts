@@ -35,6 +35,7 @@ export const endpoints = {
   orders: {
     buyerOrders: "/orders/my/buyer",
   },
+  
   checkouts: {
     fromCart: "/checkouts/cart",
     fromProduct: (productId: string) => `/checkouts/product/${productId}`,
