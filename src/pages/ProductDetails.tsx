@@ -14,6 +14,8 @@ import ProductImageGallery from "@/components/ProductImageGallery";
 import ProductDetailSellerInfo from "@/components/ProductDetailSellerInfo";
 import PaymentChoiceModal from "@/components/PaymentChoiceModal";
 import CheckoutModal from "@/components/CheckoutModal";
+import { BASE_UPLOAD_URL } from "@/api/endpoints";
+import VideoPlayer from "@/components/VideoPlayer";
 
 const ProductDetails: React.FC = () => {
   const { id } = useParams();
@@ -22,7 +24,7 @@ const ProductDetails: React.FC = () => {
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [modalType, setModalType] = useState<
-    "payment_choice" | "checkout" | null
+    "payment_choice" | "checkout" | "video" | null
   >(null);
   const [paymentType, setPaymentType] = useState<"online" | "presencial">(
     "online",
@@ -85,16 +87,30 @@ const ProductDetails: React.FC = () => {
 
       <main className="pb-32 pt-16 md:pt-24">
         <div className="lg:grid lg:grid-cols-2 lg:gap-12 lg:max-w-7xl lg:mx-auto lg:px-8">
-          <ProductImageGallery
-            images={allImages}
-            currentIndex={currentImageIndex}
-            productName={product.name}
-            category={product.category}
-            onIndexChange={setCurrentImageIndex}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
-          />
+          <div className="relative group">
+            <ProductImageGallery
+              images={allImages}
+              currentIndex={currentImageIndex}
+              productName={product.name}
+              category={product.category}
+              onIndexChange={setCurrentImageIndex}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+            />
+
+            {product.verificationVideo && (
+              <div className="hidden lg:block absolute top-6 right-6 z-30 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <button
+                  onClick={() => setModalType("video")}
+                  className="flex items-center gap-2 bg-black/60 hover:bg-primary backdrop-blur-md text-white px-4 py-2.5 rounded-full border border-white/20 transition-all duration-300 shadow-xl active:scale-95 group/vid"
+                >
+                  <span className="material-symbols-outlined text-xl group-hover/vid:animate-pulse">play_circle</span>
+                  <span className="text-xs font-bold uppercase tracking-wider">Ver Vídeo Real</span>
+                </button>
+              </div>
+            )}
+          </div>
 
           <div className="px-4 md:px-6 lg:px-0 -mt-8 lg:mt-0 space-y-4 relative z-10">
             <div className="bg-card p-6 rounded-xl shadow-soft border border-border">
@@ -125,9 +141,7 @@ const ProductDetails: React.FC = () => {
                   </span>
                   <span>{product.stock.availableQuantity} disponíveis</span>
                 </div>
-
                 <span className="mx-2 text-border">•</span>
-
                 <div
                   className={`flex items-center gap-1 ${getProductStatusColor(product.status)} bg-transparent font-bold`}
                 >
@@ -150,20 +164,36 @@ const ProductDetails: React.FC = () => {
               </p>
             </div>
 
-            <div className="bg-primary/5 p-4 rounded-xl border border-primary/10 flex gap-3 items-start">
-              <span className="material-symbols-outlined text-primary">
-                security
-              </span>
-              <div>
-                <h4 className="text-sm font-bold text-primary">
-                  Compra Segura TRALLO
-                </h4>
-                <p className="text-xs text-primary/80 leading-tight">
-                  Este produto está coberto pelo sistema de proteção ao
-                  comprador. Pagamento seguro e garantia de entrega.
-                </p>
-              </div>
-            </div>
+            {product.verificationVideo && (
+              <button
+                onClick={() => setModalType("video")}
+                className="block lg:hidden w-full bg-card p-4 rounded-xl flex items-center gap-4 active:scale-[0.98] transition-all group relative overflow-hidden border-2 border-primary/40 shadow-[0_0_15px_rgba(var(--primary-rgb),0.15)]"
+              >
+                <div className="relative size-14 shrink-0 rounded-lg overflow-hidden bg-primary/5 flex items-center justify-center border border-primary/20">
+                  <div className="absolute inset-0 bg-primary/10 flex items-center justify-center z-10">
+                    <span className="material-symbols-outlined text-primary text-2xl fill-1">
+                      play_circle
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex-1 text-left">
+                  <div className="flex items-center gap-1.5 mb-0.5">
+                    <span className="material-symbols-outlined text-primary text-lg">verified_user</span>
+                    <h4 className="font-bold text-sm uppercase tracking-tight text-foreground">Verificação Real</h4>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground leading-tight">
+                    Toque para confirmar o estado do produto em vídeo.
+                  </p>
+                </div>
+
+                <div className="size-8 rounded-full bg-primary/5 flex items-center justify-center">
+                  <span className="material-symbols-outlined text-primary text-xl">
+                    chevron_right
+                  </span>
+                </div>
+              </button>
+            )}
 
             <div className="pt-4 lg:pt-6">
               <button
@@ -198,6 +228,39 @@ const ProductDetails: React.FC = () => {
             total={total}
             onClose={closeModal}
           />
+        )}
+
+        {modalType === "video" && product.verificationVideo && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center">
+            {/* Overlay Escuro com Blur */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={closeModal}
+              className="absolute inset-0 bg-black backdrop-blur-md"
+            />
+
+            {/* Player Container: Fullscreen no Mobile, Modal no Desktop */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 30 }}
+              className="relative w-full h-full md:h-auto md:max-w-4xl md:aspect-video md:rounded-3xl overflow-hidden shadow-2xl z-10 bg-black"
+            >
+              {/* Botão Fechar - Flutuante e Limpo */}
+              <button
+                onClick={closeModal}
+                className="absolute top-6 right-6 z-50 size-12 flex items-center justify-center bg-black/30 text-white rounded-full hover:bg-black/50 transition-colors backdrop-blur-md border border-white/10 shadow-lg active:scale-90"
+              >
+                <span className="material-symbols-outlined text-3xl">close</span>
+              </button>
+
+              <VideoPlayer src={`${BASE_UPLOAD_URL}/${product.verificationVideo}`} />
+
+              
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </MobileLayout>

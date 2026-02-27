@@ -72,6 +72,7 @@ export interface SearchedProductDTO {
   seller: SellerDTO;
   images: string[]; 
   stock: ProductStockDTO;
+  verificationVideo?: string;
   createdAt: string;
 }
 

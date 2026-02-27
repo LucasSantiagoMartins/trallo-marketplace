@@ -7,7 +7,6 @@ import {
   ProductDTO,
   ProductVerificationType,
   SearchedProductDTO,
-  UpdateProductDTO,
 } from "@/types/product";
 
 export async function createProduct(
@@ -80,7 +79,6 @@ export async function searchProducts(query: {
   maxPrice?: number;
   condition?: ProductCondition;
 }): Promise<ApiResponse<SearchedProductDTO[]>> {
-  console.log(query);
   return await http.get<SearchedProductDTO[]>(endpoints.products.search, {
     params: query,
   });
