@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import BottomNavigation from "../components/BottomNavigation";
 import OrderItem from "../components/OrderItem";
 import PageHeader from "../components/PageHeader";
-import { MyOrderDTO, orderService } from "@/services/order.service";
 import { OrderStatus } from "@/enums/order-status";
+import { MyOrderDTO } from "@/dtos/order";
+import { orderService } from "@/services/order.service";
 
 const OrdersHistory: React.FC = () => {
   const [orders, setOrders] = useState<MyOrderDTO[]>([]);

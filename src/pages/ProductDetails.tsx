@@ -98,7 +98,7 @@ const ProductDetails: React.FC = () => {
 
       if (response && response.success) {
         toast.success("Pedido realizado com sucesso.");
-        navigate("/orders/success", { state: { order: response.data } });
+        navigate("/meus-pedidos", { state: { order: response.data } });
         return response.data;
       } else {
         toast.error(response.message || "Erro ao processar checkout.");
