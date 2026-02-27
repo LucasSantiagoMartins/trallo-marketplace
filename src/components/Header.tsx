@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useCart } from "@/hooks/use-cart";
+ 
 
 interface HeaderProps {
   showBack?: boolean;
@@ -17,7 +19,14 @@ const Header: React.FC<HeaderProps> = ({
 }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const { user, isAuthenticated } = useAuth();
+  const { cartCount, syncCartWithServer } = useCart();
   const location = useLocation();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      syncCartWithServer();
+    }
+  }, [isAuthenticated, syncCartWithServer]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -47,10 +56,7 @@ const Header: React.FC<HeaderProps> = ({
     ],
     OPERATOR: [
       { name: "Pedidos Pendentes", path: "/operacao/pedidos" },
-      {
-        name: "Verificações Pendentes",
-        path: "/area-operacional/verificacoes-pendentes",
-      },
+      { name: "Verificações Pendentes", path: "/area-operacional/verificacoes-pendentes" },
       { name: "Estoque", path: "/area-operacional/gestao-estoque" },
     ],
     DELIVERER: [
@@ -76,9 +82,7 @@ const Header: React.FC<HeaderProps> = ({
             onClick={onBack}
             className="size-10 flex items-center justify-center bg-card rounded-full shadow-soft active:scale-90 transition-transform"
           >
-            <span className="material-symbols-outlined text-foreground">
-              arrow_back
-            </span>
+            <span className="material-symbols-outlined text-foreground">arrow_back</span>
           </button>
           {title && (
             <h2 className="text-foreground text-sm font-bold uppercase tracking-widest">
@@ -92,20 +96,14 @@ const Header: React.FC<HeaderProps> = ({
   }
 
   return (
-    <header
-      className={`${headerStyles} px-4 md:px-6 lg:px-8 transition-all duration-300`}
-    >
+    <header className={`${headerStyles} px-4 md:px-6 lg:px-8 transition-all duration-300`}>
       <div className="w-full max-w-[75.5rem] mx-auto">
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2 group">
             <div className="bg-primary p-1.5 rounded-lg text-primary-foreground group-active:scale-90 transition-transform">
-              <span className="material-symbols-outlined text-2xl">
-                shopping_bag
-              </span>
+              <span className="material-symbols-outlined text-2xl">shopping_bag</span>
             </div>
-            <h1 className="text-xl font-bold tracking-tight clash-style">
-              TRALLO
-            </h1>
+            <h1 className="text-xl font-bold tracking-tight clash-style">TRALLO</h1>
           </Link>
 
           <nav className="hidden lg:flex items-center gap-8">
@@ -113,17 +111,17 @@ const Header: React.FC<HeaderProps> = ({
               <Link
                 key={item.path}
                 to={item.path}
-                className={`relative py-1 text-sm transition-colors group/link ${location.pathname === item.path
+                className={`relative py-1 text-sm transition-colors group/link ${
+                  location.pathname === item.path
                     ? "font-semibold text-primary"
                     : "font-medium text-muted-foreground hover:text-primary"
-                  }`}
+                }`}
               >
                 {item.name}
                 <span
-                  className={`absolute bottom-0 left-0 h-[2px] bg-primary transition-all duration-300 ease-in-out ${location.pathname === item.path
-                      ? "w-full"
-                      : "w-0 group-hover/link:w-full"
-                    }`}
+                  className={`absolute bottom-0 left-0 h-[2px] bg-primary transition-all duration-300 ease-in-out ${
+                    location.pathname === item.path ? "w-full" : "w-0 group-hover/link:w-full"
+                  }`}
                 />
               </Link>
             ))}
@@ -135,9 +133,11 @@ const Header: React.FC<HeaderProps> = ({
               className="hidden lg:flex items-center gap-2 px-4 py-2 rounded-full bg-card hover:bg-muted transition-colors active:scale-95"
             >
               <span className="material-symbols-outlined">shopping_cart</span>
-              <span className="bg-primary text-primary-foreground text-xs font-bold px-2 py-0.5 rounded-full">
-                3
-              </span>
+              {cartCount > 0 && (
+                <span className="bg-primary text-primary-foreground text-xs font-bold px-2 py-0.5 rounded-full animate-in zoom-in">
+                  {cartCount}
+                </span>
+              )}
             </Link>
 
             <Link

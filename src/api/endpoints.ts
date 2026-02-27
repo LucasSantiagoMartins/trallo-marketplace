@@ -18,8 +18,7 @@ export const endpoints = {
     search: "/products/search",
     create: "/products",
     myProducts: "/products/my",
-    submitValidation: (id: string) =>
-      `/products/${id}/submit-for-verification`,
+    submitValidation: (id: string) => `/products/${id}/submit-for-verification`,
     pendingVerifications: "/products/verifications/pending",
     details: (id: string) => `/products/${id}`,
     verify: (id: string) => `/products/${id}/verification`,
@@ -29,5 +28,8 @@ export const endpoints = {
   carts: {
     getMyCart: "/carts",
     addToCart: (productId: string) => `/carts/add/${productId}`,
+    updateQuantity: (cartItemId: string) => `/carts/item/${cartItemId}`,
+    removeItem: (cartItemId: string) => `/carts/item/${cartItemId}`, 
+    clear: "/carts/clear",
   },
 };

@@ -3,34 +3,48 @@ import { http } from "../api/http";
 import { endpoints } from "../api/endpoints";
 
 export interface ApiCartItem {
+  id: string;
+  quantity: number;
+  priceSnapshot: number;
+  product: {
     id: string;
-    quantity: number;
-    priceSnapshot: number;
-    product: {
-        id: string;
-        name: string;
-        description: string;
-        coverImage: string | null;
-    };
+    name: string;
+    description: string;
+    coverImage: string | null;
+  };
 }
 
 export interface ApiCart {
-    id: string;
-    items: ApiCartItem[];
-    totalAmount: number;
+  id: string;
+  items: ApiCartItem[];
+  totalAmount: number;
 }
-
 
 export async function getMyCart(): Promise<ApiResponse<ApiCart>> {
-    return http.get<ApiCart>(endpoints.carts.getMyCart);
+  return http.get<ApiCart>(endpoints.carts.getMyCart);
 }
 
-
 export async function addToCart(
-    productId: string,
+  productId: string,
 ): Promise<ApiResponse<ApiCart>> {
-    return http.post<ApiCart>(
-        endpoints.carts.addToCart(productId),
-        {}, 
-    );
+  return http.post<ApiCart>(endpoints.carts.addToCart(productId), {});
+}
+
+export async function updateCartItemQuantity(
+  productId: string,
+  quantity: number,
+): Promise<ApiResponse<ApiCart>> {
+  return http.patch<ApiCart>(endpoints.carts.updateQuantity(productId), {
+    quantity,
+  });
+}
+
+export async function removeFromCart(
+  productId: string,
+): Promise<ApiResponse<ApiCart>> {
+  return http.delete<ApiCart>(endpoints.carts.removeItem(productId));
+}
+
+export async function clearCart(): Promise<ApiResponse<void>> {
+  return http.delete<void>(endpoints.carts.clear);
 }

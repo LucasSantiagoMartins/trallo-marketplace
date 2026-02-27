@@ -1,41 +1,34 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useCart } from "@/hooks/use-cart";
+ 
 
 interface NavItem {
   icon: string;
   label: string;
   path: string;
   isCenter?: boolean;
-  badge?: number;
+  isCart?: boolean; // Adicionamos esta flag para identificar o carrinho
 }
 
 const BottomNavigation: React.FC = () => {
   const location = useLocation();
   const { user, isAuthenticated } = useAuth();
+  const { cartCount } = useCart(); // Pegamos o valor global aqui
 
   const menuConfig: Record<string, NavItem[]> = {
     ADMIN: [
       { icon: "dashboard", label: "Painel", path: "/admin" },
       { icon: "group", label: "Usuários", path: "/admin/users" },
-      {
-        icon: "analytics",
-        label: "Relatórios",
-        path: "/admin/reports",
-        isCenter: true,
-      },
+      { icon: "analytics", label: "Relatórios", path: "/admin/reports", isCenter: true },
       { icon: "settings", label: "Config", path: "/configuracoes" },
       { icon: "person", label: "Perfil", path: "/perfil" },
     ],
     SELLER: [
       { icon: "home", label: "Início", path: "/" },
       { icon: "inventory_2", label: "Produtos", path: "/meus-produtos" },
-      {
-        icon: "storefront",
-        label: "Vender",
-        path: "/adicionar-produto",
-        isCenter: true,
-      },
+      { icon: "storefront", label: "Vender", path: "/adicionar-produto", isCenter: true },
       { icon: "account_balance_wallet", label: "Carteira", path: "/carteira" },
       { icon: "person", label: "Perfil", path: "/perfil" },
     ],
@@ -47,24 +40,15 @@ const BottomNavigation: React.FC = () => {
         label: "Carrinho",
         path: "/carrinho",
         isCenter: true,
-        badge: 3,
+        isCart: true // Marcamos como carrinho
       },
       { icon: "package_2", label: "Pedidos", path: "/meus-pedidos" },
       { icon: "person", label: "Perfil", path: "/perfil" },
     ],
     OPERATOR: [
       { icon: "home", label: "Início", path: "/" },
-      {
-        icon: "pending_actions",
-        label: "Pendentes",
-        path: "/area-operacional/verificacoes-pendentes",
-      },
-      {
-        icon: "inventory",
-        label: "Estoque",
-        path: "/operacao/estoque",
-        isCenter: true,
-      },
+      { icon: "pending_actions", label: "Pendentes", path: "/area-operacional/verificacoes-pendentes" },
+      { icon: "inventory", label: "Estoque", path: "/operacao/estoque", isCenter: true },
       { icon: "notifications", label: "Avisos", path: "/notifications" },
       { icon: "person", label: "Perfil", path: "/perfil" },
     ],
@@ -81,9 +65,9 @@ const BottomNavigation: React.FC = () => {
     isAuthenticated && user
       ? menuConfig[user.role]
       : [
-          { icon: "home", label: "Início", path: "/" },
-          { icon: "person", label: "Entrar", path: "/perfil" },
-        ];
+        { icon: "home", label: "Início", path: "/" },
+        { icon: "person", label: "Entrar", path: "/perfil" },
+      ];
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 glass-nav border-t border-border px-6 py-3 flex justify-between items-center z-50 rounded-t-xl lg:hidden">
@@ -104,9 +88,10 @@ const BottomNavigation: React.FC = () => {
                 <span className="text-[10px] font-medium mt-1 text-muted-foreground">
                   {item.label}
                 </span>
-                {item.badge && (
-                  <span className="absolute top-[-44px] right-[-4px] bg-destructive text-destructive-foreground text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-card">
-                    {item.badge}
+                {/* Badge dinâmico para o carrinho central */}
+                {item.isCart && cartCount > 0 && (
+                  <span className="absolute top-[-44px] right-[-4px] bg-destructive text-destructive-foreground text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-background animate-in zoom-in">
+                    {cartCount}
                   </span>
                 )}
               </Link>
@@ -119,14 +104,10 @@ const BottomNavigation: React.FC = () => {
               to={item.path}
               className={`flex flex-col items-center ${isActive ? "text-primary" : "text-muted-foreground"}`}
             >
-              <span
-                className={`material-symbols-outlined ${isActive ? "fill-1" : ""}`}
-              >
+              <span className={`material-symbols-outlined ${isActive ? "fill-1" : ""}`}>
                 {item.icon}
               </span>
-              <span
-                className={`text-[10px] mt-1 ${isActive ? "font-bold" : "font-medium"}`}
-              >
+              <span className={`text-[10px] mt-1 ${isActive ? "font-bold" : "font-medium"}`}>
                 {item.label}
               </span>
             </Link>

@@ -5,7 +5,13 @@ import CartItemCard from "../components/CartItemCard";
 import PaymentChoiceModal from "@/components/PaymentChoiceModal";
 import CheckoutModal from "@/components/CheckoutModal";
 import EmptyCartCard from "../components/EmptyCartCard";
-import { getMyCart } from "@/services/cart.service";
+import ConfirmActionModal from "../components/ConfirmActionModal";
+import {
+  getMyCart,
+  updateCartItemQuantity,
+  removeFromCart,
+  clearCart,
+} from "@/services/cart.service";
 import { BASE_UPLOAD_URL } from "@/api/endpoints";
 
 interface CartItem {
@@ -28,32 +34,37 @@ const CartPage: React.FC = () => {
   );
   const [paymentMethod, setPaymentMethod] = useState<"mcx" | "transfer">("mcx");
 
+  const fetchCart = async () => {
+    const res = await getMyCart();
+    if (res.success && res.data) {
+      const formattedItems: CartItem[] = res.data.items.map((item) => ({
+        id: item.id,
+        name: item.product.name,
+        attr: item.product.description,
+        price: item.priceSnapshot,
+        qty: item.quantity,
+        image: `${BASE_UPLOAD_URL}/${item.product.coverImage}`,
+      }));
+      setItems(formattedItems);
+    }
+  };
+
   useEffect(() => {
-    const fetchCart = async () => {
-      const res = await getMyCart();
-      if (res.success && res.data) {
-        const formattedItems: CartItem[] = res.data.items.map((item) => ({
-          id: item.id,
-          name: item.product.name,
-          attr: item.product.description,
-          price: item.priceSnapshot,
-          qty: item.quantity,
-          image: `${BASE_UPLOAD_URL}/${item.product.coverImage}`,
-        }));
-
-        setItems(formattedItems);
-      }
-    };
-
     fetchCart();
   }, []);
 
-  const updateQty = (id: string, delta: number) => {
-    setItems((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, qty: Math.max(1, item.qty + delta) } : item,
-      ),
-    );
+  const updateQty = async (id: string, delta: number) => {
+    const item = items.find((i) => i.id === id);
+    if (!item) return;
+
+    const newQty = Math.max(1, item.qty + delta);
+    const res = await updateCartItemQuantity(id, newQty);
+
+    if (res.success) {
+      setItems((prev) =>
+        prev.map((i) => (i.id === id ? { ...i, qty: newQty } : i)),
+      );
+    }
   };
 
   const handleOpenRemoveModal = (id: string) => {
@@ -61,11 +72,25 @@ const CartPage: React.FC = () => {
     setModalType("single");
   };
 
-  const handleConfirmAction = () => {
-    if (modalType === "single" && idToRemove !== null) {
-      setItems((prev) => prev.filter((item) => item.id !== idToRemove));
+  const handleConfirmAction = async () => {
+    if (modalType === "single" && idToRemove) {
+      try {
+        const res = await removeFromCart(idToRemove);
+        if (res.success) {
+          setItems((prev) => prev.filter((item) => item.id !== idToRemove));
+        }
+      } catch (error) {
+        console.error("Erro ao remover item:", error);
+      }
     } else if (modalType === "all") {
-      setItems([]);
+      try {
+        const res = await clearCart();
+        if (res.success) {
+          setItems([]);
+        }
+      } catch (error) {
+        console.error("Erro ao limpar carrinho:", error);
+      }
     }
     closeModal();
   };
@@ -104,11 +129,7 @@ const CartPage: React.FC = () => {
                 layout
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                exit={{
-                  opacity: 0,
-                  scale: 0.8,
-                  transition: { duration: 0.2 },
-                }}
+                exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.2 } }}
               >
                 <CartItemCard
                   item={item}
@@ -175,34 +196,14 @@ const CartPage: React.FC = () => {
           />
         )}
 
-        {(modalType === "single" || modalType === "all") && (
-          <div className="fixed inset-0 z-[130] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm">
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white dark:bg-[#1c182d] w-full max-w-md rounded-3xl p-6 text-center"
-            >
-              <h4 className="text-lg font-bold mb-6">
-                {modalType === "all" ? "Limpar carrinho?" : "Remover item?"}
-              </h4>
-              <div className="flex flex-col gap-2">
-                <button
-                  onClick={handleConfirmAction}
-                  className="w-full py-3 text-white bg-red-500 rounded-xl font-bold"
-                >
-                  Sim, confirmar
-                </button>
-                <button
-                  onClick={closeModal}
-                  className="w-full py-3 text-gray-500 bg-gray-100 dark:bg-white/5 rounded-xl"
-                >
-                  Cancelar
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        )}
+        <ConfirmActionModal
+          isOpen={modalType === "single" || modalType === "all"}
+          type={
+            modalType === "single" || modalType === "all" ? modalType : null
+          }
+          onConfirm={handleConfirmAction}
+          onClose={closeModal}
+        />
       </AnimatePresence>
     </div>
   );
