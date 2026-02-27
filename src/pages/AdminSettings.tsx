@@ -31,7 +31,7 @@ const AdminSettings: React.FC = () => {
     // Simulação de chamada de API
     try {
       await new Promise((resolve) => setTimeout(resolve, 1500));
-      toast.success("Configurações atualizadas com sucesso!");
+      toast.success("Configurações atualizadas com sucesso.");
     } catch (error) {
       toast.error("Erro ao salvar configurações.");
     } finally {

@@ -35,7 +35,7 @@ export const RegisterEntryForm: React.FC<Props> = ({ onSuccess, onCancel }) => {
       });
 
       if (res.success) {
-        toast.success("Entrada registrada com sucesso!");
+        toast.success("Entrada registrada com sucesso.");
         onSuccess();
       } else {
         toast.error(res.message || "Erro ao registrar entrada.");

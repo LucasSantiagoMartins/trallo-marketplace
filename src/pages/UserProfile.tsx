@@ -20,7 +20,7 @@ const UserProfileScreen: React.FC = () => {
 
       await logout();
 
-      toast.success("Sessão encerrada com sucesso!");
+      toast.success("Sessão encerrada com sucesso.");
 
       setTimeout(() => {
         setIsModalOpen(false);

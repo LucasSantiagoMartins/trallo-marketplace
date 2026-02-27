@@ -38,8 +38,7 @@ const CreateStaffForm: React.FC<CreateStaffProps> = ({ type }) => {
 
     setLoading(true);
     try {
-      // Aqui entraria a sua lógica de API
-      toast.success(`${title} criado com sucesso!`);
+      toast.success(`${title} criado com sucesso.`);
       navigate("/area-administrativa");
     } catch (err) {
       toast.error(

@@ -25,7 +25,7 @@ const Login: React.FC = () => {
     try {
       const res = await login(identifier, password);
       if (res.success) {
-        toast.success(res.message || "Login realizado com sucesso!");
+        toast.success(res.message || "Login realizado com sucesso.");
 
         const userRole = res.data.role;
 

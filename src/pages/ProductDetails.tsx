@@ -97,7 +97,7 @@ const ProductDetails: React.FC = () => {
       });
 
       if (response && response.success) {
-        toast.success("Pedido realizado com sucesso!");
+        toast.success("Pedido realizado com sucesso.");
         navigate("/orders/success", { state: { order: response.data } });
         return response.data;
       } else {

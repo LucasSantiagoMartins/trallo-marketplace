@@ -34,7 +34,7 @@ export const RegisterExitForm: React.FC<Props> = ({ onSuccess, onCancel }) => {
       });
 
       if (res.success) {
-        toast.success("Saída registrada com sucesso!");
+        toast.success("Saída registrada com sucesso.");
         onSuccess();
       } else {
         toast.error(res.message || "Erro ao registrar saída.");

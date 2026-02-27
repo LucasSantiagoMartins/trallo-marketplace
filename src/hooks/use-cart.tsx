@@ -27,7 +27,7 @@ export const useCart = () => {
       const res = await addToCartService(productId);
       if (res.success) {
         dispatch(incrementCart());
-        toast.success("Produto adicionado ao carrinho!");
+        toast.success("Produto adicionado ao carrinho.");
       }
     } catch (error) {
       toast.error("Erro ao adicionar produto.");

@@ -62,7 +62,7 @@ const Register: React.FC = () => {
         formData.address || undefined,
       );
       if (res.success) {
-        toast.success(res.message || "Conta criada com sucesso!");
+        toast.success(res.message || "Conta criada com sucesso.");
         setUser({
           userName: res.data.userName,
           role: res.data.role as any,
