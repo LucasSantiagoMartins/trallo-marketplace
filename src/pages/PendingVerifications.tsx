@@ -4,14 +4,13 @@ import { AnimatePresence, motion, Variants } from "framer-motion";
 import Sidebar from "@/components/Sidebar";
 import Pagination from "@/components/Pagination";
 import { PendingVerificationDTO } from "@/types/product";
-import { useAppToast } from "@/hooks/useAppToast";
 import { pendingVerifications } from "@/services/product.service";
 import ProductVerificationCard from "@/components/ProductVerificationCard";
 import { operatorItems } from "@/constants/sidebar-items";
+import toast from "react-hot-toast";
 
 const PendingVerificationsPage: React.FC = () => {
   const navigate = useNavigate();
-  const { showToast } = useAppToast();
   const [products, setProducts] = useState<PendingVerificationDTO[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -49,7 +48,7 @@ const PendingVerificationsPage: React.FC = () => {
       const res = await pendingVerifications();
       if (res.success && res.data) setProducts(res.data);
     } catch (err: any) {
-      showToast("error", "Erro ao carregar produtos pendentes.");
+      toast.error("Erro ao carregar produtos pendentes.");
     } finally {
       setLoading(false);
     }

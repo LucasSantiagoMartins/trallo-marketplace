@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast"; // Importação do novo toast
 import MobileLayout from "@/layouts/MobileLayout";
 import PageHeader from "@/components/PageHeader";
 import TralloInput from "@/components/TralloInput";
@@ -11,7 +12,6 @@ import QuantitySelector from "@/components/QuantitySelector";
 import ConditionModal from "@/components/ConditionModal";
 import CategoryDrawer from "@/components/CategoryDrawer";
 import { createProduct } from "@/services/product.service";
-import { useAppToast } from "@/hooks/useAppToast";
 import {
   PRODUCT_CATEGORIES,
   PRODUCT_CONDITIONS,
@@ -20,7 +20,6 @@ import BottomNavigation from "@/components/BottomNavigation";
 
 const CreateProduct: React.FC = () => {
   const navigate = useNavigate();
-  const { showToast } = useAppToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [loading, setLoading] = useState(false);
@@ -84,17 +83,17 @@ const CreateProduct: React.FC = () => {
 
   const handleSubmit = async () => {
     if (!formData.name) {
-      showToast("error", "Por favor, informe o nome do produto.");
+      toast.error("Por favor, informe o nome do produto.");
       return;
     }
 
     if (!formData.price) {
-      showToast("error", "Faltou definir o preço de venda do produto.");
+      toast.error("Faltou definir o preço de venda do produto.");
       return;
     }
 
     if (fileObjects.length === 0) {
-      showToast("error", "Adicione pelo menos uma foto do produto.");
+      toast.error("Adicione pelo menos uma foto do produto.");
       return;
     }
 
@@ -113,11 +112,11 @@ const CreateProduct: React.FC = () => {
 
       const res = await createProduct(data);
       if (res.success) {
-        showToast("success", res.message ?? "Produto criado.");
+        toast.success(res.message ?? "Produto criado.");
         navigate("/meus-produtos");
       }
     } catch (err: any) {
-      showToast("error", err.message ?? "Erro ao conectar ao servidor.");
+      toast.error(err.message ?? "Erro ao conectar ao servidor.");
     } finally {
       setLoading(false);
     }

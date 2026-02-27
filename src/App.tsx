@@ -1,9 +1,7 @@
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { ToastProvider } from "@/context/ToastContext";
 import { AuthProvider } from "@/context/AuthContext";
-import ToastContainer from "@/components/Toast";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 
 import Home from "./pages/Home";
@@ -36,123 +34,110 @@ import CreateStaffForm from "./components/CreateStaffForm";
 import AdminSettings from "./pages/AdminSettings";
 import InventoryManagement from "./pages/InventoryManagement";
 import OperatorDashboard from "./pages/OperatorDashboard";
- 
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
-      <ToastProvider>
-        <TooltipProvider>
-          <ToastContainer />
-          <BrowserRouter>
-            <Routes>
-              {/* --- 1. ROTAS PÚBLICAS --- */}
-              <Route path="/" element={<Home />} />
-              <Route path="/entrar" element={<Login />} />
-              <Route path="/registrar" element={<Register />} />
-              <Route path="/esqueceu-senha" element={<ResetPassword />} />
-              <Route path="/detalhes-produto" element={<ProductDetails />} />
+      <TooltipProvider>
+        <BrowserRouter>
+          <Routes>
+            {/* --- 1. ROTAS PÚBLICAS --- */}
+            <Route path="/" element={<Home />} />
+            <Route path="/entrar" element={<Login />} />
+            <Route path="/registrar" element={<Register />} />
+            <Route path="/esqueceu-senha" element={<ResetPassword />} />
+            <Route path="/detalhes-produto" element={<ProductDetails />} />
 
-              {/* --- 2. ROTAS PRIVADAS (CLIENTES / GERAL) --- */}
-              <Route element={<ProtectedRoute />}>
-                <Route path="/perfil" element={<UserProfileScreen />} />
-                <Route path="/editar-perfil" element={<EditProfile />} />
-                <Route path="/alterar-senha" element={<ChangePassword />} />
-                <Route path="/carrinho" element={<CartPage />} />
-                <Route path="/meus-pedidos" element={<OrdersHistory />} />
-                <Route path="/detalhe-pedido" element={<OrderDetail />} />
-                <Route path="/carteira" element={<WalletScreen />} />
-                <Route
-                  path="/transacoes"
-                  element={<TransactionHistoryScreen />}
-                />
-                <Route path="/configuracoes" element={<SettingsScreen />} />
-              </Route>
-
-              {/* --- 3. ÁREA DO VENDEDOR (SELLER) --- */}
+            {/* --- 2. ROTAS PRIVADAS (CLIENTES / GERAL) --- */}
+            <Route element={<ProtectedRoute />}>
+              <Route path="/perfil" element={<UserProfileScreen />} />
+              <Route path="/editar-perfil" element={<EditProfile />} />
+              <Route path="/alterar-senha" element={<ChangePassword />} />
+              <Route path="/carrinho" element={<CartPage />} />
+              <Route path="/meus-pedidos" element={<OrdersHistory />} />
+              <Route path="/detalhe-pedido" element={<OrderDetail />} />
+              <Route path="/carteira" element={<WalletScreen />} />
               <Route
-                element={<ProtectedRoute allowedRoles={["SELLER", "ADMIN"]} />}
-              >
-                <Route path="/meus-produtos" element={<MyProductsScreen />} />
-                <Route path="/adicionar-produto" element={<CreateProduct />} />
-                <Route path="/editar-produto" element={<EditProduct />} />
-               
+                path="/transacoes"
+                element={<TransactionHistoryScreen />}
+              />
+              <Route path="/configuracoes" element={<SettingsScreen />} />
+            </Route>
 
-                <Route
-                  path="/submeter-produto"
-                  element={<ProductValidationSubmission />}
-                />
-                <Route
-                  path="/realizar-levantamento"
-                  element={<WithdrawScreen />}
-                />
-              </Route>
+            {/* --- 3. ÁREA DO VENDEDOR (SELLER) --- */}
+            <Route
+              element={<ProtectedRoute allowedRoles={["SELLER", "ADMIN"]} />}
+            >
+              <Route path="/meus-produtos" element={<MyProductsScreen />} />
+              <Route path="/adicionar-produto" element={<CreateProduct />} />
+              <Route path="/editar-produto" element={<EditProduct />} />
 
-              {/* --- 4. ÁREA OPERACIONAL (OPERATOR) --- */}
               <Route
-                element={
-                  <ProtectedRoute allowedRoles={["OPERATOR", "ADMIN"]} />
-                }
-              >
-                <Route
-                  path="/area-operacional"
-                  element={<OperatorDashboard />}
-                />
-                <Route
-                  path="/area-operacional/verificacoes-pendentes"
-                  element={<PendingVerificationsPage />}
-                />
-                <Route
-                  path="/area-operacional/validar-produto"
-                  element={<ReviewProductPage />}
-                />
-              </Route>
-               <Route
-                  path="/area-operacional/gestao-estoque"
-                  element={<InventoryManagement />}
-                />
+                path="/submeter-produto"
+                element={<ProductValidationSubmission />}
+              />
+              <Route
+                path="/realizar-levantamento"
+                element={<WithdrawScreen />}
+              />
+            </Route>
 
-              {/* --- 5. ÁREA ADMINISTRATIVA (ADMIN) --- */}
-              <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
-                <Route
-                  path="/area-administrativa"
-                  element={<AdminDashboard />}
-                />
-                <Route
-                  path="/area-administrativa/usuarios"
-                  element={<UsersManagement />}
-                />
-                <Route
-                  path="/area-administrativa/transacoes"
-                  element={<TransactionsManagement />}
-                />
-              
-                <Route
-                  path="/area-administrativa/pagamentos"
-                  element={<PaymentsManagement />}
-                />
-                <Route
-                  path="/area-administrativa/configuracoes"
-                  element={<AdminSettings />}
-                />
-                <Route
-                  path="/area-administrativa/adicionar-operador"
-                  element={<CreateStaffForm type="OPERATOR" />}
-                />
-                <Route
-                  path="/area-administrativa/adicionar-administrador"
-                  element={<CreateStaffForm type="ADMIN" />}
-                />
-              </Route>
+            {/* --- 4. ÁREA OPERACIONAL (OPERATOR) --- */}
+            <Route
+              element={<ProtectedRoute allowedRoles={["OPERATOR", "ADMIN"]} />}
+            >
+              <Route path="/area-operacional" element={<OperatorDashboard />} />
+              <Route
+                path="/area-operacional/verificacoes-pendentes"
+                element={<PendingVerificationsPage />}
+              />
+              <Route
+                path="/area-operacional/validar-produto"
+                element={<ReviewProductPage />}
+              />
+              <Route
+                path="/area-operacional/gestao-estoque"
+                element={<InventoryManagement />}
+              />
+            </Route>
 
-              {/* CATCH-ALL */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
-      </ToastProvider>
+            {/* --- 5. ÁREA ADMINISTRATIVA (ADMIN) --- */}
+            <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
+              <Route path="/area-administrativa" element={<AdminDashboard />} />
+              <Route
+                path="/area-administrativa/usuarios"
+                element={<UsersManagement />}
+              />
+              <Route
+                path="/area-administrativa/transacoes"
+                element={<TransactionsManagement />}
+              />
+
+              <Route
+                path="/area-administrativa/pagamentos"
+                element={<PaymentsManagement />}
+              />
+              <Route
+                path="/area-administrativa/configuracoes"
+                element={<AdminSettings />}
+              />
+              <Route
+                path="/area-administrativa/adicionar-operador"
+                element={<CreateStaffForm type="OPERATOR" />}
+              />
+              <Route
+                path="/area-administrativa/adicionar-administrador"
+                element={<CreateStaffForm type="ADMIN" />}
+              />
+            </Route>
+
+            {/* CATCH-ALL */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
     </AuthProvider>
   </QueryClientProvider>
 );

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
+import toast from "react-hot-toast"; // Importação do hot-toast
 import MobileLayout from "@/layouts/MobileLayout";
 import PageHeader from "@/components/PageHeader";
 import TralloInput from "@/components/TralloInput";
@@ -10,7 +11,6 @@ import PriceInput from "@/components/PriceInput";
 import QuantitySelector from "@/components/QuantitySelector";
 import ConditionModal from "@/components/ConditionModal";
 import CategoryDrawer from "@/components/CategoryDrawer";
-import { useAppToast } from "@/hooks/useAppToast";
 import { BASE_UPLOAD_URL } from "@/api/endpoints";
 import {
   PRODUCT_CATEGORIES,
@@ -23,7 +23,6 @@ import { updateProduct } from "@/services/product.service";
 const EditProduct: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { showToast } = useAppToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [loading, setLoading] = useState(false);
@@ -113,17 +112,17 @@ const EditProduct: React.FC = () => {
     const productFromState = location.state?.product as ProductDTO;
 
     if (!productFromState) {
-      showToast("error", "Erro ao recuperar dados do produto.");
+      toast.error("Erro ao recuperar dados do produto.");
       return;
     }
 
     if (!formData.name) {
-      showToast("error", "Por favor, informe o nome do produto.");
+      toast.error("Por favor, informe o nome do produto.");
       return;
     }
 
     if (!formData.price) {
-      showToast("error", "Faltou definir o preço de venda do produto.");
+      toast.error("Faltou definir o preço de venda do produto.");
       return;
     }
 
@@ -190,7 +189,7 @@ const EditProduct: React.FC = () => {
       }
 
       if (!hasChanges) {
-        showToast("info", "Nenhuma alteração detectada.");
+        toast("Nenhuma alteração detectada.", { icon: "ℹ️" });
         setLoading(false);
         return;
       }
@@ -198,11 +197,11 @@ const EditProduct: React.FC = () => {
       const res = await updateProduct(productFromState.id, form as any);
 
       if (res.success) {
-        showToast("success", res.message ?? "Produto atualizado com sucesso.");
+        toast.success(res.message ?? "Produto atualizado com sucesso.");
         navigate("/meus-produtos");
       }
     } catch (err: any) {
-      showToast("error", err.message ?? "Erro ao conectar ao servidor.");
+      toast.error(err.message ?? "Erro ao conectar ao servidor.");
     } finally {
       setLoading(false);
     }

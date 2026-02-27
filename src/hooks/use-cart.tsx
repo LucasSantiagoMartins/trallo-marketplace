@@ -4,13 +4,12 @@ import {
   getMyCart,
   addToCart as addToCartService,
 } from "@/services/cart.service";
-import { useAppToast } from "./useAppToast";
+import toast from "react-hot-toast"; // Importação direta do toast
 import { RootState } from "@/store/main";
 
 export const useCart = () => {
   const dispatch = useDispatch();
   const cartCount = useSelector((state: RootState) => state.cart.count);
-  const { showToast } = useAppToast();
 
   const syncCartWithServer = async () => {
     try {
@@ -28,10 +27,10 @@ export const useCart = () => {
       const res = await addToCartService(productId);
       if (res.success) {
         dispatch(incrementCart());
-        showToast("success", "Produto adicionado ao carrinho!");
+        toast.success("Produto adicionado ao carrinho!");
       }
     } catch (error) {
-      showToast("error", "Erro ao adicionar produto.");
+      toast.error("Erro ao adicionar produto.");
     }
   };
 

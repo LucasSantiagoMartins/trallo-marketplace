@@ -11,12 +11,11 @@ import {
 } from "@/types/product";
 import { BASE_UPLOAD_URL } from "@/api/endpoints";
 import { verifyProduct } from "@/services/product.service";
-import { useAppToast } from "@/hooks/useAppToast";
+import toast from "react-hot-toast";
 
 const ProductVerification: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { showToast } = useAppToast();
   const product = location.state?.product as PendingVerificationDTO;
 
   const [loading, setLoading] = useState(false);
@@ -67,15 +66,14 @@ const ProductVerification: React.FC = () => {
       });
 
       if (res.success) {
-        showToast(
-          "success",
+        toast.success(
           res.message ||
             `Produto ${isApproved ? "aprovado" : "rejeitado"} com sucesso.`,
         );
         navigate("/area-operacional/verificacoes-pendentes");
       }
     } catch (err: any) {
-      showToast("error", err.message || "Erro ao processar verificação.");
+      toast.error(err.message || "Erro ao processar verificação.");
     } finally {
       setLoading(false);
       setShowTypeSelection(false);

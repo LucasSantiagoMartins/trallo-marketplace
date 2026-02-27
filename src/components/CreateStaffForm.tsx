@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast"; // Importação do react-hot-toast
 import TralloInput from "@/components/TralloInput";
 import TralloButton from "@/components/TralloButton";
 import PasswordTooltip from "@/components/PasswordTooltip";
 import Sidebar from "@/components/Sidebar";
-import { useAppToast } from "@/hooks/useAppToast";
 import { adminItems } from "@/constants/sidebar-items";
 
 interface CreateStaffProps {
@@ -22,7 +22,6 @@ const CreateStaffForm: React.FC<CreateStaffProps> = ({ type }) => {
     department: "",
   });
 
-  const { showToast } = useAppToast();
   const navigate = useNavigate();
 
   const isAdmin = type === "ADMIN";
@@ -33,16 +32,19 @@ const CreateStaffForm: React.FC<CreateStaffProps> = ({ type }) => {
     e.preventDefault();
 
     if (!formData.fullName || !formData.email || !formData.password) {
-      showToast("error", "Preencha todos os campos obrigatórios.");
+      toast.error("Preencha todos os campos obrigatórios.");
       return;
     }
 
     setLoading(true);
     try {
-      showToast("success", `${title} criado com sucesso!`);
+      // Aqui entraria a sua lógica de API
+      toast.success(`${title} criado com sucesso!`);
       navigate("/area-administrativa");
     } catch (err) {
-      showToast("error", "Erro ao processar solicitação.");
+      toast.error(
+        err instanceof Error ? err.message : "Erro ao processar solicitação.",
+      );
     } finally {
       setLoading(false);
     }

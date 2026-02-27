@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import MobileLayout from "@/layouts/MobileLayout";
 import TralloInput from "@/components/TralloInput";
 import TralloButton from "@/components/TralloButton";
 import PasswordTooltip from "@/components/PasswordTooltip";
 import { register } from "@/services/auth.service";
-import { useAppToast } from "@/hooks/useAppToast";
 import { useAuth } from "@/context/AuthContext";
 
 type UserRole = "buyer" | "seller";
@@ -21,9 +21,8 @@ const Register: React.FC = () => {
     password: "",
     address: "",
   });
-  const {setUser} = useAuth();
+  const { setUser } = useAuth();
 
-  const { showToast } = useAppToast();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -31,10 +30,7 @@ const Register: React.FC = () => {
 
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{6,}$/;
     if (!passwordRegex.test(formData.password)) {
-      showToast(
-        "error",
-        "A senha não cumpre todos os requisitos de segurança.",
-      );
+      toast.error("A senha não cumpre todos os requisitos de segurança.");
       return;
     }
 
@@ -44,12 +40,12 @@ const Register: React.FC = () => {
       !formData.password ||
       !formData.phoneNumber
     ) {
-      showToast("error", "Preencha os campos obrigatórios.");
+      toast.error("Preencha os campos obrigatórios.");
       return;
     }
 
     if (role === "buyer" && !formData.address) {
-      showToast("error", "O endereço é obrigatório para compradores.");
+      toast.error("O endereço é obrigatório para compradores.");
       return;
     }
 
@@ -66,7 +62,7 @@ const Register: React.FC = () => {
         formData.address || undefined,
       );
       if (res.success) {
-        showToast("success", res.message || "Conta criada com sucesso!");
+        toast.success(res.message || "Conta criada com sucesso!");
         setUser({
           userName: res.data.userName,
           role: res.data.role as any,
@@ -74,11 +70,10 @@ const Register: React.FC = () => {
         });
         navigate("/");
       } else {
-        showToast("error", res.message || "Erro ao criar conta.");
+        toast.error(res.message || "Erro ao criar conta.");
       }
     } catch (err) {
-      showToast(
-        "error",
+      toast.error(
         err instanceof Error ? err.message : "Erro ao conectar ao servidor.",
       );
     } finally {

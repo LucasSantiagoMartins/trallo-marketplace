@@ -16,17 +16,14 @@ import PaymentChoiceModal from "@/components/PaymentChoiceModal";
 import CheckoutModal from "@/components/CheckoutModal";
 import { BASE_UPLOAD_URL } from "@/api/endpoints";
 import VideoPlayer from "@/components/VideoPlayer";
-import {
-  checkoutFromProduct,
-} from "@/services/checkout.service";
-import { useAppToast } from "@/hooks/useAppToast";
+import { checkoutFromProduct } from "@/services/checkout.service";
 import { PaymentMethod, PaymentMode } from "@/enums/payment";
+import toast from "react-hot-toast";
 
 const ProductDetails: React.FC = () => {
   const { id: paramId } = useParams<{ id: string }>();
   const location = useLocation();
   const navigate = useNavigate();
-  const { showToast } = useAppToast();
   const product = location.state?.product as SearchedProductDTO;
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -76,7 +73,7 @@ const ProductDetails: React.FC = () => {
     const targetId = paramId || product.id;
 
     if (!targetId) {
-      showToast("error", "ID do produto não encontrado.");
+      toast.error("ID do produto não encontrado.");
       return null;
     }
 
@@ -100,15 +97,14 @@ const ProductDetails: React.FC = () => {
       });
 
       if (response && response.success) {
-        showToast("success", "Pedido realizado com sucesso!");
+        toast.success("Pedido realizado com sucesso!");
         navigate("/orders/success", { state: { order: response.data } });
         return response.data;
       } else {
-        showToast("error", response.message || "Erro ao processar checkout.");
+        toast.error(response.message || "Erro ao processar checkout.");
       }
     } catch (error) {
-      showToast(
-        "error",
+      toast.error(
         error instanceof Error
           ? error.message
           : "Erro ao conectar com o servidor.",

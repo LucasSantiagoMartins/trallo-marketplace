@@ -1,42 +1,40 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import ToastContainer from "@/components/Toast";
 import BottomNavigation from "../components/BottomNavigation";
 import PageHeader from "../components/PageHeader";
 import ConfirmLogoutModal from "../components/ConfirmLogoutModal";
 import { logout } from "../services/auth.service";
 import { useAuth } from "../context/AuthContext";
+import toast from "react-hot-toast";
 
 const UserProfileScreen: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleLogout = async () => {
     try {
       setIsLoggingOut(true);
-      
+
       await logout();
-      
-      ToastContainer("Sessão encerrada com sucesso!");
-      
+
+      toast.success("Sessão encerrada com sucesso!");
+
       setTimeout(() => {
         setIsModalOpen(false);
         navigate("/login");
       }, 1500);
-      
     } catch (error) {
-    ToastContainer("Erro ao sair. Tente novamente.");
+      toast.error("Erro ao sair. Tente novamente.");
       setIsLoggingOut(false);
     }
   };
 
   return (
     <div className="bg-background-light dark:bg-background-dark text-[#111118] dark:text-white min-h-screen transition-colors">
-      
-      <ConfirmLogoutModal 
+      <ConfirmLogoutModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onConfirm={handleLogout}

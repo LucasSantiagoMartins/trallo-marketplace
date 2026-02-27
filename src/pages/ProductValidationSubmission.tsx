@@ -7,12 +7,11 @@ import { ProductDTO } from "@/types/product";
 import { BASE_UPLOAD_URL } from "@/api/endpoints";
 import { formatPrice } from "@/utils/currency";
 import { submitProductForVerification } from "@/services/product.service";
-import { useAppToast } from "@/hooks/useAppToast";
+import toast from "react-hot-toast";
 
 const ProductValidationSubmission: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { showToast } = useAppToast();
 
   const product = location.state?.product as ProductDTO;
 
@@ -42,16 +41,12 @@ const ProductValidationSubmission: React.FC = () => {
 
   const handleSubmit = async () => {
     if (!selectedVideo) {
-      showToast(
-        "error",
-        "Por favor, adicione um vídeo de prova para continuar.",
-      );
+      toast.error("Por favor, adicione um vídeo de prova para continuar.");
       return;
     }
 
     if (notes.length < 10) {
-      showToast(
-        "error",
+      toast.error(
         "Adicione uma nota um pouco mais detalhada (mínimo 10 caracteres).",
       );
       return;
@@ -66,19 +61,17 @@ const ProductValidationSubmission: React.FC = () => {
       );
 
       if (res.success) {
-        showToast(
-          "success",
+        toast.success(
           res.message ?? "Produto enviado para análise com sucesso!",
         );
         navigate("/meus-produtos");
       } else {
-        showToast(
-          "error",
+        toast.error(
           res.message ?? "Não foi possível processar o envio.",
         );
       }
     } catch (err: any) {
-      showToast("error", err.message ?? "Erro ao conectar ao servidor.");
+      toast.error(err.message ?? "Erro ao conectar ao servidor.");
     } finally {
       setIsSubmitting(false);
     }

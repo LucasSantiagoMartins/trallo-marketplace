@@ -1,24 +1,23 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast"; 
 import MobileLayout from "@/layouts/MobileLayout";
 import TralloInput from "@/components/TralloInput";
 import TralloButton from "@/components/TralloButton";
 import { login } from "@/services/auth.service";
-import { useAppToast } from "@/hooks/useAppToast";
 import { useAuth } from "@/context/AuthContext";
 
 const Login: React.FC = () => {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const { showToast } = useAppToast();
   const navigate = useNavigate();
   const { setUser } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!identifier || !password) {
-      showToast("error", "Preencha todos os campos.");
+      toast("Preencha todos os campos.");
       return;
     }
 
@@ -26,7 +25,7 @@ const Login: React.FC = () => {
     try {
       const res = await login(identifier, password);
       if (res.success) {
-        showToast("success", res.message || "Login realizado com sucesso!");
+        toast.success(res.message || "Login realizado com sucesso!");
 
         const userRole = res.data.role;
 
@@ -45,11 +44,10 @@ const Login: React.FC = () => {
 
         navigate(roleRoutes[userRole] || "/");
       } else {
-        showToast("error", res.message || "Credenciais inválidas.");
+        toast.error(res.message || "Credenciais inválidas.");
       }
     } catch (err) {
-      showToast(
-        "error",
+      toast.error(
         err instanceof Error ? err.message : "Erro ao conectar ao servidor.",
       );
     } finally {

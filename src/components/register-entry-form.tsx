@@ -1,8 +1,8 @@
 import React, { useState } from "react";
+import toast from "react-hot-toast"; // Importação do novo toast
 import TralloInput from "@/components/TralloInput";
 import TralloButton from "@/components/TralloButton";
 import { registerStockEntry } from "@/services/warehouse-inventory.service";
-import { useAppToast } from "@/hooks/useAppToast";
 
 interface Props {
   onSuccess: () => void;
@@ -10,7 +10,6 @@ interface Props {
 }
 
 export const RegisterEntryForm: React.FC<Props> = ({ onSuccess, onCancel }) => {
-  const { showToast } = useAppToast();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     productSku: "",
@@ -23,7 +22,7 @@ export const RegisterEntryForm: React.FC<Props> = ({ onSuccess, onCancel }) => {
     e.preventDefault();
 
     if (!formData.productSku || !formData.shelfCode) {
-      showToast("error", "Por favor, preencha a localização e o SKU.");
+      toast.error("Por favor, preencha a localização e o SKU.");
       return;
     }
 
@@ -36,13 +35,13 @@ export const RegisterEntryForm: React.FC<Props> = ({ onSuccess, onCancel }) => {
       });
 
       if (res.success) {
-        showToast("success", "Entrada registrada com sucesso!");
+        toast.success("Entrada registrada com sucesso!");
         onSuccess();
       } else {
-        showToast("error", res.message || "Erro ao registrar entrada.");
+        toast.error(res.message || "Erro ao registrar entrada.");
       }
     } catch (err) {
-      showToast("error", "Falha na comunicação com o servidor.");
+      toast.error("Falha na comunicação com o servidor.");
     } finally {
       setLoading(false);
     }

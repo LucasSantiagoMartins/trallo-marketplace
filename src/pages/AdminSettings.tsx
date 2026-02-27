@@ -1,19 +1,16 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import toast from "react-hot-toast"; // Importação do toast
 import TralloInput from "@/components/TralloInput";
 import TralloButton from "@/components/TralloButton";
 import PasswordTooltip from "@/components/PasswordTooltip";
-import { useAppToast } from "@/hooks/useAppToast";
-import { useNavigate } from "react-router-dom";
 import Sidebar from "@/components/Sidebar";
 import { adminItems } from "@/constants/sidebar-items";
 
 const AdminSettings: React.FC = () => {
-  const { showToast } = useAppToast();
   const [loading, setLoading] = useState(false);
   const [password, setPassword] = useState("");
   const [showTooltip, setShowTooltip] = useState(false);
-  const navigate = useNavigate();
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -28,12 +25,18 @@ const AdminSettings: React.FC = () => {
     visible: { opacity: 1, y: 0 },
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     setLoading(true);
-    setTimeout(() => {
+
+    // Simulação de chamada de API
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      toast.success("Configurações atualizadas com sucesso!");
+    } catch (error) {
+      toast.error("Erro ao salvar configurações.");
+    } finally {
       setLoading(false);
-      showToast("success", "Configurações atualizadas com sucesso!");
-    }, 1500);
+    }
   };
 
   return (
