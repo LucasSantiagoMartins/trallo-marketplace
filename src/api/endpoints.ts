@@ -29,7 +29,14 @@ export const endpoints = {
     getMyCart: "/carts",
     addToCart: (productId: string) => `/carts/add/${productId}`,
     updateQuantity: (cartItemId: string) => `/carts/item/${cartItemId}`,
-    removeItem: (cartItemId: string) => `/carts/item/${cartItemId}`, 
+    removeItem: (cartItemId: string) => `/carts/item/${cartItemId}`,
     clear: "/carts/clear",
+  },
+  orders: {
+    buyerOrders: "/orders/my/buyer",
+  },
+  checkouts: {
+    fromCart: "/checkouts/cart",
+    fromProduct: (productId: string) => `/checkouts/product/${productId}`,
   },
 };

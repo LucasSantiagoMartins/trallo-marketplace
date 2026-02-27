@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import MobileLayout from "@/layouts/MobileLayout";
 import PageHeader from "@/components/PageHeader";
@@ -16,19 +16,17 @@ import PaymentChoiceModal from "@/components/PaymentChoiceModal";
 import CheckoutModal from "@/components/CheckoutModal";
 import { BASE_UPLOAD_URL } from "@/api/endpoints";
 import VideoPlayer from "@/components/VideoPlayer";
+import { checkoutFromProduct, PaymentMethod, PaymentMode } from "@/services/checkout.service";
 
 const ProductDetails: React.FC = () => {
-  const { id } = useParams();
+  const { id: paramId } = useParams<{ id: string }>();
   const location = useLocation();
+  const navigate = useNavigate();
   const product = location.state?.product as SearchedProductDTO;
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [modalType, setModalType] = useState<
-    "payment_choice" | "checkout" | "video" | null
-  >(null);
-  const [paymentType, setPaymentType] = useState<"online" | "presencial">(
-    "online",
-  );
+  const [modalType, setModalType] = useState<"payment_choice" | "checkout" | "video" | null>(null);
+  const [paymentType, setPaymentType] = useState<"online" | "presencial">("online");
   const [paymentMethod, setPaymentMethod] = useState<"mcx" | "transfer">("mcx");
 
   const touchStartX = useRef<number | null>(null);
@@ -46,13 +44,8 @@ const ProductDetails: React.FC = () => {
 
   const allImages = [product.coverImage, ...(product.images || [])];
 
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.targetTouches[0].clientX;
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    touchEndX.current = e.targetTouches[0].clientX;
-  };
+  const handleTouchStart = (e: React.TouchEvent) => { touchStartX.current = e.targetTouches[0].clientX; };
+  const handleTouchMove = (e: React.TouchEvent) => { touchEndX.current = e.targetTouches[0].clientX; };
 
   const handleTouchEnd = () => {
     if (!touchStartX.current || !touchEndX.current) return;
@@ -64,6 +57,45 @@ const ProductDetails: React.FC = () => {
     }
     touchStartX.current = null;
     touchEndX.current = null;
+  };
+
+  const handleConfirmCheckout = async () => {
+    const targetId = paramId || product.id;
+
+    if (!targetId) {
+      console.error("ID não encontrado");
+      return null;
+    }
+
+    try {
+      const mode = paymentType === "online"
+        ? PaymentMode.ONLINE_PAYMENT
+        : PaymentMode.ONSITE_PAYMENT;
+
+      let method;
+        if(paymentType === "online"){
+
+        method = paymentMethod === "mcx"
+          ? PaymentMethod.MULTICAIXA_EXPRESS
+          : PaymentMethod.REFERENCE;
+      }
+
+
+      const response = await checkoutFromProduct(targetId, {
+        paymentMode: mode,
+        paymentMethod: method
+      });
+
+      if (response && response.data) {
+        navigate("/orders/success", { state: { order: response.data } });
+        return response.data;
+      }
+
+      return response;
+    } catch (error) {
+      console.error("Erro ao finalizar checkout", error);
+      throw error;
+    }
   };
 
   const closeModal = () => setModalType(null);
@@ -78,9 +110,7 @@ const ProductDetails: React.FC = () => {
         backTo={-1}
         rightElement={
           <button className="size-10 flex items-center justify-center bg-card rounded-full shadow-soft">
-            <span className="material-symbols-outlined text-foreground">
-              share
-            </span>
+            <span className="material-symbols-outlined text-foreground">share</span>
           </button>
         }
       />
@@ -115,42 +145,26 @@ const ProductDetails: React.FC = () => {
           <div className="px-4 md:px-6 lg:px-0 -mt-8 lg:mt-0 space-y-4 relative z-10">
             <div className="bg-card p-6 rounded-xl shadow-soft border border-border">
               <div className="flex justify-between items-start mb-2 gap-4">
-                <h1 className="text-2xl md:text-3xl font-bold leading-tight flex-1">
-                  {product.name}
-                </h1>
+                <h1 className="text-2xl md:text-3xl font-bold leading-tight flex-1">{product.name}</h1>
                 <div className="bg-primary/10 text-primary px-3 py-1 rounded-lg shrink-0">
-                  <span className="text-xs font-bold uppercase">
-                    {getProductConditionLabel(product.condition)}
-                  </span>
+                  <span className="text-xs font-bold uppercase">{getProductConditionLabel(product.condition)}</span>
                 </div>
               </div>
 
               <div className="flex items-baseline gap-1">
-                <span className="text-3xl md:text-4xl font-price font-bold text-primary">
-                  {formatPrice(product.price, false)}
-                </span>
-                <span className="text-lg md:text-xl font-price font-bold text-primary">
-                  Kz
-                </span>
+                <span className="text-3xl md:text-4xl font-price font-bold text-primary">{formatPrice(product.price, false)}</span>
+                <span className="text-lg md:text-xl font-price font-bold text-primary">Kz</span>
               </div>
 
               <div className="mt-4 flex flex-wrap items-center gap-y-2 text-muted-foreground text-sm">
                 <div className="flex items-center gap-1">
-                  <span className="material-symbols-outlined text-sm">
-                    inventory_2
-                  </span>
+                  <span className="material-symbols-outlined text-sm">inventory_2</span>
                   <span>{product.stock.availableQuantity} disponíveis</span>
                 </div>
                 <span className="mx-2 text-border">•</span>
-                <div
-                  className={`flex items-center gap-1 ${getProductStatusColor(product.status)} bg-transparent font-bold`}
-                >
-                  <span className="material-symbols-outlined text-[16px]">
-                    check_circle
-                  </span>
-                  <span className="text-xs uppercase tracking-wide">
-                    {getProductStatusLabel(product.status)}
-                  </span>
+                <div className={`flex items-center gap-1 ${getProductStatusColor(product.status)} bg-transparent font-bold`}>
+                  <span className="material-symbols-outlined text-[16px]">check_circle</span>
+                  <span className="text-xs uppercase tracking-wide">{getProductStatusLabel(product.status)}</span>
                 </div>
               </div>
             </div>
@@ -159,9 +173,7 @@ const ProductDetails: React.FC = () => {
 
             <div className="bg-card p-6 rounded-xl shadow-soft border border-border">
               <h3 className="font-bold text-lg mb-4">Descrição</h3>
-              <p className="text-muted-foreground leading-relaxed text-sm whitespace-pre-line">
-                {product.description}
-              </p>
+              <p className="text-muted-foreground leading-relaxed text-sm whitespace-pre-line">{product.description}</p>
             </div>
 
             {product.verificationVideo && (
@@ -171,26 +183,18 @@ const ProductDetails: React.FC = () => {
               >
                 <div className="relative size-14 shrink-0 rounded-lg overflow-hidden bg-primary/5 flex items-center justify-center border border-primary/20">
                   <div className="absolute inset-0 bg-primary/10 flex items-center justify-center z-10">
-                    <span className="material-symbols-outlined text-primary text-2xl fill-1">
-                      play_circle
-                    </span>
+                    <span className="material-symbols-outlined text-primary text-2xl fill-1">play_circle</span>
                   </div>
                 </div>
-
                 <div className="flex-1 text-left">
                   <div className="flex items-center gap-1.5 mb-0.5">
                     <span className="material-symbols-outlined text-primary text-lg">verified_user</span>
                     <h4 className="font-bold text-sm uppercase tracking-tight text-foreground">Verificação Real</h4>
                   </div>
-                  <p className="text-[11px] text-muted-foreground leading-tight">
-                    Toque para confirmar o estado do produto em vídeo.
-                  </p>
+                  <p className="text-[11px] text-muted-foreground leading-tight">Toque para confirmar o estado do produto em vídeo.</p>
                 </div>
-
                 <div className="size-8 rounded-full bg-primary/5 flex items-center justify-center">
-                  <span className="material-symbols-outlined text-primary text-xl">
-                    chevron_right
-                  </span>
+                  <span className="material-symbols-outlined text-primary text-xl">chevron_right</span>
                 </div>
               </button>
             )}
@@ -227,12 +231,12 @@ const ProductDetails: React.FC = () => {
             deliveryFee={deliveryFee}
             total={total}
             onClose={closeModal}
+            onConfirm={handleConfirmCheckout}
           />
         )}
 
         {modalType === "video" && product.verificationVideo && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center">
-            {/* Overlay Escuro com Blur */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -240,25 +244,19 @@ const ProductDetails: React.FC = () => {
               onClick={closeModal}
               className="absolute inset-0 bg-black backdrop-blur-md"
             />
-
-            {/* Player Container: Fullscreen no Mobile, Modal no Desktop */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 30 }}
               className="relative w-full h-full md:h-auto md:max-w-4xl md:aspect-video md:rounded-3xl overflow-hidden shadow-2xl z-10 bg-black"
             >
-              {/* Botão Fechar - Flutuante e Limpo */}
               <button
                 onClick={closeModal}
                 className="absolute top-6 right-6 z-50 size-12 flex items-center justify-center bg-black/30 text-white rounded-full hover:bg-black/50 transition-colors backdrop-blur-md border border-white/10 shadow-lg active:scale-90"
               >
                 <span className="material-symbols-outlined text-3xl">close</span>
               </button>
-
               <VideoPlayer src={`${BASE_UPLOAD_URL}/${product.verificationVideo}`} />
-
-              
             </motion.div>
           </div>
         )}

@@ -15,7 +15,7 @@ const PaymentChoiceModal: React.FC<Props> = ({ onSelect, onClose }) => {
         exit={{ scale: 0.9, opacity: 0 }}
         className="bg-white dark:bg-[#1c182d] w-full max-w-sm rounded-3xl p-6 shadow-2xl"
       >
-        <h3 className="text-xl font-black mb-6 text-center">
+        <h3 className="text-xl font-black mb-6 text-center text-gray-900 dark:text-white">
           Tipo de Pagamento
         </h3>
         <div className="grid grid-cols-1 gap-3">
@@ -23,24 +23,18 @@ const PaymentChoiceModal: React.FC<Props> = ({ onSelect, onClose }) => {
             onClick={() => onSelect("online")}
             className="flex items-center gap-4 p-4 rounded-2xl border-2 border-gray-100 dark:border-white/5 hover:border-[#6d3ff8] transition-all bg-gray-50 dark:bg-white/5"
           >
-            <span className="material-symbols-outlined text-[#6d3ff8] text-3xl">
-              language
-            </span>
-            <div className="text-left">
+            <span className="material-symbols-outlined text-[#6d3ff8] text-3xl">language</span>
+            <div className="text-left text-gray-900 dark:text-white">
               <p className="font-bold">Pagamento Online</p>
-              <p className="text-xs text-gray-500">
-                MCX Express ou Transferência
-              </p>
+              <p className="text-xs text-gray-500">MCX Express ou Transferência</p>
             </div>
           </button>
           <button
             onClick={() => onSelect("presencial")}
             className="flex items-center gap-4 p-4 rounded-2xl border-2 border-gray-100 dark:border-white/5 hover:border-[#6d3ff8] transition-all bg-gray-50 dark:bg-white/5"
           >
-            <span className="material-symbols-outlined text-[#6d3ff8] text-3xl">
-              handshake
-            </span>
-            <div className="text-left">
+            <span className="material-symbols-outlined text-[#6d3ff8] text-3xl">handshake</span>
+            <div className="text-left text-gray-900 dark:text-white">
               <p className="font-bold">Pagamento Presencial</p>
               <p className="text-xs text-gray-500">Pague e levante no Trallo</p>
             </div>
