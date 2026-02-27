@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import PageHeader from "../components/PageHeader";
 import CartItemCard from "../components/CartItemCard";
 import PaymentChoiceModal from "@/components/PaymentChoiceModal";
@@ -13,6 +14,7 @@ import {
   clearCart,
 } from "@/services/cart.service";
 import { BASE_UPLOAD_URL } from "@/api/endpoints";
+import { checkoutFromCart, PaymentMethod, PaymentMode } from "@/services/checkout.service";
 
 interface CartItem {
   id: string;
@@ -24,6 +26,7 @@ interface CartItem {
 }
 
 const CartPage: React.FC = () => {
+  const navigate = useNavigate();
   const [items, setItems] = useState<CartItem[]>([]);
   const [modalType, setModalType] = useState<
     "single" | "all" | "payment_choice" | "checkout" | null
@@ -93,6 +96,36 @@ const CartPage: React.FC = () => {
       }
     }
     closeModal();
+  };
+
+  const handleConfirmCheckout = async () => {
+    try {
+      const mode = paymentType === "online"
+        ? PaymentMode.ONLINE_PAYMENT
+        : PaymentMode.ONSITE_PAYMENT;
+
+      let method;
+      if (paymentType === "online") {
+        method = paymentMethod === "mcx"
+          ? PaymentMethod.MULTICAIXA_EXPRESS
+          : PaymentMethod.REFERENCE;
+      }
+
+      const response = await checkoutFromCart({
+        paymentMode: mode,
+        paymentMethod: method
+      });
+
+      if (response && response.data) {
+        navigate("/orders/success", { state: { order: response.data } });
+        return response.data;
+      }
+
+      return response;
+    } catch (error) {
+      console.error("Erro ao finalizar checkout do carrinho", error);
+      throw error;
+    }
   };
 
   const closeModal = () => {
@@ -193,6 +226,7 @@ const CartPage: React.FC = () => {
             deliveryFee={deliveryFee}
             total={total}
             onClose={closeModal}
+            onConfirm={handleConfirmCheckout}
           />
         )}
 
