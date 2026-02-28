@@ -15,7 +15,7 @@ export const RegisterEntryForm: React.FC<Props> = ({ onSuccess, onCancel }) => {
     orderNumber: "",
     productSku: "",
     shelfCode: "",
-    row: "",
+    row: 0,
     quantity: 1,
   });
 
@@ -31,6 +31,7 @@ export const RegisterEntryForm: React.FC<Props> = ({ onSuccess, onCancel }) => {
     try {
       const res = await registerStockEntry({
         ...formData,
+        row: Number(formData.row),
         quantity: Number(formData.quantity),
       });
 
@@ -41,7 +42,7 @@ export const RegisterEntryForm: React.FC<Props> = ({ onSuccess, onCancel }) => {
           orderNumber: prev.orderNumber,
           productSku: "",
           shelfCode: "",
-          row: "",
+          row: 0,
           quantity: 1,
         }));
 
@@ -49,7 +50,7 @@ export const RegisterEntryForm: React.FC<Props> = ({ onSuccess, onCancel }) => {
       } else {
         toast.error(res.message || "Erro ao registrar entrada.");
       }
-    } catch (err) {
+    } catch (err: any) {
       toast.error(err.message ?? "Falha na comunicação com o servidor.");
     } finally {
       setLoading(false);
@@ -80,8 +81,9 @@ export const RegisterEntryForm: React.FC<Props> = ({ onSuccess, onCancel }) => {
         <TralloInput
           label="Fileira"
           placeholder="2"
-          value={formData.row}
-          onChange={(e) => setFormData({ ...formData, row: e })}
+          type="number"
+          value={formData.row.toString()}
+          onChange={(e) => setFormData({ ...formData, row: Number(e) })}
         />
       </div>
       <TralloInput

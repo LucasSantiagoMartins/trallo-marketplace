@@ -42,7 +42,7 @@ export interface RegisterEntryDto {
   orderNumber: string;
   productSku: string;
   shelfCode: string;
-  row: string;
+  row: number;
   quantity: number;
 }
 
