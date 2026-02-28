@@ -37,7 +37,9 @@ export const endpoints = {
   orders: {
     buyerOrders: "/orders/my/buyer",
   },
-
+  wallets: {
+    summary: "/wallets/summary",
+  },
   transactions: {
     my: (limit: number, page: number, type?: string, status?: string) => {
       let url = `/transactions/my?limit=${limit}&page=${page}`;

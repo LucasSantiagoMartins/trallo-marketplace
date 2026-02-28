@@ -1,15 +1,40 @@
-import React, { useState } from "react";
-import TransactionItem from "../components/TransactionItem";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import BottomNavigation from "@/components/BottomNavigation";
 import PerformanceCard from "../components/PerformanceCard";
-import { useNavigate } from "react-router-dom";
+import MyTransactionCard from "@/components/MyTransactionCard";
 import { useAuth } from "@/context/AuthContext";
+import { walletService } from "@/services/wallet.service";
+import { WalletSummaryDTO } from "@/dtos/wallet";
+import { formatPrice } from "@/utils/currency";
 
 const WalletScreen: React.FC = () => {
   const [isVisible, setIsVisible] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [walletData, setWalletData] = useState<WalletSummaryDTO | null>(null);
+
   const navigate = useNavigate();
+  const { user } = useAuth();
+
   const toggleVisibility = () => setIsVisible(!isVisible);
-  const { user } = useAuth(); // Acessando os dados do usuário logado
+
+  const fetchWalletSummary = async () => {
+    setLoading(true);
+    try {
+      const response = await walletService.getWalletSummary();
+      if (response.success) {
+        setWalletData(response.data);
+      }
+    } catch (error) {
+      console.error("Erro ao buscar dados da carteira:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchWalletSummary();
+  }, []);
 
   return (
     <div className="bg-background-light dark:bg-background-dark min-h-screen font-display text-[#181112] dark:text-white antialiased">
@@ -28,10 +53,10 @@ const WalletScreen: React.FC = () => {
           <div className="flex items-center gap-3">
             <div className="text-right">
               <p className="text-[10px] text-[#8c5f67] dark:text-gray-400 font-bold uppercase tracking-wider">
-                Olá, {user.userName}
+                Olá, {user?.userName || "Usuário"}
               </p>
               <p className="text-[10px] font-black text-primary uppercase tracking-tight">
-                vendedor
+                {walletData?.type === "SELLER" ? "vendedor" : "comprador"}
               </p>
             </div>
             <div className="size-10 rounded-full border-2 border-primary/20 p-0.5 shadow-sm">
@@ -61,7 +86,9 @@ const WalletScreen: React.FC = () => {
                       Saldo Disponível
                     </p>
                     <h2 className="text-white text-3xl font-bold mt-1">
-                      {isVisible ? "1.250.000,00" : "••••••••"}{" "}
+                      {isVisible
+                        ? formatPrice(walletData?.availableBalance || 0, false)
+                        : "••••••••"}{" "}
                       <span className="text-sm font-medium">Kz</span>
                     </h2>
                   </div>
@@ -72,7 +99,9 @@ const WalletScreen: React.FC = () => {
                     <p className="text-xs font-medium uppercase tracking-wider">
                       Saldo Retido:{" "}
                       <span className="text-white font-bold">
-                        {isVisible ? "45.000,00 Kz" : "••••"}
+                        {isVisible
+                          ? formatPrice(walletData?.heldBalance || 0, true)
+                          : "••••"}
                       </span>
                     </p>
                   </div>
@@ -81,10 +110,11 @@ const WalletScreen: React.FC = () => {
                 <div className="relative z-10 flex justify-between items-end mt-6">
                   <div>
                     <p className="text-white/60 text-[10px] uppercase tracking-widest">
-                      Número da Conta
+                      ID da Carteira
                     </p>
-                    <p className="text-white tracking-widest font-mono">
-                      **** **** 4829
+                    <p className="text-white tracking-widest font-mono text-xs opacity-80">
+                      {walletData?.id.split("-")[0]}...
+                      {walletData?.id.split("-").pop()}
                     </p>
                   </div>
                   <button
@@ -110,18 +140,18 @@ const WalletScreen: React.FC = () => {
                 <div className="size-12 rounded-2xl bg-gradient-to-br from-[#8B5CF6] to-[#6D28D9] flex items-center justify-center text-white mb-4 shadow-lg shadow-purple-500/20">
                   <span className="material-symbols-outlined">lock_clock</span>
                 </div>
-                <h4 className="font-black text-lg mb-2 tracking-tight">
+                <h4 className="font-black text-lg mb-2 tracking-tight text-[#181112] dark:text-white">
                   Por que o saldo está retido?
                 </h4>
                 <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
                   Este montante corresponde a pedidos já pagos e aguardando
-                  apenas a entrega ao cliente.
+                  apenas a entrega ao cliente para ser liberado.
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Coluna Direita: Desempenho e Transações (Scroll normal) */}
+          {/* Coluna Direita: Desempenho e Transações */}
           <div className="lg:col-span-7 lg:col-start-6">
             <PerformanceCard />
 
@@ -138,19 +168,19 @@ const WalletScreen: React.FC = () => {
             </div>
 
             <div className="space-y-4">
-              {/* Adicionei mais itens para garantir que haja scroll */}
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <TransactionItem
-                  key={i}
-                  type={i % 2 === 0 ? "venda" : "compra"}
-                  title={
-                    i % 2 === 0 ? "Venda de Produto" : "Compra de Material"
-                  }
-                  date="Hoje, 14:20"
-                  amount={i % 2 === 0 ? 450000 : -85000}
-                  status="Concluído"
-                />
-              ))}
+              {loading ? (
+                <div className="text-center py-10 opacity-50 font-bold italic">
+                  Carregando transações...
+                </div>
+              ) : walletData && walletData.transactions.length > 0 ? (
+                walletData.transactions.map((transaction) => (
+                  <MyTransactionCard key={transaction.id} {...transaction} />
+                ))
+              ) : (
+                <div className="py-10 text-center opacity-50 border-2 border-dashed border-gray-200 dark:border-gray-800 rounded-3xl font-medium">
+                  Nenhuma transação encontrada.
+                </div>
+              )}
             </div>
           </div>
         </div>

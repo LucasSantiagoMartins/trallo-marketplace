@@ -8,7 +8,7 @@ import {
 } from "@/utils/mappers/transaction.mappers";
 import { TransactionType } from "@/enums/transaction";
 import { formatPrice } from "@/utils/currency";
-import { formatDateFriendly } from "@/utils/date"; // ajuste o path conforme seu projeto
+import { formatDateFriendly } from "@/utils/date"; 
 
 const MyTransactionCard: React.FC<TransactionDTO> = ({
   amount,
