@@ -16,28 +16,37 @@ export interface StockMovementProductDTO {
   coverImage: string;
   shelfCode: string;
   row: number;
+  quantity: number;
+}
+
+export interface DeliveryDetailsDTO {
+  id: string;
+  status: string;
+  trackingCode: string;
+  shippedAt: string | null;
+  deliveredAt: string | null;
+  delivererId: number;
+  delivererName: string;
 }
 
 export interface StockMovementDTO {
   id: string;
   type: MovementType;
   origin: MovementOrigin;
-  quantity: number;
   createdAt: string;
   referenceId: string | null;
   product: StockMovementProductDTO;
+  delivery?: DeliveryDetailsDTO;
 }
-
 export interface RegisterEntryDto {
+  orderNumber: string;
   productSku: string;
   shelfCode: string;
-  row: number;
+  row: string;
   quantity: number;
 }
 
 export interface RegisterExitDto {
-  productSku: string;
-  quantity: number;
-  delivery: number
+  orderNumber: string;
+  delivererId: number;
 }
-

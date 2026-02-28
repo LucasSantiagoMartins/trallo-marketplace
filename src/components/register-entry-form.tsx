@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import toast from "react-hot-toast"; // Importação do novo toast
+import toast from "react-hot-toast";
 import TralloInput from "@/components/TralloInput";
 import TralloButton from "@/components/TralloButton";
 import { registerStockEntry } from "@/services/warehouse-inventory.service";
@@ -12,17 +12,18 @@ interface Props {
 export const RegisterEntryForm: React.FC<Props> = ({ onSuccess, onCancel }) => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
+    orderNumber: "",
     productSku: "",
     shelfCode: "",
-    row: 0,
+    row: "",
     quantity: 1,
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.productSku || !formData.shelfCode) {
-      toast.error("Por favor, preencha a localização e o SKU.");
+    if (!formData.orderNumber || !formData.productSku || !formData.shelfCode) {
+      toast.error("Por favor, preencha o número do pedido, SKU e localização.");
       return;
     }
 
@@ -30,18 +31,26 @@ export const RegisterEntryForm: React.FC<Props> = ({ onSuccess, onCancel }) => {
     try {
       const res = await registerStockEntry({
         ...formData,
-        row: Number(formData.row),
         quantity: Number(formData.quantity),
       });
 
       if (res.success) {
         toast.success("Entrada registrada com sucesso.");
+
+        setFormData((prev) => ({
+          orderNumber: prev.orderNumber,
+          productSku: "",
+          shelfCode: "",
+          row: "",
+          quantity: 1,
+        }));
+
         onSuccess();
       } else {
         toast.error(res.message || "Erro ao registrar entrada.");
       }
     } catch (err) {
-      toast.error("Falha na comunicação com o servidor.");
+      toast.error(err.message ?? "Falha na comunicação com o servidor.");
     } finally {
       setLoading(false);
     }
@@ -49,6 +58,12 @@ export const RegisterEntryForm: React.FC<Props> = ({ onSuccess, onCancel }) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      <TralloInput
+        label="Número do Pedido"
+        placeholder="PED-XXXXXX"
+        value={formData.orderNumber}
+        onChange={(e) => setFormData({ ...formData, orderNumber: e })}
+      />
       <TralloInput
         label="Código do Produto"
         placeholder="Ex: TR-123"
@@ -58,15 +73,15 @@ export const RegisterEntryForm: React.FC<Props> = ({ onSuccess, onCancel }) => {
       <div className="grid grid-cols-2 gap-4">
         <TralloInput
           label="Prateleira"
-          placeholder="A1"
+          placeholder="P-A3"
           value={formData.shelfCode}
           onChange={(e) => setFormData({ ...formData, shelfCode: e })}
         />
         <TralloInput
           label="Fileira"
-          type="number"
-          value={formData.row.toString()}
-          onChange={(e) => setFormData({ ...formData, row: Number(e) })}
+          placeholder="2"
+          value={formData.row}
+          onChange={(e) => setFormData({ ...formData, row: e })}
         />
       </div>
       <TralloInput

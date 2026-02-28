@@ -30,7 +30,6 @@ const InventoryManagement: React.FC = () => {
         activeTab === "entradas"
           ? await getStockEntries()
           : await getStockExits();
-
       if (response.success) {
         setMovements(response.data);
       }

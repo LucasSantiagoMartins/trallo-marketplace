@@ -11,16 +11,17 @@ interface ProductProps {
 }
 
 export const ProductStockCard: React.FC<ProductProps> = ({ movement }) => {
-  const { product, quantity, type, origin, createdAt } = movement;
-  const [copied, setCopied] = useState(false);
+  const { product, type, origin, createdAt, delivery } = movement;
+  const [copiedSku, setCopiedSku] = useState(false);
+  const [copiedTracking, setCopiedTracking] = useState(false);
 
   const typeConfig = movementTypeMap[type];
   const originConfig = movementOriginMap[origin];
 
-  const handleCopySku = () => {
-    navigator.clipboard.writeText(product.sku);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const handleCopy = (text: string, setter: (v: boolean) => void) => {
+    navigator.clipboard.writeText(text);
+    setter(true);
+    setTimeout(() => setter(false), 2000);
   };
 
   return (
@@ -44,48 +45,85 @@ export const ProductStockCard: React.FC<ProductProps> = ({ movement }) => {
               <h3 className="font-clash font-bold text-slate-900 dark:text-white text-lg leading-tight truncate">
                 {product.name}
               </h3>
-              <div className="flex items-center gap-2 mt-1">
-                <p className="text-[11px] font-numbers text-slate-400 tracking-wider">
-                  Código do produto: {product.sku}
-                </p>
-                <button
-                  onClick={handleCopySku}
-                  className="flex items-center justify-center p-1 rounded-md hover:bg-slate-100 dark:hover:bg-white/10 transition-colors text-slate-400 hover:text-[#6C3EF8]"
-                >
-                  <span className="material-symbols-outlined text-[14px]">
-                    {copied ? "check" : "content_copy"}
-                  </span>
-                </button>
+
+              <div className="flex flex-col gap-1 mt-1">
+                <div className="flex items-center gap-2">
+                  <p className="text-[11px] font-numbers text-slate-400 tracking-wider">
+                    Código: {product.sku}
+                  </p>
+                  <button
+                    onClick={() => handleCopy(product.sku, setCopiedSku)}
+                    className="flex items-center justify-center p-1 rounded-md hover:bg-slate-100 dark:hover:bg-white/10 transition-colors text-slate-400 hover:text-[#6C3EF8]"
+                  >
+                    <span className="material-symbols-outlined text-[14px]">
+                      {copiedSku ? "check" : "content_copy"}
+                    </span>
+                  </button>
+                </div>
+
+                {delivery?.trackingCode && (
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1 text-[#6C3EF8]">
+                      <span className="material-symbols-outlined text-[14px]">
+                        local_shipping
+                      </span>
+                      <p className="text-[11px] font-bold tracking-wider">
+                        Rastreio: {delivery.trackingCode}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() =>
+                        handleCopy(delivery.trackingCode, setCopiedTracking)
+                      }
+                      className="flex items-center justify-center p-1 rounded-md hover:bg-slate-100 dark:hover:bg-white/10 transition-colors text-slate-400 hover:text-[#6C3EF8]"
+                    >
+                      <span className="material-symbols-outlined text-[14px]">
+                        {copiedTracking ? "check" : "content_copy"}
+                      </span>
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
-            {/* O badge abaixo agora ficará Verde ou Vermelho conforme o mapper */}
-            <span
-              className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-sm ${typeConfig.color}`}
-            >
-              {typeConfig.label}
-            </span>
+
+            <div className="flex flex-col items-end gap-1.5">
+              <span
+                className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-sm ${typeConfig.color}`}
+              >
+                {typeConfig.label}
+              </span>
+              {product.quantity === 0 && (
+                <span className="px-2 py-0.5 rounded-md text-[9px] font-bold uppercase bg-orange-50 dark:bg-orange-500/10 text-orange-500 border border-orange-200 dark:border-orange-500/20">
+                 Entregue / concluído
+                </span>
+              )}
+            </div>
           </div>
 
           <div className="h-px w-full bg-slate-100 dark:bg-white/5 my-3" />
 
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
             <div>
-              <p className="text-[9px] text-slate-400 uppercase font-black tracking-widest mb-1">
-                Movimentado
-              </p>
-              <div className="flex items-baseline gap-1">
-                <span className="font-numbers text-xl font-bold text-slate-900 dark:text-white">
-                  {quantity}
-                </span>
-                <span className="text-[10px] font-medium text-slate-500 uppercase">
-                  unidade
-                </span>
-              </div>
+              {product.quantity > 0 && (
+                <>
+                  <p className="text-[9px] text-slate-400 uppercase font-black tracking-widest mb-1">
+                    Qtd. Produto
+                  </p>
+                  <div className="flex items-baseline gap-1">
+                    <span className="font-numbers text-xl font-bold text-slate-900 dark:text-white">
+                      {product.quantity}
+                    </span>
+                    <span className="text-[10px] font-medium text-slate-500 uppercase">
+                      un
+                    </span>
+                  </div>
+                </>
+              )}
             </div>
 
             <div>
               <p className="text-[9px] text-slate-400 uppercase font-black tracking-widest mb-1">
-                Prateleira / Fila
+                Prateleira / Fileira
               </p>
               <p className="text-xs font-bold text-slate-700 dark:text-slate-300">
                 {product.shelfCode}
@@ -96,10 +134,17 @@ export const ProductStockCard: React.FC<ProductProps> = ({ movement }) => {
 
             <div className="col-span-2 sm:col-span-1 sm:text-right flex flex-col sm:justify-end items-start sm:items-end">
               <span
-                className={`px-2 py-0.5 rounded-md text-[9px] font-bold uppercase mb-1.5 ${originConfig.color}`}
+                className={`px-2 py-0.5 rounded-md text-[9px] font-bold uppercase mb-1 ${originConfig.color}`}
               >
                 {originConfig.label}
               </span>
+
+              {delivery?.delivererName && (
+                <p className="text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase mb-1">
+                  Entregador: {delivery.delivererName}
+                </p>
+              )}
+
               <p className="text-[10px] text-slate-400 font-numbers">
                 {new Date(createdAt).toLocaleDateString("pt-BR")} às{" "}
                 {new Date(createdAt).toLocaleTimeString("pt-BR", {
