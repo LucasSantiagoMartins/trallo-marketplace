@@ -1,137 +1,105 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { AnimatePresence } from "framer-motion";
-import TransactionItem, { TransactionType } from "./TransactionItem";
 import BottomNavigation from "./BottomNavigation";
 import PageHeader from "./PageHeader";
 import SummaryCard from "./SummaryCard";
-import FilterModal from "./FilterModal";
-
-interface Transaction {
-  id: number;
-  type: TransactionType;
-  title: string;
-  date: string;
-  fullDate: Date;
-  amount: number;
-  status: "Concluído" | "Pendente" | "Cancelado";
-  day: string;
-}
-
-const TRANSACTIONS_DATA: Transaction[] = [
-  {
-    id: 1,
-    type: "venda",
-    title: "Venda de iPhone 13",
-    date: "14:20 • Saldo Trallo",
-    fullDate: new Date(),
-    amount: 250000,
-    status: "Concluído",
-    day: "Hoje",
-  },
-  {
-    id: 2,
-    type: "compra",
-    title: "Restaurante Pooke",
-    date: "12:15 • Cartão Débito",
-    fullDate: new Date(),
-    amount: -8500,
-    status: "Concluído",
-    day: "Hoje",
-  },
-  {
-    id: 3,
-    type: "levantamento",
-    title: "Levantamento Banco BAI",
-    date: "18:45 • Multicaixa",
-    fullDate: new Date(new Date().setDate(new Date().getDate() - 1)),
-    amount: -50000,
-    status: "Pendente",
-    day: "Ontem",
-  },
-  {
-    id: 4,
-    type: "venda",
-    title: "Venda Tênis Nike Air",
-    date: "09:30 • Saldo Trallo",
-    fullDate: new Date(new Date().setDate(new Date().getDate() - 1)),
-    amount: 45000,
-    status: "Concluído",
-    day: "Ontem",
-  },
-];
+import TransactionFilterModal from "./TransactionFilterModal";
+import Pagination from "@/components/Pagination";
+import MyTransactionCard from "@/components/MyTransactionCard";
+import { transactionService } from "@/services/transaction.service";
+import { MyTransactionsResponseDTO } from "@/dtos/transaction";
+import { formatPrice } from "@/utils/currency";
 
 const HistoryScreen: React.FC = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [activeFilters, setActiveFilters] = useState({
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<MyTransactionsResponseDTO | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
+  const [apiFilters, setApiFilters] = useState({
     type: "todas",
-    period: "todos",
     status: "todos",
   });
 
-  const toggleFilter = () => setIsFilterOpen(!isFilterOpen);
+  const [localFilters, setLocalFilters] = useState({
+    type: "todas",
+    status: "todos",
+  });
+
+  const fetchTransactions = async () => {
+    setLoading(true);
+    try {
+      const typeParam =
+        apiFilters.type !== "todas" ? apiFilters.type : undefined;
+      const statusParam =
+        apiFilters.status !== "todos" ? apiFilters.status : undefined;
+
+      const response = await transactionService.getMyTransactions(
+        itemsPerPage,
+        currentPage,
+        typeParam,
+        statusParam,
+      );
+
+      if (response.success) {
+        setData(response.data);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTransactions();
+  }, [currentPage, apiFilters]);
 
   const filteredTransactions = useMemo(() => {
-    return TRANSACTIONS_DATA.filter((t) => {
+    if (!data) return [];
+    return data.transactions.filter((t) => {
       const matchType =
-        activeFilters.type === "todas" || t.type === activeFilters.type;
+        localFilters.type === "todas" || t.type === localFilters.type;
       const matchStatus =
-        activeFilters.status === "todos" || t.status === activeFilters.status;
-
-      let matchPeriod = true;
-      const now = new Date();
-      if (activeFilters.period === "semana") {
-        const lastWeek = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-        matchPeriod = t.fullDate >= lastWeek;
-      } else if (activeFilters.period === "mes") {
-        matchPeriod =
-          t.fullDate.getMonth() === now.getMonth() &&
-          t.fullDate.getFullYear() === now.getFullYear();
-      } else if (activeFilters.period === "ano") {
-        matchPeriod = t.fullDate.getFullYear() === now.getFullYear();
-      }
-      return matchType && matchStatus && matchPeriod;
+        localFilters.status === "todos" || t.status === localFilters.status;
+      return matchType && matchStatus;
     });
-  }, [activeFilters]);
+  }, [data, localFilters]);
 
-  const stats = useMemo(() => {
-    const getSum = (type: string) =>
-      TRANSACTIONS_DATA.filter((t) => t.type === type).reduce(
-        (acc, curr) => acc + Math.abs(curr.amount),
-        0,
-      );
-    return {
-      venda: getSum("venda"),
-      compra: getSum("compra"),
-      levantamento: getSum("levantamento"),
-    };
-  }, []);
+  const toggleFilter = () => setIsFilterOpen(!isFilterOpen);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
     <div className="bg-[#F8F9FD] dark:bg-[#0D0D12] min-h-screen font-display text-[#121118] dark:text-white antialiased">
-      <PageHeader
-        title="Histórico"
-        backTo={-1}
-      />
+      <PageHeader title="Histórico" backTo={-1} />
 
       <main className="max-w-6xl mx-auto px-4 md:px-6 pt-24 pb-32">
         <section className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-6 mb-10">
           <SummaryCard
             title="Vendas"
-            value={stats.venda.toLocaleString()}
-            color="from-emerald-400 via-emerald-500 to-teal-700" // 3 cores
+            value={
+              data?.stats.totalSales
+                ? formatPrice(data.stats.totalSales, true)
+                : "Sem vendas"
+            }
+            isEmpty={!data?.stats.totalSales}
+            color="from-emerald-400 via-emerald-500 to-teal-700"
             icon="payments"
           />
-          <SummaryCard
-            title="Compras"
-            value={stats.compra.toLocaleString()}
-            color="from-orange-400 via-red-500 to-red-700" // 3 cores
-            icon="shopping_basket"
-          />
           <div className="col-span-2 md:col-span-1">
-            {/* Este usará o padrão Índigo de 3 cores definido no componente */}
             <SummaryCard
               title="Levantamentos"
-              value={stats.levantamento.toLocaleString()}
+              value={
+                data?.stats.totalWithdrawals
+                  ? formatPrice(data.stats.totalWithdrawals, true)
+                  : "Nenhum saque"
+              }
+              isEmpty={!data?.stats.totalWithdrawals}
               icon="account_balance"
             />
           </div>
@@ -155,23 +123,31 @@ const HistoryScreen: React.FC = () => {
             </div>
 
             <div className="space-y-8">
-              {["Hoje", "Ontem"].map((day) => {
-                const dayTransactions = filteredTransactions.filter(
-                  (t) => t.day === day,
-                );
-                if (dayTransactions.length === 0) return null;
-                return (
-                  <TransactionGroup key={day} label={day}>
-                    {dayTransactions.map((t) => (
-                      <TransactionItem key={t.id} {...t} />
-                    ))}
-                  </TransactionGroup>
-                );
-              })}
-              {filteredTransactions.length === 0 && (
-                <div className="py-20 text-center opacity-50 font-medium bg-white dark:bg-gray-900/50 rounded-[2.5rem] border border-dashed border-gray-200 dark:border-gray-800">
-                  Nenhuma movimentação encontrada.
+              {loading ? (
+                <div className="text-center py-10 opacity-50 font-bold italic">
+                  Buscando dados...
                 </div>
+              ) : (
+                <>
+                  {filteredTransactions.length > 0 ? (
+                    <TransactionGroup
+                      label={
+                        apiFilters.type !== "todas" ||
+                        apiFilters.status !== "todos"
+                          ? "Resultados da Busca"
+                          : "Recentes"
+                      }
+                    >
+                      {filteredTransactions.map((t) => (
+                        <MyTransactionCard key={t.id} {...t} />
+                      ))}
+                    </TransactionGroup>
+                  ) : (
+                    <div className="py-20 text-center opacity-50 font-medium bg-white dark:bg-gray-900/50 rounded-[2.5rem] border border-dashed border-gray-200 dark:border-gray-800">
+                      Nenhuma movimentação encontrada.
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>
@@ -179,45 +155,50 @@ const HistoryScreen: React.FC = () => {
           <aside className="hidden lg:block lg:w-[35%] sticky top-24">
             <div className="p-8 bg-gradient-to-b from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-[2.5rem] border border-gray-100 dark:border-gray-700 shadow-sm relative overflow-hidden">
               <div className="size-12 rounded-2xl bg-gradient-to-br from-[#8B5CF6] to-[#6D28D9] flex items-center justify-center text-white mb-6 shadow-lg shadow-purple-500/20">
-                <span className="material-symbols-outlined">lock_clock</span>
+                <span className="material-symbols-outlined">lightbulb</span>
               </div>
 
               <h4 className="font-black text-lg mb-3 tracking-tight text-[#181112] dark:text-white">
-                Por que existem movimentações pendentes?
+                Como encontrar o que precisa?
               </h4>
 
               <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
-                Algumas vendas e levantamentos podem levar um tempo para serem
-                processados. O valor é liberado automaticamente após{" "}
-                <span className="text-[#7C3AED] dark:text-[#A78BFA] font-bold">
-                  24h
-                </span>{" "}
-                se não houver contestações.
+                Use o botão <b>Aplicar</b> para organizar apenas o que você já
+                está vendo agora.
+                <br />
+                <br />
+                Se quiser buscar algo mais antigo, use o botão <b>
+                  Pesquisar
+                </b>{" "}
+                para carregar todo o seu histórico.
               </p>
-
-              <div className="mt-6 pt-6 border-t border-gray-100 dark:border-gray-700">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#8B5CF6]/10 to-[#6D28D9]/10 border border-[#8B5CF6]/20">
-                  <span className="material-symbols-outlined text-sm text-[#7C3AED]">
-                    verified_user
-                  </span>
-                  <p className="text-[10px] font-black text-[#7C3AED] uppercase tracking-wider">
-                    Transações Seguras
-                  </p>
-                </div>
-              </div>
             </div>
           </aside>
         </div>
       </main>
 
+      {data && data.pagination.totalPages > 1 && !loading && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={data.pagination.totalPages}
+          onPageChange={handlePageChange}
+        />
+      )}
+
       <BottomNavigation />
 
       <AnimatePresence>
         {isFilterOpen && (
-          <FilterModal
-            currentFilters={activeFilters}
-            onApply={(newFilters: any) => {
-              setActiveFilters(newFilters);
+          <TransactionFilterModal
+            currentFilters={localFilters}
+            onApplyLocal={(newFilters) => {
+              setLocalFilters(newFilters);
+              toggleFilter();
+            }}
+            onSearchAPI={(newFilters) => {
+              setApiFilters(newFilters);
+              setLocalFilters(newFilters);
+              setCurrentPage(1);
               toggleFilter();
             }}
             onClose={toggleFilter}

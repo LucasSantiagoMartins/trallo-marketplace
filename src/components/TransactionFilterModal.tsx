@@ -1,16 +1,19 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import { TransactionStatus, TransactionType } from "@/enums/transaction";
 
-interface FilterModalProps {
+interface TransactionFilterModalProps {
   onClose: () => void;
   currentFilters: any;
-  onApply: (filters: any) => void;
+  onApplyLocal: (filters: any) => void;
+  onSearchAPI: (filters: any) => void;
 }
 
-const FilterModal: React.FC<FilterModalProps> = ({
+const TransactionFilterModal: React.FC<TransactionFilterModalProps> = ({
   onClose,
   currentFilters,
-  onApply,
+  onApplyLocal,
+  onSearchAPI,
 }) => {
   const [tempFilters, setTempFilters] = useState({ ...currentFilters });
 
@@ -20,9 +23,9 @@ const FilterModal: React.FC<FilterModalProps> = ({
       key: "type",
       options: [
         { id: "todas", label: "Todas" },
-        { id: "venda", label: "Venda" },
-        { id: "compra", label: "Compra" },
-        { id: "levantamento", label: "Levant." },
+        { id: TransactionType.SALE, label: "Venda" },
+        { id: TransactionType.WITHDRAWAL, label: "Levant." },
+        { id: TransactionType.REFUND, label: "Estorno" },
       ],
     },
     {
@@ -40,9 +43,9 @@ const FilterModal: React.FC<FilterModalProps> = ({
       key: "status",
       options: [
         { id: "todos", label: "Todos" },
-        { id: "Concluído", label: "Concl." },
-        { id: "Pendente", label: "Pend." },
-        { id: "Cancelado", label: "Canc." },
+        { id: TransactionStatus.COMPLETED, label: "Concl." },
+        { id: TransactionStatus.PENDING, label: "Pend." },
+        { id: TransactionStatus.CANCELLED, label: "Canc." },
       ],
     },
   ];
@@ -108,15 +111,24 @@ const FilterModal: React.FC<FilterModalProps> = ({
           ))}
         </div>
 
-        <button
-          onClick={() => onApply(tempFilters)}
-          className="w-full py-4 bg-primary text-white font-black rounded-2xl mt-8 active:scale-95 transition-all shadow-lg shadow-primary/20"
-        >
-          Aplicar Filtros
-        </button>
+        <div className="flex gap-3 mt-8">
+          <button
+            onClick={() => onApplyLocal(tempFilters)}
+            className="flex-1 py-4 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white font-black rounded-2xl active:scale-95 transition-all"
+          >
+            Aplicar
+          </button>
+          <button
+            onClick={() => onSearchAPI(tempFilters)}
+            className="flex-[2] py-4 bg-primary text-white font-black rounded-2xl active:scale-95 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
+          >
+            <span className="material-symbols-outlined text-lg">search</span>
+            Pesquisar
+          </button>
+        </div>
       </motion.div>
     </div>
   );
 };
 
-export default FilterModal;
+export default TransactionFilterModal;

@@ -1,3 +1,5 @@
+import MyProductsPage from "@/pages/MyProducts";
+
 export const BASE_URL = "http://localhost:9090";
 export const BASE_UPLOAD_URL = "http://localhost:9090/uploads/";
 
@@ -35,7 +37,16 @@ export const endpoints = {
   orders: {
     buyerOrders: "/orders/my/buyer",
   },
-  
+
+  transactions: {
+    my: (limit: number, page: number, type?: string, status?: string) => {
+      let url = `/transactions/my?limit=${limit}&page=${page}`;
+      if (type) url += `&type=${type}`;
+      if (status) url += `&status=${status}`;
+      return url;
+    },
+  },
+
   checkouts: {
     fromCart: "/checkouts/cart",
     fromProduct: (productId: string) => `/checkouts/product/${productId}`,
