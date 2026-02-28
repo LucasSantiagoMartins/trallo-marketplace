@@ -40,6 +40,9 @@ export const endpoints = {
   wallets: {
     summary: "/wallets/summary",
   },
+  withdrawals: {
+    request: "/withdrawals",
+  },
   transactions: {
     my: (limit: number, page: number, type?: string, status?: string) => {
       let url = `/transactions/my?limit=${limit}&page=${page}`;

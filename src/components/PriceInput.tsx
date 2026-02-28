@@ -3,9 +3,14 @@ import React from "react";
 interface PriceInputProps {
   value: string;
   onChange: (value: string) => void;
+  title?: string;
 }
 
-const PriceInput: React.FC<PriceInputProps> = ({ value, onChange }) => {
+const PriceInput: React.FC<PriceInputProps> = ({
+  value,
+  onChange,
+  title = "Preço de Venda",
+}) => {
   const formatValue = (val: string) => {
     const raw = val.replace(/\D/g, "");
     if (!raw) return "";
@@ -21,7 +26,7 @@ const PriceInput: React.FC<PriceInputProps> = ({ value, onChange }) => {
   return (
     <section className="flex flex-col gap-2 w-full max-w-md mx-auto">
       <label className="text-xs font-bold text-muted-foreground uppercase ml-1">
-        Preço de Venda
+        {title}
       </label>
       <div className="relative w-full py-6 rounded-2xl bg-card border border-border focus-within:border-primary transition-all flex items-center">
         <input

@@ -1,26 +1,72 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import toast from "react-hot-toast";
 import MobileLayout from "@/layouts/MobileLayout";
 import PageHeader from "@/components/PageHeader";
 import PriceInput from "@/components/PriceInput";
 import TralloButton from "@/components/TralloButton";
 import BottomNavigation from "@/components/BottomNavigation";
+import { withdrawalService } from "@/services/withdrawal.service";
+import { walletService } from "@/services/wallet.service";
+import { formatPrice } from "@/utils/currency";
 
 const WithdrawScreen: React.FC = () => {
   const navigate = useNavigate();
   const [amount, setAmount] = useState("");
   const [loading, setLoading] = useState(false);
+  const [fetchingBalance, setFetchingBalance] = useState(true);
+  const [availableBalance, setAvailableBalance] = useState<number>(0);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
-  const handleWithdraw = () => {
-    if (!amount) return;
+  useEffect(() => {
+    const fetchBalance = async () => {
+      try {
+        const res = await walletService.getWalletSummary();
+        if (res.success) {
+          setAvailableBalance(res.data.availableBalance);
+        }
+      } catch (err) {
+        console.error("Erro ao carregar saldo:", err);
+      } finally {
+        setFetchingBalance(false);
+      }
+    };
+
+    fetchBalance();
+  }, []);
+
+  const handleWithdraw = async () => {
+    const numericAmount = Number(amount);
+
+    if (!amount || numericAmount <= 0) {
+      toast.error("Insira um valor válido para o levantamento.");
+      return;
+    }
+
+    if (numericAmount > availableBalance) {
+      toast.error("Saldo insuficiente para este levantamento.");
+      return;
+    }
+
     setLoading(true);
-    setTimeout(() => {
+    try {
+      const res = await withdrawalService.requestWithdrawal(numericAmount);
+
+      if (res.success) {
+        toast.success(res.message || "Pedido de levantamento enviado!");
+        setIsSheetOpen(false);
+        navigate("/carteira");
+      } else {
+        toast.error(res.message || "Não foi possível processar o pedido.");
+      }
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Erro ao conectar ao servidor.",
+      );
+    } finally {
       setLoading(false);
-      setIsSheetOpen(false);
-      navigate("/carteira");
-    }, 2000);
+    }
   };
 
   return (
@@ -37,7 +83,9 @@ const WithdrawScreen: React.FC = () => {
                   Saldo disponível para levantamento
                 </p>
                 <h2 className="text-3xl lg:text-4xl font-black">
-                  1.250.000,00{" "}
+                  {fetchingBalance
+                    ? "---"
+                    : formatPrice(availableBalance, false)}{" "}
                   <span className="text-lg lg:text-xl font-medium text-white/50">
                     Kz
                   </span>
@@ -74,12 +122,9 @@ const WithdrawScreen: React.FC = () => {
                   <p className="text-[9px] lg:text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">
                     Prazo de Processamento
                   </p>
-                  <p className="text-xs lg:text-sm font-medium leading-relaxed">
+                  <p className="text-xs lg:text-sm font-medium leading-relaxed text-foreground">
                     Processado em até{" "}
-                    <span className="font-black text-foreground">
-                      24 horas úteis
-                    </span>
-                    .
+                    <span className="font-black">24 horas úteis</span>.
                   </p>
                 </div>
               </div>
@@ -91,6 +136,7 @@ const WithdrawScreen: React.FC = () => {
                 fullWidth
                 className="py-5 shadow-xl shadow-primary/30"
                 icon="account_balance_wallet"
+                disabled={fetchingBalance}
               >
                 Solicitar Levantamento
               </TralloButton>
@@ -98,19 +144,13 @@ const WithdrawScreen: React.FC = () => {
           </div>
 
           <div className="hidden lg:block lg:col-span-5 bg-white dark:bg-slate-900/20 p-8 rounded-[2.5rem] border border-gray-100 dark:border-white/5 sticky top-32">
-            <h3 className="text-xl font-black mb-8 tracking-tight">
-              Configurar Saque
-            </h3>
 
             <div className="space-y-8">
               <div className="space-y-4">
-                <label className="text-[10px] font-black text-slate-400 uppercase ml-1 tracking-[0.15em]">
-                  Valor do Levantamento
-                </label>
 
-                {/* CORREÇÃO AQUI: Passamos o valor diretamente se e.target falhar */}
                 <PriceInput
                   value={amount}
+                  title="Valor do levantamento"
                   onChange={(e: any) => {
                     const val = e?.target ? e.target.value : e;
                     setAmount(String(val).replace(/\D/g, ""));
@@ -119,7 +159,7 @@ const WithdrawScreen: React.FC = () => {
 
                 <div className="flex justify-between items-center px-1">
                   <button
-                    onClick={() => setAmount("1250000")}
+                    onClick={() => setAmount(String(availableBalance))}
                     className="text-[10px] font-black text-primary uppercase hover:underline"
                   >
                     Levantar saldo total
@@ -134,7 +174,7 @@ const WithdrawScreen: React.FC = () => {
                 onClick={handleWithdraw}
                 fullWidth
                 isLoading={loading}
-                disabled={!amount}
+                disabled={!amount || loading || fetchingBalance}
                 className="py-5 text-base"
                 icon="check_circle"
               >
@@ -184,13 +224,19 @@ const WithdrawScreen: React.FC = () => {
                       setAmount(String(val).replace(/\D/g, ""));
                     }}
                   />
+                  <button
+                    onClick={() => setAmount(String(availableBalance))}
+                    className="text-[10px] font-black text-primary uppercase"
+                  >
+                    Saldo total: {formatPrice(availableBalance, true)}
+                  </button>
                 </div>
 
                 <TralloButton
                   onClick={handleWithdraw}
                   fullWidth
                   isLoading={loading}
-                  disabled={!amount}
+                  disabled={!amount || loading}
                   className="py-5"
                   icon="check_circle"
                 >
