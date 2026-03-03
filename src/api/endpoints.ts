@@ -56,4 +56,8 @@ export const endpoints = {
     fromCart: "/checkouts/cart",
     fromProduct: (productId: string) => `/checkouts/product/${productId}`,
   },
+
+  admin: {
+    dashboardOverview: "/admin/dashboards/overview",
+  },
 };
