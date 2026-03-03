@@ -1,23 +1,64 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { motion, Variants } from "framer-motion";
-import PageHeader from "../components/PageHeader";
 import Pagination from "../components/Pagination";
 import BottomNavigation from "../components/BottomNavigation";
 import PaymentCard from "@/components/PaymentCard";
 import Sidebar from "@/components/Sidebar";
 import { adminItems } from "@/constants/sidebar-items";
+import { getAdminPayments } from "@/services/admin.service";
+import { AdminPayment } from "@/dtos/admin-management";
+import { PaymentStatus } from "@/enums/payment";
 
 const PaymentsManagement: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [activeFilter, setActiveFilter] = useState("Tudo");
+  const [activeFilter, setActiveFilter] = useState<string>("Tudo");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [payments, setPayments] = useState<AdminPayment[]>([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
+  const ITEMS_PER_PAGE = 10;
+
+  const fetchPayments = useCallback(async (page: number) => {
+    setIsLoading(true);
+    try {
+      const response = await getAdminPayments(page, ITEMS_PER_PAGE);
+      if (response.success) {
+        setPayments(response.data.payments);
+        setTotalPages(response.data.pagination.totalPages);
+      }
+    } catch (error) {
+      console.error("Erro ao carregar pagamentos:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchPayments(currentPage);
+  }, [currentPage, fetchPayments]);
+
+  const filteredPayments = useMemo(() => {
+    return payments.filter((pay) => {
+      const matchesStatus =
+        activeFilter === "Tudo" ||
+        pay.status === (activeFilter as PaymentStatus);
+
+      const matchesSearch =
+        pay.seller.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        pay.order.orderNumber
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
+        pay.id.toLowerCase().includes(searchQuery.toLowerCase());
+
+      return matchesStatus && matchesSearch;
+    });
+  }, [payments, activeFilter, searchQuery]);
 
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
+      transition: { staggerChildren: 0.1 },
     },
   };
 
@@ -26,69 +67,9 @@ const PaymentsManagement: React.FC = () => {
     visible: {
       opacity: 1,
       y: 0,
-      transition: {
-        duration: 0.5,
-        ease: "easeOut",
-      },
+      transition: { duration: 0.5, ease: "easeOut" },
     },
   };
-
-  const payments = [
-    {
-      id: "#PAY-88210",
-      sender: "Trallo Corp",
-      receiver: "Mercado Central",
-      amount: "150.000,00",
-      date: "Hoje, 09:15",
-      status: "Concluído",
-      image: "https://i.pravatar.cc/150?u=20",
-    },
-    {
-      id: "#PAY-88211",
-      sender: "Trallo Corp",
-      receiver: "Loja de Conveniência",
-      amount: "45.200,00",
-      date: "Hoje, 11:30",
-      status: "Processando",
-      image: "https://i.pravatar.cc/150?u=21",
-    },
-    {
-      id: "#PAY-88212",
-      sender: "Trallo Corp",
-      receiver: "João Manuel",
-      amount: "12.000,00",
-      date: "Ontem, 16:40",
-      status: "Agendado",
-      image: "https://i.pravatar.cc/150?u=7",
-    },
-    {
-      id: "#PAY-88213",
-      sender: "Trallo Corp",
-      receiver: "Ana Sofia",
-      amount: "8.500,00",
-      date: "10 Fev, 14:20",
-      status: "Concluído",
-      image: "https://i.pravatar.cc/150?u=8",
-    },
-    {
-      id: "#PAY-88214",
-      sender: "Trallo Corp",
-      receiver: "Ricardo Costa",
-      amount: "120.000,00",
-      date: "09 Fev, 10:00",
-      status: "Falhou",
-      image: "https://i.pravatar.cc/150?u=9",
-    },
-    {
-      id: "#PAY-88215",
-      sender: "Trallo Corp",
-      receiver: "Maria Luísa",
-      amount: "32.000,00",
-      date: "08 Fev, 09:15",
-      status: "Concluído",
-      image: "https://i.pravatar.cc/150?u=10",
-    },
-  ] as const;
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex font-['Inter']">
@@ -115,45 +96,6 @@ const PaymentsManagement: React.FC = () => {
             </h1>
           </motion.header>
 
-          <motion.section
-            variants={itemVariants}
-            className="mb-8 grid grid-cols-1 lg:grid-cols-3 gap-6"
-          >
-            <div className="lg:col-span-2 bg-[#6C3EF8] rounded-[2.5rem] p-8 text-white shadow-xl shadow-[#6C3EF8]/20 relative overflow-hidden flex flex-col justify-center">
-              <div className="relative z-10">
-                <p className="text-white/70 text-[10px] font-black uppercase tracking-[0.2em]">
-                  Disponível para Liquidação
-                </p>
-                <h2 className="text-3xl font-bold mt-2 tracking-tight">
-                  1.250.000,00{" "}
-                  <span className="text-base font-medium opacity-80">AOA</span>
-                </h2>
-                <div className="flex items-center gap-2 mt-4 text-[9px] font-black bg-white/15 w-fit px-3 py-1.5 rounded-full uppercase tracking-widest backdrop-blur-md">
-                  <span className="material-symbols-outlined text-xs">
-                    account_balance_wallet
-                  </span>
-                  <span>Próximo ciclo: Amanhã</span>
-                </div>
-              </div>
-              <div className="absolute -right-16 -bottom-16 w-48 h-48 bg-white/10 rounded-full blur-3xl"></div>
-            </div>
-
-            <div className="p-6 bg-white rounded-[2.5rem] border border-gray-100 shadow-sm flex flex-col justify-center">
-              <div className="size-10 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center mb-3">
-                <span className="material-symbols-outlined text-xl">
-                  pending_actions
-                </span>
-              </div>
-              <h4 className="font-black text-base mb-1 tracking-tight">
-                Controle Financeiro
-              </h4>
-              <p className="text-xs text-gray-500 leading-relaxed">
-                Acompanhe e gerencie todas as operações financeiras da
-                plataforma.
-              </p>
-            </div>
-          </motion.section>
-
           <motion.div
             variants={itemVariants}
             className="flex flex-col lg:flex-row lg:items-end gap-6 mb-8"
@@ -168,7 +110,9 @@ const PaymentsManagement: React.FC = () => {
                 </span>
                 <input
                   type="text"
-                  placeholder="ID do pagamento, nome do vendedor..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="ID, nome do vendedor ou pedido..."
                   className="w-full bg-white border-none rounded-2xl py-4 pl-12 pr-4 shadow-sm focus:ring-2 focus:ring-[#6C3EF8]/20 transition-all text-sm outline-none font-medium"
                 />
               </div>
@@ -179,7 +123,7 @@ const PaymentsManagement: React.FC = () => {
                 Estado
               </label>
               <div className="flex gap-3 overflow-visible py-4 px-2 -my-2 no-scrollbar">
-                {["Tudo", "Concluído", "Processando", "Falhou"].map(
+                {["Tudo", "PAID", "PROCESSING", "PENDING", "FAILED"].map(
                   (filter) => (
                     <button
                       key={filter}
@@ -190,7 +134,15 @@ const PaymentsManagement: React.FC = () => {
                           : "bg-white text-slate-400 border border-slate-100 hover:shadow-md hover:text-slate-600 active:scale-95"
                       }`}
                     >
-                      {filter}
+                      {filter === "PAID"
+                        ? "Pago"
+                        : filter === "PROCESSING"
+                          ? "Processando"
+                          : filter === "PENDING"
+                            ? "Pendente"
+                            : filter === "FAILED"
+                              ? "Falhou"
+                              : filter}
                     </button>
                   ),
                 )}
@@ -199,43 +151,34 @@ const PaymentsManagement: React.FC = () => {
           </motion.div>
 
           <div className="space-y-4">
-            <motion.div
-              variants={itemVariants}
-              className="flex justify-between items-center px-1"
-            >
-              <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">
-                Fluxo de Saída Recente
-              </h3>
-              <button className="text-[11px] text-[#6C3EF8] font-black uppercase tracking-widest hover:underline">
-                Nova Transferência
-              </button>
-            </motion.div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {payments.map((pay, index) => (
-                <motion.div key={index} variants={itemVariants}>
-                  <PaymentCard {...pay} />
-                </motion.div>
-              ))}
+              {isLoading ? (
+                <div className="col-span-full py-20 text-center text-slate-400 font-medium italic">
+                  Buscando registros na rede...
+                </div>
+              ) : filteredPayments.length > 0 ? (
+                filteredPayments.map((pay) => (
+                  <motion.div key={pay.id} variants={itemVariants}>
+                    <PaymentCard payment={pay} />
+                  </motion.div>
+                ))
+              ) : (
+                <div className="col-span-full py-20 text-center text-slate-400 font-medium">
+                  Nenhum resultado encontrado para os filtros aplicados.
+                </div>
+              )}
             </div>
           </div>
 
-          <motion.div variants={itemVariants}>
-            <Pagination
-              currentPage={currentPage}
-              totalPages={5}
-              onPageChange={(page) => setCurrentPage(page)}
-            />
-          </motion.div>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={(page) => {
+              setCurrentPage(page);
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+          />
         </motion.main>
-
-        <div className="fixed bottom-32 left-1/2 -translate-x-1/2 z-50 lg:hidden">
-          <button className="w-16 h-16 bg-[#0F172A] text-white rounded-full shadow-2xl flex items-center justify-center border-4 border-[#F8FAFC] active:scale-90 transition-transform">
-            <span className="material-symbols-outlined text-4xl font-light">
-              send_money
-            </span>
-          </button>
-        </div>
 
         <BottomNavigation />
       </div>

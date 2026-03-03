@@ -7,6 +7,11 @@ import {
   TransactionMetricsResponse,
   WalletMetricsResponse,
 } from "@/dtos/admin-metrics.dto";
+import {
+  AdminPaymentListResponse,
+  AdminTransactionListResponse,
+  AdminWalletListResponse,
+} from "@/dtos/admin-management";
 
 export async function getDashboardOverview(): Promise<
   ApiResponse<DashboardOverviewResponse>
@@ -32,4 +37,34 @@ export async function getWalletMetrics(): Promise<
   ApiResponse<WalletMetricsResponse>
 > {
   return http.get<WalletMetricsResponse>(endpoints.admin.dashboards.wallets);
+}
+
+export async function getAdminWallets(
+  page: number = 1,
+  limit: number = 10,
+): Promise<ApiResponse<AdminWalletListResponse>> {
+  return http.get<AdminWalletListResponse>(endpoints.admin.wallets.list, {
+    params: { page, limit },
+  });
+}
+
+export async function getAdminTransactions(
+  page: number = 1,
+  limit: number = 10,
+): Promise<ApiResponse<AdminTransactionListResponse>> {
+  return http.get<AdminTransactionListResponse>(
+    endpoints.admin.transactions.list,
+    {
+      params: { page, limit },
+    },
+  );
+}
+
+export async function getAdminPayments(
+  page: number = 1,
+  limit: number = 10,
+): Promise<ApiResponse<AdminPaymentListResponse>> {
+  return http.get<AdminPaymentListResponse>(endpoints.admin.payments.list, {
+    params: { page, limit },
+  });
 }

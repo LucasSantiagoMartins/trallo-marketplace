@@ -8,3 +8,11 @@ export enum PaymentMethod {
   REFERENCE = "REFERENCE",
   ONSITE_CARD = "ONSITE_CARD",
 }
+
+export enum PaymentStatus {
+  PENDING = 'PENDING', // payment was created but not yet released to seller
+  PAID = 'PAID', // payment was released to seller
+  FAILED = 'FAILED',
+  REFUNDED = 'REFUNDED',
+  PROCESSING = 'PROCESSING', // payment is being processed by the payment gateway
+}

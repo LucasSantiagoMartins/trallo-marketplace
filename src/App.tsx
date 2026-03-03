@@ -34,6 +34,7 @@ import CreateStaffForm from "./components/CreateStaffForm";
 import AdminSettings from "./pages/AdminSettings";
 import InventoryManagement from "./pages/InventoryManagement";
 import OperatorDashboard from "./pages/OperatorDashboard";
+import WalletManagement from "./pages/WalletManagement";
 
 const queryClient = new QueryClient();
 
@@ -118,6 +119,10 @@ const App = () => (
               <Route
                 path="/area-administrativa/pagamentos"
                 element={<PaymentsManagement />}
+              />
+                <Route
+                path="/area-administrativa/carteiras"
+                element={<WalletManagement />}
               />
               <Route
                 path="/area-administrativa/configuracoes"

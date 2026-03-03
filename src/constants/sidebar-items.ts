@@ -23,6 +23,13 @@ export const adminItems = [
     label: "Transações",
     path: "/area-administrativa/transacoes",
   },
+
+  {
+    id: "carteiras",
+    icon: "wallet",
+    label: "Carteiras",
+    path: "/area-administrativa/carteiras",
+  },
   {
     id: "area-operacional",
     icon: "inventory",

@@ -1,18 +1,21 @@
 import { TransactionType, TransactionStatus } from "@/enums/transaction";
 
-
 export const transactionTypeLabel: Record<TransactionType, string> = {
   [TransactionType.SALE]: "Venda",
   [TransactionType.WITHDRAWAL]: "Levantamento",
   [TransactionType.REFUND]: "Estorno",
-  [TransactionType.FEE]: "Taxa",
+  [TransactionType.COMMISSION]: "Comissão de Venda",
+  [TransactionType.PLATFORM_WITHDRAWAL]: "Levantamento de Saldo",
+  [TransactionType.PLATFORM_DEBIT]: "Débito de Ajuste",
 };
 
 export const transactionTypeColor: Record<TransactionType, string> = {
   [TransactionType.SALE]: "bg-emerald-500/10 text-emerald-600",
   [TransactionType.WITHDRAWAL]: "bg-rose-500/10 text-rose-600",
   [TransactionType.REFUND]: "bg-amber-500/10 text-amber-600",
-  [TransactionType.FEE]: "bg-gray-500/10 text-gray-600",
+  [TransactionType.COMMISSION]: "bg-indigo-500/10 text-indigo-600",
+  [TransactionType.PLATFORM_WITHDRAWAL]: "bg-slate-500/10 text-slate-600",
+  [TransactionType.PLATFORM_DEBIT]: "bg-red-500/10 text-red-600",
 };
 
 export function getTransactionTypeLabel(type: TransactionType): string {
@@ -22,7 +25,6 @@ export function getTransactionTypeLabel(type: TransactionType): string {
 export function getTransactionTypeColor(type: TransactionType): string {
   return transactionTypeColor[type] || "bg-gray-500/10 text-gray-500";
 }
-
 
 export const transactionStatusLabel: Record<TransactionStatus, string> = {
   [TransactionStatus.PENDING]: "Pendente",
