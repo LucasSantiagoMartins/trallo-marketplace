@@ -59,5 +59,10 @@ export const endpoints = {
 
   admin: {
     dashboardOverview: "/admin/dashboards/overview",
+    dashboards: {
+      transactions: "/admin/dashboards/transactions",
+      payments: "/admin/dashboards/payments",
+      wallets: "/admin/dashboards/wallets",
+    },
   },
 };

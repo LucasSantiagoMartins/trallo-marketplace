@@ -4,71 +4,89 @@ import { useNavigate } from "react-router-dom";
 interface OperationalFooterProps {
   loading: boolean;
   inconsistentCount?: number;
-  onAddOperator?: () => void; // Opcional, caso queira customizar o comportamento
+  onAddOperator?: () => void;
 }
 
-const OperationalFooter: React.FC<OperationalFooterProps> = ({ 
-  loading, 
-  inconsistentCount,
-  onAddOperator 
+const OperationalFooter: React.FC<OperationalFooterProps> = ({
+  loading,
+  inconsistentCount = 0,
+  onAddOperator,
 }) => {
   const navigate = useNavigate();
 
-  // Função para lidar com o clique
   const handleAddClick = () => {
     if (onAddOperator) {
       onAddOperator();
     } else {
-      // Rota padrão definida no seu App.tsx
       navigate("/area-administrativa/adicionar-operador");
     }
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
-      {/* Seção de Resumo */}
-      <section className="lg:col-span-2 bg-white p-7 rounded-[2.5rem] border border-slate-100 shadow-sm flex flex-col justify-between">
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="font-bold text-sm uppercase tracking-widest text-slate-400">
-            Resumo Operacional
-          </h3>
-          <span
-            className={`text-[10px] px-3 py-1 rounded-full font-black transition-colors duration-300 ${
-              inconsistentCount && inconsistentCount > 0 
-                ? "bg-red-100 text-red-600" 
-                : "bg-blue-100 text-blue-600"
-            }`}
-          >
-            {loading
-              ? "A VERIFICAR..."
-              : `TRANSAÇÕES INCONSISTENTES: ${inconsistentCount ?? 0}`}
-          </span>
-        </div>
-        <p className="text-slate-400 text-xs italic">
-          O sistema está monitorando as métricas de LTV e Churn em tempo real.
-        </p>
-      </section>
+    <div className="max-w-7xl mx-auto px-4 lg:px-8 w-full mb-10">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-12">
+        {/* Seção de Resumo Operacional */}
+        <section className="lg:col-span-2 bg-white/70 backdrop-blur-md p-8 rounded-[2rem] border border-slate-200/60 shadow-sm flex flex-col justify-between group hover:shadow-md transition-all duration-500">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-slate-100 rounded-lg text-slate-500">
+                <span className="material-symbols-outlined text-xl block">monitoring</span>
+              </div>
+              <h3 className="font-bold text-[11px] uppercase tracking-[0.15em] text-slate-400">
+                Resumo Operacional
+              </h3>
+            </div>
+            
+            <div className={`flex items-center gap-2 px-4 py-2 rounded-xl border transition-all duration-500 ${
+              inconsistentCount > 0 
+                ? "bg-rose-50 border-rose-100 text-rose-600 shadow-sm shadow-rose-100" 
+                : "bg-emerald-50 border-emerald-100 text-emerald-600"
+            }`}>
+              <span className={`material-symbols-outlined text-lg ${inconsistentCount > 0 ? "animate-pulse" : ""}`}>
+                {inconsistentCount > 0 ? "report" : "check_circle"}
+              </span>
+              <span className="text-[10px] font-black uppercase tracking-wider">
+                {loading
+                  ? "Sincronizando..."
+                  : `Inconsistências: ${inconsistentCount}`}
+              </span>
+            </div>
+          </div>
+          
+          <div className="bg-slate-50/50 p-4 rounded-2xl border border-dashed border-slate-200">
+            <p className="text-slate-500 text-[11px] leading-relaxed flex items-center gap-2">
+              <span className="material-symbols-outlined text-sm text-indigo-500">info</span>
+              O motor de IA está monitorando as métricas de <span className="font-bold text-slate-700">LTV</span> e <span className="font-bold text-slate-700">Churn</span> em tempo real para prevenção de perdas.
+            </p>
+          </div>
+        </section>
 
-      {/* Seção de Ação: Adicionar Operador */}
-      <div className="p-7 bg-white border border-slate-100 rounded-[2.5rem] shadow-sm flex flex-col gap-5">
-        <div>
-          <p className="font-bold text-slate-800 text-lg leading-tight tracking-tight">Equipe</p>
-          <p className="text-[10px] text-slate-400 uppercase tracking-widest mt-1">
-            Gestão de Operadores
-          </p>
+        {/* Seção de Gestão de Equipe */}
+        <div className="p-8 bg-white/70 backdrop-blur-md border border-slate-200/60 rounded-[2rem] shadow-sm flex flex-col gap-6 hover:shadow-md transition-all duration-500">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-bold text-slate-800 text-lg tracking-tight">Equipe</p>
+              <p className="text-[10px] text-slate-400 font-medium uppercase tracking-[0.1em]">
+                Gestão de Acessos
+              </p>
+            </div>
+            <div className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400">
+              <span className="material-symbols-outlined text-xl">group</span>
+            </div>
+          </div>
+          
+          <button
+            onClick={handleAddClick}
+            className="w-full py-4 border-2 border-dashed border-slate-200 rounded-2xl flex items-center justify-center gap-3 text-slate-500 hover:border-[#6C3EF8] hover:text-[#6C3EF8] hover:bg-[#6C3EF8]/5 transition-all duration-300 group"
+          >
+            <span className="material-symbols-outlined text-xl group-hover:rotate-90 transition-transform duration-500">
+              person_add
+            </span>
+            <span className="text-xs font-bold uppercase tracking-wider">
+              Novo Operador
+            </span>
+          </button>
         </div>
-        
-        <button
-          onClick={handleAddClick}
-          className="flex-1 min-h-[100px] border-2 border-dashed border-slate-200 rounded-[1.5rem] flex flex-col items-center justify-center gap-2 text-slate-400 hover:border-primary hover:text-primary hover:bg-primary/5 transition-all duration-300 group"
-        >
-          <span className="material-symbols-outlined text-2xl group-hover:scale-110 transition-transform">
-            person_add
-          </span>
-          <span className="text-[10px] font-bold uppercase tracking-widest">
-            Novo Operador
-          </span>
-        </button>
       </div>
     </div>
   );
