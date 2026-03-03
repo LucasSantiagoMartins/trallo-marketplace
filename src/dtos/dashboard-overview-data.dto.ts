@@ -18,10 +18,10 @@ export interface DashboardOverviewData {
     failed: number;
   };
   performance: {
-    revenueToday: number;
-    revenueThisMonth: number;
-    growthVsLastMonth: number;
-    growthVsLastYear: number;
+      revenueToday: number;
+      revenueThisMonth: number;
+      growthVsLastMonth: number;
+      growthVsLastYear: number;
   };
   alerts: {
     inconsistentTransactions: number;

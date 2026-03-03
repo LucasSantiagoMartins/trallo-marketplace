@@ -1,14 +1,23 @@
 import React from "react";
 import TabButton from "./TabButton";
 
-type TabType = "financeiro" | "pedidos" | "pagamentos" | "performance" | "crescimento" | "risco";
+type TabType =
+  | "financeiro"
+  | "pedidos"
+  | "pagamentos"
+  | "performance"
+  | "crescimento"
+  | "risco";
 
 interface TabContainerProps {
   activeTab: TabType;
   setActiveTab: (tab: TabType) => void;
 }
 
-const TabContainer: React.FC<TabContainerProps> = ({ activeTab, setActiveTab }) => {
+const TabContainer: React.FC<TabContainerProps> = ({
+  activeTab,
+  setActiveTab,
+}) => {
   const tabs = [
     { id: "financeiro", label: "Finanças", icon: "account_balance" },
     { id: "pedidos", label: "Pedidos", icon: "shopping_cart" },
@@ -19,7 +28,7 @@ const TabContainer: React.FC<TabContainerProps> = ({ activeTab, setActiveTab }) 
   ];
 
   return (
-    <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide no-scrollbar">
+    <div className="flex gap-2 min-w-max px-2">
       {tabs.map((tab) => (
         <TabButton
           key={tab.id}

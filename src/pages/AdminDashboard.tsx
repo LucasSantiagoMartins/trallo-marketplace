@@ -51,7 +51,7 @@ const AdminDashboard: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] font-['Inter'] flex">
       <Sidebar
-        title="Painel Admin"
+        title="Painel Administrativo"
         items={adminItems}
         activePage="dashboard"
         showSettings
@@ -68,7 +68,7 @@ const AdminDashboard: React.FC = () => {
               <p className="text-[#6C3EF8] font-bold text-[10px] tracking-[0.2em] mb-1 uppercase">
                 Gestão Central
               </p>
-              <h1 className="text-3xl font-semibold">Dashboard</h1>
+              <h1 className="text-3xl font-semibold">Visão Geral</h1>
             </div>
             <TabContainer activeTab={activeTab} setActiveTab={setActiveTab} />
           </div>

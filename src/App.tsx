@@ -125,11 +125,7 @@ const App = () => (
               />
               <Route
                 path="/area-administrativa/adicionar-operador"
-                element={<CreateStaffForm type="OPERATOR" />}
-              />
-              <Route
-                path="/area-administrativa/adicionar-administrador"
-                element={<CreateStaffForm type="ADMIN" />}
+                element={<CreateStaffForm />}
               />
             </Route>
 

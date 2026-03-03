@@ -1,17 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import toast from "react-hot-toast"; // Importação do react-hot-toast
+import toast from "react-hot-toast";
 import TralloInput from "@/components/TralloInput";
 import TralloButton from "@/components/TralloButton";
 import PasswordTooltip from "@/components/PasswordTooltip";
 import Sidebar from "@/components/Sidebar";
 import { adminItems } from "@/constants/sidebar-items";
 
-interface CreateStaffProps {
-  type: "OPERATOR" | "ADMIN";
-}
-
-const CreateStaffForm: React.FC<CreateStaffProps> = ({ type }) => {
+const CreateOperatorForm: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
   const [formData, setFormData] = useState({
@@ -24,21 +20,25 @@ const CreateStaffForm: React.FC<CreateStaffProps> = ({ type }) => {
 
   const navigate = useNavigate();
 
-  const isAdmin = type === "ADMIN";
-  const title = isAdmin ? "Novo Administrador" : "Novo Operador";
-  const badge = isAdmin ? "Acesso Total" : "Acesso Operacional";
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.fullName || !formData.email || !formData.password) {
-      toast.error("Preencha todos os campos obrigatórios.");
+    if (
+      !formData.fullName ||
+      !formData.email ||
+      !formData.password ||
+      !formData.department
+    ) {
+      toast.error(
+        "Preencha todos os campos obrigatórios, incluindo o departamento.",
+      );
       return;
     }
 
     setLoading(true);
     try {
-      toast.success(`${title} criado com sucesso.`);
+      // Aqui viria a sua chamada de API: await api.post('/operators', formData);
+      toast.success("Novo Operador criado com sucesso.");
       navigate("/area-administrativa");
     } catch (err) {
       toast.error(
@@ -65,18 +65,15 @@ const CreateStaffForm: React.FC<CreateStaffProps> = ({ type }) => {
       <main className="flex-1 flex flex-col min-w-0">
         <div className="flex-1 p-4 lg:p-12 max-w-5xl mx-auto w-full">
           <header className="mb-10">
-            <span
-              className={`inline-block px-3 py-1 rounded-full text-[9px] font-black tracking-widest uppercase mb-3 ${
-                isAdmin
-                  ? "bg-primary/10 text-primary"
-                  : "bg-orange-100 text-orange-600"
-              }`}
-            >
-              {badge}
+            <span className="inline-block px-3 py-1 rounded-full text-[9px] font-black tracking-widest uppercase mb-3 bg-orange-100 text-orange-600">
+              Acesso Operacional
             </span>
-            <h1 className="text-3xl font-semibold text-[#0F172A]">{title}</h1>
+            <h1 className="text-3xl font-semibold text-[#0F172A]">
+              Novo Operador
+            </h1>
             <p className="text-slate-500 text-sm mt-2">
-              Preencha os dados abaixo para conceder acesso à plataforma Trallo.
+              Preencha os dados abaixo para conceder acesso operacional à
+              plataforma Trallo.
             </p>
           </header>
 
@@ -84,9 +81,8 @@ const CreateStaffForm: React.FC<CreateStaffProps> = ({ type }) => {
             onSubmit={handleSubmit}
             className="bg-white p-8 md:p-12 rounded-[40px] shadow-sm border border-slate-100 space-y-8"
           >
-            <div
-              className={`grid grid-cols-1 ${isAdmin ? "md:grid-cols-1" : "md:grid-cols-2"} gap-6`}
-            >
+            {/* Seção: Identificação */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <TralloInput
                 label="Nome Completo"
                 placeholder="Nome do colaborador"
@@ -94,17 +90,16 @@ const CreateStaffForm: React.FC<CreateStaffProps> = ({ type }) => {
                 value={formData.fullName}
                 onChange={updateField("fullName")}
               />
-              {!isAdmin && (
-                <TralloInput
-                  label="Departamento / Área"
-                  placeholder="Ex: Logística, Suporte..."
-                  icon="work"
-                  value={formData.department}
-                  onChange={updateField("department")}
-                />
-              )}
+              <TralloInput
+                label="Departamento / Área"
+                placeholder="Ex: Logística, Suporte..."
+                icon="work"
+                value={formData.department}
+                onChange={updateField("department")}
+              />
             </div>
 
+            {/* Seção: Contacto */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <TralloInput
                 label="E-mail Corporativo"
@@ -124,6 +119,7 @@ const CreateStaffForm: React.FC<CreateStaffProps> = ({ type }) => {
               />
             </div>
 
+            {/* Seção: Segurança */}
             <div className="relative">
               <PasswordTooltip
                 password={formData.password}
@@ -142,6 +138,7 @@ const CreateStaffForm: React.FC<CreateStaffProps> = ({ type }) => {
               />
             </div>
 
+            {/* Ações */}
             <div className="pt-4 flex flex-col md:flex-row gap-4">
               <button
                 type="button"
@@ -161,4 +158,4 @@ const CreateStaffForm: React.FC<CreateStaffProps> = ({ type }) => {
   );
 };
 
-export default CreateStaffForm;
+export default CreateOperatorForm;

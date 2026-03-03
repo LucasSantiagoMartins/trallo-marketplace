@@ -40,9 +40,9 @@ const DashboardGrid: React.FC<DashboardGridProps> = ({
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 animate-pulse">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 animate-pulse">
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="h-40 bg-slate-100 rounded-[2rem]" />
+          <div key={i} className="h-32 bg-slate-100 rounded-2xl" />
         ))}
       </div>
     );
@@ -53,98 +53,265 @@ const DashboardGrid: React.FC<DashboardGridProps> = ({
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="w-full space-y-6"
+      className="w-full space-y-4 md:space-y-6"
     >
       <AnimatePresence mode="wait">
-        {/* ABA FINANCEIRO */}
         {activeTab === "financeiro" && (
-          <motion.div key="fin" variants={itemVariants} className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <StatCard icon="payments" label="Volume Bruto (GMV)" value={formatKz(stats?.financial?.grossMerchandiseVolume)} color="primary" />
-            <StatCard icon="account_tree" label="Receita Plataforma" value={formatKz(stats?.financial?.totalPlatformRevenue)} color="info" />
-            <StatCard icon="wallet" label="Saldo Wallet" value={formatKz(stats?.financial?.platformWalletBalance)} color="slate" />
-            <StatCard icon="store" label="Saldo Vendedores" value={formatKz(stats?.financial?.sellersTotalBalance)} color="slate" />
+          <motion.div
+            key="fin"
+            variants={itemVariants}
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4"
+          >
+            <StatCard
+              icon="payments"
+              label="Volume Bruto (GMV)"
+              value={formatKz(stats?.financial?.grossMerchandiseVolume)}
+              color="primary"
+            />
+            <StatCard
+              icon="account_tree"
+              label="Receita Plataforma"
+              value={formatKz(stats?.financial?.totalPlatformRevenue)}
+              color="info"
+            />
+            <StatCard
+              icon="wallet"
+              label="Saldo Wallet"
+              value={formatKz(stats?.financial?.platformWalletBalance)}
+              color="slate"
+            />
+            <StatCard
+              icon="store"
+              label="Saldo Vendedores"
+              value={formatKz(stats?.financial?.sellersTotalBalance)}
+              color="slate"
+            />
           </motion.div>
         )}
 
-        {/* ABA PEDIDOS */}
         {activeTab === "pedidos" && (
-          <motion.div key="ped" variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <StatCard icon="inventory_2" label="Total Pedidos" value={stats?.orders?.totalOrders?.toString()} color="primary" />
-            <StatCard icon="pending" label="Aguardando" value={stats?.orders?.awaitingPayment?.toString()} color="warning" />
-            <StatCard icon="verified" label="Pagos" value={stats?.orders?.paid?.toString()} color="success" />
-            <StatCard icon="block" label="Cancelados" value={stats?.orders?.cancelled?.toString()} color="danger" />
+          <motion.div
+            key="ped"
+            variants={itemVariants}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+          >
+            <StatCard
+              icon="inventory_2"
+              label="Total Pedidos"
+              value={stats?.orders?.totalOrders?.toString()}
+              color="primary"
+            />
+            <StatCard
+              icon="pending"
+              label="Aguardando"
+              value={stats?.orders?.awaitingPayment?.toString()}
+              color="warning"
+            />
+            <StatCard
+              icon="verified"
+              label="Pagos"
+              value={stats?.orders?.paid?.toString()}
+              color="success"
+            />
+            <StatCard
+              icon="block"
+              label="Cancelados"
+              value={stats?.orders?.cancelled?.toString()}
+              color="danger"
+            />
           </motion.div>
         )}
 
-        {/* ABA PAGAMENTOS */}
         {activeTab === "pagamentos" && (
-          <motion.div key="pay" variants={itemVariants} className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <StatCard icon="check_circle" label="Confirmados" value={stats?.payments?.confirmed?.toString()} color="success" />
-            <StatCard icon="hourglass_top" label="Em Processamento" value={stats?.payments?.processing?.toString()} color="warning" />
-            <StatCard icon="schedule" label="Pendentes" value={stats?.payments?.pending?.toString()} color="slate" />
-            <StatCard icon="error" label="Falhas" value={stats?.payments?.failed?.toString()} color="danger" />
+          <motion.div
+            key="pay"
+            variants={itemVariants}
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4"
+          >
+            <StatCard
+              icon="check_circle"
+              label="Confirmados"
+              value={stats?.payments?.confirmed?.toString()}
+              color="success"
+            />
+            <StatCard
+              icon="hourglass_top"
+              label="Em Processamento"
+              value={stats?.payments?.processing?.toString()}
+              color="warning"
+            />
+            <StatCard
+              icon="schedule"
+              label="Pendentes"
+              value={stats?.payments?.pending?.toString()}
+              color="slate"
+            />
+            <StatCard
+              icon="error"
+              label="Falhas"
+              value={stats?.payments?.failed?.toString()}
+              color="danger"
+            />
           </motion.div>
         )}
 
-        {/* ABA PERFORMANCE */}
         {activeTab === "performance" && (
-          <motion.div key="perf" variants={itemVariants} className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="md:col-span-2 bg-gradient-to-br from-[#6C3EF8] to-[#4F26D9] p-8 rounded-[3rem] text-white shadow-xl relative overflow-hidden">
-              <div className="relative z-10">
-                <p className="text-indigo-100 text-xs font-bold uppercase tracking-widest mb-2">Receita Mensal</p>
-                <h3 className="text-4xl font-black mb-6">{formatKz(stats?.performance?.revenueThisMonth)}</h3>
-                <div className="flex gap-4">
-                  <span className="bg-white/20 px-3 py-1 rounded-full text-xs font-medium">MoM +{stats?.performance?.growthVsLastMonth}%</span>
+          <motion.div
+            key="perf"
+            variants={itemVariants}
+            className="grid grid-cols-1 md:grid-cols-4 gap-4"
+          >
+            <div className="md:col-span-2 bg-[#6C3EF8] p-6 md:p-8 rounded-3xl text-white shadow-xl relative overflow-hidden flex flex-col justify-center min-h-[160px]">
+              <p className="text-indigo-100 text-xs font-bold uppercase tracking-widest mb-2">
+                Receita Mensal
+              </p>
+              <h3 className="text-3xl md:text-5xl font-black mb-4">
+                {formatKz(stats?.performance?.revenueThisMonth)}
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                <div className="bg-emerald-400/20 text-emerald-300 px-3 py-1 rounded-full text-xs font-bold border border-emerald-400/30">
+                  +{stats?.performance?.growthVsLastMonth}% MoM
+                </div>
+                <div className="bg-blue-400/20 text-blue-300 px-3 py-1 rounded-full text-xs font-bold border border-blue-400/30">
+                  +{stats?.performance?.growthVsLastYear}% YoY
                 </div>
               </div>
-              <span className="material-symbols-outlined absolute -right-10 -bottom-10 opacity-10 !text-[200px]">trending_up</span>
+              <span className="material-symbols-outlined absolute -right-6 -bottom-6 opacity-10 !text-[120px] md:!text-[150px]">
+                trending_up
+              </span>
             </div>
-            <StatCard icon="today" label="Receita Hoje" value={formatKz(stats?.performance?.revenueToday)} color="info" />
+            <StatCard
+              icon="today"
+              label="Receita Hoje"
+              value={formatKz(stats?.performance?.revenueToday)}
+              color="info"
+            />
+            <StatCard
+              icon="query_stats"
+              label="Crescimento Anual"
+              value={`${stats?.performance?.growthVsLastYear}%`}
+              color="success"
+            />
           </motion.div>
         )}
 
-        {/* ABA CRESCIMENTO */}
         {activeTab === "crescimento" && (
-          <motion.div key="growth" variants={itemVariants} className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <StatCard icon="confirmation_number" label="Ticket Médio" value={formatKz(stats?.growth?.averageTicket)} color="success" />
-            <StatCard icon="group" label="Usuários Ativos" value={stats?.growth?.monthlyActiveFinancialUsers?.toString()} color="primary" />
-            <StatCard icon="person_celebrate" label="Receita p/ Vendedor" value={formatKz(stats?.growth?.revenuePerActiveSeller)} color="info" />
+          <motion.div
+            key="growth"
+            variants={itemVariants}
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
+          >
+            <StatCard
+              icon="confirmation_number"
+              label="Ticket Médio"
+              value={formatKz(stats?.growth?.averageTicket)}
+              color="success"
+            />
+            <StatCard
+              icon="group"
+              label="Usuários Ativos"
+              value={stats?.growth?.monthlyActiveFinancialUsers?.toString()}
+              color="primary"
+            />
+            <StatCard
+              icon="percent"
+              label="Platform Take Rate"
+              value={`${stats?.sustainability?.platformTakeRate}%`}
+              color="info"
+            />
+            <StatCard
+              icon="moving"
+              label="LTV Vendedor"
+              value={formatKz(stats?.sustainability?.averageSellerLifetimeRevenue)}
+              color="slate"
+            />
+            <StatCard
+              icon="person_celebrate"
+              label="LTV Cliente"
+              value={formatKz(stats?.sustainability?.averageCustomerFinancialLifetimeValue)}
+              color="slate"
+            />
           </motion.div>
         )}
 
-        {/* ABA RISCO E SUSTENTABILIDADE */}
         {activeTab === "risco" && (
-          <motion.div key="risk" variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="bg-white p-8 rounded-[3rem] border border-slate-100 shadow-sm relative overflow-hidden group">
-              <div className="flex justify-between items-start mb-8">
-                <div>
-                  <h3 className="text-slate-900 font-bold text-lg">Índice de Risco</h3>
-                  <p className="text-slate-400 text-xs font-medium">Falha de Pagamento Atual</p>
-                </div>
-                <div className="bg-red-50 p-3 rounded-2xl text-red-500">
-                  <span className="material-symbols-outlined">warning</span>
-                </div>
+          <motion.div
+            key="risk"
+            variants={itemVariants}
+            className="grid grid-cols-1 md:grid-cols-3 gap-4"
+          >
+            <div className="md:col-span-2 bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+              <div className="flex justify-between items-start mb-6">
+                <h3 className="text-slate-900 font-bold text-base">
+                  Saúde Operacional
+                </h3>
+                <span className="material-symbols-outlined text-rose-500 bg-rose-50 p-1.5 rounded-lg">
+                  shield_with_heart
+                </span>
               </div>
-              <div className="space-y-4">
-                <div className="flex justify-between items-end">
-                  <span className="text-3xl font-black text-slate-900">{stats?.risk?.paymentFailureRiskIndex?.toFixed(2)}%</span>
-                  <span className="text-red-500 text-xs font-bold mb-1">Limite: 5.00%</span>
+
+              <div className="space-y-6">
+                <div>
+                  <div className="flex justify-between items-end mb-2">
+                    <span className="text-2xl md:text-3xl font-black text-slate-900">
+                      {stats?.risk?.paymentFailureRiskIndex}%
+                    </span>
+                    <span className="text-slate-400 text-[10px] font-bold uppercase">
+                      Índice de Falha
+                    </span>
+                  </div>
+                  <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{
+                        width: `${Math.min(stats?.risk?.paymentFailureRiskIndex || 0, 100)}%`,
+                      }}
+                      className={`h-full ${
+                        (stats?.risk?.paymentFailureRiskIndex || 0) > 2.5
+                          ? "bg-rose-500"
+                          : "bg-emerald-500"
+                      }`}
+                    />
+                  </div>
                 </div>
-                <div className="h-4 w-full bg-slate-100 rounded-full overflow-hidden p-1">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: `${Math.min(stats?.risk?.paymentFailureRiskIndex || 0, 100)}%` }}
-                    className="h-full bg-gradient-to-r from-red-400 to-red-600 rounded-full"
-                  />
+
+                <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-50">
+                  <div>
+                    <p className="text-slate-400 text-[10px] font-bold uppercase mb-1">
+                      Rácio de Exposição
+                    </p>
+                    <p className="text-lg font-bold text-slate-800">
+                      {((stats?.risk?.riskExposureRatio || 0) * 100).toFixed(1)}
+                      %
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-slate-400 text-[10px] font-bold uppercase mb-1">
+                      Inconsistências
+                    </p>
+                    <p
+                      className={`text-lg font-bold ${(stats?.alerts?.inconsistentTransactions || 0) > 0 ? "text-rose-500" : "text-emerald-500"}`}
+                    >
+                      {stats?.alerts?.inconsistentTransactions || 0}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-[#0F172A] p-6 rounded-[2.5rem] text-white flex flex-col justify-between">
-                <p className="text-slate-400 text-[10px] font-bold uppercase tracking-tighter">Score Sustentabilidade</p>
-                <p className="text-3xl font-black text-emerald-400">{stats?.sustainability?.financialSustainabilityScore}</p>
-              </div>
-              <StatCard icon="security" label="Margem Segur." value={`${stats?.risk?.liquiditySafetyMargin}%`} color="primary" />
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:flex md:flex-col gap-4">
+              <StatCard
+                icon="Eco"
+                label="Score de Sustentabilidade"
+                value={`${stats?.sustainability?.financialSustainabilityScore}/100`}
+                color="primary"
+              />
+              <StatCard
+                icon="Gpp_Good"
+                label="Margem de Segurança"
+                value={`${stats?.risk?.liquiditySafetyMargin}%`}
+                color="info"
+              />
             </div>
           </motion.div>
         )}
