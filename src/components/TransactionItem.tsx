@@ -1,6 +1,6 @@
+import { TransactionType } from "@/enums/transaction";
 import React from "react";
 
-export type TransactionType = "compra" | "venda" | "levantamento";
 
 interface TransactionItemProps {
   type: TransactionType;

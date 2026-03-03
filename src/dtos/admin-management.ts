@@ -1,8 +1,7 @@
 import { WalletType } from "@/enums/wallet";
 import { PaginationDTO } from "./pagination";
-import { TransactionType } from "@/components/TransactionItem";
 import { PaymentMethod, PaymentStatus } from "@/enums/payment";
-import { TransactionStatus } from "@/enums/transaction";
+import { TransactionStatus, TransactionType } from "@/enums/transaction";
 
 export interface AdminWallet {
   id: string;
