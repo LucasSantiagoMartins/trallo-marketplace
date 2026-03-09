@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BottomNavigation from "../components/BottomNavigation";
 import PageHeader from "../components/PageHeader";
-import ConfirmLogoutModal from "../components/ConfirmLogoutModal";
+import ConfirmAction from "../components/ConfirmAction";
 import { logout } from "../services/auth.service";
 import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
@@ -34,11 +34,16 @@ const UserProfileScreen: React.FC = () => {
 
   return (
     <div className="bg-background-light dark:bg-background-dark text-[#111118] dark:text-white min-h-screen transition-colors">
-      <ConfirmLogoutModal
+      <ConfirmAction
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onConfirm={handleLogout}
         isLoading={isLoggingOut}
+        title="Terminar Sessão?"
+        description="Tem certeza que deseja sair da sua conta? Você precisará fazer login novamente para acessar seus dados."
+        confirmText={isLoggingOut ? "Saindo..." : "Sim, sair agora"}
+        icon="logout"
+        variant="danger"
       />
 
       <div className="relative mx-auto min-h-screen flex flex-col pb-24 lg:pb-10 lg:max-w-4xl lg:px-8">
@@ -150,7 +155,9 @@ const UserProfileScreen: React.FC = () => {
 
 const StatItem = ({ label, value, showBorder, hasStar }: any) => (
   <div
-    className={`flex flex-col items-center ${showBorder ? "border-x border-gray-50 dark:border-gray-700" : ""}`}
+    className={`flex flex-col items-center ${
+      showBorder ? "border-x border-gray-50 dark:border-gray-700" : ""
+    }`}
   >
     <div className="flex items-center gap-0.5">
       <span className="clash-font text-lg lg:text-xl font-bold">{value}</span>

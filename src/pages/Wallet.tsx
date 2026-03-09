@@ -64,7 +64,7 @@ const WalletScreen: React.FC = () => {
     <MobileLayout>
       <PageHeader title="Minha Carteira" rightElement={RightElement} />
 
-      <main className="max-w-6xl mx-auto px-6 pt-32 pb-32 lg:pt-36">
+      <main className="max-w-6xl mx-auto px-6 pt-24 pb-32 lg:pt-24">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
           {/* Coluna Esquerda: Carteira FIXA */}
           <div className="lg:col-span-5">

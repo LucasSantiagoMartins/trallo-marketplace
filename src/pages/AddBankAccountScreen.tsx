@@ -287,7 +287,6 @@ const AddBankAccountScreen: React.FC = () => {
                 ) : (
                   <>
                     <span>Confirmar</span>
-                    <span className="material-symbols-outlined">check</span>
                   </>
                 )}
               </button>
