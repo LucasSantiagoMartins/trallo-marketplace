@@ -77,5 +77,13 @@ export const endpoints = {
     payments: {
       list: "/payments/admin/list",
     },
+
+
+  },
+  bankAccounts: {
+    list: "/bank-accounts",
+    create: "/bank-accounts",
+    update: (id: string) => `/bank-accounts/${id}`,
+    delete: (id: string) => `/bank-accounts/${id}`,
   },
 };

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import MobileLayout from "@/layouts/MobileLayout";
+import PageHeader from "@/components/PageHeader";
 import BottomNavigation from "@/components/BottomNavigation";
 import PerformanceCard from "../components/PerformanceCard";
 import MyTransactionCard from "@/components/MyTransactionCard";
@@ -36,48 +38,38 @@ const WalletScreen: React.FC = () => {
     fetchWalletSummary();
   }, []);
 
-  return (
-    <div className="bg-background-light dark:bg-background-dark min-h-screen font-display text-[#181112] dark:text-white antialiased">
-      {/* Header */}
-      <div className="fixed top-0 left-0 right-0 z-50 bg-white/70 dark:bg-[#111118]/70 backdrop-blur-md px-6 py-4 border-b border-gray-100/50 dark:border-gray-800/50">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <button
-            onClick={() => navigate(-1)}
-            className="size-10 flex items-center justify-center rounded-full bg-white dark:bg-gray-800 shadow-soft border border-gray-100 dark:border-gray-700 active:scale-90 transition-transform"
-          >
-            <span className="material-symbols-outlined text-xl text-foreground">
-              arrow_back
-            </span>
-          </button>
-
-          <div className="flex items-center gap-3">
-            <div className="text-right">
-              <p className="text-[10px] text-[#8c5f67] dark:text-gray-400 font-bold uppercase tracking-wider">
-                Olá, {user?.userName || "Usuário"}
-              </p>
-              <p className="text-[10px] font-black text-primary uppercase tracking-tight">
-                {walletData?.type === "SELLER" ? "vendedor" : "comprador"}
-              </p>
-            </div>
-            <div className="size-10 rounded-full border-2 border-primary/20 p-0.5 shadow-sm">
-              <div
-                className="w-full h-full rounded-full bg-cover bg-center"
-                style={{
-                  backgroundImage:
-                    'url("https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=100&h=100&auto=format&fit=crop")',
-                }}
-              />
-            </div>
-          </div>
-        </div>
+  const RightElement = (
+    <div
+      className="flex items-center gap-3 cursor-pointer"
+      onClick={() => navigate("/perfil")}
+    >
+      <div className="text-right hidden sm:block">
+        <p className="text-[10px] text-[#8c5f67] dark:text-gray-400 font-bold uppercase tracking-wider">
+          Olá, {user?.userName || "Vendedor"}
+        </p>
       </div>
+      <div className="size-10 rounded-full border-2 border-primary/20 p-0.5 shadow-sm">
+        <div
+          className="w-full h-full rounded-full bg-cover bg-center"
+          style={{
+            backgroundImage:
+              'url("https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=100&h=100&auto=format&fit=crop")',
+          }}
+        />
+      </div>
+    </div>
+  );
 
-      <main className="max-w-6xl mx-auto px-6 pt-28 pb-32">
+  return (
+    <MobileLayout>
+      <PageHeader title="Minha Carteira" rightElement={RightElement} />
+
+      <main className="max-w-6xl mx-auto px-6 pt-32 pb-32 lg:pt-36">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
           {/* Coluna Esquerda: Carteira FIXA */}
           <div className="lg:col-span-5">
             <div className="lg:fixed lg:w-[calc((1152px-40px)*5/12-2.5rem)] max-w-[440px] space-y-6">
-              <div className="relative overflow-hidden rounded-3xl p-6 min-h-[220px] flex flex-col justify-between bg-gradient-to-br from-[#6C3EF8] to-[#8B5CF6] shadow-xl shadow-purple-500/20">
+              <div className="relative overflow-hidden rounded-[2.5rem] p-6 min-h-[220px] flex flex-col justify-between bg-gradient-to-br from-[#6C3EF8] to-[#8B5CF6] shadow-xl shadow-purple-500/20">
                 <div className="absolute -right-10 -top-10 size-40 bg-white/10 rounded-full blur-2xl"></div>
 
                 <div className="relative z-10">
@@ -85,11 +77,11 @@ const WalletScreen: React.FC = () => {
                     <p className="text-white/80 text-sm font-medium">
                       Saldo Disponível
                     </p>
-                    <h2 className="text-white text-3xl font-bold mt-1">
+                    <h2 className="text-white text-3xl font-black mt-1">
                       {isVisible
                         ? formatPrice(walletData?.availableBalance || 0, false)
                         : "••••••••"}{" "}
-                      <span className="text-sm font-medium">Kz</span>
+                      <span className="text-sm font-medium opacity-60">Kz</span>
                     </h2>
                   </div>
                   <div className="mt-4 flex items-center gap-2 text-white/70">
@@ -119,7 +111,7 @@ const WalletScreen: React.FC = () => {
                   </div>
                   <button
                     onClick={toggleVisibility}
-                    className="size-10 rounded-full bg-white/20 border border-white/30 backdrop-blur-sm flex items-center justify-center text-white active:scale-90"
+                    className="size-10 rounded-full bg-white/20 border border-white/30 backdrop-blur-sm flex items-center justify-center text-white active:scale-90 transition-transform"
                   >
                     <span className="material-symbols-outlined text-[20px]">
                       {isVisible ? "visibility" : "visibility_off"}
@@ -130,13 +122,13 @@ const WalletScreen: React.FC = () => {
 
               <button
                 onClick={() => navigate("/realizar-levantamento")}
-                className="w-full bg-primary text-white h-14 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-primary/30 active:scale-[0.98]"
+                className="w-full bg-primary text-white h-14 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-primary/30 active:scale-[0.98] transition-all"
               >
-                <span className="material-symbols-outlined">add_circle</span>
+                
                 <span>Realizar levantamento</span>
               </button>
 
-              <div className="p-6 bg-gradient-to-b from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-[2.5rem] border border-gray-100 dark:border-gray-700 shadow-sm">
+              <div className="p-6 bg-gradient-to-b from-white to-gray-50 dark:from-slate-900/40 dark:to-slate-900/60 rounded-[2.5rem] border border-gray-100 dark:border-white/5 shadow-sm">
                 <div className="size-12 rounded-2xl bg-gradient-to-br from-[#8B5CF6] to-[#6D28D9] flex items-center justify-center text-white mb-4 shadow-lg shadow-purple-500/20">
                   <span className="material-symbols-outlined">lock_clock</span>
                 </div>
@@ -145,7 +137,7 @@ const WalletScreen: React.FC = () => {
                 </h4>
                 <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
                   Este montante corresponde a pedidos já pagos e aguardando
-                  apenas a entrega ao cliente para ser liberado.
+                  apenas a entrega ao cliente para ser liberado na sua conta.
                 </p>
               </div>
             </div>
@@ -155,7 +147,7 @@ const WalletScreen: React.FC = () => {
           <div className="lg:col-span-7 lg:col-start-6">
             <PerformanceCard />
 
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between mb-6 mt-10 lg:mt-0">
               <h3 className="text-xl font-bold tracking-tight">
                 Transações Recentes
               </h3>
@@ -167,9 +159,9 @@ const WalletScreen: React.FC = () => {
               </button>
             </div>
 
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 gap-4">
               {loading ? (
-                <div className="text-center py-10 opacity-50 font-bold italic">
+                <div className="text-center py-12 opacity-50 font-bold animate-pulse">
                   Carregando transações...
                 </div>
               ) : walletData && walletData.transactions.length > 0 ? (
@@ -177,7 +169,7 @@ const WalletScreen: React.FC = () => {
                   <MyTransactionCard key={transaction.id} {...transaction} />
                 ))
               ) : (
-                <div className="py-10 text-center opacity-50 border-2 border-dashed border-gray-200 dark:border-gray-800 rounded-3xl font-medium">
+                <div className="py-20 text-center opacity-50 border-2 border-dashed border-gray-100 dark:border-white/5 rounded-[2.5rem] font-medium">
                   Nenhuma transação encontrada.
                 </div>
               )}
@@ -187,7 +179,7 @@ const WalletScreen: React.FC = () => {
       </main>
 
       <BottomNavigation />
-    </div>
+    </MobileLayout>
   );
 };
 

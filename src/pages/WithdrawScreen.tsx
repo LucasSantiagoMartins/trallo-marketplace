@@ -9,6 +9,7 @@ import TralloButton from "@/components/TralloButton";
 import BottomNavigation from "@/components/BottomNavigation";
 import { withdrawalService } from "@/services/withdrawal.service";
 import { walletService } from "@/services/wallet.service";
+import { bankService } from "@/services/bank.service";
 import { formatPrice } from "@/utils/currency";
 
 const WithdrawScreen: React.FC = () => {
@@ -17,52 +18,77 @@ const WithdrawScreen: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [fetchingBalance, setFetchingBalance] = useState(true);
   const [availableBalance, setAvailableBalance] = useState<number>(0);
+  const [accounts, setAccounts] = useState<any[]>([]);
+  const [selectedAccountId, setSelectedAccountId] = useState<string | null>(
+    null,
+  );
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   useEffect(() => {
-    const fetchBalance = async () => {
+    const loadInitialData = async () => {
+      setFetchingBalance(true);
       try {
-        const res = await walletService.getWalletSummary();
-        if (res.success) {
-          setAvailableBalance(res.data.availableBalance);
+        const [balanceRes, accountsRes] = await Promise.all([
+          walletService.getWalletSummary(),
+          bankService.getAccounts(),
+        ]);
+
+        if (balanceRes.success) {
+          setAvailableBalance(balanceRes.data.availableBalance);
+        }
+
+        if (accountsRes.success) {
+          setAccounts(accountsRes.data);
+          if (accountsRes.data.length > 0) {
+            setSelectedAccountId(accountsRes.data[0].id);
+          }
         }
       } catch (err) {
-        console.error("Erro ao carregar saldo:", err);
+        console.error("Erro ao carregar dados:", err);
+        toast.error("Erro ao carregar informações.");
       } finally {
         setFetchingBalance(false);
       }
     };
 
-    fetchBalance();
+    loadInitialData();
   }, []);
 
   const handleWithdraw = async () => {
     const numericAmount = Number(amount);
 
+    if (!selectedAccountId) {
+      toast.error("Selecione uma conta de destino.");
+      return;
+    }
+
     if (!amount || numericAmount <= 0) {
-      toast.error("Insira um valor válido para o levantamento.");
+      toast.error("Insira um valor válido.");
       return;
     }
 
     if (numericAmount > availableBalance) {
-      toast.error("Saldo insuficiente para este levantamento.");
+      toast.error("Saldo insuficiente.");
       return;
     }
 
     setLoading(true);
     try {
-      const res = await withdrawalService.requestWithdrawal(numericAmount);
+      const res = await withdrawalService.requestWithdrawal({
+        amount: numericAmount,
+        bankAccountId: selectedAccountId,
+      });
 
       if (res.success) {
-        toast.success(res.message || "Pedido de levantamento enviado!");
+        toast.success(res.message || "Pedido enviado com sucesso!");
         setIsSheetOpen(false);
         navigate("/carteira");
       } else {
-        toast.error(res.message || "Não foi possível processar o pedido.");
+        toast.error(res.message || "Erro ao processar levantamento.");
       }
-    } catch (err) {
+    } catch (err: any) {
       toast.error(
-        err instanceof Error ? err.message : "Erro ao conectar ao servidor.",
+        err?.response?.data?.message || err.message || "Erro no servidor.",
       );
     } finally {
       setLoading(false);
@@ -93,38 +119,68 @@ const WithdrawScreen: React.FC = () => {
               </div>
             </div>
 
-            <div className="bg-white dark:bg-slate-900/40 border border-gray-100 dark:border-white/5 rounded-[2.5rem] p-5 lg:p-6 space-y-4 lg:space-y-6">
-              <div className="flex items-start gap-4">
-                <div className="size-10 lg:size-12 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center text-blue-600 shrink-0">
-                  <span className="material-symbols-outlined text-xl lg:text-2xl">
-                    account_balance
-                  </span>
-                </div>
-                <div>
-                  <p className="text-[9px] lg:text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">
-                    Conta de Destino (IBAN)
-                  </p>
-                  <p className="font-bold text-sm lg:text-base text-foreground break-all">
-                    AO06 0040 0000 1234 4829 1012 3
-                  </p>
-                </div>
+            <div className="space-y-3">
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">
+                Selecione a conta de destino
+              </p>
+
+              <div className="grid grid-cols-1 gap-2">
+                {accounts.map((acc) => {
+                  const isMCX = acc.type === "MCX_EXPRESS";
+                  return (
+                    <button
+                      key={acc.id}
+                      onClick={() => setSelectedAccountId(acc.id)}
+                      className={`relative text-left bg-white dark:bg-slate-900/40 border-2 transition-all rounded-[1.8rem] p-4 flex items-center gap-4 ${
+                        selectedAccountId === acc.id
+                          ? "border-primary shadow-md shadow-primary/5"
+                          : "border-gray-100 dark:border-white/5"
+                      }`}
+                    >
+                      <div
+                        className={`size-10 rounded-xl flex items-center justify-center shrink-0 ${
+                          isMCX
+                            ? "bg-orange-50 text-orange-600 dark:bg-orange-500/10"
+                            : "bg-blue-50 text-blue-600 dark:bg-blue-500/10"
+                        }`}
+                      >
+                        <span className="material-symbols-outlined text-xl">
+                          {isMCX ? "smartphone" : "account_balance"}
+                        </span>
+                      </div>
+                      <div className="flex-1 min-w-0 pr-6">
+                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest truncate">
+                          {isMCX ? "MCX Express" : acc.bankName || "Banco"}
+                        </p>
+                        <p className="font-bold text-sm text-foreground truncate">
+                          {isMCX ? acc.phoneNumber : acc.iban}
+                        </p>
+                      </div>
+
+                      {selectedAccountId === acc.id && (
+                        <div className="absolute right-4 text-primary">
+                          <span className="material-symbols-outlined font-bold text-lg">
+                            check_circle
+                          </span>
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
 
-              <div className="h-px bg-gray-100 dark:bg-white/5 w-full" />
-
-              <div className="flex items-start gap-4">
-                <div className="size-10 lg:size-12 rounded-2xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center text-amber-600 shrink-0">
-                  <span className="material-symbols-outlined text-xl lg:text-2xl">
+              <div className="bg-white dark:bg-slate-900/40 border border-gray-100 dark:border-white/5 rounded-[1.8rem] p-4 flex items-center gap-4">
+                <div className="size-10 rounded-xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center text-amber-600 shrink-0">
+                  <span className="material-symbols-outlined text-xl">
                     schedule
                   </span>
                 </div>
                 <div>
-                  <p className="text-[9px] lg:text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">
-                    Prazo de Processamento
+                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                    Prazo
                   </p>
-                  <p className="text-xs lg:text-sm font-medium leading-relaxed text-foreground">
-                    Processado em até{" "}
-                    <span className="font-black">24 horas úteis</span>.
+                  <p className="text-xs font-medium text-foreground">
+                    Até <span className="font-black">48h úteis</span>.
                   </p>
                 </div>
               </div>
@@ -135,8 +191,7 @@ const WithdrawScreen: React.FC = () => {
                 onClick={() => setIsSheetOpen(true)}
                 fullWidth
                 className="py-5 shadow-xl shadow-primary/30"
-                icon="account_balance_wallet"
-                disabled={fetchingBalance}
+                disabled={fetchingBalance || accounts.length === 0}
               >
                 Solicitar Levantamento
               </TralloButton>
@@ -144,19 +199,15 @@ const WithdrawScreen: React.FC = () => {
           </div>
 
           <div className="hidden lg:block lg:col-span-5 bg-white dark:bg-slate-900/20 p-8 rounded-[2.5rem] border border-gray-100 dark:border-white/5 sticky top-32">
-
             <div className="space-y-8">
               <div className="space-y-4">
-
                 <PriceInput
                   value={amount}
                   title="Valor do levantamento"
-                  onChange={(e: any) => {
-                    const val = e?.target ? e.target.value : e;
-                    setAmount(String(val).replace(/\D/g, ""));
-                  }}
+                  onChange={(val: any) =>
+                    setAmount(String(val).replace(/\D/g, ""))
+                  }
                 />
-
                 <div className="flex justify-between items-center px-1">
                   <button
                     onClick={() => setAmount(String(availableBalance))}
@@ -174,9 +225,10 @@ const WithdrawScreen: React.FC = () => {
                 onClick={handleWithdraw}
                 fullWidth
                 isLoading={loading}
-                disabled={!amount || loading || fetchingBalance}
+                disabled={
+                  !amount || loading || fetchingBalance || !selectedAccountId
+                }
                 className="py-5 text-base"
-                icon="check_circle"
               >
                 Confirmar Levantamento
               </TralloButton>
@@ -202,16 +254,9 @@ const WithdrawScreen: React.FC = () => {
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              drag="y"
-              dragConstraints={{ top: 0 }}
-              dragElastic={0.2}
-              onDragEnd={(_, info) =>
-                info.offset.y > 100 && setIsSheetOpen(false)
-              }
               className="fixed bottom-0 left-0 right-0 bg-white dark:bg-[#111118] z-[101] rounded-t-[3rem] p-8 pb-12 lg:hidden shadow-2xl border-t border-white/5"
             >
               <div className="w-12 h-1.5 bg-gray-200 dark:bg-gray-800 rounded-full mx-auto mb-10" />
-
               <div className="space-y-8">
                 <div className="space-y-4">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
@@ -219,10 +264,9 @@ const WithdrawScreen: React.FC = () => {
                   </label>
                   <PriceInput
                     value={amount}
-                    onChange={(e: any) => {
-                      const val = e?.target ? e.target.value : e;
-                      setAmount(String(val).replace(/\D/g, ""));
-                    }}
+                    onChange={(val: any) =>
+                      setAmount(String(val).replace(/\D/g, ""))
+                    }
                   />
                   <button
                     onClick={() => setAmount(String(availableBalance))}
@@ -236,7 +280,7 @@ const WithdrawScreen: React.FC = () => {
                   onClick={handleWithdraw}
                   fullWidth
                   isLoading={loading}
-                  disabled={!amount || loading}
+                  disabled={!amount || loading || !selectedAccountId}
                   className="py-5"
                   icon="check_circle"
                 >

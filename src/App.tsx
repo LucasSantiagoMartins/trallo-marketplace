@@ -36,6 +36,8 @@ import InventoryManagement from "./pages/InventoryManagement";
 import OperatorDashboard from "./pages/OperatorDashboard";
 import WalletManagement from "./pages/WalletManagement";
 import SalesCenter from "./pages/SalesCenter";
+import BankAccountsScreen from "./pages/BankAccountsScreen";
+import AddBankAccountScreen from "./pages/AddBankAccountScreen";
 
 const queryClient = new QueryClient();
 
@@ -136,7 +138,17 @@ const App = () => (
               />
             </Route>
 
-            {/* CATCH-ALL */}
+            <Route element={<ProtectedRoute />}>
+              <Route
+                path="/contas-bancarias"
+                element={<BankAccountsScreen />}
+              />
+              <Route
+                path="/contas-bancarias/nova"
+                element={<AddBankAccountScreen />}
+              />
+            </Route>
+
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

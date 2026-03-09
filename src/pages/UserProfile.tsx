@@ -99,9 +99,14 @@ const UserProfileScreen: React.FC = () => {
                 <MenuLink
                   icon="account_balance_wallet"
                   label="Carteira TRALLO"
-                  sublabel="85.400,00 Kz"
                   isWallet
                   to="/carteira"
+                />
+
+                <MenuLink
+                  icon="account_balance"
+                  label="Contas Bancárias"
+                  to="/contas-bancarias"
                 />
               </div>
             </section>
