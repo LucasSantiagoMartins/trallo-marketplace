@@ -12,7 +12,7 @@ import {
   getWalletMetrics,
 } from "@/services/admin.service";
 import TabContainer from "@/components/TabContainer";
-import DashboardGrid from "@/components/DashBoardGrid";
+import DashboardGrid from "@/components/DashboardGrid";
 
 type MetricContext = "overview" | "payments" | "transactions" | "wallets";
 

@@ -65,7 +65,7 @@ export default {
       },
       fontFamily: {
         display: ["Plus Jakarta Sans", "Inter", "sans-serif"],
-        body: ["Inter", "sans-serif"],
+        body: ["Poppins", "sans-serif"],
         price: ["Space Grotesk", "sans-serif"],
         grotesk: ["Space Grotesk", "sans-serif"],
       },

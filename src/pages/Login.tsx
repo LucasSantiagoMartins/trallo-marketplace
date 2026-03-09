@@ -38,7 +38,7 @@ const Login: React.FC = () => {
         const roleRoutes: Record<string, string> = {
           ADMIN: "/area-administrativa",
           OPERATOR: "/area-operacional",
-          SELLER: "/meus-produtos",
+          SELLER: "/centro-vendas",
           BUYER: "/",
         };
 

@@ -35,6 +35,7 @@ import AdminSettings from "./pages/AdminSettings";
 import InventoryManagement from "./pages/InventoryManagement";
 import OperatorDashboard from "./pages/OperatorDashboard";
 import WalletManagement from "./pages/WalletManagement";
+import SalesCenter from "./pages/SalesCenter";
 
 const queryClient = new QueryClient();
 
@@ -71,6 +72,7 @@ const App = () => (
             <Route
               element={<ProtectedRoute allowedRoles={["SELLER", "ADMIN"]} />}
             >
+              <Route path="/centro-vendas" element={<SalesCenter />} />
               <Route path="/meus-produtos" element={<MyProductsScreen />} />
               <Route path="/adicionar-produto" element={<CreateProduct />} />
               <Route path="/editar-produto" element={<EditProduct />} />
@@ -120,7 +122,7 @@ const App = () => (
                 path="/area-administrativa/pagamentos"
                 element={<PaymentsManagement />}
               />
-                <Route
+              <Route
                 path="/area-administrativa/carteiras"
                 element={<WalletManagement />}
               />
