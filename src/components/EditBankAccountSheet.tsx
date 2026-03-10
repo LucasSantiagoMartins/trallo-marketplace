@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { bankService } from "@/services/bank.service";
 import toast from "react-hot-toast";
 import { BankAccountType, BankAccountDTO } from "@/dtos/bank.dto";
+import TralloInput from "@/components/TralloInput";
+import TralloButton from "@/components/TralloButton";
 
 const BANKS = [
   { id: "bai", name: "BAI", color: "#003366" },
@@ -59,8 +61,8 @@ const EditBankAccountSheet: React.FC<EditAccountProps> = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleUpdate = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleUpdate = async (e?: React.FormEvent) => {
+    e?.preventDefault();
     if (!account) return;
 
     const hasChanged =
@@ -169,7 +171,13 @@ const EditBankAccountSheet: React.FC<EditAccountProps> = ({
                 </button>
               </header>
 
-              <form onSubmit={handleUpdate} className="space-y-5">
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleUpdate();
+                }}
+                className="space-y-5"
+              >
                 {account.type === BankAccountType.NORMAL_BANK ? (
                   <>
                     <div className="space-y-2 relative" ref={selectRef}>
@@ -179,7 +187,7 @@ const EditBankAccountSheet: React.FC<EditAccountProps> = ({
                       <button
                         type="button"
                         onClick={() => setIsSelectOpen(!isSelectOpen)}
-                        className="w-full h-14 pl-12 pr-4 rounded-2xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700 flex items-center justify-between transition-all focus:border-primary"
+                        className="w-full h-14 pl-12 pr-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700 flex items-center justify-between transition-all focus:border-primary"
                       >
                         <span className="material-symbols-outlined absolute left-4 text-primary">
                           account_balance
@@ -227,57 +235,36 @@ const EditBankAccountSheet: React.FC<EditAccountProps> = ({
                       </AnimatePresence>
                     </div>
 
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-black uppercase text-gray-400 ml-2">
-                        IBAN
-                      </label>
-                      <div className="relative">
-                        <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
-                          pin
-                        </span>
-                        <input
-                          className="w-full h-14 pl-12 pr-4 rounded-2xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700 outline-none focus:border-primary font-mono text-[#181112] dark:text-white"
-                          value={formData.iban}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              iban: e.target.value.toUpperCase(),
-                            })
-                          }
-                        />
-                      </div>
-                    </div>
+                    <TralloInput
+                      label="IBAN"
+                      icon="pin"
+                      className="font-mono"
+                      value={formData.iban}
+                      onChange={(val) =>
+                        setFormData({ ...formData, iban: val.toUpperCase() })
+                      }
+                    />
                   </>
                 ) : (
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase text-gray-400 ml-2">
-                      Telefone
-                    </label>
-                    <div className="relative">
-                      <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
-                        phone_iphone
-                      </span>
-                      <input
-                        className="w-full h-14 pl-12 pr-4 rounded-2xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700 outline-none focus:border-primary font-mono text-[#181112] dark:text-white"
-                        value={formData.phoneNumber}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            phoneNumber: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
-                  </div>
+                  <TralloInput
+                    label="Telefone"
+                    icon="phone_iphone"
+                    className="font-mono"
+                    value={formData.phoneNumber}
+                    onChange={(val) =>
+                      setFormData({ ...formData, phoneNumber: val })
+                    }
+                  />
                 )}
 
-                <button
-                  disabled={submitting}
+                <TralloButton
                   type="submit"
-                  className="w-full bg-primary text-white h-14 rounded-2xl font-black uppercase tracking-widest shadow-lg shadow-primary/20 active:scale-[0.98] transition-all disabled:opacity-50"
+                  fullWidth
+                  isLoading={submitting}
+                  className="mt-2"
                 >
-                  {submitting ? "Atualizando..." : "Salvar Alterações"}
-                </button>
+                  Salvar Alterações
+                </TralloButton>
               </form>
             </div>
           </motion.div>

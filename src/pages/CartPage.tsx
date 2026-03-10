@@ -17,6 +17,7 @@ import {
 import { BASE_UPLOAD_URL } from "@/api/endpoints";
 import { checkoutFromCart } from "@/services/checkout.service";
 import { PaymentMethod, PaymentMode } from "@/enums/payment";
+import ConfirmAction from "@/components/ConfirmAction";
 
 interface CartItem {
   id: string;
@@ -244,11 +245,12 @@ const CartPage: React.FC = () => {
           />
         )}
 
-        <ConfirmActionModal
+        <ConfirmAction
+          isLoading={false}
+          description="ira limpar todos os items do seu carrinho"
+          title="Tem a certeza que quer limpar o carrinho ?"
+          confirmText="limpar carrinho"
           isOpen={modalType === "single" || modalType === "all"}
-          type={
-            modalType === "single" || modalType === "all" ? modalType : null
-          }
           onConfirm={handleConfirmAction}
           onClose={closeModal}
         />

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import BottomNavigation from "../components/BottomNavigation";
 import PageHeader from "../components/PageHeader";
@@ -7,6 +7,22 @@ import { logout } from "../services/auth.service";
 import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
 
+// Interfaces para tipagem segura
+interface StatItemProps {
+  label: string;
+  value: string | number;
+  showBorder?: boolean;
+  hasStar?: boolean;
+}
+
+interface MenuLinkProps {
+  icon: string;
+  label: string;
+  sublabel?: string;
+  isWallet?: boolean;
+  to?: string;
+}
+
 const UserProfileScreen: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -14,23 +30,24 @@ const UserProfileScreen: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  const handleLogout = async () => {
+  const handleLogout = useCallback(async () => {
+    if (isLoggingOut) return;
+
+    setIsLoggingOut(true);
     try {
-      setIsLoggingOut(true);
-
       await logout();
-
       toast.success("Sessão encerrada com sucesso.");
-
-      setTimeout(() => {
-        setIsModalOpen(false);
-        navigate("/login");
-      }, 1500);
+      setIsModalOpen(false);
+      navigate("/login", { replace: true });
     } catch (error) {
       toast.error("Erro ao sair. Tente novamente.");
+    } finally {
       setIsLoggingOut(false);
     }
-  };
+  }, [isLoggingOut, navigate]);
+
+  // Early return se o usuário não existir (proteção contra quebras)
+  if (!user) return null;
 
   return (
     <div className="bg-background-light dark:bg-background-dark text-[#111118] dark:text-white min-h-screen transition-colors">
@@ -91,9 +108,7 @@ const UserProfileScreen: React.FC = () => {
 
           <div className="lg:col-span-7 space-y-6">
             <section className="space-y-4">
-              <h3 className="clash-font text-sm font-bold uppercase tracking-widest text-gray-400 ml-1">
-                Gerenciamento
-              </h3>
+            
               <div className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700">
                 <MenuLink
                   icon="person_edit"
@@ -101,18 +116,23 @@ const UserProfileScreen: React.FC = () => {
                   to="/editar-perfil"
                 />
                 <div className="mx-4 border-t border-gray-50 dark:border-gray-700" />
-                <MenuLink
-                  icon="account_balance_wallet"
-                  label="Carteira TRALLO"
-                  isWallet
-                  to="/carteira"
-                />
 
-                <MenuLink
-                  icon="account_balance"
-                  label="Contas Bancárias"
-                  to="/contas-bancarias"
-                />
+                {user.role === "SELLER" && (
+                  <>
+                    <MenuLink
+                      icon="account_balance_wallet"
+                      label="Carteira TRALLO"
+                      isWallet
+                      to="/carteira"
+                    />
+                    <div className="mx-4 border-t border-gray-50 dark:border-gray-700" />
+                    <MenuLink
+                      icon="account_balance"
+                      label="Contas Bancárias"
+                      to="/contas-bancarias"
+                    />
+                  </>
+                )}
               </div>
             </section>
 
@@ -137,12 +157,13 @@ const UserProfileScreen: React.FC = () => {
 
             <button
               onClick={() => setIsModalOpen(true)}
-              className="w-full flex items-center justify-center gap-2 p-4 text-red-500 font-bold clash-font text-sm bg-red-50 dark:bg-red-900/10 rounded-2xl hover:bg-red-100 dark:hover:bg-red-900/20 transition-all"
+              disabled={isLoggingOut}
+              className="w-full flex items-center justify-center gap-2 p-4 text-red-500 font-bold clash-font text-sm bg-red-50 dark:bg-red-900/10 rounded-2xl hover:bg-red-100 dark:hover:bg-red-900/20 transition-all disabled:opacity-50"
             >
               <span className="material-symbols-outlined text-[20px]">
                 logout
               </span>
-              <span>Terminar Sessão</span>
+              <span>{isLoggingOut ? "Encerrando..." : "Terminar Sessão"}</span>
             </button>
           </div>
         </main>
@@ -153,7 +174,13 @@ const UserProfileScreen: React.FC = () => {
   );
 };
 
-const StatItem = ({ label, value, showBorder, hasStar }: any) => (
+// Componentes internos com tipagem e sem uso de 'any'
+const StatItem: React.FC<StatItemProps> = ({
+  label,
+  value,
+  showBorder,
+  hasStar,
+}) => (
   <div
     className={`flex flex-col items-center ${
       showBorder ? "border-x border-gray-50 dark:border-gray-700" : ""
@@ -173,14 +200,22 @@ const StatItem = ({ label, value, showBorder, hasStar }: any) => (
   </div>
 );
 
-const MenuLink = ({ icon, label, sublabel, isWallet, to }: any) => {
+const MenuLink: React.FC<MenuLinkProps> = ({
+  icon,
+  label,
+  sublabel,
+  isWallet,
+  to,
+}) => {
   const navigate = useNavigate();
+
+  const handleNavigate = useCallback(() => {
+    if (to) navigate(to);
+  }, [navigate, to]);
 
   return (
     <button
-      onClick={() => {
-        if (to) navigate(to);
-      }}
+      onClick={handleNavigate}
       className="w-full flex items-center gap-4 p-5 hover:bg-gray-50 dark:hover:bg-gray-700/30 active:bg-gray-100 transition-colors group text-left"
     >
       <div

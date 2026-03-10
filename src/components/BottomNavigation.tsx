@@ -34,7 +34,7 @@ const BottomNavigation: React.FC = () => {
     ],
     BUYER: [
       { icon: "home", label: "Início", path: "/" },
-      { icon: "wallet", label: "Carteira", path: "/carteira" },
+      { icon: "favorite", label: "Favoritos", path: "/favorites" },
       {
         icon: "shopping_cart",
         label: "Carrinho",
@@ -90,7 +90,7 @@ const BottomNavigation: React.FC = () => {
                 </span>
                 {/* Badge dinâmico para o carrinho central */}
                 {item.isCart && cartCount > 0 && (
-                  <span className="absolute top-[-44px] right-[-4px] bg-destructive text-destructive-foreground text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-background animate-in zoom-in">
+                  <span className="absolute top-[-44px] right-[-4px] bg-destructive text-destructive-foreground text-[12px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-full border-background animate-in zoom-in">
                     {cartCount}
                   </span>
                 )}

@@ -5,6 +5,8 @@ import PageHeader from "@/components/PageHeader";
 import { bankService } from "@/services/bank.service";
 import toast from "react-hot-toast";
 import { BankAccountType } from "@/dtos/bank.dto";
+import TralloInput from "@/components/TralloInput";
+import TralloButton from "@/components/TralloButton";
 
 const BANKS = [
   { id: "bai", name: "BAI", color: "#003366" },
@@ -45,8 +47,8 @@ const AddBankAccountScreen: React.FC = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (e?: React.FormEvent) => {
+    e?.preventDefault();
 
     if (selectedType === BankAccountType.NORMAL_BANK) {
       if (!formData.bankName) return toast.error("Selecione o seu banco");
@@ -87,15 +89,12 @@ const AddBankAccountScreen: React.FC = () => {
 
   return (
     <div className="bg-background-light dark:bg-background-dark min-h-screen font-display text-[#181112] dark:text-white antialiased">
-      <PageHeader
-        title="Vincular Conta"
-      />
+      <PageHeader title="Vincular Conta" />
 
       <main className="max-w-2xl mx-auto px-6 pt-28 pb-32">
         {step === "SELECT_TYPE" ? (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
             <header className="mb-10 text-center">
-             
               <p className="text-gray-500 dark:text-gray-400 text-sm mt-2 font-medium">
                 Como você deseja receber seus pagamentos?
               </p>
@@ -164,132 +163,112 @@ const AddBankAccountScreen: React.FC = () => {
               </h2>
             </header>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleSubmit();
+              }}
+              className="space-y-6"
+            >
               {selectedType === BankAccountType.NORMAL_BANK ? (
                 <>
-                  <div className="space-y-3">
-                    <label className="text-[10px] font-black uppercase text-gray-400 ml-4 tracking-[0.2em]">
+                  <div className="space-y-1 relative" ref={selectRef}>
+                    <label className="text-[10px] font-black uppercase text-gray-400 ml-1 tracking-[0.2em]">
                       Instituição
                     </label>
-                    <div className="relative" ref={selectRef}>
-                      <button
-                        type="button"
-                        onClick={() => setIsSelectOpen(!isSelectOpen)}
-                        className={`w-full h-16 pl-14 pr-6 rounded-2xl bg-white dark:bg-gray-800 border transition-all flex items-center justify-between group ${isSelectOpen ? "border-primary ring-4 ring-primary/5" : "border-gray-100 dark:border-gray-700"}`}
-                      >
-                        <div className="absolute left-5 top-1/2 -translate-y-1/2 text-primary">
-                          <span className="material-symbols-outlined text-2xl">
-                            account_balance
-                          </span>
-                        </div>
-                        <span
-                          className={`font-bold ${formData.bankName ? "text-[#181112] dark:text-white" : "text-gray-400"}`}
-                        >
-                          {formData.bankName || "Escolha o banco..."}
-                        </span>
-                        <span
-                          className={`material-symbols-outlined transition-transform duration-300 text-gray-400 ${isSelectOpen ? "rotate-180" : ""}`}
-                        >
-                          expand_more
-                        </span>
-                      </button>
-
-                      {isSelectOpen && (
-                        <div className="absolute z-[100] w-full mt-2 p-2 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-3xl shadow-2xl animate-in fade-in zoom-in duration-200">
-                          <div className="max-h-60 overflow-y-auto custom-scrollbar">
-                            {BANKS.map((bank) => (
-                              <button
-                                key={bank.id}
-                                type="button"
-                                onClick={() => {
-                                  setFormData({
-                                    ...formData,
-                                    bankName: bank.name,
-                                  });
-                                  setIsSelectOpen(false);
-                                }}
-                                className="w-full p-4 flex items-center gap-4 rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors group"
-                              >
-                                <div
-                                  className="size-3 rounded-full"
-                                  style={{ backgroundColor: bank.color }}
-                                />
-                                <span className="font-bold text-sm uppercase tracking-tight group-hover:text-primary transition-colors">
-                                  {bank.name}
-                                </span>
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="space-y-3">
-                    <label className="text-[10px] font-black uppercase text-gray-400 ml-4 tracking-[0.2em]">
-                      Número do IBAN
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        placeholder="AO06 0000 0000 0000 0000 0"
-                        className="w-full h-16 pl-14 pr-6 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 focus:border-primary focus:ring-4 focus:ring-primary/5 outline-none font-mono text-lg transition-all"
-                        value={formData.iban}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            iban: e.target.value.toUpperCase(),
-                          })
-                        }
-                      />
-                      <div className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400">
-                        <span className="material-symbols-outlined text-2xl">
-                          pin
+                    <button
+                      type="button"
+                      onClick={() => setIsSelectOpen(!isSelectOpen)}
+                      className={`w-full h-14 pl-11 pr-6 rounded-xl bg-white dark:bg-gray-800 border transition-all flex items-center justify-between group ${
+                        isSelectOpen
+                          ? "border-primary ring-4 ring-primary/5"
+                          : "border-gray-100 dark:border-gray-700"
+                      }`}
+                    >
+                      <div className="absolute left-4 text-gray-400">
+                        <span className="material-symbols-outlined text-lg">
+                          account_balance
                         </span>
                       </div>
-                    </div>
+                      <span
+                        className={`font-bold text-sm ${
+                          formData.bankName
+                            ? "text-[#181112] dark:text-white"
+                            : "text-gray-400"
+                        }`}
+                      >
+                        {formData.bankName || "Escolha o banco..."}
+                      </span>
+                      <span
+                        className={`material-symbols-outlined transition-transform duration-300 text-gray-400 ${
+                          isSelectOpen ? "rotate-180" : ""
+                        }`}
+                      >
+                        expand_more
+                      </span>
+                    </button>
+
+                    {isSelectOpen && (
+                      <div className="absolute z-[100] w-full mt-2 p-2 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-2xl animate-in fade-in zoom-in duration-200">
+                        <div className="max-h-60 overflow-y-auto custom-scrollbar">
+                          {BANKS.map((bank) => (
+                            <button
+                              key={bank.id}
+                              type="button"
+                              onClick={() => {
+                                setFormData({
+                                  ...formData,
+                                  bankName: bank.name,
+                                });
+                                setIsSelectOpen(false);
+                              }}
+                              className="w-full p-4 flex items-center gap-4 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors group"
+                            >
+                              <div
+                                className="size-3 rounded-full"
+                                style={{ backgroundColor: bank.color }}
+                              />
+                              <span className="font-bold text-sm uppercase tracking-tight group-hover:text-primary transition-colors">
+                                {bank.name}
+                              </span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
+
+                  <TralloInput
+                    label="Número do IBAN"
+                    placeholder="AO06 0000 0000 0000 0000 0"
+                    icon="pin"
+                    value={formData.iban}
+                    onChange={(val) =>
+                      setFormData({ ...formData, iban: val.toUpperCase() })
+                    }
+                  />
                 </>
               ) : (
-                <div className="space-y-3">
-                  <label className="text-[10px] font-black uppercase text-gray-400 ml-4 tracking-[0.2em]">
-                    Telefone Associado
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="tel"
-                      placeholder="9XX XXX XXX"
-                      className="w-full h-16 pl-14 pr-6 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 focus:border-primary focus:ring-4 focus:ring-primary/5 outline-none font-mono text-lg transition-all"
-                      value={formData.phoneNumber}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          phoneNumber: e.target.value,
-                        })
-                      }
-                    />
-                    <div className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400">
-                      <span className="material-symbols-outlined text-2xl">
-                        phone_android
-                      </span>
-                    </div>
-                  </div>
-                </div>
+                <TralloInput
+                  label="Telefone Associado"
+                  placeholder="9XX XXX XXX"
+                  type="tel"
+                  icon="phone_android"
+                  value={formData.phoneNumber}
+                  onChange={(val) =>
+                    setFormData({ ...formData, phoneNumber: val })
+                  }
+                />
               )}
 
-              <button
-                disabled={submitting}
+              <TralloButton
                 type="submit"
-                className="w-full bg-primary text-white h-18 py-5 rounded-2xl font-black uppercase tracking-widest shadow-2xl shadow-primary/40 active:scale-[0.97] transition-all disabled:opacity-50 flex items-center justify-center gap-3"
+                fullWidth
+                isLoading={submitting}
+                className="mt-4"
               >
-                {submitting ? (
-                  <div className="size-6 border-3 border-white/20 border-t-white rounded-full animate-spin" />
-                ) : (
-                  <>
-                    <span>Confirmar</span>
-                  </>
-                )}
-              </button>
+                Confirmar
+              </TralloButton>
             </form>
           </div>
         )}
