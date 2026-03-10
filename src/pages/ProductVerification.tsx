@@ -95,7 +95,7 @@ const ProductVerification: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#f6f5f8] dark:bg-[#141022] text-slate-900 dark:text-white">
-      <PageHeader title="Validação de Produto" backTo={-1} />
+      <PageHeader title="Validação de Produto"   />
 
       {selectedImage && (
         <div

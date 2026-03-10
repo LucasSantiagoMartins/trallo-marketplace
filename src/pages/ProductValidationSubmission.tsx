@@ -79,7 +79,7 @@ const ProductValidationSubmission: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#f6f5f8] dark:bg-[#141022] text-slate-900 dark:text-white transition-colors duration-300">
-      <PageHeader title="Enviar para Análise" backTo={-1} />
+      <PageHeader title="Enviar para Análise"   />
 
       <VideoChecklistModal
         isOpen={showVideoChecklist}

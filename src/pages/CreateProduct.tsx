@@ -157,7 +157,7 @@ const CreateProduct: React.FC = () => {
     <MobileLayout className="pb-32">
       <PageHeader
         title="Criar Novo Produto"
-        backTo="/central-vendas"
+        backTo="/"
         rightElement={RightElement}
       />
 

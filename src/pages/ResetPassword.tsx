@@ -22,7 +22,7 @@ const ResetPassword = () => {
 
   return (
     <div className="bg-background-light dark:bg-background-dark min-h-screen flex flex-col items-center p-4 sm:p-6">
-      <PageHeader title="Redefinição de senha" backTo={-1} />
+      <PageHeader title="Redefinição de senha"  />
 
       <div className="mt-20 sm:mt-16 w-full" />
 

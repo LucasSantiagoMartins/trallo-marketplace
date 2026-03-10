@@ -62,7 +62,7 @@ const WalletScreen: React.FC = () => {
 
   return (
     <MobileLayout>
-      <PageHeader title="Minha Carteira" rightElement={RightElement} backTo="/perfil" />
+      <PageHeader title="Minha Carteira" rightElement={RightElement} />
 
       <main className="max-w-6xl mx-auto px-6 pt-24 pb-32 lg:pt-24">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
@@ -124,7 +124,6 @@ const WalletScreen: React.FC = () => {
                 onClick={() => navigate("/realizar-levantamento")}
                 className="w-full bg-primary text-white h-14 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-primary/30 active:scale-[0.98] transition-all"
               >
-                
                 <span>Realizar levantamento</span>
               </button>
 

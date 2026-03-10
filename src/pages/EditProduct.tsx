@@ -216,7 +216,7 @@ const EditProduct: React.FC = () => {
 
   return (
     <MobileLayout className="pb-10">
-      <PageHeader title="Editar Produto" backTo={-1} />
+      <PageHeader title="Editar Produto" />
 
       <main className="px-4 md:px-6 lg:px-8 max-w-6xl mx-auto pt-32 md:pt-28">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-start">

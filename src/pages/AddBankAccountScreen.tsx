@@ -8,13 +8,25 @@ import { BankAccountType } from "@/dtos/bank.dto";
 import TralloInput from "@/components/TralloInput";
 import TralloButton from "@/components/TralloButton";
 
+import baiImg from "@/assets/images/banks/bai.png";
+import bfaImg from "@/assets/images/banks/bfa.png";
+import bicImg from "@/assets/images/banks/bic.png";
+import keveImg from "@/assets/images/banks/keve.png";
+import millenniumImg from "@/assets/images/banks/millennium.png";
+import solImg from "@/assets/images/banks/sol.png";
+
 const BANKS = [
-  { id: "bai", name: "BAI", color: "#003366" },
-  { id: "bfa", name: "BFA", color: "#E30613" },
-  { id: "bic", name: "BIC", color: "#F39200" },
-  { id: "sol", name: "Banco SOL", color: "#FFD700" },
-  { id: "millennium", name: "Millennium Atlântico", color: "#00AEEF" },
-  { id: "keve", name: "Banco Keve", color: "#006738" },
+  { id: "bai", name: "BAI", color: "#003366", logo: baiImg },
+  { id: "bfa", name: "BFA", color: "#E30613", logo: bfaImg },
+  { id: "bic", name: "BIC", color: "#F39200", logo: bicImg },
+  { id: "sol", name: "Banco SOL", color: "#FFD700", logo: solImg },
+  {
+    id: "millennium",
+    name: "Millennium Atlântico",
+    color: "#00AEEF",
+    logo: millenniumImg,
+  },
+  { id: "keve", name: "Banco Keve", color: "#006738", logo: keveImg },
 ];
 
 const AddBankAccountScreen: React.FC = () => {
@@ -33,6 +45,8 @@ const AddBankAccountScreen: React.FC = () => {
   const [isSelectOpen, setIsSelectOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const selectRef = useRef<HTMLDivElement>(null);
+
+  const selectedBank = BANKS.find((b) => b.name === formData.bankName);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -179,26 +193,36 @@ const AddBankAccountScreen: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => setIsSelectOpen(!isSelectOpen)}
-                      className={`w-full h-14 pl-11 pr-6 rounded-xl bg-white dark:bg-gray-800 border transition-all flex items-center justify-between group ${
+                      className={`w-full h-14 pl-4 pr-6 rounded-xl bg-white dark:bg-gray-800 border transition-all flex items-center justify-between group ${
                         isSelectOpen
                           ? "border-primary ring-4 ring-primary/5"
                           : "border-gray-100 dark:border-gray-700"
                       }`}
                     >
-                      <div className="absolute left-4 text-gray-400">
-                        <span className="material-symbols-outlined text-lg">
-                          account_balance
+                      <div className="flex items-center gap-3">
+                        {selectedBank ? (
+                          <img
+                            src={selectedBank.logo}
+                            alt=""
+                            className="size-6 object-contain"
+                          />
+                        ) : (
+                          <div className="text-gray-400">
+                            <span className="material-symbols-outlined text-lg">
+                              account_balance
+                            </span>
+                          </div>
+                        )}
+                        <span
+                          className={`font-bold text-sm ${
+                            formData.bankName
+                              ? "text-[#181112] dark:text-white"
+                              : "text-gray-400"
+                          }`}
+                        >
+                          {formData.bankName || "Escolha o banco..."}
                         </span>
                       </div>
-                      <span
-                        className={`font-bold text-sm ${
-                          formData.bankName
-                            ? "text-[#181112] dark:text-white"
-                            : "text-gray-400"
-                        }`}
-                      >
-                        {formData.bankName || "Escolha o banco..."}
-                      </span>
                       <span
                         className={`material-symbols-outlined transition-transform duration-300 text-gray-400 ${
                           isSelectOpen ? "rotate-180" : ""
@@ -222,12 +246,15 @@ const AddBankAccountScreen: React.FC = () => {
                                 });
                                 setIsSelectOpen(false);
                               }}
-                              className="w-full p-4 flex items-center gap-4 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors group"
+                              className="w-full p-3 flex items-center gap-4 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors group"
                             >
-                              <div
-                                className="size-3 rounded-full"
-                                style={{ backgroundColor: bank.color }}
-                              />
+                              <div className="size-8 rounded-lg bg-white border border-gray-100 flex items-center justify-center p-1 shrink-0">
+                                <img
+                                  src={bank.logo}
+                                  alt={bank.name}
+                                  className="w-full h-full object-contain"
+                                />
+                              </div>
                               <span className="font-bold text-sm uppercase tracking-tight group-hover:text-primary transition-colors">
                                 {bank.name}
                               </span>

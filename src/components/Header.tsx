@@ -44,8 +44,6 @@ const Header: React.FC<HeaderProps> = ({
     ],
     SELLER: [
       { name: "Início", path: "/" },
-      { name: "Produtos adicionados", path: "/meus-produtos" },
-      { name: "Publicar produto", path: "/adicionar-produto" },
       { name: "Minha carteira", path: "/carteira" },
       { name: "Centro de vendas", path: "/centro-vendas" },
     ],

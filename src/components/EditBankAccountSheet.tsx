@@ -6,13 +6,26 @@ import { BankAccountType, BankAccountDTO } from "@/dtos/bank.dto";
 import TralloInput from "@/components/TralloInput";
 import TralloButton from "@/components/TralloButton";
 
+// Importação das imagens dos bancos
+import baiImg from "@/assets/images/banks/bai.png";
+import bfaImg from "@/assets/images/banks/bfa.png";
+import bicImg from "@/assets/images/banks/bic.png";
+import keveImg from "@/assets/images/banks/keve.png";
+import millenniumImg from "@/assets/images/banks/millennium.png";
+import solImg from "@/assets/images/banks/sol.png";
+
 const BANKS = [
-  { id: "bai", name: "BAI", color: "#003366" },
-  { id: "bfa", name: "BFA", color: "#E30613" },
-  { id: "bic", name: "BIC", color: "#F39200" },
-  { id: "sol", name: "Banco SOL", color: "#FFD700" },
-  { id: "millennium", name: "Millennium Atlântico", color: "#00AEEF" },
-  { id: "keve", name: "Banco Keve", color: "#006738" },
+  { id: "bai", name: "BAI", color: "#003366", logo: baiImg },
+  { id: "bfa", name: "BFA", color: "#E30613", logo: bfaImg },
+  { id: "bic", name: "BIC", color: "#F39200", logo: bicImg },
+  { id: "sol", name: "Banco SOL", color: "#FFD700", logo: solImg },
+  {
+    id: "millennium",
+    name: "Millennium Atlântico",
+    color: "#00AEEF",
+    logo: millenniumImg,
+  },
+  { id: "keve", name: "Banco Keve", color: "#006738", logo: keveImg },
 ];
 
 interface EditAccountProps {
@@ -37,6 +50,9 @@ const EditBankAccountSheet: React.FC<EditAccountProps> = ({
   const [isSelectOpen, setIsSelectOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const selectRef = useRef<HTMLDivElement>(null);
+
+  // Encontrar o banco selecionado para mostrar o logo no botão do Select
+  const selectedBank = BANKS.find((b) => b.name === formData.bankName);
 
   useEffect(() => {
     if (account) {
@@ -187,14 +203,24 @@ const EditBankAccountSheet: React.FC<EditAccountProps> = ({
                       <button
                         type="button"
                         onClick={() => setIsSelectOpen(!isSelectOpen)}
-                        className="w-full h-14 pl-12 pr-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700 flex items-center justify-between transition-all focus:border-primary"
+                        className="w-full h-14 pl-4 pr-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700 flex items-center justify-between transition-all focus:border-primary"
                       >
-                        <span className="material-symbols-outlined absolute left-4 text-primary">
-                          account_balance
-                        </span>
-                        <span className="font-bold text-sm text-[#181112] dark:text-white">
-                          {formData.bankName}
-                        </span>
+                        <div className="flex items-center gap-3">
+                          {selectedBank ? (
+                            <img
+                              src={selectedBank.logo}
+                              alt=""
+                              className="size-6 object-contain"
+                            />
+                          ) : (
+                            <span className="material-symbols-outlined text-primary">
+                              account_balance
+                            </span>
+                          )}
+                          <span className="font-bold text-sm text-[#181112] dark:text-white">
+                            {formData.bankName || "Selecionar Banco"}
+                          </span>
+                        </div>
                         <span
                           className={`material-symbols-outlined text-gray-400 transition-transform ${isSelectOpen ? "rotate-180" : ""}`}
                         >
@@ -208,7 +234,7 @@ const EditBankAccountSheet: React.FC<EditAccountProps> = ({
                             initial={{ opacity: 0, y: -10 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -10 }}
-                            className="absolute top-[calc(100%+4px)] left-0 w-full p-2 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-xl max-h-40 overflow-y-auto z-[110] scrollbar-hide"
+                            className="absolute top-[calc(100%+4px)] left-0 w-full p-2 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-xl max-h-48 overflow-y-auto z-[110] scrollbar-hide"
                           >
                             {BANKS.map((b) => (
                               <button
@@ -223,10 +249,13 @@ const EditBankAccountSheet: React.FC<EditAccountProps> = ({
                                 }}
                                 className="w-full p-2.5 flex items-center gap-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-900/50 text-[11px] font-bold uppercase text-[#181112] dark:text-white transition-colors"
                               >
-                                <div
-                                  className="size-2 rounded-full"
-                                  style={{ backgroundColor: b.color }}
-                                />
+                                <div className="size-8 rounded-lg bg-white border border-gray-100 flex items-center justify-center p-1">
+                                  <img
+                                    src={b.logo}
+                                    alt={b.name}
+                                    className="w-full h-full object-contain"
+                                  />
+                                </div>
                                 {b.name}
                               </button>
                             ))}

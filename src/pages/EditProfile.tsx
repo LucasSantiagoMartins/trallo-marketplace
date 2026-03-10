@@ -47,7 +47,7 @@ const EditProfile = () => {
 
   return (
     <div className="bg-background-light dark:bg-background-dark min-h-screen flex flex-col items-center p-4 sm:p-6">
-      <PageHeader title="Editar Perfil" backTo={-1} />
+      <PageHeader title="Editar Perfil" />
 
       <div className="mt-16 sm:mt-16 w-full" />
 

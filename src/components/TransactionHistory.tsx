@@ -76,7 +76,7 @@ const HistoryScreen: React.FC = () => {
 
   return (
     <div className="bg-[#F8F9FD] dark:bg-[#0D0D12] min-h-screen font-display text-[#121118] dark:text-white antialiased">
-      <PageHeader title="Histórico" backTo={-1} />
+      <PageHeader title="Histórico" />
 
       <main className="max-w-6xl mx-auto px-4 md:px-6 pt-24 pb-32">
         <section className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-6 mb-10">

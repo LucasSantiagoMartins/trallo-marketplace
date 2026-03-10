@@ -121,7 +121,6 @@ const ProductDetails: React.FC = () => {
     <MobileLayout>
       <PageHeader
         title="Detalhes do Produto"
-        backTo={-1}
         rightElement={
           <button className="size-10 flex items-center justify-center bg-card rounded-full shadow-soft">
             <span className="material-symbols-outlined text-foreground">
