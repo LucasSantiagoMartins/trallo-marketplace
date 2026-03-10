@@ -116,7 +116,7 @@ const WithdrawScreen: React.FC = () => {
 
   return (
     <MobileLayout className="pb-10">
-      <PageHeader title="Levantamento" backTo={-1} />
+      <PageHeader title="Levantamento" backTo="/carteira" />
 
       <main className="px-6 max-w-6xl mx-auto pt-32 pb-40 lg:pb-20">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">

@@ -64,7 +64,7 @@ const UserProfileScreen: React.FC = () => {
       />
 
       <div className="relative mx-auto min-h-screen flex flex-col pb-24 lg:pb-10 lg:max-w-4xl lg:px-8">
-        <PageHeader title="Perfil" backTo={-1} />
+        <PageHeader title="Perfil" backTo="/" />
 
         <main className="px-6 lg:px-0 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start pt-20 lg:pt-24">
           <div className="lg:col-span-5 space-y-6">

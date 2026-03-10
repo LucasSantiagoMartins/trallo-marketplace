@@ -89,7 +89,7 @@ const AddBankAccountScreen: React.FC = () => {
 
   return (
     <div className="bg-background-light dark:bg-background-dark min-h-screen font-display text-[#181112] dark:text-white antialiased">
-      <PageHeader title="Vincular Conta" />
+      <PageHeader title="Vincular Conta" backTo="/contas-bancarias" />
 
       <main className="max-w-2xl mx-auto px-6 pt-28 pb-32">
         {step === "SELECT_TYPE" ? (

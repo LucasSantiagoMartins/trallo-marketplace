@@ -153,10 +153,10 @@ const Home: React.FC = () => {
   };
 
   return (
-    <MobileLayout showBottomNav>
+    <MobileLayout>
       <Header />
 
-      <main className="mt-2 pb-24">
+      <main className="mt-2 pb-14">
         <div className="px-4 md:px-6 lg:px-8 pt-4">
           <div className="relative max-w-[75.5rem] mx-auto animate-in fade-in slide-in-from-top-2 duration-700">
             <div className="flex gap-2 items-center">

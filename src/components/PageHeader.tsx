@@ -15,15 +15,12 @@ const PageHeader: React.FC<PageHeaderProps> = ({
   const navigate = useNavigate();
 
   const handleBack = () => {
-    if (backTo) {
-      if (typeof backTo === "string") {
-        navigate(backTo);
-      } else {
-        navigate(backTo);
-      }
-    } else {
-      navigate(-1);
+    if (backTo !== undefined) {
+      navigate(backTo as any);
+      return;
     }
+
+    navigate(-1);
   };
 
   return (
@@ -42,6 +39,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
           {title}
         </h2>
 
+        {/* Elemento da direita */}
         <div className="flex gap-2 min-w-10 justify-end">{rightElement}</div>
       </div>
     </header>

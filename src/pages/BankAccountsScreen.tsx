@@ -67,7 +67,7 @@ const BankAccountsScreen: React.FC = () => {
 
   return (
     <div className="bg-background-light dark:bg-background-dark min-h-screen font-display text-[#181112] dark:text-white antialiased">
-      <PageHeader title="Minhas Contas" />
+      <PageHeader title="Minhas Contas" backTo="/perfil" />
 
       <main className="max-w-6xl mx-auto px-6 pt-28 pb-32">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">

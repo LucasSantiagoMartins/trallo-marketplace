@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import toast from "react-hot-toast"; // Importação do novo toast
+import toast from "react-hot-toast";
 import MobileLayout from "@/layouts/MobileLayout";
 import PageHeader from "@/components/PageHeader";
 import TralloInput from "@/components/TralloInput";
@@ -17,10 +17,12 @@ import {
   PRODUCT_CONDITIONS,
 } from "@/constants/product-options";
 import BottomNavigation from "@/components/BottomNavigation";
+import { useAuth } from "@/context/AuthContext";
 
 const CreateProduct: React.FC = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { user } = useAuth();
 
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -129,9 +131,35 @@ const CreateProduct: React.FC = () => {
     PRODUCT_CONDITIONS.find((c) => c.value === formData.condition)?.label ||
     "Selecionar";
 
+  const RightElement = (
+    <div
+      className="flex items-center gap-3 cursor-pointer"
+      onClick={() => navigate("/perfil")}
+    >
+      <div className="text-right hidden sm:block">
+        <p className="text-[10px] text-[#8c5f67] dark:text-gray-400 font-bold uppercase tracking-wider">
+          Olá, {user?.userName || "Vendedor"}
+        </p>
+      </div>
+      <div className="size-10 rounded-full border-2 border-primary/20 p-0.5 shadow-sm">
+        <div
+          className="w-full h-full rounded-full bg-cover bg-center"
+          style={{
+            backgroundImage:
+              'url("https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=100&h=100&auto=format&fit=crop")',
+          }}
+        />
+      </div>
+    </div>
+  );
+
   return (
-    <MobileLayout className="pb-10">
-      <PageHeader title="Criar Novo Produto" backTo={-1} />
+    <MobileLayout className="pb-32">
+      <PageHeader
+        title="Criar Novo Produto"
+        backTo="/central-vendas"
+        rightElement={RightElement}
+      />
 
       <main className="px-4 md:px-6 lg:px-8 max-w-6xl mx-auto pt-32 md:pt-28">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-start">

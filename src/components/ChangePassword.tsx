@@ -17,7 +17,7 @@ const ChangePassword = () => {
 
   return (
     <div className="bg-background-light dark:bg-background-dark min-h-screen flex flex-col items-center p-4 sm:p-6">
-      <PageHeader title="Alterar Senha" backTo={-1} />
+      <PageHeader title="Alterar Senha" backTo="configuracoes" />
 
       <div className="mt-20 sm:mt-16 w-full" />
 
@@ -59,10 +59,7 @@ const ChangePassword = () => {
           />
 
           <div className="relative w-full">
-            <PasswordTooltip 
-              password={newPassword} 
-              isVisible={showTooltip} 
-            />
+            <PasswordTooltip password={newPassword} isVisible={showTooltip} />
             <TralloInput
               label="Nova Senha"
               type="password"
@@ -92,8 +89,6 @@ const ChangePassword = () => {
             </TralloButton>
           </div>
         </form>
-
-        
       </main>
     </div>
   );

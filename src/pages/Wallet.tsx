@@ -62,7 +62,7 @@ const WalletScreen: React.FC = () => {
 
   return (
     <MobileLayout>
-      <PageHeader title="Minha Carteira" rightElement={RightElement} />
+      <PageHeader title="Minha Carteira" rightElement={RightElement} backTo="/perfil" />
 
       <main className="max-w-6xl mx-auto px-6 pt-24 pb-32 lg:pt-24">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
