@@ -2,54 +2,76 @@ import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "@/hooks/use-cart";
- 
 
 interface NavItem {
   icon: string;
   label: string;
   path: string;
   isCenter?: boolean;
-  isCart?: boolean; // Adicionamos esta flag para identificar o carrinho
+  isCart?: boolean;
 }
 
 const BottomNavigation: React.FC = () => {
   const location = useLocation();
   const { user, isAuthenticated } = useAuth();
-  const { cartCount } = useCart(); // Pegamos o valor global aqui
+  const { cartCount } = useCart();
 
   const menuConfig: Record<string, NavItem[]> = {
     ADMIN: [
-      { icon: "dashboard", label: "Painel", path: "/admin" },
-      { icon: "group", label: "Usuários", path: "/admin/users" },
-      { icon: "analytics", label: "Relatórios", path: "/admin/reports", isCenter: true },
+      { icon: "dashboard", label: "Admin", path: "/area-administrativa" },
+      {
+        icon: "payments",
+        label: "Pagamentos",
+        path: "/area-administrativa/pagamentos",
+      },
+      {
+        icon: "swap_horiz",
+        label: "Transações",
+        path: "/area-administrativa/transacoes",
+        isCenter: true,
+      },
       { icon: "settings", label: "Config", path: "/configuracoes" },
       { icon: "person", label: "Perfil", path: "/perfil" },
     ],
     SELLER: [
       { icon: "home", label: "Início", path: "/" },
       { icon: "inventory_2", label: "Produtos", path: "/meus-produtos" },
-      { icon: "storefront", label: "Vender", path: "/adicionar-produto", isCenter: true },
+      {
+        icon: "add_circle",
+        label: "Publicar",
+        path: "/adicionar-produto",
+        isCenter: true,
+      },
       { icon: "account_balance_wallet", label: "Carteira", path: "/carteira" },
-      { icon: "person", label: "Perfil", path: "/perfil" },
+      { icon: "storefront", label: "Vendas", path: "/centro-vendas" },
     ],
     BUYER: [
       { icon: "home", label: "Início", path: "/" },
-      { icon: "favorite", label: "Favoritos", path: "/favorites" },
+      { icon: "favorite", label: "Favoritos", path: "/favoritos" },
       {
         icon: "shopping_cart",
         label: "Carrinho",
         path: "/carrinho",
         isCenter: true,
-        isCart: true // Marcamos como carrinho
+        isCart: true,
       },
       { icon: "package_2", label: "Pedidos", path: "/meus-pedidos" },
       { icon: "person", label: "Perfil", path: "/perfil" },
     ],
     OPERATOR: [
       { icon: "home", label: "Início", path: "/" },
-      { icon: "pending_actions", label: "Pendentes", path: "/area-operacional/verificacoes-pendentes" },
-      { icon: "inventory", label: "Estoque", path: "/operacao/estoque", isCenter: true },
-      { icon: "notifications", label: "Avisos", path: "/notifications" },
+      { icon: "pending_actions", label: "Pedidos", path: "/operacao/pedidos" },
+      {
+        icon: "inventory",
+        label: "Estoque",
+        path: "/area-operacional/gestao-estoque",
+        isCenter: true,
+      },
+      {
+        icon: "fact_check",
+        label: "Verificações",
+        path: "/area-operacional/verificacoes-pendentes",
+      },
       { icon: "person", label: "Perfil", path: "/perfil" },
     ],
     DELIVERER: [
@@ -62,12 +84,12 @@ const BottomNavigation: React.FC = () => {
   };
 
   const currentNavItems =
-    isAuthenticated && user
+    isAuthenticated && user && menuConfig[user.role]
       ? menuConfig[user.role]
       : [
-        { icon: "home", label: "Início", path: "/" },
-        { icon: "person", label: "Entrar", path: "/perfil" },
-      ];
+          { icon: "home", label: "Início", path: "/" },
+          { icon: "person", label: "Entrar", path: "/perfil" },
+        ];
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 glass-nav border-t border-border px-6 py-3 flex justify-between items-center z-50 rounded-t-xl lg:hidden">
@@ -88,9 +110,8 @@ const BottomNavigation: React.FC = () => {
                 <span className="text-[10px] font-medium mt-1 text-muted-foreground">
                   {item.label}
                 </span>
-                {/* Badge dinâmico para o carrinho central */}
                 {item.isCart && cartCount > 0 && (
-                  <span className="absolute top-[-44px] right-[-4px] bg-destructive text-destructive-foreground text-[12px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-full border-background animate-in zoom-in">
+                  <span className="absolute top-[-44px] right-[-4px] bg-destructive text-destructive-foreground text-[12px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-background animate-in zoom-in">
                     {cartCount}
                   </span>
                 )}
@@ -104,10 +125,14 @@ const BottomNavigation: React.FC = () => {
               to={item.path}
               className={`flex flex-col items-center ${isActive ? "text-primary" : "text-muted-foreground"}`}
             >
-              <span className={`material-symbols-outlined ${isActive ? "fill-1" : ""}`}>
+              <span
+                className={`material-symbols-outlined ${isActive ? "fill-1" : ""}`}
+              >
                 {item.icon}
               </span>
-              <span className={`text-[10px] mt-1 ${isActive ? "font-bold" : "font-medium"}`}>
+              <span
+                className={`text-[10px] mt-1 ${isActive ? "font-bold" : "font-medium"}`}
+              >
                 {item.label}
               </span>
             </Link>
