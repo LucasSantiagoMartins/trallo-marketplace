@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "@/hooks/use-cart";
- 
 
 interface HeaderProps {
   showBack?: boolean;
@@ -48,6 +47,7 @@ const Header: React.FC<HeaderProps> = ({
       { name: "Produtos adicionados", path: "/meus-produtos" },
       { name: "Publicar produto", path: "/adicionar-produto" },
       { name: "Minha carteira", path: "/carteira" },
+      { name: "Centro de vendas", path: "/centro-vendas" },
     ],
     BUYER: [
       { name: "Início", path: "/" },
@@ -56,7 +56,10 @@ const Header: React.FC<HeaderProps> = ({
     ],
     OPERATOR: [
       { name: "Pedidos Pendentes", path: "/operacao/pedidos" },
-      { name: "Verificações Pendentes", path: "/area-operacional/verificacoes-pendentes" },
+      {
+        name: "Verificações Pendentes",
+        path: "/area-operacional/verificacoes-pendentes",
+      },
       { name: "Estoque", path: "/area-operacional/gestao-estoque" },
     ],
     DELIVERER: [
@@ -82,7 +85,9 @@ const Header: React.FC<HeaderProps> = ({
             onClick={onBack}
             className="size-10 flex items-center justify-center bg-card rounded-full shadow-soft active:scale-90 transition-transform"
           >
-            <span className="material-symbols-outlined text-foreground">arrow_back</span>
+            <span className="material-symbols-outlined text-foreground">
+              arrow_back
+            </span>
           </button>
           {title && (
             <h2 className="text-foreground text-sm font-bold uppercase tracking-widest">
@@ -96,14 +101,20 @@ const Header: React.FC<HeaderProps> = ({
   }
 
   return (
-    <header className={`${headerStyles} px-4 md:px-6 lg:px-8 transition-all duration-300`}>
+    <header
+      className={`${headerStyles} px-4 md:px-6 lg:px-8 transition-all duration-300`}
+    >
       <div className="w-full max-w-[75.5rem] mx-auto">
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2 group">
             <div className="bg-primary p-1.5 rounded-lg text-primary-foreground group-active:scale-90 transition-transform">
-              <span className="material-symbols-outlined text-2xl">shopping_bag</span>
+              <span className="material-symbols-outlined text-2xl">
+                shopping_bag
+              </span>
             </div>
-            <h1 className="text-xl font-bold tracking-tight clash-style">TRALLO</h1>
+            <h1 className="text-xl font-bold tracking-tight clash-style">
+              TRALLO
+            </h1>
           </Link>
 
           <nav className="hidden lg:flex items-center gap-8">
@@ -120,7 +131,9 @@ const Header: React.FC<HeaderProps> = ({
                 {item.name}
                 <span
                   className={`absolute bottom-0 left-0 h-[2px] bg-primary transition-all duration-300 ease-in-out ${
-                    location.pathname === item.path ? "w-full" : "w-0 group-hover/link:w-full"
+                    location.pathname === item.path
+                      ? "w-full"
+                      : "w-0 group-hover/link:w-full"
                   }`}
                 />
               </Link>

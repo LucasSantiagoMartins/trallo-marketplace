@@ -95,6 +95,25 @@ const WithdrawScreen: React.FC = () => {
     }
   };
 
+  const ShortcutBadge = ({
+    value,
+    colorClass,
+    hoverClass,
+  }: {
+    value: number;
+    colorClass: string;
+    hoverClass: string;
+  }) => (
+    <button
+      onClick={() => setAmount(String(Math.floor(value)))}
+      className={`flex-1 ${colorClass} ${hoverClass} backdrop-blur-md transition-all duration-300 py-2.5 px-1 rounded-full border border-transparent active:scale-90 flex items-center justify-center group`}
+    >
+      <p className="text-[10px] font-black truncate text-center tracking-tight group-hover:scale-105 transition-transform">
+        {formatPrice(value, false)}
+      </p>
+    </button>
+  );
+
   return (
     <MobileLayout className="pb-10">
       <PageHeader title="Levantamento" backTo={-1} />
@@ -208,16 +227,23 @@ const WithdrawScreen: React.FC = () => {
                     setAmount(String(val).replace(/\D/g, ""))
                   }
                 />
-                <div className="flex justify-between items-center px-1">
-                  <button
-                    onClick={() => setAmount(String(availableBalance))}
-                    className="text-[10px] font-black text-primary uppercase hover:underline"
-                  >
-                    Levantar saldo total
-                  </button>
-                  <span className="text-[10px] font-bold text-slate-400 uppercase">
-                    Taxa: 0 Kz
-                  </span>
+
+                <div className="flex gap-2">
+                  <ShortcutBadge
+                    value={availableBalance / 3}
+                    colorClass="bg-blue-50/50 text-blue-600 dark:bg-blue-500/5 dark:text-blue-400"
+                    hoverClass="hover:border-blue-400/50 hover:bg-blue-100/50 dark:hover:bg-blue-500/10"
+                  />
+                  <ShortcutBadge
+                    value={availableBalance / 2}
+                    colorClass="bg-purple-50/50 text-purple-600 dark:bg-purple-500/5 dark:text-purple-400"
+                    hoverClass="hover:border-purple-400/50 hover:bg-purple-100/50 dark:hover:bg-purple-500/10"
+                  />
+                  <ShortcutBadge
+                    value={availableBalance}
+                    colorClass="bg-emerald-50/50 text-emerald-600 dark:bg-emerald-500/5 dark:text-emerald-400"
+                    hoverClass="hover:border-emerald-400/50 hover:bg-emerald-100/50 dark:hover:bg-emerald-500/10"
+                  />
                 </div>
               </div>
 
@@ -268,12 +294,24 @@ const WithdrawScreen: React.FC = () => {
                       setAmount(String(val).replace(/\D/g, ""))
                     }
                   />
-                  <button
-                    onClick={() => setAmount(String(availableBalance))}
-                    className="text-[10px] font-black text-primary uppercase"
-                  >
-                    Saldo total: {formatPrice(availableBalance, true)}
-                  </button>
+
+                  <div className="flex gap-2">
+                    <ShortcutBadge
+                      value={availableBalance / 3}
+                      colorClass="bg-blue-50/50 text-blue-600 dark:bg-blue-500/5 dark:text-blue-400"
+                      hoverClass="hover:border-blue-400/50"
+                    />
+                    <ShortcutBadge
+                      value={availableBalance / 2}
+                      colorClass="bg-purple-50/50 text-purple-600 dark:bg-purple-500/5 dark:text-purple-400"
+                      hoverClass="hover:border-purple-400/50"
+                    />
+                    <ShortcutBadge
+                      value={availableBalance}
+                      colorClass="bg-emerald-50/50 text-emerald-600 dark:bg-emerald-500/5 dark:text-emerald-400"
+                      hoverClass="hover:border-emerald-400/50"
+                    />
+                  </div>
                 </div>
 
                 <TralloButton
