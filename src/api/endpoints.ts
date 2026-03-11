@@ -88,7 +88,11 @@ export const endpoints = {
     delete: (id: string) => `/bank-accounts/${id}`,
   },
 
-  SalesCenter: {
+  salesCenter: {
     summary: "/orders/my/sales-summary"
+  },
+  userSecuritySettings: {
+    get: "/user-security-settings",
+    update: "/user-security-settings",
   }
 };

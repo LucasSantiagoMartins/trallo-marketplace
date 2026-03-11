@@ -1,9 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PageHeader from "@/components/PageHeader";
 import BottomNavigation from "@/components/BottomNavigation";
 import ConfirmAction from "@/components/ConfirmAction";
-import ActionSheet from "@/components/ActionSheet";
+import ActionSheet, { TwoFactorMethod } from "@/components/ActionSheet";
 import { Link } from "react-router-dom";
+import { toast } from "react-hot-toast";
+import {
+  getUserSecuritySettings,
+  updateUserSecuritySettings,
+} from "@/services/user-security.service";
 
 export const CustomToggle = ({
   checked,
@@ -12,7 +17,13 @@ export const CustomToggle = ({
   checked: boolean;
   onChange: () => void;
 }) => (
-  <div className="shrink-0 relative cursor-pointer" onClick={onChange}>
+  <div
+    className="shrink-0 relative cursor-pointer"
+    onClick={(e) => {
+      e.stopPropagation();
+      onChange();
+    }}
+  >
     <div
       className={`w-10 sm:w-12 h-6 sm:h-7 rounded-full transition-colors shadow-inner ${checked ? "bg-primary" : "bg-gray-200 dark:bg-gray-700"}`}
     />
@@ -32,13 +43,66 @@ const SettingsScreen: React.FC = () => {
     useState("Português (Angola)");
 
   const [is2FASheetOpen, setIs2FASheetOpen] = useState(false);
-  const [is2FAEnabled, setIs2FAEnabled] = useState(false);
-  const [tempTwoFAMethod, setTempTwoFAMethod] = useState<"sms" | "email">(
-    "sms",
-  );
-  const [activeTwoFAMethod, setActiveTwoFAMethod] = useState<"sms" | "email">(
-    "sms",
-  );
+  const [isUpdatingSecurity, setIsUpdatingSecurity] = useState(false);
+
+  const [secureLogin, setSecureLogin] = useState(false);
+  const [secureOperations, setSecureOperations] = useState(false);
+  const [activeTwoFAMethod, setActiveTwoFAMethod] =
+    useState<TwoFactorMethod>("EMAIL");
+
+  const [tempTwoFAMethod, setTempTwoFAMethod] =
+    useState<TwoFactorMethod>("EMAIL");
+
+  useEffect(() => {
+    loadSecuritySettings();
+  }, []);
+
+  const loadSecuritySettings = async () => {
+    try {
+      const response = await getUserSecuritySettings();
+      if (response.success) {
+        setSecureLogin(response.data.secureLogin);
+        setSecureOperations(response.data.secureOperations);
+        setActiveTwoFAMethod(response.data.twoFactorMethod);
+        setTempTwoFAMethod(response.data.twoFactorMethod);
+      }
+    } catch (error) {
+      console.error("Erro ao carregar configurações de segurança", error);
+    }
+  };
+
+  const handleConfirmSecurityUpdate = async (payload: any) => {
+    setIsUpdatingSecurity(true);
+    try {
+      const response = await updateUserSecuritySettings({
+        twoFactorMethod: payload.twoFactorMethod,
+        secureLogin: payload.secureLogin,
+        secureOperations: payload.secureOperations,
+      });
+
+      if (response.success) {
+        setSecureLogin(response.data.secureLogin);
+        setSecureOperations(response.data.secureOperations);
+        setActiveTwoFAMethod(response.data.twoFactorMethod);
+        setTempTwoFAMethod(response.data.twoFactorMethod);
+
+        setIs2FASheetOpen(false);
+        toast.success(
+          response.message ??
+            "Configurações de segurança atualizadas com sucesso",
+        );
+      }
+    } catch (error: any) {
+      console.error("Erro ao salvar segurança", error);
+      toast.error(
+        error.response?.data?.message ||
+          error.message ||
+          "Falha ao atualizar configurações",
+      );
+    } finally {
+      setIsUpdatingSecurity(false);
+    }
+  };
 
   const languages = [
     "Português (Angola)",
@@ -53,11 +117,6 @@ const SettingsScreen: React.FC = () => {
       setIsDeleting(false);
       setIsDeleteModalOpen(false);
     }, 2000);
-  };
-
-  const handleConfirm2FA = () => {
-    setActiveTwoFAMethod(tempTwoFAMethod);
-    setIs2FASheetOpen(false);
   };
 
   const SettingItem = ({
@@ -160,12 +219,10 @@ const SettingsScreen: React.FC = () => {
                 <SettingItem
                   icon="verified_user"
                   title="Verificação de Segurança"
-                  subtitle={
-                    is2FAEnabled
-                      ? `Ativado (${activeTwoFAMethod.toUpperCase()})`
-                      : "Desativado"
-                  }
-                  onClick={() => setIs2FASheetOpen(true)}
+                  onClick={() => {
+                    setTempTwoFAMethod(activeTwoFAMethod);
+                    setIs2FASheetOpen(true);
+                  }}
                 />
               </div>
             </section>
@@ -189,7 +246,6 @@ const SettingsScreen: React.FC = () => {
         <BottomNavigation />
       </div>
 
-      {/* ActionSheet para Idioma */}
       <ActionSheet
         isOpen={isLanguageSheetOpen}
         onClose={() => setIsLanguageSheetOpen(false)}
@@ -199,22 +255,25 @@ const SettingsScreen: React.FC = () => {
         onAction={(lang) => {
           setSelectedLanguage(lang);
           setIsLanguageSheetOpen(false);
+          toast.success(`Idioma alterado para ${lang}`);
         }}
       />
 
-      {/* ActionSheet para 2FA */}
       <ActionSheet
         isOpen={is2FASheetOpen}
         onClose={() => setIs2FASheetOpen(false)}
         title="Segurança 2FA"
         type="2fa"
         data={{
-          is2FAEnabled,
-          setIs2FAEnabled,
+          secureLogin,
+          setSecureLogin,
+          secureOperations,
+          setSecureOperations,
           tempTwoFAMethod,
           setTempTwoFAMethod,
+          isUpdating: isUpdatingSecurity,
         }}
-        onAction={handleConfirm2FA}
+        onAction={handleConfirmSecurityUpdate}
       />
 
       <ConfirmAction
