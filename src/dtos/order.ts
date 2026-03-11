@@ -2,8 +2,9 @@ import { OrderStatus } from "@/enums/order-status";
 
 export interface OrderItemDTO {
   name: string;
+  coverImage: string;
   quantity: number;
-  price: string;
+  price: number;
 }
 
 export interface MyOrderDTO {
@@ -12,5 +13,7 @@ export interface MyOrderDTO {
   status: OrderStatus;
   items: OrderItemDTO[];
   totalQuantity: number;
-  totalAmount: string;
+  totalAmount: number;
 }
+
+

@@ -1,3 +1,5 @@
+import { OrderItemDTO } from "./order";
+
 export interface SalesPerformance {
     day?: string;
     week?: string;
@@ -13,11 +15,7 @@ export interface SalesMetrics {
     };
 }
 
-export interface SalesOrderItem {
-    name: string;
-    quantity: number;
-    price: number;
-}
+
 
 export interface SalesPayment {
     amount: number;
@@ -35,7 +33,7 @@ export interface RecentOrder {
     totalQuantity: number;
     totalAmount: number;
     payments: SalesPayment[];
-    items: SalesOrderItem[];
+    items: OrderItemDTO[];
 }
 
 export interface SalesSummary {

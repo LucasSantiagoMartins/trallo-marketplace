@@ -12,7 +12,7 @@ import NotFound from "./pages/NotFound";
 import UserProfileScreen from "./pages/UserProfile";
 import WalletScreen from "./pages/Wallet";
 import TransactionHistoryScreen from "./components/TransactionHistory";
-import OrdersHistory from "./pages/OrdersHistory";
+import BuyerOrdersHistory from "./pages/BuyerOrdersHistory";
 import OrderDetail from "./pages/OrderDetail";
 import CartPage from "./pages/CartPage";
 import SettingsScreen from "./pages/Settings";
@@ -39,6 +39,7 @@ import SalesCenter from "./pages/SalesCenter";
 import BankAccountsScreen from "./pages/BankAccountsScreen";
 import AddBankAccountScreen from "./pages/AddBankAccountScreen";
 import SupportPage from "./pages/SupportPage";
+import SellerOrdersHistory from "./pages/SellerOrdersHistory";
 
 const queryClient = new QueryClient();
 
@@ -61,7 +62,8 @@ const App = () => (
               <Route path="/editar-perfil" element={<EditProfile />} />
               <Route path="/alterar-senha" element={<ChangePassword />} />
               <Route path="/carrinho" element={<CartPage />} />
-              <Route path="/meus-pedidos" element={<OrdersHistory />} />
+              <Route path="/meus-pedidos" element={<BuyerOrdersHistory />} />
+              <Route path="/minhas-vendas" element={<SellerOrdersHistory />} />
               <Route path="/detalhe-pedido" element={<OrderDetail />} />
               <Route path="/carteira" element={<WalletScreen />} />
               <Route path="/suporte" element={<SupportPage />} />

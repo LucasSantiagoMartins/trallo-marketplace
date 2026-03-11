@@ -9,6 +9,7 @@ import { useAuth } from "@/context/AuthContext";
 import { formatPrice } from "@/utils/currency";
 import { getSalesSummary } from "@/services/sales.service";
 import { formatDateFriendly } from "@/utils/date";
+import OrderDetailsModal from "@/components/OrderDetailsModal";
 
 export interface MonthOverMonth {
   percentage: number;
@@ -42,6 +43,8 @@ export interface SalesSummary {
 const SalesCenter: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [selectedOrder, setSelectedOrder] = React.useState<any>(null);
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
 
   const { data: salesResponse, isLoading } = useQuery({
     queryKey: ["sales-summary"],
@@ -57,7 +60,11 @@ const SalesCenter: React.FC = () => {
     recentOrders: [],
   };
 
-  // Badge posicionada no canto superior direito
+  const handleOpenDetails = (order: any) => {
+    setSelectedOrder(order);
+    setIsModalOpen(true);
+  };
+
   const renderGrowthBadge = (mom?: MonthOverMonth, isCurrency?: boolean) => {
     if (!mom) return null;
 
@@ -168,7 +175,6 @@ const SalesCenter: React.FC = () => {
                   : ""
               }`}
             >
-              {/* Badge no canto superior direito */}
               {renderGrowthBadge(stat.mom, stat.isCurrency)}
 
               <div
@@ -211,13 +217,13 @@ const SalesCenter: React.FC = () => {
           <div className="lg:col-span-5 xl:col-span-4 flex flex-col min-h-0">
             <div className="flex items-center justify-between px-2 mb-4 shrink-0">
               <h3 className="text-xl font-bold tracking-tight text-foreground">
-                Pedidos Recentes
+                Vendas Recentes
               </h3>
               <button
-                onClick={() => navigate("/meus-pedidos")}
+                onClick={() => navigate("/minhas-vendas")}
                 className="text-primary text-sm font-bold hover:underline"
               >
-                Ver todos
+                Ver todas
               </button>
             </div>
 
@@ -236,7 +242,7 @@ const SalesCenter: React.FC = () => {
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-start mb-1">
                       <h4 className="font-bold text-[13px] truncate text-foreground pr-2 uppercase tracking-tight">
-                        {order.items[0]?.name || "Pedido Sem Nome"}
+                        {order.orderNumber || "Pedido Sem Nome"}
                       </h4>
                       <span
                         className={`text-[7px] font-black uppercase px-2 py-0.5 rounded-md shrink-0 ${
@@ -260,11 +266,11 @@ const SalesCenter: React.FC = () => {
                         </span>
                       </div>
                       <button
-                        onClick={() => navigate(`/pedido/${order.orderNumber}`)}
-                        className="size-7 rounded-full bg-secondary flex items-center justify-center active:bg-primary/20 transition-all"
+                        onClick={() => handleOpenDetails(order)}
+                        className="size-7 rounded-full bg-secondary flex items-center justify-center active:bg-primary/20 transition-all text-muted-foreground hover:text-primary"
                       >
                         <span className="material-symbols-outlined text-base">
-                          chevron_right
+                          info
                         </span>
                       </button>
                     </div>
@@ -280,6 +286,14 @@ const SalesCenter: React.FC = () => {
           </div>
         </div>
       </main>
+
+      {selectedOrder && (
+        <OrderDetailsModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          order={selectedOrder}
+        />
+      )}
     </MobileLayout>
   );
 };

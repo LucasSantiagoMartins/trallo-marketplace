@@ -36,6 +36,7 @@ export const endpoints = {
   },
   orders: {
     buyerOrders: "/orders/my/buyer",
+    sellerOrders: "/orders/my/seller",
   },
   wallets: {
     summary: "/wallets/summary",

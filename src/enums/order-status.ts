@@ -4,6 +4,7 @@ export enum OrderStatus {
   PAID = 'PAID', // Confirmado
   PAYMENT_FAILED = 'PAYMENT_FAILED', // Erro no processamento do pagamento
   SHIPPED = 'SHIPPED',
+  AWAITING_SHIPMENT = 'AWAITING_SHIPMENT',
   DELIVERED = 'DELIVERED',
   CANCELLED = 'CANCELLED',
 }
