@@ -8,6 +8,23 @@ import PageHeader from "@/components/PageHeader";
 import EditBankAccountSheet from "@/components/EditBankAccountSheet";
 import ConfirmAction from "@/components/ConfirmAction";
 
+import baiImg from "@/assets/images/banks/bai.png";
+import bfaImg from "@/assets/images/banks/bfa.png";
+import bicImg from "@/assets/images/banks/bic.png";
+import keveImg from "@/assets/images/banks/keve.png";
+import millenniumImg from "@/assets/images/banks/millennium.png";
+import solImg from "@/assets/images/banks/sol.png";
+import mcxImg from "@/assets/images/banks/mcx_express.png";
+
+const BANKS = [
+  { id: "bai", name: "BAI", logo: baiImg },
+  { id: "bfa", name: "BFA", logo: bfaImg },
+  { id: "bic", name: "BIC", logo: bicImg },
+  { id: "sol", name: "BANCO SOL", logo: solImg },
+  { id: "millennium", name: "MILLENNIUM ATLÂNTICO", logo: millenniumImg },
+  { id: "keve", name: "BANCO KEVE", logo: keveImg },
+];
+
 const BankAccountsScreen: React.FC = () => {
   const [accounts, setAccounts] = useState<BankAccountDTO[]>([]);
   const [loading, setLoading] = useState(true);
@@ -19,6 +36,7 @@ const BankAccountsScreen: React.FC = () => {
     null,
   );
   const [isDeleting, setIsDeleting] = useState(false);
+  const [activeMenu, setActiveMenu] = useState<string | null>(null);
 
   const navigate = useNavigate();
 
@@ -39,6 +57,7 @@ const BankAccountsScreen: React.FC = () => {
   const openEdit = (acc: BankAccountDTO) => {
     setSelectedAccount(acc);
     setIsEditOpen(true);
+    setActiveMenu(null);
   };
 
   const confirmDelete = async () => {
@@ -65,9 +84,37 @@ const BankAccountsScreen: React.FC = () => {
     fetchAccounts();
   }, []);
 
+  const getBankContent = (acc: BankAccountDTO) => {
+    if (acc.type === "MCX_EXPRESS") {
+      return <img src={mcxImg} alt="MCX" className="size-10 object-contain" />;
+    }
+
+    const bank = BANKS.find((b) =>
+      acc.bankName
+        ?.toUpperCase()
+        .includes(b.name.replace("BANCO ", "").toUpperCase()),
+    );
+
+    if (bank) {
+      return (
+        <img
+          src={bank.logo}
+          alt={bank.name}
+          className="size-10 object-contain"
+        />
+      );
+    }
+
+    return (
+      <span className="material-symbols-outlined text-2xl">
+        account_balance_wallet
+      </span>
+    );
+  };
+
   return (
     <div className="bg-background-light dark:bg-background-dark min-h-screen font-display text-[#181112] dark:text-white antialiased">
-      <PageHeader title="Minhas Contas"   />
+      <PageHeader title="Minhas Contas" />
 
       <main className="max-w-6xl mx-auto px-6 pt-28 pb-32">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
@@ -115,20 +162,15 @@ const BankAccountsScreen: React.FC = () => {
                     className="p-5 bg-white dark:bg-gray-800/50 rounded-3xl border border-gray-100 dark:border-gray-700 hover:border-primary/50 transition-all flex items-center justify-between group"
                   >
                     <div className="flex items-center gap-4 overflow-hidden">
-                      <div className="size-14 shrink-0 rounded-2xl flex items-center justify-center transition-colors bg-gray-100 dark:bg-gray-800 text-primary group-hover:bg-primary group-hover:text-white">
-                        <span className="material-symbols-outlined text-2xl">
-                          {acc.type === "MCX_EXPRESS"
-                            ? "phone_iphone"
-                            : "account_balance_wallet"}
-                        </span>
+                      <div className="size-14 shrink-0 rounded-full flex items-center justify-center transition-colors bg-gray-100 dark:bg-gray-800 text-primary group-hover:bg-primary/10">
+                        {getBankContent(acc)}
                       </div>
                       <div className="overflow-hidden">
                         <div className="flex items-center gap-2 mb-1">
                           <p className="font-black text-[#181112] dark:text-white uppercase text-[11px] tracking-widest truncate">
-                            {acc.bankName ||
-                              (acc.type === "MCX_EXPRESS"
-                                ? "Multicaixa Express"
-                                : "Banco")}
+                            {acc.type === "MCX_EXPRESS"
+                              ? "Multicaixa Express"
+                              : acc.bankName || "Banco"}
                           </p>
                         </div>
                         <p className="text-sm font-mono font-medium truncate max-w-[180px] sm:max-w-none opacity-80">
@@ -139,23 +181,49 @@ const BankAccountsScreen: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-1 shrink-0">
+                    <div className="relative">
                       <button
-                        onClick={() => openEdit(acc)}
-                        className="size-10 rounded-full flex items-center justify-center text-gray-300 hover:text-blue-500 transition-all active:scale-90"
+                        onClick={() =>
+                          setActiveMenu(activeMenu === acc.id ? null : acc.id)
+                        }
+                        className="size-10 rounded-full flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all active:scale-90"
                       >
-                        <span className="material-symbols-outlined text-xl">
-                          edit
+                        <span className="material-symbols-outlined">
+                          more_vert
                         </span>
                       </button>
-                      <button
-                        onClick={() => setAccountToDelete(acc)}
-                        className="size-10 rounded-full flex items-center justify-center text-gray-300 hover:text-red-500 transition-all active:scale-90"
-                      >
-                        <span className="material-symbols-outlined text-xl">
-                          delete
-                        </span>
-                      </button>
+
+                      {activeMenu === acc.id && (
+                        <>
+                          <div
+                            className="fixed inset-0 z-10"
+                            onClick={() => setActiveMenu(null)}
+                          />
+                          <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 py-2 z-20 animate-in fade-in zoom-in duration-200 overflow-hidden">
+                            <button
+                              onClick={() => openEdit(acc)}
+                              className="w-full px-4 py-3 flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                            >
+                              <span className="material-symbols-outlined text-lg text-gray-500 dark:text-gray-400">
+                                edit
+                              </span>
+                              <span>Editar conta</span>
+                            </button>
+                            <button
+                              onClick={() => {
+                                setAccountToDelete(acc);
+                                setActiveMenu(null);
+                              }}
+                              className="w-full px-4 py-3 flex items-center gap-3 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                            >
+                              <span className="material-symbols-outlined text-lg">
+                                delete
+                              </span>
+                              <span>Eliminar conta</span>
+                            </button>
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
                 ))
@@ -182,15 +250,8 @@ const BankAccountsScreen: React.FC = () => {
         onConfirm={confirmDelete}
         isLoading={isDeleting}
         title="Eliminar conta?"
-        description={`Tem certeza que deseja remover esta conta de ${accountToDelete?.bankName || "pagamento"}?`}
+        description={`Tem certeza que deseja remover esta conta de ${accountToDelete?.bankName || (accountToDelete?.type === "MCX_EXPRESS" ? "Multicaixa Express" : "pagamento")}?`}
         confirmText={isDeleting ? "A eliminar..." : "Sim, eliminar"}
-        details={
-          accountToDelete
-            ? accountToDelete.type === "MCX_EXPRESS"
-              ? accountToDelete.phoneNumber
-              : accountToDelete.iban
-            : undefined
-        }
         icon="warning"
         variant="danger"
       />

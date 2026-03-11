@@ -144,7 +144,7 @@ const UserProfileScreen: React.FC = () => {
                 <MenuLink
                   icon="help_center"
                   label="Ajuda e Suporte"
-                  to="/support"
+                  to="/suporte"
                 />
                 <div className="mx-4 border-t border-gray-50 dark:border-gray-700" />
                 <MenuLink

@@ -79,21 +79,23 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
         <div className="flex items-center justify-between">
           <div className="flex flex-col">
             <div className="flex items-baseline gap-1">
-              <span className="text-xl font-black text-slate-900 text-primary">
+              <span className="text-xl font-black text-primary">
                 {formatPrice(product.price, false)}
               </span>
               <span className="text-[11px] font-bold text-primary">Kz</span>
             </div>
           </div>
 
-          <button
-            onClick={handleAddToCart}
-            className="w-12 h-12 rounded-2xl flex items-center justify-center bg-primary text-white shadow-lg shadow-primary/30 transition-all duration-500 ease-out hover:bg-primary/90 active:scale-90 lg:translate-y-4 lg:opacity-0 lg:group-hover:translate-y-0 lg:group-hover:opacity-100 opacity-100 translate-y-0"
-          >
-            <span className="material-symbols-outlined text-2xl">
-              shopping_cart
-            </span>
-          </button>
+          {onAddToCart && (
+            <button
+              onClick={handleAddToCart}
+              className="w-12 h-12 rounded-2xl flex items-center justify-center bg-primary text-white shadow-lg shadow-primary/30 transition-all duration-500 ease-out hover:bg-primary/90 active:scale-90 lg:translate-y-4 lg:opacity-0 lg:group-hover:translate-y-0 lg:group-hover:opacity-100 opacity-100 translate-y-0"
+            >
+              <span className="material-symbols-outlined text-2xl">
+                shopping_cart
+              </span>
+            </button>
+          )}
         </div>
       </div>
     </div>

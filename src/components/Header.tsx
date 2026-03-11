@@ -21,6 +21,8 @@ const Header: React.FC<HeaderProps> = ({
   const { cartCount, syncCartWithServer } = useCart();
   const location = useLocation();
 
+  const isSeller = user?.role === "SELLER";
+
   useEffect(() => {
     if (isAuthenticated) {
       syncCartWithServer();
@@ -66,9 +68,12 @@ const Header: React.FC<HeaderProps> = ({
     ],
   };
 
+  // CORREÇÃO: Adicionado fallback (|| []) e verificação segura da role
   const navItems =
-    isAuthenticated && user
-      ? menuConfig[user.role as keyof typeof menuConfig]
+    isAuthenticated && user && user.role
+      ? menuConfig[user.role as keyof typeof menuConfig] || [
+          { name: "Início", path: "/" },
+        ]
       : [{ name: "Início", path: "/" }];
 
   const headerStyles = isScrolled
@@ -139,17 +144,19 @@ const Header: React.FC<HeaderProps> = ({
           </nav>
 
           <div className="flex items-center gap-2">
-            <Link
-              to="/carrinho"
-              className="hidden lg:flex items-center gap-2 px-4 py-2 rounded-full bg-card hover:bg-muted transition-colors active:scale-95"
-            >
-              <span className="material-symbols-outlined">shopping_cart</span>
-              {cartCount > 0 && (
-                <span className="bg-primary text-primary-foreground text-xs font-bold px-2 py-0.5 rounded-full animate-in zoom-in">
-                  {cartCount}
-                </span>
-              )}
-            </Link>
+            {!isSeller && (
+              <Link
+                to="/carrinho"
+                className="hidden lg:flex items-center gap-2 px-4 py-2 rounded-full bg-card hover:bg-muted transition-colors active:scale-95"
+              >
+                <span className="material-symbols-outlined">shopping_cart</span>
+                {cartCount > 0 && (
+                  <span className="bg-primary text-primary-foreground text-xs font-bold px-2 py-0.5 rounded-full animate-in zoom-in">
+                    {cartCount}
+                  </span>
+                )}
+              </Link>
+            )}
 
             <Link
               to="/notifications"

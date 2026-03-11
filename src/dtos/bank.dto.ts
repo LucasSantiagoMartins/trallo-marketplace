@@ -5,6 +5,7 @@ export enum BankAccountType {
 
 export interface BankAccountDTO {
     id: string;
+    bankLogo: string
     type: BankAccountType;
     phoneNumber: string | null;
     bankName: string | null;

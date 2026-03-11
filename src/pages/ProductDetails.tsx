@@ -18,12 +18,14 @@ import { BASE_UPLOAD_URL } from "@/api/endpoints";
 import VideoPlayer from "@/components/VideoPlayer";
 import { checkoutFromProduct } from "@/services/checkout.service";
 import { PaymentMethod, PaymentMode } from "@/enums/payment";
+import { useAuth } from "@/context/AuthContext";
 import toast from "react-hot-toast";
 
 const ProductDetails: React.FC = () => {
   const { id: paramId } = useParams<{ id: string }>();
   const location = useLocation();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const product = location.state?.product as SearchedProductDTO;
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -246,15 +248,19 @@ const ProductDetails: React.FC = () => {
               </button>
             )}
 
-            <div className="pt-4 lg:pt-6">
-              <button
-                onClick={() => setModalType("payment_choice")}
-                className="w-full buy-gradient text-primary-foreground font-semibold text-lg rounded-full shadow-lg shadow-primary/20 flex items-center justify-center gap-2 active:scale-[0.98] transition-transform py-4 lg:py-5"
-              >
-                Comprar Agora
-                <span className="material-symbols-outlined">arrow_forward</span>
-              </button>
-            </div>
+            {user?.role !== "SELLER" && (
+              <div className="pt-4 lg:pt-6">
+                <button
+                  onClick={() => setModalType("payment_choice")}
+                  className="w-full buy-gradient text-primary-foreground font-semibold text-lg rounded-full shadow-lg shadow-primary/20 flex items-center justify-center gap-2 active:scale-[0.98] transition-transform py-4 lg:py-5"
+                >
+                  Comprar Agora
+                  <span className="material-symbols-outlined">
+                    arrow_forward
+                  </span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </main>

@@ -1,10 +1,64 @@
 import React, { useState } from "react";
 import PageHeader from "@/components/PageHeader";
 import BottomNavigation from "@/components/BottomNavigation";
+import ConfirmAction from "@/components/ConfirmAction";
+import ActionSheet from "@/components/ActionSheet";
 import { Link } from "react-router-dom";
+
+export const CustomToggle = ({
+  checked,
+  onChange,
+}: {
+  checked: boolean;
+  onChange: () => void;
+}) => (
+  <div className="shrink-0 relative cursor-pointer" onClick={onChange}>
+    <div
+      className={`w-10 sm:w-12 h-6 sm:h-7 rounded-full transition-colors shadow-inner ${checked ? "bg-primary" : "bg-gray-200 dark:bg-gray-700"}`}
+    />
+    <div
+      className={`absolute top-[3px] sm:top-[4px] left-[4px] bg-white rounded-full h-[18px] sm:h-[20px] w-[18px] sm:w-[20px] transition-all shadow-md ${checked ? "translate-x-4 sm:translate-x-5" : "translate-x-0"}`}
+    />
+  </div>
+);
 
 const SettingsScreen: React.FC = () => {
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const [isLanguageSheetOpen, setIsLanguageSheetOpen] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] =
+    useState("Português (Angola)");
+
+  const [is2FASheetOpen, setIs2FASheetOpen] = useState(false);
+  const [is2FAEnabled, setIs2FAEnabled] = useState(false);
+  const [tempTwoFAMethod, setTempTwoFAMethod] = useState<"sms" | "email">(
+    "sms",
+  );
+  const [activeTwoFAMethod, setActiveTwoFAMethod] = useState<"sms" | "email">(
+    "sms",
+  );
+
+  const languages = [
+    "Português (Angola)",
+    "Português (Portugal)",
+    "English (US)",
+    "Français",
+  ];
+
+  const handleDeleteAccount = () => {
+    setIsDeleting(true);
+    setTimeout(() => {
+      setIsDeleting(false);
+      setIsDeleteModalOpen(false);
+    }, 2000);
+  };
+
+  const handleConfirm2FA = () => {
+    setActiveTwoFAMethod(tempTwoFAMethod);
+    setIs2FASheetOpen(false);
+  };
 
   const SettingItem = ({
     icon,
@@ -13,100 +67,167 @@ const SettingsScreen: React.FC = () => {
     children,
     onClick,
     to,
-    danger = false
+    danger = false,
   }: any) => {
     const Content = () => (
-      <div className="flex items-center gap-4 px-4 h-16 w-full group">
-        <div className={`flex items-center justify-center rounded-2xl shrink-0 size-11 transition-colors ${danger ? 'bg-red-500/10 text-red-500' : 'bg-primary/10 text-primary'
-          }`}>
-          <span className="material-symbols-outlined text-[24px]">{icon}</span>
+      <div className="flex items-center gap-4 px-4 sm:px-6 h-20 w-full group">
+        <div
+          className={`flex items-center justify-center rounded-2xl shrink-0 size-11 sm:size-12 transition-all group-hover:scale-110 ${danger ? "bg-red-500/10 text-red-500" : "bg-primary/10 text-primary"}`}
+        >
+          <span className="material-symbols-outlined text-[24px] sm:text-[26px]">
+            {icon}
+          </span>
         </div>
-        <div className="flex-1 text-left">
-          <p className={`text-[15px] font-bold tracking-tight ${danger ? 'text-red-500' : ''}`}>{title}</p>
-          {subtitle && <p className="text-[#866565] dark:text-gray-400 text-xs leading-none mt-1">{subtitle}</p>}
+        <div className="flex-1 text-left min-w-0">
+          <p
+            className={`text-[14px] sm:text-base font-bold tracking-tight truncate ${danger ? "text-red-500" : ""}`}
+          >
+            {title}
+          </p>
+          {subtitle && (
+            <p className="text-[#866565] dark:text-gray-400 text-[11px] sm:text-xs mt-0.5 truncate">
+              {subtitle}
+            </p>
+          )}
         </div>
-        {children ? children : <span className="material-symbols-outlined text-gray-300 group-hover:text-primary transition-colors">chevron_right</span>}
+        {children ? (
+          <div onClick={(e) => e.stopPropagation()}>{children}</div>
+        ) : (
+          <span className="material-symbols-outlined text-gray-300 group-hover:text-primary group-hover:translate-x-1 transition-all">
+            chevron_right
+          </span>
+        )}
       </div>
     );
-
-    const baseClass = "w-full block transition-all active:scale-[0.98] hover:bg-black/[0.03] dark:hover:bg-white/[0.03]";
-
-    if (to) return <Link to={to} className={baseClass}><Content /></Link>;
-    return <button onClick={onClick} className={baseClass}><Content /></button>;
+    const baseClass =
+      "w-full block transition-all active:scale-[0.99] hover:bg-black/[0.02] dark:hover:bg-white/[0.02]";
+    return to ? (
+      <Link to={to} className={baseClass}>
+        <Content />
+      </Link>
+    ) : (
+      <button onClick={onClick} className={baseClass}>
+        <Content />
+      </button>
+    );
   };
 
   return (
-    <div className="bg-[#F8F9FA] dark:bg-[#120F0F] min-h-screen font-display text-[#171212] dark:text-gray-100 transition-colors duration-300">
+    <div className="bg-[#F8F9FA] dark:bg-[#120F0F] min-h-screen font-display text-[#171212] dark:text-gray-100 transition-colors duration-500 overflow-x-hidden">
       <PageHeader title="Configurações" />
 
-      <div className="max-w-6xl mx-auto flex flex-col pt-28 pb-32 px-5 lg:px-10">
-        <main className="flex flex-col gap-12">
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-
-            <section className="flex flex-col h-full">
-              <h3 className="text-primary font-black text-[11px] uppercase tracking-[0.15em] mb-4 ml-2 opacity-80">
+      <div className="max-w-7xl mx-auto flex flex-col pt-24 sm:pt-32 pb-32 px-4 sm:px-6 lg:px-8">
+        <main className="flex flex-col gap-8 sm:gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 items-start">
+            <section className="flex flex-col gap-4">
+              <h3 className="text-primary font-black text-[10px] sm:text-[11px] uppercase tracking-[0.2em] ml-2 opacity-80">
                 Preferências
               </h3>
-              <div className="bg-white dark:bg-[#1E1A1A] rounded-[24px] overflow-hidden shadow-sm border border-black/[0.03] dark:border-white/[0.03] flex-1">
-                <SettingItem icon="notifications" title="Notificações" subtitle="Alertas e sons do sistema">
-                  <div className="shrink-0 relative">
-                    <input
-                      type="checkbox"
-                      className="sr-only peer"
-                      checked={notificationsEnabled}
-                      onChange={() => setNotificationsEnabled(!notificationsEnabled)}
-                    />
-                    <div className="w-12 h-7 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-5 peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:start-[4px] after:bg-white after:rounded-full after:h-[20px] after:w-[20px] after:transition-all peer-checked:bg-primary shadow-inner"></div>
-                  </div>
+              <div className="bg-white dark:bg-[#1E1A1A] rounded-[24px] sm:rounded-[32px] overflow-hidden shadow-sm border border-black/[0.03] dark:border-white/[0.03]">
+                <SettingItem
+                  icon="notifications"
+                  title="Notificações"
+                  subtitle="Alertas do sistema"
+                >
+                  <CustomToggle
+                    checked={notificationsEnabled}
+                    onChange={() =>
+                      setNotificationsEnabled(!notificationsEnabled)
+                    }
+                  />
                 </SettingItem>
-                <div className="h-[1px] mx-4 bg-gray-50 dark:bg-white/5" />
-                <SettingItem icon="language" title="Idioma" subtitle="Português (AO)" />
-                <div className="h-[1px] mx-4 bg-gray-50 dark:bg-white/5" />
-                <SettingItem icon="palette" title="Aparência" subtitle="Modo Escuro / Claro" />
+                <div className="h-[1px] mx-6 bg-gray-50 dark:bg-white/5" />
+                <SettingItem
+                  icon="language"
+                  title="Idioma"
+                  subtitle={selectedLanguage}
+                  onClick={() => setIsLanguageSheetOpen(true)}
+                />
               </div>
             </section>
 
-            <section className="flex flex-col h-full">
-              <h3 className="text-primary font-black text-[11px] uppercase tracking-[0.15em] mb-4 ml-2 opacity-80">
+            <section className="flex flex-col gap-4">
+              <h3 className="text-primary font-black text-[10px] sm:text-[11px] uppercase tracking-[0.2em] ml-2 opacity-80">
                 Segurança
               </h3>
-              <div className="bg-white dark:bg-[#1E1A1A] rounded-[24px] overflow-hidden shadow-sm border border-black/[0.03] dark:border-white/[0.03] flex-1">
-                <SettingItem icon="lock_open" title="Alterar Senha" to="/alterar-senha" />
-                <div className="h-[1px] mx-4 bg-gray-50 dark:bg-white/5" />
-                <SettingItem icon="verified_user" title="Autenticação em 2 Etapas" />
-                <div className="h-[1px] mx-4 bg-gray-50 dark:bg-white/5" />
-                <SettingItem icon="devices" title="Dispositivos Conectados" />
+              <div className="bg-white dark:bg-[#1E1A1A] rounded-[24px] sm:rounded-[32px] overflow-hidden shadow-sm border border-black/[0.03] dark:border-white/[0.03]">
+                <SettingItem
+                  icon="lock_open"
+                  title="Alterar Senha"
+                  to="/alterar-senha"
+                />
+                <div className="h-[1px] mx-6 bg-gray-50 dark:bg-white/5" />
+                <SettingItem
+                  icon="verified_user"
+                  title="Verificação de Segurança"
+                  subtitle={
+                    is2FAEnabled
+                      ? `Ativado (${activeTwoFAMethod.toUpperCase()})`
+                      : "Desativado"
+                  }
+                  onClick={() => setIs2FASheetOpen(true)}
+                />
               </div>
             </section>
 
-            <section className="flex flex-col h-full lg:col-span-1 md:col-span-2 lg:col-auto">
-              <h3 className="text-primary font-black text-[11px] uppercase tracking-[0.15em] mb-4 ml-2 opacity-80">
-                Sobre
+            <section className="flex flex-col gap-4">
+              <h3 className="text-red-500 font-black text-[10px] sm:text-[11px] uppercase tracking-[0.2em] ml-2 opacity-80">
+                Conta
               </h3>
-              <div className="bg-white dark:bg-[#1E1A1A] rounded-[24px] overflow-hidden shadow-sm border border-black/[0.03] dark:border-white/[0.03] flex-1">
-                <SettingItem icon="info" title="Sobre o TRALLO" />
-                <div className="h-[1px] mx-4 bg-gray-50 dark:bg-white/5" />
-                <SettingItem icon="description" title="Termos de Serviço" />
-                <div className="h-[1px] mx-4 bg-gray-50 dark:bg-white/5" />
-                <SettingItem icon="shield_lock" title="Privacidade" />
+              <div className="bg-white dark:bg-[#1E1A1A] rounded-[24px] sm:rounded-[32px] overflow-hidden shadow-sm border border-black/[0.03] dark:border-white/[0.03]">
+                <SettingItem
+                  icon="no_accounts"
+                  title="Eliminar Conta"
+                  subtitle="Remover todos os dados permanentemente"
+                  danger={true}
+                  onClick={() => setIsDeleteModalOpen(true)}
+                />
               </div>
             </section>
-          </div>
-
-          <div className="mt-8 flex flex-col items-center gap-3">
-            <div className="px-4 py-1.5 bg-primary/5 rounded-full border border-primary/10">
-              <p className="text-primary dark:text-primary/80 text-[10px] font-bold tracking-widest uppercase">
-                Versão 2.4.1 (Angola)
-              </p>
-            </div>
-            <div className="h-1 w-8 bg-primary/20 rounded-full"></div>
-            <p className="text-gray-400 text-[11px] font-medium">© 2026 Trallo Corporation</p>
           </div>
         </main>
-
         <BottomNavigation />
       </div>
+
+      {/* ActionSheet para Idioma */}
+      <ActionSheet
+        isOpen={isLanguageSheetOpen}
+        onClose={() => setIsLanguageSheetOpen(false)}
+        title="Escolher Idioma"
+        type="language"
+        data={{ languages, selectedLanguage }}
+        onAction={(lang) => {
+          setSelectedLanguage(lang);
+          setIsLanguageSheetOpen(false);
+        }}
+      />
+
+      {/* ActionSheet para 2FA */}
+      <ActionSheet
+        isOpen={is2FASheetOpen}
+        onClose={() => setIs2FASheetOpen(false)}
+        title="Segurança 2FA"
+        type="2fa"
+        data={{
+          is2FAEnabled,
+          setIs2FAEnabled,
+          tempTwoFAMethod,
+          setTempTwoFAMethod,
+        }}
+        onAction={handleConfirm2FA}
+      />
+
+      <ConfirmAction
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDeleteAccount}
+        isLoading={isDeleting}
+        title="Eliminar Conta?"
+        description="Esta ação removerá todos os seus dados permanentemente."
+        confirmText="Sim, Eliminar"
+        variant="danger"
+        icon="delete_forever"
+      />
     </div>
   );
 };

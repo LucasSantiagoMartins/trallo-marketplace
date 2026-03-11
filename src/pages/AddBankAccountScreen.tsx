@@ -117,7 +117,7 @@ const AddBankAccountScreen: React.FC = () => {
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
             <header className="mb-10 text-center">
               <p className="text-gray-500 dark:text-gray-400 text-sm mt-2 font-medium">
-                Como você deseja receber seus pagamentos?
+                Como você deseja receber seus ganhos?
               </p>
             </header>
 
@@ -165,7 +165,7 @@ const AddBankAccountScreen: React.FC = () => {
                     </h3>
                   </div>
                   <p className="text-xs text-gray-400 font-medium leading-tight mt-0.5">
-                    Levantamentos imediatos via Multicaixa Express
+                    Levantamentos Instantâneos via Multicaixa Express
                   </p>
                 </div>
               </button>

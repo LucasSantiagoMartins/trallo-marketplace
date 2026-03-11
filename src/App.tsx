@@ -38,6 +38,7 @@ import WalletManagement from "./pages/WalletManagement";
 import SalesCenter from "./pages/SalesCenter";
 import BankAccountsScreen from "./pages/BankAccountsScreen";
 import AddBankAccountScreen from "./pages/AddBankAccountScreen";
+import SupportPage from "./pages/SupportPage";
 
 const queryClient = new QueryClient();
 
@@ -63,6 +64,7 @@ const App = () => (
               <Route path="/meus-pedidos" element={<OrdersHistory />} />
               <Route path="/detalhe-pedido" element={<OrderDetail />} />
               <Route path="/carteira" element={<WalletScreen />} />
+              <Route path="/suporte" element={<SupportPage />} />
               <Route
                 path="/transacoes"
                 element={<TransactionHistoryScreen />}

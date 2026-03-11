@@ -1,3 +1,4 @@
+import { SalesPerformance } from "@/dtos/sales-summary.dto";
 import React, { useState } from "react";
 import {
   AreaChart,
@@ -9,25 +10,31 @@ import {
   CartesianGrid,
 } from "recharts";
 
-const dataWeek = [
-  { name: "Seg", valor: 120000 },
-  { name: "Ter", valor: 450000 },
-  { name: "Qua", valor: 300000 },
-  { name: "Qui", valor: 800000 },
-  { name: "Sex", valor: 600000 },
-  { name: "Sáb", valor: 950000 },
-  { name: "Dom", valor: 1250000 },
-];
+interface PerformanceCardProps {
+  data?: {
+    weekly: SalesPerformance[];
+    monthly: SalesPerformance[];
+  };
+}
 
-const dataMonth = [
-  { name: "Sem 1", valor: 400000 },
-  { name: "Sem 2", valor: 850000 },
-  { name: "Sem 3", valor: 600000 },
-  { name: "Sem 4", valor: 1250000 },
-];
-
-const PerformanceCard: React.FC = () => {
+const PerformanceCard: React.FC<PerformanceCardProps> = ({ data }) => {
   const [period, setPeriod] = useState<"semana" | "mes">("semana");
+
+  const chartData = React.useMemo(() => {
+    if (!data) return [];
+
+    if (period === "semana") {
+      return data.weekly.map((item) => ({
+        name: item.day,
+        valor: item.value,
+      }));
+    }
+
+    return data.monthly.map((item) => ({
+      name: item.week,
+      valor: item.value,
+    }));
+  }, [data, period]);
 
   return (
     <div className="bg-white dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700/50 rounded-[2.5rem] p-6 mb-8">
@@ -41,7 +48,6 @@ const PerformanceCard: React.FC = () => {
           </p>
         </div>
 
-        {/* Toggle Switch */}
         <div className="bg-gray-100 dark:bg-gray-900 p-1 rounded-xl flex gap-1">
           <button
             onClick={() => setPeriod("semana")}
@@ -68,7 +74,7 @@ const PerformanceCard: React.FC = () => {
 
       <div className="h-[200px] w-full">
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={period === "semana" ? dataWeek : dataMonth}>
+          <AreaChart data={chartData}>
             <defs>
               <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#7C3AED" stopOpacity={0.3} />

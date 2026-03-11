@@ -86,4 +86,8 @@ export const endpoints = {
     update: (id: string) => `/bank-accounts/${id}`,
     delete: (id: string) => `/bank-accounts/${id}`,
   },
+
+  SalesCenter: {
+    summary: "/orders/my/sales-summary"
+  }
 };

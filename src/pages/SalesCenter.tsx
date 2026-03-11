@@ -1,28 +1,109 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
 import MobileLayout from "@/layouts/MobileLayout";
 import PerformanceCard from "../components/PerformanceCard";
 import PageHeader from "../components/PageHeader";
 import { useAuth } from "@/context/AuthContext";
 import { formatPrice } from "@/utils/currency";
+import { getSalesSummary } from "@/services/sales.service";
+import { formatDateFriendly } from "@/utils/date";
+
+export interface MonthOverMonth {
+  percentage: number;
+  value: number;
+  isGrowth: boolean;
+}
+
+export interface SalesMetrics {
+  monthOverMonth: MonthOverMonth;
+}
+
+export interface SalesPerformance {
+  day?: string;
+  week?: string;
+  value: number;
+}
+
+export interface SalesSummary {
+  total: {
+    count: number;
+    totalValue: number;
+  };
+  performance: {
+    weekly: SalesPerformance[];
+    monthly: SalesPerformance[];
+  };
+  metrics: SalesMetrics;
+  recentOrders: any[];
+}
 
 const SalesCenter: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
+  const { data: salesResponse, isLoading } = useQuery({
+    queryKey: ["sales-summary"],
+    queryFn: getSalesSummary,
+  });
+
+  const salesData = salesResponse?.data as unknown as SalesSummary;
+
+  const { total, metrics, performance, recentOrders } = salesData || {
+    total: { count: 0, totalValue: 0 },
+    metrics: { monthOverMonth: { percentage: 0, value: 0, isGrowth: true } },
+    performance: { weekly: [], monthly: [] },
+    recentOrders: [],
+  };
+
+  // Badge posicionada no canto superior direito
+  const renderGrowthBadge = (mom?: MonthOverMonth, isCurrency?: boolean) => {
+    if (!mom) return null;
+
+    return (
+      <div className="absolute top-4 right-4 flex flex-col items-end gap-1">
+        <div
+          className={`flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-black shadow-sm ${
+            mom.isGrowth
+              ? "bg-emerald-500/10 text-emerald-500"
+              : "bg-rose-500/10 text-rose-500"
+          }`}
+        >
+          <span className="material-symbols-outlined text-[12px] font-bold">
+            {mom.isGrowth ? "trending_up" : "trending_down"}
+          </span>
+          {mom.isGrowth ? "+" : "-"}
+          {mom.percentage}%
+        </div>
+
+        <div
+          className={`flex items-center gap-1 text-[12px] font-bold ${mom.isGrowth ? "text-emerald-600/60" : "text-rose-600/60"}`}
+        >
+          <span className="material-symbols-outlined text-[12px]">
+            compare_arrows
+          </span>
+          {isCurrency ? formatPrice(mom.value, true) : mom.value}
+        </div>
+      </div>
+    );
+  };
+
   const stats = [
     {
       label: "Vendas Totais",
-      value: "150.000 Kz",
+      value: salesData ? formatPrice(total.totalValue, true) : "---",
       icon: "payments",
       color: "emerald",
+      mom: metrics?.monthOverMonth,
+      isCurrency: true,
     },
     {
-      label: "Produtos Ativos",
-      value: "12",
+      label: "Pedidos",
+      value: salesData ? total.count.toString() : "---",
       icon: "inventory_2",
       color: "orange",
+      isCurrency: false,
     },
     {
       label: "Meus Produtos",
@@ -31,45 +112,8 @@ const SalesCenter: React.FC = () => {
       color: "blue",
       isClickable: true,
       path: "/meus-produtos",
-    },
-  ];
-
-  const recentOrders = [
-    {
-      id: "1",
-      productName: "iPhone 13 Pro Max",
-      price: 450000,
-      status: "Pendente",
-      date: "Hoje, 12:30",
-      image:
-        "https://images.unsplash.com/photo-1632661674596-df8be070a5c5?q=80&w=200&h=200&auto=format&fit=crop",
-    },
-    {
-      id: "2",
-      productName: "MacBook Air M1",
-      price: 600000,
-      status: "Concluído",
-      date: "Ontem, 18:45",
-      image:
-        "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?q=80&w=200&h=200&auto=format&fit=crop",
-    },
-    {
-      id: "3",
-      productName: "AirPods Pro",
-      price: 120000,
-      status: "Concluído",
-      date: "24 Out, 10:15",
-      image:
-        "https://images.unsplash.com/photo-1588423770574-910ae97c653a?q=80&w=200&h=200&auto=format&fit=crop",
-    },
-    {
-      id: "4",
-      productName: "Apple Watch S7",
-      price: 250000,
-      status: "Concluído",
-      date: "22 Out, 09:00",
-      image:
-        "https://images.unsplash.com/photo-1546868871-70c122469d8b?q=80&w=200&h=200&auto=format&fit=crop",
+      mom: null,
+      isCurrency: false,
     },
   ];
 
@@ -95,6 +139,16 @@ const SalesCenter: React.FC = () => {
     </div>
   );
 
+  if (isLoading) {
+    return (
+      <MobileLayout>
+        <div className="flex h-screen items-center justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      </MobileLayout>
+    );
+  }
+
   return (
     <MobileLayout>
       <PageHeader title="Centro de Vendas" rightElement={RightElement} />
@@ -108,12 +162,15 @@ const SalesCenter: React.FC = () => {
               onClick={() =>
                 stat.isClickable && stat.path && navigate(stat.path)
               }
-              className={`bg-card p-4 sm:p-5 rounded-[2rem] border border-border shadow-soft flex items-center gap-4 transition-all ${
+              className={`relative bg-card p-4 sm:p-5 rounded-[2rem] border border-border shadow-soft flex items-center gap-4 transition-all ${
                 stat.isClickable
                   ? "cursor-pointer hover:border-primary/40 hover:shadow-md"
                   : ""
               }`}
             >
+              {/* Badge no canto superior direito */}
+              {renderGrowthBadge(stat.mom, stat.isCurrency)}
+
               <div
                 className={`size-11 sm:size-14 rounded-2xl flex items-center justify-center shrink-0 shadow-sm ${
                   stat.color === "emerald"
@@ -127,12 +184,15 @@ const SalesCenter: React.FC = () => {
                   {stat.icon}
                 </span>
               </div>
-              <div className="flex flex-col min-w-0">
+
+              <div className="flex flex-col min-w-0 flex-1 mt-1">
                 <p className="text-[9px] sm:text-[10px] text-muted-foreground font-black uppercase tracking-widest mb-0.5">
                   {stat.label}
                 </p>
-                <div className="text-base sm:text-lg font-black truncate tracking-tight text-foreground">
-                  {stat.value}
+                <div className="flex items-center gap-2">
+                  <div className="text-base sm:text-lg font-black truncate tracking-tight text-foreground">
+                    {stat.value}
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -143,7 +203,7 @@ const SalesCenter: React.FC = () => {
           <div className="lg:col-span-7 xl:col-span-8 flex flex-col">
             <div className="bg-card rounded-[2.5rem] border border-border overflow-hidden shadow-soft flex flex-col flex-1 min-h-[300px]">
               <div className="flex-1 w-full">
-                <PerformanceCard />
+                <PerformanceCard data={performance} />
               </div>
             </div>
           </div>
@@ -161,57 +221,48 @@ const SalesCenter: React.FC = () => {
               </button>
             </div>
 
-            <div
-              className="flex-1 overflow-y-auto sm:overflow-y-auto pr-2 space-y-3 scroll-smooth pb-2"
-              style={{
-                scrollbarWidth: "none",
-                msOverflowStyle: "none",
-              }}
-            >
-              <style>{`
-                div::-webkit-scrollbar {
-                  display: none;
-                }
-              `}</style>
-              {recentOrders.map((order) => (
+            <div className="flex-1 overflow-y-auto pr-2 space-y-3 scroll-smooth pb-2 custom-scrollbar">
+              <style>{`div::-webkit-scrollbar { display: none; }`}</style>
+              {recentOrders.map((order: any) => (
                 <motion.div
-                  key={order.id}
+                  key={order.orderNumber}
                   className="bg-card p-3.5 rounded-[1.8rem] border border-border flex items-center gap-4 shadow-sm shrink-0"
                 >
-                  <div className="size-14 rounded-2xl overflow-hidden bg-secondary shrink-0 shadow-inner">
-                    <img
-                      src={order.image}
-                      className="size-full object-cover"
-                      alt={order.productName}
-                    />
+                  <div className="size-14 rounded-2xl overflow-hidden bg-secondary shrink-0 shadow-inner flex items-center justify-center">
+                    <span className="material-symbols-outlined text-muted-foreground">
+                      package_2
+                    </span>
                   </div>
-
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-start mb-1">
                       <h4 className="font-bold text-[13px] truncate text-foreground pr-2 uppercase tracking-tight">
-                        {order.productName}
+                        {order.items[0]?.name || "Pedido Sem Nome"}
                       </h4>
                       <span
                         className={`text-[7px] font-black uppercase px-2 py-0.5 rounded-md shrink-0 ${
-                          order.status === "Pendente"
+                          order.status === "PAYMENT_PROCESSING"
                             ? "bg-orange-100 text-orange-600"
                             : "bg-emerald-100 text-emerald-600"
                         }`}
                       >
-                        {order.status}
+                        {order.status === "PAYMENT_PROCESSING"
+                          ? "Pendente"
+                          : "Concluído"}
                       </span>
                     </div>
-
                     <div className="flex items-end justify-between mt-1">
                       <div className="space-y-0.5">
-                        <p className="text-[9px] text-muted-foreground">
-                          {order.date}
+                        <p className="text-[10px] text-muted-foreground">
+                          {formatDateFriendly(order.createdAt)}
                         </p>
                         <span className="text-primary font-black text-sm">
-                          {formatPrice(order.price, true)}
+                          {formatPrice(order.totalAmount, true)}
                         </span>
                       </div>
-                      <button className="size-7 rounded-full bg-secondary flex items-center justify-center active:bg-primary/20 transition-all">
+                      <button
+                        onClick={() => navigate(`/pedido/${order.orderNumber}`)}
+                        className="size-7 rounded-full bg-secondary flex items-center justify-center active:bg-primary/20 transition-all"
+                      >
                         <span className="material-symbols-outlined text-base">
                           chevron_right
                         </span>
@@ -220,6 +271,11 @@ const SalesCenter: React.FC = () => {
                   </div>
                 </motion.div>
               ))}
+              {recentOrders.length === 0 && (
+                <div className="text-center py-10 text-muted-foreground text-sm">
+                  Nenhuma venda realizada recentemente.
+                </div>
+              )}
             </div>
           </div>
         </div>
