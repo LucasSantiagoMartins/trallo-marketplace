@@ -43,31 +43,34 @@ const MfaVerificationModal: React.FC<MfaVerificationModalProps> = ({
         return {
           title: "Confirmar Saque",
           desc: `Confirme o código enviado${deliveryMethod} para autorizar a retirada`,
+          buttonText: "Confirmar Saque",
         };
       case VerificationType.CHANGE_PASSWORD:
         return {
           title: "Alterar Senha",
           desc: `Confirme o código enviado${deliveryMethod} para mudar sua senha`,
+          buttonText: "Alterar Senha",
         };
       case VerificationType.CHANGE_BANK:
         return {
           title: "Dados Bancários",
           desc: `Confirme o código enviado${deliveryMethod} para alterar sua conta bancária`,
+          buttonText: "Atualizar Banco",
         };
       case VerificationType.LOGIN:
       default:
         return {
           title: "Verificação",
           desc: `Insira o código enviado${deliveryMethod} para acessar sua conta`,
+          buttonText: "Verificar Identidade",
         };
     }
   };
 
-  const { title, desc } = getContent();
+  const { title, desc, buttonText } = getContent();
 
   const handleChange = (value: string, index: number) => {
     const char = value.substring(value.length - 1);
-
     if (char && !/^[0-9]$/.test(char)) return;
 
     const newCode = [...mfaCode];
@@ -139,7 +142,7 @@ const MfaVerificationModal: React.FC<MfaVerificationModalProps> = ({
               isLoading={isLoading}
               disabled={isLoading || mfaCode.join("").length < 4}
             >
-              Confirmar Identidade
+              {buttonText}
             </TralloButton>
           </div>
         </form>
