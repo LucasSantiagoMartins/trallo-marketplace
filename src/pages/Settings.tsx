@@ -245,8 +245,8 @@ const SettingsScreen: React.FC = () => {
                   title="Verificação de Segurança"
                   subtitle={
                     secureOperations
-                      ? "MFA Ativo em operações"
-                      : "MFA apenas no Login"
+                      ? "Ativo"
+                      : "Inativo"
                   }
                   onClick={() => {
                     setTempTwoFAMethod(activeTwoFAMethod);

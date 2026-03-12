@@ -20,7 +20,6 @@ const ActionSheet: React.FC<ActionSheetProps> = ({
   data,
   onAction,
 }) => {
-  // Verifica se pelo menos um dos toggles está ativo
   const isAnySecurityEnabled = data?.secureLogin || data?.secureOperations;
 
   return (
@@ -54,7 +53,6 @@ const ActionSheet: React.FC<ActionSheetProps> = ({
 
             {type === "2fa" && (
               <div className="flex flex-col gap-4">
-                {/* Toggle: Secure Login */}
                 <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-white/5 rounded-[22px] border border-black/5 dark:border-white/5">
                   <div className="flex flex-col">
                     <span className="text-sm font-bold">Login Seguro</span>
@@ -75,7 +73,6 @@ const ActionSheet: React.FC<ActionSheetProps> = ({
                   </div>
                 </div>
 
-                {/* Toggle: Secure Operations */}
                 <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-white/5 rounded-[22px] border border-black/5 dark:border-white/5">
                   <div className="flex flex-col">
                     <span className="text-sm font-bold">Operações Seguras</span>
@@ -98,9 +95,8 @@ const ActionSheet: React.FC<ActionSheetProps> = ({
                   </div>
                 </div>
 
-                {/* Cards de Método - Desabilitados se nada estiver ativo */}
                 <div
-                  className={`grid grid-cols-2 gap-4 mt-2 transition-opacity duration-300 ${!isAnySecurityEnabled ? "opacity-40 pointer-events-none" : "opacity-100"}`}
+                  className={`grid grid-cols-2 gap-4 mt-2 transition-opacity duration-300 ${!isAnySecurityEnabled ? "opacity-20 pointer-events-none" : "opacity-100"}`}
                 >
                   <button
                     onClick={() => data.setTempTwoFAMethod("SMS")}
@@ -131,9 +127,14 @@ const ActionSheet: React.FC<ActionSheetProps> = ({
                     <span className="material-symbols-outlined text-3xl">
                       mail
                     </span>
-                    <span className="text-[10px] font-black uppercase tracking-wider">
-                      E-mail
-                    </span>
+                    <div className="flex flex-col items-center">
+                      <span className="text-[10px] font-black uppercase tracking-wider">
+                        E-mail
+                      </span>
+                      <span className="text-[8px] font-bold text-primary uppercase mt-0.5">
+                        Recomendado
+                      </span>
+                    </div>
                   </button>
                 </div>
 
@@ -145,7 +146,7 @@ const ActionSheet: React.FC<ActionSheetProps> = ({
                       twoFactorMethod: data.tempTwoFAMethod,
                     })
                   }
-                  disabled={data.isUpdating || !isAnySecurityEnabled}
+                  disabled={data.isUpdating}
                   className="w-full h-14 bg-primary text-white rounded-2xl font-bold transition-all active:scale-[0.98] mt-4 shadow-lg shadow-primary/20 flex items-center justify-center gap-2 disabled:opacity-50 disabled:active:scale-100 disabled:cursor-not-allowed"
                 >
                   {data.isUpdating ? (
