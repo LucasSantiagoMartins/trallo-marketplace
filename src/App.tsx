@@ -52,7 +52,7 @@ const App = () => (
             {/* --- 1. ROTAS PÚBLICAS --- */}
             <Route path="/" element={<Home />} />
             <Route path="/entrar" element={<Login />} />
-            <Route path="/registrar" element={<Register />} />
+            <Route path="/criar-conta" element={<Register />} />
             <Route path="/esqueceu-senha" element={<ResetPassword />} />
             <Route path="/detalhes-produto" element={<ProductDetails />} />
 

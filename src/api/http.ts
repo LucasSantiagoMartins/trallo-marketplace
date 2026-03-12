@@ -7,6 +7,7 @@ interface RequestOptions {
   headers?: HttpHeaders;
   params?: Record<string, any>;
 }
+
 async function request<T>(
   method: string,
   path: string,
@@ -22,11 +23,11 @@ async function request<T>(
     ...options?.headers,
   };
 
-  if (!isFormData) {
+  if (!isFormData && !headers["Content-Type"]) {
     headers["Content-Type"] = "application/json";
   }
 
-  if (token) {
+  if (token && !headers["Authorization"]) {
     headers["Authorization"] = `Bearer ${token}`;
   }
 
@@ -39,6 +40,7 @@ async function request<T>(
         ? JSON.stringify(body)
         : undefined,
   };
+
   try {
     const response = await fetch(url, config);
     if (!response.ok) {
@@ -52,16 +54,16 @@ async function request<T>(
       if (response.status === 401) {
         throw new Error(
           errorBody?.message ||
-            errorBody?.error ||
-            "Sua sessão expirou. Por favor, faça login novamente.",
+          errorBody?.error ||
+          "Sua sessão expirou. Por favor, faça login novamente.",
         );
       }
 
       if (response.status === 403) {
         throw new Error(
           errorBody?.message ||
-            errorBody?.error ||
-            "Você não tem permissão para realizar esta ação.",
+          errorBody?.error ||
+          "Você não tem permissão para realizar esta ação.",
         );
       }
 

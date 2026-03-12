@@ -1,0 +1,6 @@
+export enum VerificationType {
+    WITHDRAWAL = "WITHDRAWAL",
+    CHANGE_PASSWORD = "CHANGE_PASSWORD",
+    CHANGE_BANK = "CHANGE_BANK",
+    LOGIN = "LOGIN"
+}

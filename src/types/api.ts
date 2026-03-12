@@ -6,13 +6,21 @@ export type ApiResponse<T> = {
   data: T;
 };
 
-export interface AuthUser {
-  id: number,
+
+
+export class AuthUser {
+  id: number;
+  token: string;
+  role: string;
   fullName: string;
-  role: UserRole;
-  token?: string;
   profilePicture?: string;
   address?: string;
+}
+
+export class MfaRequiredDto {
+  mfaRequired: boolean;
+  mfaToken: string;
+  method: string;
 }
 
 export interface User {

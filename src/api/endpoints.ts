@@ -1,4 +1,5 @@
 import MyProductsPage from "@/pages/MyProducts";
+import { verify } from "crypto";
 
 export const BASE_URL = "http://localhost:9090";
 export const BASE_UPLOAD_URL = "http://localhost:9090/uploads/";
@@ -6,6 +7,7 @@ export const BASE_UPLOAD_URL = "http://localhost:9090/uploads/";
 export const endpoints = {
   auth: {
     login: "/auth/login",
+    verify2faCode: "/auth/verify-2fa",
     register: "/users",
   },
   users: {
@@ -95,6 +97,7 @@ export const endpoints = {
     summary: "/orders/my/sales-summary"
   },
   userSecuritySettings: {
+    verifyCode: "/user-security-settings/verify-code",
     get: "/user-security-settings",
     update: "/user-security-settings",
   }

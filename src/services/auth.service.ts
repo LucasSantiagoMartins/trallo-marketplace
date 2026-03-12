@@ -1,6 +1,7 @@
-import type { ApiResponse, AuthUser } from "@/types/api";
+import type { ApiResponse, AuthUser, MfaRequiredDto } from "@/types/api";
 import { http } from "../api/http";
 import { endpoints } from "../api/endpoints";
+import { VerificationType } from "@/enums/verification-type.enum";
 
 interface LoginPayload {
   identifier: string;
@@ -19,28 +20,29 @@ interface RegisterPayload {
 export async function login(
   identifier: string,
   password: string,
+): Promise<ApiResponse<AuthUser | MfaRequiredDto>> {
+  return await http.post<AuthUser | MfaRequiredDto, LoginPayload>(
+    endpoints.auth.login,
+    { identifier, password }
+  );
+}
+
+export async function verify2faCode(
+  code: string,
+  mfaToken: string
 ): Promise<ApiResponse<AuthUser>> {
-  const res = await http.post<AuthUser,
-    LoginPayload
-  >(endpoints.auth.login, {
-    identifier,
-    password,
-  });
-
-  if (res.success && res.data) {
-    const sessionData = {
-      role: res.data.role,
-      token: res.data.token,
-      fullName: res.data.fullName,
-      profilePicture: res.data.profilePicture,
-      address: res.data.address
-    };
-
-    localStorage.setItem("user_session", JSON.stringify(sessionData));
-    localStorage.setItem("auth_token", res.data.token);
-  }
-
-  return res;
+  return await http.post<AuthUser, { code: string; type: VerificationType }>(
+    endpoints.auth.verify2faCode,
+    {
+      code,
+      type: VerificationType.LOGIN
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${mfaToken}`
+      }
+    }
+  );
 }
 
 export async function register(
