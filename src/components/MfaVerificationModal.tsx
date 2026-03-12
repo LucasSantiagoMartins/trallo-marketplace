@@ -7,8 +7,8 @@ interface MfaVerificationModalProps {
   onClose: () => void;
   onSubmit: (code: string) => void;
   isLoading: boolean;
-  method?: string;
   type: VerificationType;
+  method?: string;
 }
 
 const MfaVerificationModal: React.FC<MfaVerificationModalProps> = ({
@@ -16,8 +16,8 @@ const MfaVerificationModal: React.FC<MfaVerificationModalProps> = ({
   onClose,
   onSubmit,
   isLoading,
-  method,
   type,
+  method,
 }) => {
   const [mfaCode, setMfaCode] = useState<string[]>(new Array(4).fill(""));
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -36,27 +36,29 @@ const MfaVerificationModal: React.FC<MfaVerificationModalProps> = ({
   }, [isOpen]);
 
   const getContent = () => {
+    const deliveryMethod = method ? ` via ${method.toLowerCase()}` : "";
+
     switch (type) {
       case VerificationType.WITHDRAWAL:
         return {
           title: "Confirmar Saque",
-          desc: "Confirme o código para autorizar a retirada.",
+          desc: `Confirme o código enviado${deliveryMethod} para autorizar a retirada`,
         };
       case VerificationType.CHANGE_PASSWORD:
         return {
           title: "Alterar Senha",
-          desc: "Confirme sua identidade para mudar sua senha.",
+          desc: `Confirme o código enviado${deliveryMethod} para mudar sua senha`,
         };
       case VerificationType.CHANGE_BANK:
         return {
           title: "Dados Bancários",
-          desc: "Confirme o código para alterar sua conta bancária.",
+          desc: `Confirme o código enviado${deliveryMethod} para alterar sua conta bancária`,
         };
       case VerificationType.LOGIN:
       default:
         return {
           title: "Verificação",
-          desc: "Insira o código enviado para acessar sua conta.",
+          desc: `Insira o código enviado${deliveryMethod} para acessar sua conta`,
         };
     }
   };
@@ -93,7 +95,7 @@ const MfaVerificationModal: React.FC<MfaVerificationModalProps> = ({
   return (
     <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
       <div className="bg-card w-full max-w-md rounded-[32px] border border-border shadow-2xl p-8 animate-in fade-in zoom-in duration-300">
-        <div className="text-center mb-6">
+        <div className="text-center mb-8">
           <div className="size-16 bg-primary/10 text-primary rounded-2xl flex items-center justify-center mx-auto mb-4">
             <span className="material-symbols-outlined !text-3xl">
               {type === VerificationType.WITHDRAWAL
@@ -102,15 +104,10 @@ const MfaVerificationModal: React.FC<MfaVerificationModalProps> = ({
             </span>
           </div>
           <h2 className="text-2xl font-bold clash-style">{title}</h2>
-          <p className="text-muted-foreground text-sm mt-2">
-            {desc} via{" "}
-            <span className="font-bold text-foreground">
-              {method || "e-mail"}
-            </span>
-          </p>
+          <p className="text-muted-foreground text-sm mt-3">{desc}</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-8">
           <div className="grid grid-cols-4 gap-3">
             {mfaCode.map((digit, idx) => (
               <input
@@ -119,7 +116,14 @@ const MfaVerificationModal: React.FC<MfaVerificationModalProps> = ({
                 type="text"
                 inputMode="numeric"
                 pattern="[0-9]*"
-                className="w-full h-16 text-center text-2xl font-bold border border-border rounded-2xl bg-muted/20 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                className={`w-full h-16 text-center text-2xl font-bold border rounded-xl bg-muted/20 outline-none transition-all duration-200
+                  ${
+                    digit
+                      ? "border-emerald-500 ring-2 ring-emerald-500/10 bg-emerald-500/5"
+                      : "border-border focus:border-primary focus:ring-2 focus:ring-primary/20"
+                  }
+                  ${isLoading ? "opacity-50 cursor-not-allowed" : ""}
+                `}
                 value={digit}
                 onChange={(e) => handleChange(e.target.value, idx)}
                 onKeyDown={(e) => handleKeyDown(e, idx)}
@@ -128,7 +132,7 @@ const MfaVerificationModal: React.FC<MfaVerificationModalProps> = ({
             ))}
           </div>
 
-          <div className="space-y-3">
+          <div className="pt-2">
             <TralloButton
               type="submit"
               fullWidth
@@ -137,14 +141,6 @@ const MfaVerificationModal: React.FC<MfaVerificationModalProps> = ({
             >
               Confirmar Identidade
             </TralloButton>
-
-            <button
-              type="button"
-              onClick={onClose}
-              className="w-full text-center text-sm text-muted-foreground hover:text-foreground font-medium transition-colors"
-            >
-              Cancelar e voltar
-            </button>
           </div>
         </form>
       </div>
