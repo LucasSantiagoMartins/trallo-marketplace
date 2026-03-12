@@ -38,37 +38,15 @@ const WalletScreen: React.FC = () => {
     fetchWalletSummary();
   }, []);
 
-  const RightElement = (
-    <div
-      className="flex items-center gap-3 cursor-pointer"
-      onClick={() => navigate("/perfil")}
-    >
-      <div className="text-right hidden sm:block">
-        <p className="text-[10px] text-[#8c5f67] dark:text-gray-400 font-bold uppercase tracking-wider">
-          Olá, {user?.fullName || "Vendedor"}
-        </p>
-      </div>
-      <div className="size-10 rounded-full border-2 border-primary/20 p-0.5 shadow-sm">
-        <div
-          className="w-full h-full rounded-full bg-cover bg-center"
-          style={{
-            backgroundImage:
-              'url("https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=100&h=100&auto=format&fit=crop")',
-          }}
-        />
-      </div>
-    </div>
-  );
-
   return (
     <MobileLayout>
-      <PageHeader title="Minha Carteira" rightElement={RightElement} />
+      <PageHeader title="Minha Carteira" showUser={true} />
 
-      <main className="max-w-6xl mx-auto px-6 pt-24 pb-32 lg:pt-24">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+      <main className="max-w-6xl mx-auto px-6 pt-24 pb-32 lg:pt-24 lg:h-screen lg:overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:h-full">
           {/* Coluna Esquerda: Carteira FIXA */}
           <div className="lg:col-span-5">
-            <div className="lg:fixed lg:w-[calc((1152px-40px)*5/12-2.5rem)] max-w-[440px] space-y-6">
+            <div className="space-y-6 max-w-[440px]">
               <div className="relative overflow-hidden rounded-[2.5rem] p-6 min-h-[220px] flex flex-col justify-between bg-gradient-to-br from-[#6C3EF8] to-[#8B5CF6] shadow-xl shadow-purple-500/20">
                 <div className="absolute -right-10 -top-10 size-40 bg-white/10 rounded-full blur-2xl"></div>
 
@@ -142,10 +120,8 @@ const WalletScreen: React.FC = () => {
             </div>
           </div>
 
-          {/* Coluna Direita: Desempenho e Transações */}
-          <div className="lg:col-span-7 lg:col-start-6">
-            <PerformanceCard />
-
+          {/* Coluna Direita: Desempenho e Transações com SCROLL */}
+          <div className="lg:col-span-7 lg:overflow-y-auto lg:pr-4 lg:pb-40 scrollbar-hide">
             <div className="flex items-center justify-between mb-6 mt-10 lg:mt-0">
               <h3 className="text-xl font-bold tracking-tight">
                 Transações Recentes

@@ -66,8 +66,9 @@ const UserProfileScreen: React.FC = () => {
         <PageHeader title="Perfil" backTo="/" />
 
         <main className="px-6 lg:px-0 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start pt-20 lg:pt-24">
-          <div className="lg:col-span-5 space-y-6">
-            <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-sm border border-gray-100 dark:border-gray-700/50">
+          {/* Coluna Esquerda: FIXA no scroll Desktop */}
+          <div className="lg:col-span-5 lg:sticky lg:top-24 space-y-6">
+            <div className="bg-white dark:bg-gray-800 rounded-3xl p-4 shadow-sm border border-gray-100 dark:border-gray-700/50">
               <div className="flex flex-col items-center">
                 <div className="relative">
                   <div className="size-32 rounded-full border-[3px] border-accent p-1 flex items-center justify-center overflow-hidden">
@@ -114,6 +115,7 @@ const UserProfileScreen: React.FC = () => {
             </div>
           </div>
 
+          {/* Coluna Direita: Conteúdo com Scroll */}
           <div className="lg:col-span-7 space-y-6">
             <section className="space-y-4">
               <div className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700">
@@ -127,6 +129,12 @@ const UserProfileScreen: React.FC = () => {
                 {user.role === "SELLER" && (
                   <>
                     <MenuLink
+                      icon="storefront"
+                      label="Centro de Vendas"
+                      to="/centro-vendas"
+                    />
+                    <div className="mx-4 border-t border-gray-50 dark:border-gray-700" />
+                    <MenuLink
                       icon="account_balance_wallet"
                       label="Carteira TRALLO"
                       isWallet
@@ -138,6 +146,7 @@ const UserProfileScreen: React.FC = () => {
                       label="Contas Bancárias"
                       to="/contas-bancarias"
                     />
+                    <div className="mx-4 border-t border-gray-50 dark:border-gray-700" />
                   </>
                 )}
               </div>

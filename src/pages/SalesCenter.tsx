@@ -10,6 +10,7 @@ import { formatPrice } from "@/utils/currency";
 import { getSalesSummary } from "@/services/sales.service";
 import { formatDateFriendly } from "@/utils/date";
 import OrderDetailsModal from "@/components/OrderDetailsModal";
+import BottomNavigation from "@/components/BottomNavigation";
 
 export interface MonthOverMonth {
   percentage: number;
@@ -124,28 +125,6 @@ const SalesCenter: React.FC = () => {
     },
   ];
 
-  const RightElement = (
-    <div
-      className="flex items-center gap-3 cursor-pointer"
-      onClick={() => navigate("/perfil")}
-    >
-      <div className="text-right hidden sm:block">
-        <p className="text-[10px] text-[#8c5f67] dark:text-gray-400 font-bold uppercase tracking-wider">
-          Olá, {user?.fullName || "Vendedor"}
-        </p>
-      </div>
-      <div className="size-10 rounded-full border-2 border-primary/20 p-0.5 shadow-sm">
-        <div
-          className="w-full h-full rounded-full bg-cover bg-center"
-          style={{
-            backgroundImage:
-              'url("https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=100&h=100&auto=format&fit=crop")',
-          }}
-        />
-      </div>
-    </div>
-  );
-
   if (isLoading) {
     return (
       <MobileLayout>
@@ -161,7 +140,10 @@ const SalesCenter: React.FC = () => {
       <PageHeader title="Centro de Vendas" showUser={true} />
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 pt-24 flex flex-col space-y-6 sm:space-y-10 h-auto sm:h-[calc(100vh-theme(spacing.2))] overflow-visible sm:overflow-hidden">
-        <section className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 shrink-0">
+        
+        {/* Container de Stats atualizado para scroll lateral no mobile */}
+        <section className="flex overflow-x-auto pb-4 -mx-4 px-4 snap-x snap-mandatory sm:grid sm:grid-cols-3 sm:gap-6 sm:pb-0 sm:mx-0 sm:px-0 hide-scrollbar shrink-0">
+          <style>{`.hide-scrollbar::-webkit-scrollbar { display: none; } .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }`}</style>
           {stats.map((stat, index) => (
             <motion.div
               key={index}
@@ -169,7 +151,7 @@ const SalesCenter: React.FC = () => {
               onClick={() =>
                 stat.isClickable && stat.path && navigate(stat.path)
               }
-              className={`relative bg-card p-4 sm:p-5 rounded-[2rem] border border-border shadow-soft flex items-center gap-4 transition-all ${
+              className={`relative bg-card p-4 sm:p-5 rounded-[2rem] border border-border shadow-soft flex items-center gap-4 transition-all shrink-0 w-[280px] sm:w-auto snap-center mr-4 sm:mr-0 ${
                 stat.isClickable
                   ? "cursor-pointer hover:border-primary/40 hover:shadow-md"
                   : ""
@@ -294,6 +276,7 @@ const SalesCenter: React.FC = () => {
           order={selectedOrder}
         />
       )}
+      <BottomNavigation />
     </MobileLayout>
   );
 };

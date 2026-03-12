@@ -216,6 +216,7 @@ const SettingsScreen: React.FC = () => {
                   to="/alterar-senha"
                 />
                 <div className="h-[1px] mx-6 bg-gray-50 dark:bg-white/5" />
+
                 <SettingItem
                   icon="verified_user"
                   title="Verificação de Segurança"
@@ -228,14 +229,21 @@ const SettingsScreen: React.FC = () => {
             </section>
 
             <section className="flex flex-col gap-4">
-              <h3 className="text-red-500 font-black text-[10px] sm:text-[11px] uppercase tracking-[0.2em] ml-2 opacity-80">
-                Conta
+              <h3 className="text-[#866565] dark:text-gray-400 font-black text-[10px] sm:text-[11px] uppercase tracking-[0.2em] ml-2 opacity-80">
+                Conta & Informações
               </h3>
               <div className="bg-white dark:bg-[#1E1A1A] rounded-[24px] sm:rounded-[32px] overflow-hidden shadow-sm border border-black/[0.03] dark:border-white/[0.03]">
                 <SettingItem
+                  icon="info"
+                  title="Sobre o App"
+                  subtitle="Versão e termos de uso"
+                  to="/sobre"
+                />
+                <div className="h-[1px] mx-6 bg-gray-50 dark:bg-white/5" />
+                <SettingItem
                   icon="no_accounts"
                   title="Eliminar Conta"
-                  subtitle="Remover todos os dados permanentemente"
+                  subtitle="Encerrar permanentemente"
                   danger={true}
                   onClick={() => setIsDeleteModalOpen(true)}
                 />

@@ -58,31 +58,11 @@ const MyProductsPage: React.FC = () => {
     ).length,
   };
 
-  const RightElement = (
-    <div
-      className="flex items-center gap-3 cursor-pointer"
-      onClick={() => navigate("/perfil")}
-    >
-      <div className="text-right hidden sm:block">
-        <p className="text-[10px] text-[#8c5f67] dark:text-gray-400 font-bold uppercase tracking-wider">
-          Olá, {user.fullName || "Vendedor"}
-        </p>
-      </div>
-      <div className="size-10 rounded-full border-2 border-primary/20 p-0.5 shadow-sm">
-        <div
-          className="w-full h-full rounded-full bg-cover bg-center"
-          style={{
-            backgroundImage:
-              'url("https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=100&h=100&auto=format&fit=crop")',
-          }}
-        />
-      </div>
-    </div>
-  );
+ 
 
   return (
     <div className="bg-background-light dark:bg-background-dark min-h-screen flex flex-col">
-      <PageHeader title="Meus Produtos" rightElement={RightElement} />
+      <PageHeader title="Meus Produtos" showUser={true} />
 
       <main className="max-w-6xl mx-auto w-full px-6 pt-24 pb-20">
         <header className="mb-8">
