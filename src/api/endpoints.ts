@@ -10,6 +10,9 @@ export const endpoints = {
   },
   users: {
     list: "/users",
+    updateProfilePicture: "/users/profile-picture",
+    updateUser: "/users/me",
+    myInfo: "/users/me"
   },
   warehouseInventories: {
     exits: "/warehouse-inventories/exits",

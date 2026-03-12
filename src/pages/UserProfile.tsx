@@ -5,9 +5,9 @@ import PageHeader from "../components/PageHeader";
 import ConfirmAction from "../components/ConfirmAction";
 import { logout } from "../services/auth.service";
 import { useAuth } from "../context/AuthContext";
+import { BASE_UPLOAD_URL } from "@/api/endpoints";
 import toast from "react-hot-toast";
 
-// Interfaces para tipagem segura
 interface StatItemProps {
   label: string;
   value: string | number;
@@ -35,10 +35,10 @@ const UserProfileScreen: React.FC = () => {
 
     setIsLoggingOut(true);
     try {
-      await logout();
+      logout();
       toast.success("Sessão encerrada com sucesso.");
       setIsModalOpen(false);
-      navigate("/login", { replace: true });
+      navigate("/entrar", { replace: true });
     } catch (error) {
       toast.error("Erro ao sair. Tente novamente.");
     } finally {
@@ -46,7 +46,6 @@ const UserProfileScreen: React.FC = () => {
     }
   }, [isLoggingOut, navigate]);
 
-  // Early return se o usuário não existir (proteção contra quebras)
   if (!user) return null;
 
   return (
@@ -71,14 +70,21 @@ const UserProfileScreen: React.FC = () => {
             <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-sm border border-gray-100 dark:border-gray-700/50">
               <div className="flex flex-col items-center">
                 <div className="relative">
-                  <div className="size-32 rounded-full border-[3px] border-accent p-1">
-                    <div
-                      className="w-full h-full rounded-full bg-cover bg-center"
-                      style={{
-                        backgroundImage:
-                          "url('https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=256&h=256&auto=format&fit=crop')",
-                      }}
-                    />
+                  <div className="size-32 rounded-full border-[3px] border-accent p-1 flex items-center justify-center overflow-hidden">
+                    {user.profilePicture ? (
+                      <div
+                        className="w-full h-full rounded-full bg-cover bg-center"
+                        style={{
+                          backgroundImage: `url(${BASE_UPLOAD_URL + user.profilePicture})`,
+                        }}
+                      />
+                    ) : (
+                      <div className="w-full h-full rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
+                        <span className="material-symbols-outlined text-slate-400 text-6xl">
+                          account_circle
+                        </span>
+                      </div>
+                    )}
                   </div>
                   <div className="absolute bottom-1 right-1 size-8 bg-primary rounded-full border-4 border-white dark:border-gray-800 flex items-center justify-center">
                     <span className="material-symbols-outlined text-white text-[18px]">
@@ -89,13 +95,15 @@ const UserProfileScreen: React.FC = () => {
 
                 <div className="mt-5 text-center">
                   <h2 className="clash-font text-2xl lg:text-3xl font-extrabold">
-                    {user?.userName || "Usuário"}
+                    {user?.fullName || "Usuário"}
                   </h2>
                   <div className="flex items-center justify-center gap-1 text-gray-500 dark:text-gray-400 mt-1">
                     <span className="material-symbols-outlined text-sm">
                       location_on
                     </span>
-                    <span className="text-sm font-medium">Luanda, Angola</span>
+                    <span className="text-sm font-medium">
+                      {user?.address || "Localização não definida"}
+                    </span>
                   </div>
                 </div>
 
@@ -108,7 +116,6 @@ const UserProfileScreen: React.FC = () => {
 
           <div className="lg:col-span-7 space-y-6">
             <section className="space-y-4">
-            
               <div className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700">
                 <MenuLink
                   icon="person_edit"
@@ -174,7 +181,6 @@ const UserProfileScreen: React.FC = () => {
   );
 };
 
-// Componentes internos com tipagem e sem uso de 'any'
 const StatItem: React.FC<StatItemProps> = ({
   label,
   value,

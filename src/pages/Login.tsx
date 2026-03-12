@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import toast from "react-hot-toast"; 
+import toast from "react-hot-toast";
 import MobileLayout from "@/layouts/MobileLayout";
 import TralloInput from "@/components/TralloInput";
 import TralloButton from "@/components/TralloButton";
@@ -30,9 +30,12 @@ const Login: React.FC = () => {
         const userRole = res.data.role;
 
         setUser({
-          userName: res.data.userName,
+          id: res.data.id,
+          fullName: res.data.fullName,
           role: userRole as any,
           token: res.data.token,
+          address: res.data.address,
+          profilePicture: res.data.profilePicture
         });
 
         const roleRoutes: Record<string, string> = {

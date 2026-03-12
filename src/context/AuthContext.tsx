@@ -1,4 +1,5 @@
-import React, {
+import { AuthUser } from "@/types/api";
+import {
   createContext,
   useContext,
   useState,
@@ -6,16 +7,10 @@ import React, {
   ReactNode,
 } from "react";
 
-interface User {
-  userName: string;
-  role: "ADMIN" | "SELLER" | "BUYER" | "OPERATOR" | "DELIVERER";
-  token?: string;
-}
-
 interface AuthContextType {
-  user: User | null;
+  user: AuthUser | null;
   isAuthenticated: boolean;
-  setUser: (user: User | null) => void;
+  setUser: (user: AuthUser | null) => void;
   loading: boolean;
   logout: () => void;
 }
@@ -23,10 +18,10 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUserState] = useState<User | null>(null);
+  const [user, setUserState] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const setUser = (userData: User | null) => {
+  const setUser = (userData: AuthUser | null) => {
     setUserState(userData);
     if (userData) {
       localStorage.setItem("user_session", JSON.stringify(userData));

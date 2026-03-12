@@ -1,23 +1,25 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { BASE_UPLOAD_URL } from "@/api/endpoints";
 
 interface PageHeaderProps {
   title: string;
   rightElement?: React.ReactNode;
-  /** Rota de destino específica. Se não informada, tenta voltar ou ir para '/' */
   backTo?: string;
+  showUser?: boolean;
 }
 
 const PageHeader: React.FC<PageHeaderProps> = ({
   title,
   rightElement,
   backTo,
+  showUser = false,
 }) => {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const handleBack = () => {
-    // 1. Se o desenvolvedor passou uma rota fixa, ignore o histórico e vá para ela.
-    // Isso evita loops se o usuário ficar alternando entre duas telas.
     if (backTo) {
       navigate(backTo, { replace: true });
       return;
@@ -28,6 +30,35 @@ const PageHeader: React.FC<PageHeaderProps> = ({
     } else {
       navigate(-1);
     }
+  };
+
+  const renderUserInfo = () => {
+    return (
+      <div
+        className="flex items-center gap-3 cursor-pointer"
+        onClick={() => navigate("/perfil")}
+      >
+        <div className="text-right hidden sm:block">
+          <p className="text-[10px] text-[#8c5f67] dark:text-gray-400 font-bold uppercase tracking-wider">
+            Olá, {user?.fullName || "Usuário"}
+          </p>
+        </div>
+        <div className="size-10 rounded-full border-2 border-primary/20 p-0.5 shadow-sm overflow-hidden bg-card flex items-center justify-center">
+          {user?.profilePicture ? (
+            <div
+              className="w-full h-full rounded-full bg-cover bg-center"
+              style={{
+                backgroundImage: `url(${BASE_UPLOAD_URL + user.profilePicture})`,
+              }}
+            />
+          ) : (
+            <span className="material-symbols-outlined text-foreground text-2xl">
+              account_circle
+            </span>
+          )}
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -49,8 +80,13 @@ const PageHeader: React.FC<PageHeaderProps> = ({
         </h2>
 
         <div className="flex gap-2 min-w-10 justify-end">
-          {rightElement || <div className="size-10" />}{" "}
-          {/* Espaçador para manter o título centralizado */}
+          {rightElement ? (
+            rightElement
+          ) : showUser ? (
+            renderUserInfo()
+          ) : (
+            <div className="size-10" />
+          )}
         </div>
       </div>
     </header>

@@ -64,7 +64,8 @@ const Register: React.FC = () => {
       if (res.success) {
         toast.success(res.message || "Conta criada com sucesso.");
         setUser({
-          userName: res.data.userName,
+          id: res.data.id,
+          fullName: res.data.fullName,
           role: res.data.role as any,
           token: res.data.token,
         });

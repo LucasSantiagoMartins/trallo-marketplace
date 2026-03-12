@@ -138,7 +138,7 @@ const CreateProduct: React.FC = () => {
     >
       <div className="text-right hidden sm:block">
         <p className="text-[10px] text-[#8c5f67] dark:text-gray-400 font-bold uppercase tracking-wider">
-          Olá, {user?.userName || "Vendedor"}
+          Olá, {user?.fullName || "Vendedor"}
         </p>
       </div>
       <div className="size-10 rounded-full border-2 border-primary/20 p-0.5 shadow-sm">

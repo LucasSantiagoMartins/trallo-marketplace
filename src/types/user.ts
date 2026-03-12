@@ -5,6 +5,7 @@ export interface UserResponseDTO {
   fullName: string;
   email: string;
   phoneNumber: string;
+  profilePicture?: string;
   address: string | null;
   role: UserRole;
   isSuspended: boolean;

@@ -131,7 +131,7 @@ const SalesCenter: React.FC = () => {
     >
       <div className="text-right hidden sm:block">
         <p className="text-[10px] text-[#8c5f67] dark:text-gray-400 font-bold uppercase tracking-wider">
-          Olá, {user?.userName || "Vendedor"}
+          Olá, {user?.fullName || "Vendedor"}
         </p>
       </div>
       <div className="size-10 rounded-full border-2 border-primary/20 p-0.5 shadow-sm">
@@ -158,7 +158,7 @@ const SalesCenter: React.FC = () => {
 
   return (
     <MobileLayout>
-      <PageHeader title="Centro de Vendas" rightElement={RightElement} />
+      <PageHeader title="Centro de Vendas" showUser={true} />
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 pt-24 flex flex-col space-y-6 sm:space-y-10 h-auto sm:h-[calc(100vh-theme(spacing.2))] overflow-visible sm:overflow-hidden">
         <section className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 shrink-0">
