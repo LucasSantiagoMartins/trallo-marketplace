@@ -2,6 +2,7 @@ import { http } from "../api/http";
 import { endpoints } from "../api/endpoints";
 import type { ApiResponse, User, AuthUser } from "@/types/api";
 import { UserResponseDTO, UserFiltersDto } from "@/types/user";
+import { ChangePasswordDto } from "@/dtos/users";
 
 export async function getUsers(
   filters: UserFiltersDto & { page?: number },
@@ -77,4 +78,9 @@ export async function updateUser(
 
 export async function getMyInfo(): Promise<ApiResponse<User>> {
   return await http.get<User>(endpoints.users.myInfo);
+}
+
+
+export async function changePassword(data: ChangePasswordDto): Promise<ApiResponse<void>> {
+  return await http.patch<void>(endpoints.users.changePassword, data);
 }

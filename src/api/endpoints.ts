@@ -15,7 +15,8 @@ export const endpoints = {
     list: "/users",
     updateProfilePicture: "/users/profile-picture",
     updateUser: "/users/me",
-    myInfo: "/users/me"
+    myInfo: "/users/me",
+    changePassword: "/users/change-password"
   },
   warehouseInventories: {
     exits: "/warehouse-inventories/exits",
