@@ -17,7 +17,7 @@ const ChangePassword = () => {
 
   return (
     <div className="bg-background-light dark:bg-background-dark min-h-screen flex flex-col items-center p-4 sm:p-6">
-      <PageHeader title="Alterar Senha" />
+      <PageHeader title="Alterar Senha" showUser={true}/>
 
       <div className="mt-20 sm:mt-16 w-full" />
 

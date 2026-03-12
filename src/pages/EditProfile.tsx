@@ -1,4 +1,5 @@
 import React, { useState, useRef, ChangeEvent, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import TralloInput from "@/components/TralloInput";
 import TralloButton from "@/components/TralloButton";
 import PageHeader from "@/components/PageHeader";
@@ -23,6 +24,7 @@ const EditProfile = () => {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isImageLoading, setIsImageLoading] = useState(false);
+  const [showReauthModal, setShowReauthModal] = useState(false);
 
   const [initialData, setInitialData] = useState({
     name: "",
@@ -65,38 +67,43 @@ const EditProfile = () => {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const hasChanges =
-      name !== initialData.name ||
-      email !== initialData.email ||
-      phone !== initialData.phone ||
-      address !== initialData.address;
+    // Criar payload apenas com campos modificados
+    const payload: any = {};
+    if (name !== initialData.name) payload.fullName = name;
+    if (email !== initialData.email) payload.email = email;
+    if (phone !== initialData.phone) payload.phoneNumber = phone; // Mapeado para phoneNumber
+    if (address !== initialData.address) payload.address = address;
+
+    const hasChanges = Object.keys(payload).length > 0;
 
     if (!hasChanges) {
       toast("Nenhuma alteração feita");
       return;
     }
 
+    const securitySensitiveChange = !!(payload.email || payload.phoneNumber);
+
     setIsLoading(true);
     try {
-      const res = await updateUser(
-        {
-          fullName: name,
-          email,
-          phone,
-          address,
-        },
-        setUser,
-      );
+      const res = await updateUser(payload, setUser);
 
       if (res.success) {
+        if (securitySensitiveChange) {
+          setShowReauthModal(true);
+        } else {
+          toast.success(res.message ?? "Perfil atualizado com sucesso");
+        }
         setInitialData({ name, email, phone, address });
-        toast.success(res.message ?? "Perfil atualizado com sucesso");
       }
     } catch (err) {
-      toast.error("Erro ao atualizar perfil");
+      toast.error(err.message ?? "Erro ao atualizar perfil");
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleCloseModal = () => {
+    setShowReauthModal(false);
   };
 
   const handleImageClick = () => {
@@ -114,8 +121,10 @@ const EditProfile = () => {
           setProfileImage(res.data.profilePicture || null);
           toast.success("Foto atualizada");
         }
-      } catch (error) {
-        toast.error("Erro ao enviar imagem");
+      } catch (err) {
+        toast.error(
+          err.message ?? "Não foi possível atualizar a foto de perfil",
+        );
       } finally {
         setIsImageLoading(false);
         if (fileInputRef.current) fileInputRef.current.value = "";
@@ -231,6 +240,65 @@ const EditProfile = () => {
           </div>
         </form>
       </main>
+
+      {showReauthModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="relative bg-white dark:bg-[#1c182d] w-full max-w-md rounded-[2rem] p-8 shadow-2xl border border-white/10 text-center animate-in fade-in zoom-in duration-300">
+            <button
+              onClick={handleCloseModal}
+              className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+            >
+              <span className="material-symbols-outlined text-xl">close</span>
+            </button>
+
+            <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+              <span className="material-symbols-outlined text-primary text-4xl">
+                info
+              </span>
+            </div>
+
+            <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-4">
+              Dados Atualizados
+            </h2>
+
+            <div className="text-slate-500 dark:text-slate-400 mb-8 space-y-3">
+              <p>As suas informações foram alteradas com sucesso.</p>
+
+              <div className="bg-slate-50 dark:bg-white/5 p-4 rounded-2xl border border-slate-100 dark:border-white/5 text-left space-y-2">
+                {email !== initialData.email && (
+                  <p className="text-sm">
+                    <span className="font-bold block text-primary uppercase text-[10px] tracking-widest mb-1">
+                      Novo E-mail
+                    </span>
+                    <span className="text-slate-700 dark:text-slate-200 font-medium">
+                      {email}
+                    </span>
+                  </p>
+                )}
+                {phone !== initialData.phone && (
+                  <p className="text-sm">
+                    <span className="font-bold block text-primary uppercase text-[10px] tracking-widest mb-1">
+                      Novo Telemóvel
+                    </span>
+                    <span className="text-slate-700 dark:text-slate-200 font-medium">
+                      {phone}
+                    </span>
+                  </p>
+                )}
+              </div>
+
+              <p className="text-xs pt-2">
+                Utilize estes novos dados na próxima vez que iniciar sessão no
+                Trallo.
+              </p>
+            </div>
+
+            <TralloButton fullWidth onClick={handleCloseModal}>
+              Entendi
+            </TralloButton>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

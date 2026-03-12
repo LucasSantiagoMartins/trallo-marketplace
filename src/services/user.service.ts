@@ -12,8 +12,7 @@ export async function getUsers(
     },
   });
 }
-
-const updateSessionCache = (updatedData: any): any => {
+const updateSessionCache = (updatedData: AuthUser | User): any => {
   const session = localStorage.getItem("user_session");
   if (session) {
     const currentSession = JSON.parse(session);
@@ -21,11 +20,6 @@ const updateSessionCache = (updatedData: any): any => {
     const newSession = {
       ...currentSession,
       ...updatedData,
-      fullName: updatedData.fullName || currentSession.fullName,
-      email: updatedData.email || currentSession.email,
-      profilePicture: updatedData.profilePicture || currentSession.profilePicture,
-      address: updatedData.address || currentSession.address,
-      role: updatedData.role || currentSession.role,
     };
 
     localStorage.setItem("user_session", JSON.stringify(newSession));
@@ -37,11 +31,11 @@ const updateSessionCache = (updatedData: any): any => {
 export async function updateProfilePicture(
   file: File,
   setUser: (user: any) => void
-): Promise<ApiResponse<{ profilePicture?: string; fullName?: string; email?: string; role?: any }>> {
+): Promise<ApiResponse<User | AuthUser>> {
   const formData = new FormData();
   formData.append("file", file);
 
-  const res = await http.patch<{ profilePicture?: string; fullName?: string; email?: string; role?: any }>(
+  const res = await http.patch<User | AuthUser>(
     endpoints.users.updateProfilePicture,
     formData
   );
@@ -62,11 +56,19 @@ export async function updateUser(
     address?: string;
   },
   setUser: (user: any) => void
-): Promise<ApiResponse<UserResponseDTO>> {
-  const res = await http.patch<UserResponseDTO>(endpoints.users.updateUser, data);
+): Promise<ApiResponse<User | AuthUser>> {
+  const res = await http.patch<User | AuthUser>(
+    endpoints.users.updateUser,
+    data
+  );
 
   if (res.success && res.data) {
     const updatedFullUser = updateSessionCache(res.data);
+
+    if ('token' in res.data && res.data.token) {
+      localStorage.setItem("token", res.data.token);
+    }
+
     setUser(updatedFullUser);
   }
 
