@@ -9,6 +9,7 @@ import {
   getUserSecuritySettings,
   updateUserSecuritySettings,
 } from "@/services/user-security.service";
+import { useAuth } from "@/context/AuthContext";
 
 export const CustomToggle = ({
   checked,
@@ -34,6 +35,7 @@ export const CustomToggle = ({
 );
 
 const SettingsScreen: React.FC = () => {
+  const { user, setUser } = useAuth(); // Acessando contexto para atualizar cache global
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -71,6 +73,9 @@ const SettingsScreen: React.FC = () => {
     }
   };
 
+  /**
+   * Atualiza as configurações no Banco e sincroniza com o Contexto/Cache
+   */
   const handleConfirmSecurityUpdate = async (payload: any) => {
     setIsUpdatingSecurity(true);
     try {
@@ -81,10 +86,26 @@ const SettingsScreen: React.FC = () => {
       });
 
       if (response.success) {
+        // 1. Atualiza estados locais da tela
         setSecureLogin(response.data.secureLogin);
         setSecureOperations(response.data.secureOperations);
         setActiveTwoFAMethod(response.data.twoFactorMethod);
         setTempTwoFAMethod(response.data.twoFactorMethod);
+
+        // 2. SINCRONIZAÇÃO COM AUTH CONTEXT E CACHE
+        if (user) {
+          const updatedUser = {
+            ...user,
+            secureLogin: response.data.secureLogin,
+            secureOperations: response.data.secureOperations,
+          };
+
+          // Atualiza Contexto Global
+          setUser(updatedUser as any);
+
+          // Atualiza LocalStorage para persistência no reload
+          localStorage.setItem("user_session", JSON.stringify(updatedUser));
+        }
 
         setIs2FASheetOpen(false);
         toast.success(
@@ -178,6 +199,7 @@ const SettingsScreen: React.FC = () => {
       <div className="max-w-7xl mx-auto flex flex-col pt-24 sm:pt-32 pb-32 px-4 sm:px-6 lg:px-8">
         <main className="flex flex-col gap-8 sm:gap-12">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 items-start">
+            {/* Preferências */}
             <section className="flex flex-col gap-4">
               <h3 className="text-primary font-black text-[10px] sm:text-[11px] uppercase tracking-[0.2em] ml-2 opacity-80">
                 Preferências
@@ -205,6 +227,7 @@ const SettingsScreen: React.FC = () => {
               </div>
             </section>
 
+            {/* Segurança */}
             <section className="flex flex-col gap-4">
               <h3 className="text-primary font-black text-[10px] sm:text-[11px] uppercase tracking-[0.2em] ml-2 opacity-80">
                 Segurança
@@ -220,6 +243,11 @@ const SettingsScreen: React.FC = () => {
                 <SettingItem
                   icon="verified_user"
                   title="Verificação de Segurança"
+                  subtitle={
+                    secureOperations
+                      ? "MFA Ativo em operações"
+                      : "MFA apenas no Login"
+                  }
                   onClick={() => {
                     setTempTwoFAMethod(activeTwoFAMethod);
                     setIs2FASheetOpen(true);
@@ -228,6 +256,7 @@ const SettingsScreen: React.FC = () => {
               </div>
             </section>
 
+            {/* Conta */}
             <section className="flex flex-col gap-4">
               <h3 className="text-[#866565] dark:text-gray-400 font-black text-[10px] sm:text-[11px] uppercase tracking-[0.2em] ml-2 opacity-80">
                 Conta & Informações

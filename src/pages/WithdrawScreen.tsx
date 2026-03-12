@@ -13,10 +13,13 @@ import { walletService } from "@/services/wallet.service";
 import { bankService } from "@/services/bank.service";
 import { formatPrice } from "@/utils/currency";
 import { VerificationType } from "@/enums/verification-type.enum";
+import { useAuth } from "@/context/AuthContext";
 import { requestCode } from "@/services/user-security.service";
 
 const WithdrawScreen: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAuth(); 
+
   const [amount, setAmount] = useState("");
   const [loading, setLoading] = useState(false);
   const [fetchingBalance, setFetchingBalance] = useState(true);
@@ -26,7 +29,6 @@ const WithdrawScreen: React.FC = () => {
     null,
   );
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-
   // Estados para o MFA
   const [isMfaOpen, setIsMfaOpen] = useState(false);
   const [mfaLoading, setMfaLoading] = useState(false);
@@ -61,7 +63,6 @@ const WithdrawScreen: React.FC = () => {
     loadInitialData();
   }, []);
 
-  // 1. Solicita o código e abre o Modal de MFA
   const handleInitiateWithdraw = async () => {
     const numericAmount = Number(amount);
 
@@ -80,13 +81,13 @@ const WithdrawScreen: React.FC = () => {
       return;
     }
 
+    if (!user?.secureOperations) {
+      return handleFinalSubmit("");
+    }
+
     setLoading(true);
     try {
-      // Solicita o código de verificação antes de abrir o modal
-      const res = await requestCode(
-        VerificationType.WITHDRAWAL,
-      );
-
+      const res = await requestCode(VerificationType.WITHDRAWAL);
       if (res.success) {
         setIsMfaOpen(true);
       } else {
@@ -101,14 +102,15 @@ const WithdrawScreen: React.FC = () => {
     }
   };
 
-  // 2. Finaliza o processo enviando o código digitado no modal
   const handleFinalSubmit = async (code: string) => {
-    setMfaLoading(true);
+    if (code) setMfaLoading(true);
+    else setLoading(true);
+
     try {
       const res = await withdrawalService.requestWithdrawal({
         amount: Number(amount),
         bankAccountId: selectedAccountId!,
-        code: code,
+        code: code, 
       });
 
       if (res.success) {
@@ -125,6 +127,7 @@ const WithdrawScreen: React.FC = () => {
       );
     } finally {
       setMfaLoading(false);
+      setLoading(false);
     }
   };
 

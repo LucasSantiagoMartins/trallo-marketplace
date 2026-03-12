@@ -22,6 +22,9 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const { setUser } = useAuth();
 
+  /**
+   * Finaliza o login persistindo os dados, incluindo as flags de segurança
+   */
   const finalizeLogin = (data: AuthUser) => {
     const sessionData = {
       id: data.id,
@@ -30,12 +33,19 @@ const Login: React.FC = () => {
       fullName: data.fullName,
       profilePicture: data.profilePicture,
       address: data.address,
+      // Persistindo as novas configurações de segurança
+      secureLogin: data.secureLogin,
+      secureOperations: data.secureOperations,
     };
+
+    // Salva no cache do navegador
     localStorage.setItem("user_session", JSON.stringify(sessionData));
     localStorage.setItem("auth_token", data.token);
 
+    // Atualiza o estado global do contexto
     setUser(sessionData as any);
 
+    // Redirecionamento baseado no cargo
     const roleRoutes: Record<string, string> = {
       ADMIN: "/area-administrativa",
       OPERATOR: "/area-operacional",
@@ -58,6 +68,7 @@ const Login: React.FC = () => {
       const res = await login(identifier, password);
 
       if (res.success && res.data) {
+        // Verifica se o backend exige MFA para este usuário
         if ("mfaRequired" in res.data && res.data.mfaRequired) {
           setMfaToken(res.data.mfaToken);
           setMfaMethod(res.data.method || "E-mail");
@@ -81,7 +92,7 @@ const Login: React.FC = () => {
     try {
       const res = await verify2faCode(code, mfaToken);
       if (res.success && res.data) {
-        toast.success("Sessão inciada com sucesso");
+        toast.success("Sessão iniciada com sucesso");
         setShowMfaModal(false);
         finalizeLogin(res.data as AuthUser);
       }
@@ -96,6 +107,7 @@ const Login: React.FC = () => {
     <MobileLayout className="bg-background">
       <div className="flex items-center justify-center min-h-screen w-full bg-background/50 md:py-12">
         <div className="w-full max-w-full lg:max-w-5xl min-h-screen md:min-h-0 md:h-fit bg-card shadow-2xl border-border/50 md:border md:rounded-[40px] overflow-hidden flex flex-col lg:grid lg:grid-cols-2">
+          {/* Coluna Esquerda: Branding */}
           <div className="p-8 md:p-12 lg:p-16 bg-muted/30 border-b lg:border-b-0 lg:border-r border-border/50 flex flex-col justify-center relative overflow-hidden">
             <div className="relative z-10">
               <div className="mb-8 p-3 bg-card rounded-2xl shadow-sm w-fit">
@@ -115,6 +127,7 @@ const Login: React.FC = () => {
             </div>
           </div>
 
+          {/* Coluna Direita: Formulário */}
           <div className="p-8 md:p-12 lg:p-16 flex flex-col justify-center bg-card">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-5">
@@ -138,7 +151,6 @@ const Login: React.FC = () => {
                   <div className="flex justify-end">
                     <Link
                       to="/esqueceu-senha"
-                      title="Esqueceu a senha?"
                       className="text-primary text-xs font-bold hover:underline"
                     >
                       Esqueceu a senha?
@@ -155,6 +167,7 @@ const Login: React.FC = () => {
               >
                 Entrar na Conta
               </TralloButton>
+
               <p className="text-center text-sm text-muted-foreground">
                 Não tens uma conta?{" "}
                 <Link to="/criar-conta" className="text-primary font-black">

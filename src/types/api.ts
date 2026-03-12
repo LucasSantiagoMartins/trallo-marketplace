@@ -15,6 +15,8 @@ export class AuthUser {
   fullName: string;
   profilePicture?: string;
   address?: string;
+  secureLogin: boolean;
+  secureOperations: boolean;
 }
 
 export class MfaRequiredDto {

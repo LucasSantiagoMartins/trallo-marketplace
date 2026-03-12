@@ -7,6 +7,8 @@ import { VerificationType } from "@/enums/verification-type.enum";
 import TralloInput from "@/components/TralloInput";
 import TralloButton from "@/components/TralloButton";
 import MfaVerificationModal from "@/components/MfaVerificationModal";
+import { useAuth } from "@/context/AuthContext";
+import { requestCode } from "@/services/user-security.service";
 
 import baiImg from "@/assets/images/banks/bai.png";
 import bfaImg from "@/assets/images/banks/bfa.png";
@@ -14,7 +16,6 @@ import bicImg from "@/assets/images/banks/bic.png";
 import keveImg from "@/assets/images/banks/keve.png";
 import millenniumImg from "@/assets/images/banks/millennium.png";
 import solImg from "@/assets/images/banks/sol.png";
-import { requestCode } from "@/services/user-security.service";
 
 const BANKS = [
   { id: "bai", name: "BAI", logo: baiImg },
@@ -38,6 +39,7 @@ const EditBankAccountSheet: React.FC<EditAccountProps> = ({
   onClose,
   onSuccess,
 }) => {
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     bankName: "",
     iban: "",
@@ -60,12 +62,10 @@ const EditBankAccountSheet: React.FC<EditAccountProps> = ({
     }
   }, [account]);
 
-  // Passo 1: Solicitar código MFA
   const handleInitiateUpdate = async (e?: React.FormEvent) => {
     e?.preventDefault();
     if (!account) return;
 
-    // Validações básicas
     if (account.type === BankAccountType.NORMAL_BANK) {
       if (!formData.bankName) return toast.error("Selecione o banco");
       if (formData.iban.length < 21) return toast.error("IBAN incompleto");
@@ -73,43 +73,57 @@ const EditBankAccountSheet: React.FC<EditAccountProps> = ({
       return toast.error("Telefone inválido");
     }
 
+    const hasChanges =
+      account.type === BankAccountType.NORMAL_BANK
+        ? formData.bankName !== account.bankName ||
+          formData.iban !== account.iban
+        : formData.phoneNumber !== account.phoneNumber;
+
+    if (!hasChanges) {
+      return toast("Nenhuma alteração detectada");
+    }
+
+    if (user?.secureOperations === false) {
+      return handleFinalUpdate("");
+    }
+
     setSubmitting(true);
     try {
-      const res = await requestCode(
-        VerificationType.CHANGE_BANK,
-      );
+      const res = await requestCode(VerificationType.CHANGE_BANK);
       if (res.success) {
         setIsMfaOpen(true);
       } else {
-        toast.error(res.message || "Erro ao solicitar código.");
+        toast.error(res.message || "Erro ao solicitar código");
       }
     } catch (err) {
-      toast.error("Erro ao processar verificação de segurança.");
+      toast.error("Erro ao processar verificação de segurança");
     } finally {
       setSubmitting(false);
     }
   };
 
-  // Passo 2: Enviar atualização com o código digitado
   const handleFinalUpdate = async (code: string) => {
     if (!account) return;
     setSubmitting(true);
+
+    const payload: any = {};
+
+    if (account.type === BankAccountType.NORMAL_BANK) {
+      if (formData.bankName !== account.bankName)
+        payload.bankName = formData.bankName;
+      if (formData.iban !== account.iban) payload.iban = formData.iban;
+    } else {
+      if (formData.phoneNumber !== account.phoneNumber) {
+        payload.phoneNumber = formData.phoneNumber;
+      }
+    }
+
+    if (user?.secureOperations && code) {
+      payload.code = code;
+    }
+
     try {
-      const response = await bankService.updateAccount(account.id, {
-        bankName:
-          account.type === BankAccountType.NORMAL_BANK
-            ? formData.bankName
-            : "Multicaixa Express",
-        iban:
-          account.type === BankAccountType.NORMAL_BANK
-            ? formData.iban
-            : undefined,
-        phoneNumber:
-          account.type === BankAccountType.MCX_EXPRESS
-            ? formData.phoneNumber
-            : undefined,
-        code: code, // Enviando o código MFA para o backend
-      });
+      const response = await bankService.updateAccount(account.id, payload);
 
       if (response.success) {
         toast.success("Dados atualizados com sucesso");
@@ -118,7 +132,7 @@ const EditBankAccountSheet: React.FC<EditAccountProps> = ({
         onClose();
       }
     } catch (err: any) {
-      toast.error(err.message || "Erro ao atualizar.");
+      toast.error(err.message || "Erro ao atualizar");
     } finally {
       setSubmitting(false);
     }
