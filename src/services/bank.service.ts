@@ -16,8 +16,10 @@ export const bankService = {
         return http.patch<BankAccountDTO>(endpoints.bankAccounts.update(id), data);
     },
 
-    async deleteAccount(id: string): Promise<ApiResponse<void>> {
-        return http.delete<void>(endpoints.bankAccounts.delete(id));
+    async deleteAccount(id: string, code: string): Promise<ApiResponse<void>> {
+        return http.delete<void>(endpoints.bankAccounts.delete(id), {
+            params: { code }
+        });
     },
 
     async setDefaultAccount(id: string): Promise<ApiResponse<BankAccountDTO>> {

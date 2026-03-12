@@ -4,9 +4,11 @@ import toast from "react-hot-toast";
 import BottomNavigation from "@/components/BottomNavigation";
 import { bankService } from "@/services/bank.service";
 import { BankAccountDTO } from "@/dtos/bank.dto";
+import { VerificationType } from "@/enums/verification-type.enum";
 import PageHeader from "@/components/PageHeader";
 import EditBankAccountSheet from "@/components/EditBankAccountSheet";
 import ConfirmAction from "@/components/ConfirmAction";
+import MfaVerificationModal from "@/components/MfaVerificationModal";
 
 import baiImg from "@/assets/images/banks/bai.png";
 import bfaImg from "@/assets/images/banks/bfa.png";
@@ -15,6 +17,7 @@ import keveImg from "@/assets/images/banks/keve.png";
 import millenniumImg from "@/assets/images/banks/millennium.png";
 import solImg from "@/assets/images/banks/sol.png";
 import mcxImg from "@/assets/images/banks/mcx_express.png";
+import { requestCode } from "@/services/user-security.service";
 
 const BANKS = [
   { id: "bai", name: "BAI", logo: baiImg },
@@ -26,27 +29,27 @@ const BANKS = [
 ];
 
 const BankAccountsScreen: React.FC = () => {
+  const navigate = useNavigate();
   const [accounts, setAccounts] = useState<BankAccountDTO[]>([]);
   const [loading, setLoading] = useState(true);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState<BankAccountDTO | null>(
     null,
   );
+
+  // Estados para Exclusão e MFA
   const [accountToDelete, setAccountToDelete] = useState<BankAccountDTO | null>(
     null,
   );
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isMfaOpen, setIsMfaOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
-
-  const navigate = useNavigate();
 
   const fetchAccounts = async () => {
     setLoading(true);
     try {
       const response = await bankService.getAccounts();
-      if (response.success) {
-        setAccounts(response.data);
-      }
+      if (response.success) setAccounts(response.data);
     } catch (error) {
       console.error("Erro ao carregar contas:", error);
     } finally {
@@ -60,21 +63,47 @@ const BankAccountsScreen: React.FC = () => {
     setActiveMenu(null);
   };
 
-  const confirmDelete = async () => {
+  // 1. Inicia o processo de exclusão solicitando o código
+  const handleInitiateDelete = async () => {
     if (!accountToDelete) return;
 
     setIsDeleting(true);
     try {
-      const response = await bankService.deleteAccount(accountToDelete.id);
+      const res = await requestCode(
+        VerificationType.CHANGE_BANK,
+      );
+      if (res.success) {
+        setIsMfaOpen(true);
+      } else {
+        toast.error(res.message || "Erro ao solicitar código.");
+      }
+    } catch (err: any) {
+      toast.error("Falha ao enviar código de verificação.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  // 2. Executa a exclusão real com o código MFA
+  const handleFinalDelete = async (code: string) => {
+    if (!accountToDelete) return;
+
+    setIsDeleting(true);
+    try {
+      const response = await bankService.deleteAccount(
+        accountToDelete.id,
+        code,
+      );
       if (response.success) {
         setAccounts((prev) =>
           prev.filter((acc) => acc.id !== accountToDelete.id),
         );
         toast.success("Conta eliminada com sucesso");
+        setIsMfaOpen(false);
         setAccountToDelete(null);
       }
-    } catch (error) {
-      toast.error("Erro ao eliminar conta");
+    } catch (error: any) {
+      toast.error(error.message || "Erro ao eliminar conta");
     } finally {
       setIsDeleting(false);
     }
@@ -88,24 +117,14 @@ const BankAccountsScreen: React.FC = () => {
     if (acc.type === "MCX_EXPRESS") {
       return <img src={mcxImg} alt="MCX" className="size-10 object-contain" />;
     }
-
     const bank = BANKS.find((b) =>
       acc.bankName
         ?.toUpperCase()
         .includes(b.name.replace("BANCO ", "").toUpperCase()),
     );
-
-    if (bank) {
-      return (
-        <img
-          src={bank.logo}
-          alt={bank.name}
-          className="size-10 object-contain"
-        />
-      );
-    }
-
-    return (
+    return bank ? (
+      <img src={bank.logo} alt={bank.name} className="size-10 object-contain" />
+    ) : (
       <span className="material-symbols-outlined text-2xl">
         account_balance_wallet
       </span>
@@ -121,7 +140,6 @@ const BankAccountsScreen: React.FC = () => {
           <div className="lg:col-span-5">
             <div className="sticky top-28 bg-gradient-to-br from-primary to-[#6C3EF8] p-8 rounded-[2.5rem] text-white shadow-xl shadow-primary/20 overflow-hidden relative">
               <div className="absolute -right-10 -top-10 size-40 bg-white/10 rounded-full blur-3xl" />
-
               <div className="relative z-10">
                 <div className="size-14 bg-white/20 rounded-2xl flex items-center justify-center mb-6">
                   <span className="material-symbols-outlined text-3xl">
@@ -133,7 +151,7 @@ const BankAccountsScreen: React.FC = () => {
                 </h2>
                 <p className="text-white/70 mt-3 text-sm leading-relaxed">
                   Adicione e gerencie suas contas bancárias para realizar
-                  levantamentos de forma segura e rápida.
+                  levantamentos de forma segura.
                 </p>
                 <button
                   onClick={() => navigate("/contas-bancarias/nova")}
@@ -166,14 +184,12 @@ const BankAccountsScreen: React.FC = () => {
                         {getBankContent(acc)}
                       </div>
                       <div className="overflow-hidden">
-                        <div className="flex items-center gap-2 mb-1">
-                          <p className="font-black text-[#181112] dark:text-white uppercase text-[11px] tracking-widest truncate">
-                            {acc.type === "MCX_EXPRESS"
-                              ? "Multicaixa Express"
-                              : acc.bankName || "Banco"}
-                          </p>
-                        </div>
-                        <p className="text-sm font-mono font-medium truncate max-w-[180px] sm:max-w-none opacity-80">
+                        <p className="font-black text-[#181112] dark:text-white uppercase text-[11px] tracking-widest truncate">
+                          {acc.type === "MCX_EXPRESS"
+                            ? "Multicaixa Express"
+                            : acc.bankName || "Banco"}
+                        </p>
+                        <p className="text-sm font-mono font-medium truncate opacity-80">
                           {acc.type === "MCX_EXPRESS"
                             ? acc.phoneNumber
                             : acc.iban}
@@ -199,27 +215,27 @@ const BankAccountsScreen: React.FC = () => {
                             className="fixed inset-0 z-10"
                             onClick={() => setActiveMenu(null)}
                           />
-                          <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 py-2 z-20 animate-in fade-in zoom-in duration-200 overflow-hidden">
+                          <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 py-2 z-20 animate-in fade-in zoom-in duration-200">
                             <button
                               onClick={() => openEdit(acc)}
-                              className="w-full px-4 py-3 flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                              className="w-full px-4 py-3 flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50"
                             >
-                              <span className="material-symbols-outlined text-lg text-gray-500 dark:text-gray-400">
+                              <span className="material-symbols-outlined text-lg">
                                 edit
                               </span>
-                              <span>Editar conta</span>
+                              Editar conta
                             </button>
                             <button
                               onClick={() => {
                                 setAccountToDelete(acc);
                                 setActiveMenu(null);
                               }}
-                              className="w-full px-4 py-3 flex items-center gap-3 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                              className="w-full px-4 py-3 flex items-center gap-3 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
                             >
                               <span className="material-symbols-outlined text-lg">
                                 delete
                               </span>
-                              <span>Eliminar conta</span>
+                              Eliminar conta
                             </button>
                           </div>
                         </>
@@ -247,13 +263,20 @@ const BankAccountsScreen: React.FC = () => {
       <ConfirmAction
         isOpen={!!accountToDelete}
         onClose={() => setAccountToDelete(null)}
-        onConfirm={confirmDelete}
+        onConfirm={handleInitiateDelete}
         isLoading={isDeleting}
         title="Eliminar conta?"
-        description={`Tem certeza que deseja remover esta conta de ${accountToDelete?.bankName || (accountToDelete?.type === "MCX_EXPRESS" ? "Multicaixa Express" : "pagamento")}?`}
-        confirmText={isDeleting ? "A eliminar..." : "Sim, eliminar"}
-        icon="warning"
+        description={`Tem certeza que deseja remover esta conta?`}
+        confirmText="Sim, eliminar"
         variant="danger"
+      />
+
+      <MfaVerificationModal
+        isOpen={isMfaOpen}
+        onClose={() => setIsMfaOpen(false)}
+        onSubmit={handleFinalDelete}
+        isLoading={isDeleting}
+        type={VerificationType.CHANGE_BANK}
       />
 
       <BottomNavigation />

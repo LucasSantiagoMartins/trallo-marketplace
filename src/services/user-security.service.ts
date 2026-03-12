@@ -17,3 +17,11 @@ export async function updateUserSecuritySettings(
   )
 }
 
+export async function requestCode(
+  type: VerificationType
+): Promise<ApiResponse<any>> {
+  return http.post<any>(
+    endpoints.userSecuritySettings.requestCode,
+    { type }
+  );
+}

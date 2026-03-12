@@ -41,9 +41,9 @@ const MfaVerificationModal: React.FC<MfaVerificationModalProps> = ({
     switch (type) {
       case VerificationType.WITHDRAWAL:
         return {
-          title: "Confirmar Saque",
+          title: "Confirmar Levantamento",
           desc: `Confirme o código enviado${deliveryMethod} para autorizar a retirada`,
-          buttonText: "Confirmar Saque",
+          buttonText: "Confirmar Levantamento",
         };
       case VerificationType.CHANGE_PASSWORD:
         return {

@@ -31,4 +31,5 @@ export interface UpdateBankAccountDTO {
     iban?: string;
     phoneNumber?: string;
     accountNumber?: string;
+    code?: string;
 }

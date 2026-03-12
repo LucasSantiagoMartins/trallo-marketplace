@@ -7,10 +7,13 @@ import PageHeader from "@/components/PageHeader";
 import PriceInput from "@/components/PriceInput";
 import TralloButton from "@/components/TralloButton";
 import BottomNavigation from "@/components/BottomNavigation";
+import MfaVerificationModal from "@/components/MfaVerificationModal";
 import { withdrawalService } from "@/services/withdrawal.service";
 import { walletService } from "@/services/wallet.service";
 import { bankService } from "@/services/bank.service";
 import { formatPrice } from "@/utils/currency";
+import { VerificationType } from "@/enums/verification-type.enum";
+import { requestCode } from "@/services/user-security.service";
 
 const WithdrawScreen: React.FC = () => {
   const navigate = useNavigate();
@@ -23,6 +26,10 @@ const WithdrawScreen: React.FC = () => {
     null,
   );
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+
+  // Estados para o MFA
+  const [isMfaOpen, setIsMfaOpen] = useState(false);
+  const [mfaLoading, setMfaLoading] = useState(false);
 
   useEffect(() => {
     const loadInitialData = async () => {
@@ -54,7 +61,8 @@ const WithdrawScreen: React.FC = () => {
     loadInitialData();
   }, []);
 
-  const handleWithdraw = async () => {
+  // 1. Solicita o código e abre o Modal de MFA
+  const handleInitiateWithdraw = async () => {
     const numericAmount = Number(amount);
 
     if (!selectedAccountId) {
@@ -74,13 +82,38 @@ const WithdrawScreen: React.FC = () => {
 
     setLoading(true);
     try {
+      // Solicita o código de verificação antes de abrir o modal
+      const res = await requestCode(
+        VerificationType.WITHDRAWAL,
+      );
+
+      if (res.success) {
+        setIsMfaOpen(true);
+      } else {
+        toast.error(res.message || "Erro ao solicitar código de segurança.");
+      }
+    } catch (err: any) {
+      toast.error(
+        err?.response?.data?.message || "Não foi possível enviar o código.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 2. Finaliza o processo enviando o código digitado no modal
+  const handleFinalSubmit = async (code: string) => {
+    setMfaLoading(true);
+    try {
       const res = await withdrawalService.requestWithdrawal({
-        amount: numericAmount,
-        bankAccountId: selectedAccountId,
+        amount: Number(amount),
+        bankAccountId: selectedAccountId!,
+        code: code,
       });
 
       if (res.success) {
         toast.success(res.message || "Pedido enviado com sucesso!");
+        setIsMfaOpen(false);
         setIsSheetOpen(false);
         navigate("/carteira");
       } else {
@@ -91,7 +124,7 @@ const WithdrawScreen: React.FC = () => {
         err?.response?.data?.message || err.message || "Erro no servidor.",
       );
     } finally {
-      setLoading(false);
+      setMfaLoading(false);
     }
   };
 
@@ -248,7 +281,7 @@ const WithdrawScreen: React.FC = () => {
               </div>
 
               <TralloButton
-                onClick={handleWithdraw}
+                onClick={handleInitiateWithdraw}
                 fullWidth
                 isLoading={loading}
                 disabled={
@@ -315,7 +348,7 @@ const WithdrawScreen: React.FC = () => {
                 </div>
 
                 <TralloButton
-                  onClick={handleWithdraw}
+                  onClick={handleInitiateWithdraw}
                   fullWidth
                   isLoading={loading}
                   disabled={!amount || loading || !selectedAccountId}
@@ -329,6 +362,14 @@ const WithdrawScreen: React.FC = () => {
           </>
         )}
       </AnimatePresence>
+
+      <MfaVerificationModal
+        isOpen={isMfaOpen}
+        onClose={() => setIsMfaOpen(false)}
+        onSubmit={handleFinalSubmit}
+        isLoading={mfaLoading}
+        type={VerificationType.WITHDRAWAL}
+      />
     </MobileLayout>
   );
 };

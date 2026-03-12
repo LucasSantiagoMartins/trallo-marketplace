@@ -1,3 +1,4 @@
+import { VerificationType } from "@/enums/verification-type.enum";
 import MyProductsPage from "@/pages/MyProducts";
 import { verify } from "crypto";
 
@@ -100,5 +101,6 @@ export const endpoints = {
     verifyCode: "/user-security-settings/verify-code",
     get: "/user-security-settings",
     update: "/user-security-settings",
+    requestCode: "/user-security-settings/request-code"
   }
 };
