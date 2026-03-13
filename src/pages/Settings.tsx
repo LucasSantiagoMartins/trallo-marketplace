@@ -113,13 +113,8 @@ const SettingsScreen: React.FC = () => {
             "Configurações de segurança atualizadas com sucesso",
         );
       }
-    } catch (error: any) {
-      console.error("Erro ao salvar segurança", error);
-      toast.error(
-        error.response?.data?.message ||
-          error.message ||
-          "Falha ao atualizar configurações",
-      );
+    } catch (err) {
+      toast.error(err.message || "Falha ao atualizar configurações");
     } finally {
       setIsUpdatingSecurity(false);
     }
@@ -243,11 +238,7 @@ const SettingsScreen: React.FC = () => {
                 <SettingItem
                   icon="verified_user"
                   title="Verificação de Segurança"
-                  subtitle={
-                    secureOperations
-                      ? "Ativo"
-                      : "Inativo"
-                  }
+                  subtitle={secureOperations ? "Ativo" : "Inativo"}
                   onClick={() => {
                     setTempTwoFAMethod(activeTwoFAMethod);
                     setIs2FASheetOpen(true);

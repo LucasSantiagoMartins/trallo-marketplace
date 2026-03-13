@@ -37,9 +37,8 @@ const ChangePassword = () => {
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
-    } catch (error: any) {
-      const message = error.response?.data?.message || "Erro ao alterar senha";
-      toast.error(message);
+    } catch (err) {
+      toast.error(err.message || "Erro ao alterar senha");
     } finally {
       setIsLoading(false);
     }

@@ -134,6 +134,21 @@ export const http = {
   },
 
   delete<T>(path: string, options?: RequestOptions): Promise<ApiResponse<T>> {
-    return request<T>("DELETE", path, undefined, options);
+    let url = path;
+
+    if (options?.params) {
+      const queryParams = new URLSearchParams();
+      Object.entries(options.params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          queryParams.append(key, value.toString());
+        }
+      });
+      const queryString = queryParams.toString();
+      if (queryString) {
+        url += `?${queryString}`;
+      }
+    }
+
+    return request<T>("DELETE", url, undefined, options);
   },
 };
