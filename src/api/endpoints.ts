@@ -12,7 +12,10 @@ export const endpoints = {
     updateProfilePicture: "/users/profile-picture",
     updateUser: "/users/me",
     myInfo: "/users/me",
-    changePassword: "/users/change-password"
+    changePassword: "/users/change-password",
+    resetPassword: "/users/reset-password",
+    requestResetPassword: "/users/request-reset-password"
+
   },
   warehouseInventories: {
     exits: "/warehouse-inventories/exits",

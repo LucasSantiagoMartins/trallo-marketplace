@@ -3,6 +3,7 @@ import { endpoints } from "../api/endpoints";
 import type { ApiResponse, User, AuthUser } from "@/types/api";
 import { UserResponseDTO, UserFiltersDto } from "@/types/user";
 import { ChangePasswordDto } from "@/dtos/users";
+import { ResetPasswordDto } from "@/dtos/reset-password";
 
 export async function getUsers(
   filters: UserFiltersDto & { page?: number },
@@ -83,4 +84,14 @@ export async function getMyInfo(): Promise<ApiResponse<User>> {
 
 export async function changePassword(data: ChangePasswordDto): Promise<ApiResponse<void>> {
   return await http.patch<void>(endpoints.users.changePassword, data);
+}
+
+
+export async function resetPassword(data: ResetPasswordDto): Promise<ApiResponse<void>> {
+  return await http.patch<void>(endpoints.users.resetPassword, data);
+}
+
+
+export async function requestResetPassword(data: ResetPasswordDto): Promise<ApiResponse<void>> {
+  return await http.post<void>(endpoints.users.requestResetPassword, data);
 }

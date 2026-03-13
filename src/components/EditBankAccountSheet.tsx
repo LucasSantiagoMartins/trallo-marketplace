@@ -6,7 +6,7 @@ import { BankAccountType, BankAccountDTO } from "@/dtos/bank.dto";
 import { VerificationType } from "@/enums/verification-type.enum";
 import TralloInput from "@/components/TralloInput";
 import TralloButton from "@/components/TralloButton";
-import MfaVerificationModal from "@/components/MfaVerificationModal";
+import SecurityVerificationModal from "@/components/SecurityVerificationModal";
 import { useAuth } from "@/context/AuthContext";
 import { requestCode } from "@/services/user-security.service";
 
@@ -255,7 +255,7 @@ const EditBankAccountSheet: React.FC<EditAccountProps> = ({
         )}
       </AnimatePresence>
 
-      <MfaVerificationModal
+      <SecurityVerificationModal
         isOpen={isMfaOpen}
         onClose={() => setIsMfaOpen(false)}
         onSubmit={handleFinalUpdate}

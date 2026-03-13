@@ -8,7 +8,7 @@ import { VerificationType } from "@/enums/verification-type.enum";
 import PageHeader from "@/components/PageHeader";
 import EditBankAccountSheet from "@/components/EditBankAccountSheet";
 import ConfirmAction from "@/components/ConfirmAction";
-import MfaVerificationModal from "@/components/MfaVerificationModal";
+import SecurityVerificationModal from "@/components/SecurityVerificationModal";
 import { useAuth } from "@/context/AuthContext";
 import { requestCode } from "@/services/user-security.service";
 
@@ -239,7 +239,7 @@ const BankAccountsScreen: React.FC = () => {
         variant="danger"
       />
 
-      <MfaVerificationModal
+      <SecurityVerificationModal
         isOpen={isMfaOpen}
         onClose={() => setIsMfaOpen(false)}
         onSubmit={handleFinalDelete}

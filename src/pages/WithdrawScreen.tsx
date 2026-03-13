@@ -7,7 +7,7 @@ import PageHeader from "@/components/PageHeader";
 import PriceInput from "@/components/PriceInput";
 import TralloButton from "@/components/TralloButton";
 import BottomNavigation from "@/components/BottomNavigation";
-import MfaVerificationModal from "@/components/MfaVerificationModal";
+import SecurityVerificationModal from "@/components/SecurityVerificationModal";
 import { withdrawalService } from "@/services/withdrawal.service";
 import { walletService } from "@/services/wallet.service";
 import { bankService } from "@/services/bank.service";
@@ -366,7 +366,7 @@ const WithdrawScreen: React.FC = () => {
         )}
       </AnimatePresence>
 
-      <MfaVerificationModal
+      <SecurityVerificationModal
         isOpen={isMfaOpen}
         onClose={() => setIsMfaOpen(false)}
         onSubmit={handleFinalSubmit}

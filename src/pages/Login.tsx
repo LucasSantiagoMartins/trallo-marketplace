@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import MobileLayout from "@/layouts/MobileLayout";
 import TralloInput from "@/components/TralloInput";
 import TralloButton from "@/components/TralloButton";
-import MfaVerificationModal from "@/components/MfaVerificationModal";
+import SecurityVerificationModal from "@/components/SecurityVerificationModal";
 import { login, verify2faCode } from "@/services/auth.service";
 import { useAuth } from "@/context/AuthContext";
 import { AuthUser } from "@/types/api";
@@ -175,7 +175,7 @@ const Login: React.FC = () => {
         </div>
       </div>
 
-      <MfaVerificationModal
+      <SecurityVerificationModal
         isOpen={showMfaModal}
         isLoading={loading}
         method={mfaMethod}
