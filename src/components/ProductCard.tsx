@@ -37,7 +37,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
       onClick={handleNavigate}
       className="group relative bg-white rounded-3xl overflow-hidden transition-all duration-500 hover:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.1)] border border-slate-100 flex flex-col w-full cursor-pointer"
     >
-      <div className="relative aspect-square overflow-hidden bg-slate-50">
+      {/* Reduzi um pouco a altura da imagem usando max-height */}
+      <div className="relative aspect-square max-h-[220px] overflow-hidden bg-slate-50">
         <img
           src={displayImage}
           alt={product.name}
@@ -64,7 +65,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
         <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       </div>
 
-      <div className="p-5 flex flex-col flex-1 gap-2">
+      {/* Reduzi o padding de p-5 para p-3.5 para encolher o card */}
+      <div className="p-3.5 flex flex-col flex-1 gap-2">
         <div className="flex flex-col gap-1">
           <div
             className={`w-fit px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-1 ${getProductStatusColor(

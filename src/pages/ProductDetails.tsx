@@ -1,3 +1,4 @@
+// @/pages/ProductDetails.tsx
 import React, { useState, useRef } from "react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -26,6 +27,7 @@ const ProductDetails: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
+
   const product = location.state?.product as SearchedProductDTO;
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -36,6 +38,7 @@ const ProductDetails: React.FC = () => {
     "online",
   );
   const [paymentMethod, setPaymentMethod] = useState<"mcx" | "transfer">("mcx");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const touchStartX = useRef<number | null>(null);
   const touchEndX = useRef<number | null>(null);
@@ -43,14 +46,27 @@ const ProductDetails: React.FC = () => {
   if (!product) {
     return (
       <MobileLayout>
-        <div className="flex items-center justify-center h-screen text-muted-foreground">
-          Produto não encontrado.
+        <div className="flex flex-col items-center justify-center h-screen text-muted-foreground p-4 text-center">
+          <span className="material-symbols-outlined text-6xl mb-4 opacity-20">
+            inventory_2
+          </span>
+          <p className="font-medium">
+            Produto não encontrado ou link expirado.
+          </p>
+          <button
+            onClick={() => navigate("/")}
+            className="mt-4 text-primary font-bold"
+          >
+            Voltar para a Home
+          </button>
         </div>
       </MobileLayout>
     );
   }
 
-  const allImages = [product.coverImage, ...(product.images || [])];
+  const allImages = [product.coverImage, ...(product.images || [])].filter(
+    Boolean,
+  );
 
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.targetTouches[0].clientX;
@@ -72,14 +88,16 @@ const ProductDetails: React.FC = () => {
   };
 
   const handleConfirmCheckout = async () => {
-    const targetId = paramId || product.id;
+    if (isSubmitting) return;
 
+    const targetId = paramId || product.id;
     if (!targetId) {
       toast.error("ID do produto não encontrado.");
       return null;
     }
 
     try {
+      setIsSubmitting(true);
       const mode =
         paymentType === "online"
           ? PaymentMode.ONLINE_PAYMENT
@@ -111,6 +129,8 @@ const ProductDetails: React.FC = () => {
           ? error.message
           : "Erro ao conectar com o servidor.",
       );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -124,7 +144,17 @@ const ProductDetails: React.FC = () => {
       <PageHeader
         title="Detalhes do Produto"
         rightElement={
-          <button className="size-10 flex items-center justify-center bg-card rounded-full shadow-soft">
+          <button
+            className="size-10 flex items-center justify-center bg-card rounded-full shadow-soft active:scale-90 transition-transform"
+            onClick={() => {
+              if (navigator.share) {
+                navigator.share({
+                  title: product.name,
+                  url: window.location.href,
+                });
+              }
+            }}
+          >
             <span className="material-symbols-outlined text-foreground">
               share
             </span>
@@ -211,7 +241,7 @@ const ProductDetails: React.FC = () => {
             <div className="bg-card p-6 rounded-xl shadow-soft border border-border">
               <h3 className="font-bold text-lg mb-4">Descrição</h3>
               <p className="text-muted-foreground leading-relaxed text-sm whitespace-pre-line">
-                {product.description}
+                {product.description || "Sem descrição disponível."}
               </p>
             </div>
 
@@ -251,10 +281,13 @@ const ProductDetails: React.FC = () => {
             {user?.role !== "SELLER" && (
               <div className="pt-4 lg:pt-6">
                 <button
+                  disabled={product.stock.availableQuantity <= 0}
                   onClick={() => setModalType("payment_choice")}
-                  className="w-full buy-gradient text-primary-foreground font-semibold text-lg rounded-full shadow-lg shadow-primary/20 flex items-center justify-center gap-2 active:scale-[0.98] transition-transform py-4 lg:py-5"
+                  className={`w-full ${product.stock.availableQuantity <= 0 ? "bg-slate-300 cursor-not-allowed" : "buy-gradient"} text-primary-foreground font-semibold text-lg rounded-full shadow-lg flex items-center justify-center gap-2 active:scale-[0.98] transition-transform py-4 lg:py-5`}
                 >
-                  Comprar Agora
+                  {product.stock.availableQuantity <= 0
+                    ? "Esgotado"
+                    : "Comprar Agora"}
                   <span className="material-symbols-outlined">
                     arrow_forward
                   </span>
@@ -312,7 +345,11 @@ const ProductDetails: React.FC = () => {
                 </span>
               </button>
               <VideoPlayer
-                src={`${BASE_UPLOAD_URL}/${product.verificationVideo}`}
+                src={
+                  product.verificationVideo.startsWith("http")
+                    ? product.verificationVideo
+                    : `${BASE_UPLOAD_URL}/${product.verificationVideo}`
+                }
               />
             </motion.div>
           </div>

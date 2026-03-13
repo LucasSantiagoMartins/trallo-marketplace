@@ -86,7 +86,9 @@ const SalesCenter: React.FC = () => {
         </div>
 
         <div
-          className={`flex items-center gap-1 text-[12px] font-bold ${mom.isGrowth ? "text-emerald-600/60" : "text-rose-600/60"}`}
+          className={`flex items-center gap-1 text-[12px] font-bold ${
+            mom.isGrowth ? "text-emerald-600/60" : "text-rose-600/60"
+          }`}
         >
           <span className="material-symbols-outlined text-[12px]">
             compare_arrows
@@ -128,8 +130,9 @@ const SalesCenter: React.FC = () => {
   if (isLoading) {
     return (
       <MobileLayout>
-        <div className="flex h-screen items-center justify-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <div className="flex h-screen flex-col items-center justify-center">
+          <div className="animate-spin size-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4" />
+          <p className="text-muted-foreground">A carregar dados...</p>
         </div>
       </MobileLayout>
     );
@@ -140,7 +143,6 @@ const SalesCenter: React.FC = () => {
       <PageHeader title="Centro de Vendas" showUser={true} />
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 pt-24 flex flex-col space-y-6 sm:space-y-10 h-auto sm:h-[calc(100vh-theme(spacing.2))] overflow-visible sm:overflow-hidden">
-        
         {/* Container de Stats atualizado para scroll lateral no mobile */}
         <section className="flex overflow-x-auto pb-4 -mx-4 px-4 snap-x snap-mandatory sm:grid sm:grid-cols-3 sm:gap-6 sm:pb-0 sm:mx-0 sm:px-0 hide-scrollbar shrink-0">
           <style>{`.hide-scrollbar::-webkit-scrollbar { display: none; } .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }`}</style>

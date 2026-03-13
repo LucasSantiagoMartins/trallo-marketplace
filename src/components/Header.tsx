@@ -68,7 +68,6 @@ const Header: React.FC<HeaderProps> = ({
     ],
   };
 
-  // CORREÇÃO: Adicionado fallback (|| []) e verificação segura da role
   const navItems =
     isAuthenticated && user && user.role
       ? menuConfig[user.role as keyof typeof menuConfig] || [
@@ -164,7 +163,7 @@ const Header: React.FC<HeaderProps> = ({
             >
               <span className="material-symbols-outlined">notifications</span>
               <span className="bg-primary text-primary-foreground text-xs font-bold px-2 py-0.5 rounded-full">
-                +3
+                3
               </span>
             </Link>
 
