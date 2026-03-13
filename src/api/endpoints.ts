@@ -1,7 +1,3 @@
-import { VerificationType } from "@/enums/verification-type.enum";
-import MyProductsPage from "@/pages/MyProducts";
-import { verify } from "crypto";
-
 export const BASE_URL = "http://localhost:9090";
 export const BASE_UPLOAD_URL = "http://localhost:9090/uploads/";
 

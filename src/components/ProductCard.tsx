@@ -41,12 +41,21 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
         <img
           src={displayImage}
           alt={product.name}
+          loading="lazy"
+          decoding="async"
+          width={400}
+          height={400}
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+          onError={(e) => {
+            e.currentTarget.src = "/placeholder-product.png";
+          }}
         />
 
         <div className="absolute top-4 left-4 flex flex-col gap-2 z-10">
           <div
-            className={`text-[11px] font-bold px-3 py-1.5 rounded-full shadow-sm backdrop-blur-md bg-white/90 border border-white/20 ${getProductConditionColor(product.condition)}`}
+            className={`text-[11px] font-bold px-3 py-1.5 rounded-full shadow-sm backdrop-blur-md bg-white/90 border border-white/20 ${getProductConditionColor(
+              product.condition,
+            )}`}
           >
             {getProductConditionLabel(product.condition)}
           </div>
@@ -58,7 +67,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
       <div className="p-5 flex flex-col flex-1 gap-2">
         <div className="flex flex-col gap-1">
           <div
-            className={`w-fit px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-1 ${getProductStatusColor(product.status)}`}
+            className={`w-fit px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-1 ${getProductStatusColor(
+              product.status,
+            )}`}
           >
             <span className="material-symbols-outlined text-[12px]">
               check_circle
@@ -70,13 +81,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
             {product.name}
           </h4>
 
-          <p className="text-slate-500 text-sm line-clamp-2 min-h-[20px] leading-relaxed">
+          <p className="text-slate-500 text-sm line-clamp-2 min-h-[40px] leading-relaxed">
             {product.description ||
               "Nenhuma descrição disponível para este produto."}
           </p>
         </div>
 
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mt-auto">
           <div className="flex flex-col">
             <div className="flex items-baseline gap-1">
               <span className="text-xl font-black text-primary">

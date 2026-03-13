@@ -21,10 +21,7 @@ const Login: React.FC = () => {
 
   const navigate = useNavigate();
   const { setUser } = useAuth();
-
-  /**
-   * Finaliza o login persistindo os dados, incluindo as flags de segurança
-   */
+ 
   const finalizeLogin = (data: AuthUser) => {
     const sessionData = {
       id: data.id,
@@ -33,7 +30,6 @@ const Login: React.FC = () => {
       fullName: data.fullName,
       profilePicture: data.profilePicture,
       address: data.address,
-      // Persistindo as novas configurações de segurança
       secureLogin: data.secureLogin,
       secureOperations: data.secureOperations,
     };

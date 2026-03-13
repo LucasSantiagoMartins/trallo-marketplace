@@ -1,4 +1,5 @@
-import React, { useState, useMemo, useEffect, useCallback } from "react";
+// @/pages/Home.tsx
+import React, { useState, useMemo, useEffect } from "react";
 import MobileLayout from "@/layouts/MobileLayout";
 import Header from "@/components/Header";
 import BottomNavigation from "@/components/BottomNavigation";
@@ -8,9 +9,9 @@ import TralloInput from "@/components/TralloInput";
 import FilterDrawer from "@/components/FilterDrawer";
 import Pagination from "@/components/Pagination";
 import TralloButton from "@/components/TralloButton";
-import { searchProducts } from "@/services/product.service";
-import { ProductCondition, SearchedProductDTO } from "@/types/product";
+import { ProductCondition } from "@/types/product";
 import { useCart } from "@/hooks/use-cart";
+import { useProducts } from "@/hooks/use-products";
 import { useAuth } from "@/context/AuthContext";
 
 const carouselSlides = [
@@ -70,8 +71,8 @@ const EmptyState = () => (
 const Home: React.FC = () => {
   const { user } = useAuth();
   const { addProduct } = useCart();
-  const [products, setProducts] = useState<SearchedProductDTO[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { products, loading, fetchProducts } = useProducts();
+
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [tempSearch, setTempSearch] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -80,41 +81,12 @@ const Home: React.FC = () => {
 
   const isSeller = user?.role === "SELLER";
 
-  const fetchProductsData = useCallback(
-    async (filters?: {
-      minPrice?: number;
-      maxPrice?: number;
-      condition?: ProductCondition;
-    }) => {
-      try {
-        setLoading(true);
-        const params = {
-          search: searchQuery || undefined,
-          ...filters,
-        };
-        const response = await searchProducts(params);
-        if (response.data) {
-          setProducts(response.data);
-        }
-      } catch (error) {
-        console.error("Erro ao buscar produtos:", error);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [searchQuery],
-  );
+  useEffect(() => {
+    fetchProducts({ search: searchQuery || undefined });
+  }, [searchQuery, fetchProducts]);
 
   useEffect(() => {
-    fetchProductsData();
-  }, [searchQuery, fetchProductsData]);
-
-  useEffect(() => {
-    if (isFilterOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
-    }
+    document.body.style.overflow = isFilterOpen ? "hidden" : "unset";
     return () => {
       document.body.style.overflow = "unset";
     };
@@ -125,22 +97,14 @@ const Home: React.FC = () => {
     setCurrentPage(1);
   };
 
-  const handleApplyFilters = (filters: any) => {
-    let result = [...products];
-    if (filters.minPrice)
-      result = result.filter((p) => p.price >= filters.minPrice);
-    if (filters.maxPrice)
-      result = result.filter((p) => p.price <= filters.maxPrice);
-    if (filters.condition)
-      result = result.filter((p) => p.condition === filters.condition);
-    setProducts(result);
-    setIsFilterOpen(false);
-  };
-
   const handleSearchWithFilters = (filters: any) => {
-    fetchProductsData(filters);
+    fetchProducts({ search: searchQuery || undefined, ...filters });
     setIsFilterOpen(false);
     setCurrentPage(1);
+  };
+
+  const handleApplyFilters = (filters: any) => {
+    handleSearchWithFilters(filters);
   };
 
   const totalPages = Math.ceil(products.length / itemsPerPage);
@@ -176,9 +140,7 @@ const Home: React.FC = () => {
                   value={tempSearch}
                   onChange={(e) => setTempSearch(e)}
                   onKeyDown={(e: React.KeyboardEvent) => {
-                    if (e.key === "Enter") {
-                      handleSearchClick();
-                    }
+                    if (e.key === "Enter") handleSearchClick();
                   }}
                 />
                 <button
@@ -230,8 +192,6 @@ const Home: React.FC = () => {
         <div className="px-4 md:px-6 lg:px-8 py-8">
           <div className="bg-white/70 dark:bg-slate-900/40 backdrop-blur-xl rounded-3xl p-6 md:p-8 flex items-center justify-between overflow-hidden relative border border-white/40 shadow-[0_8px_32px_0_rgba(108,62,248,0.15)]">
             <div className="absolute top-0 right-0 w-32 h-32 bg-[#6C3EF8]/10 rounded-full blur-[50px] -mr-10 -mt-10" />
-            <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#6C3EF8]/5 rounded-full blur-[40px] -ml-10 -mb-10" />
-
             <div className="relative z-10 flex-1">
               <div className="flex items-center gap-2 mb-3">
                 <span className="bg-[#6C3EF8]/10 text-[#6C3EF8] text-[10px] font-extrabold uppercase tracking-widest px-2.5 py-1 rounded-lg border border-[#6C3EF8]/10">
@@ -253,9 +213,8 @@ const Home: React.FC = () => {
                 </span>
               </button>
             </div>
-
             <div className="relative z-10 w-24 h-24 md:w-32 md:h-32 bg-gradient-to-br from-white/40 to-[#6C3EF8]/10 rounded-[2rem] flex items-center justify-center border border-white/50 backdrop-blur-2xl rotate-6 shadow-xl">
-              <span className="material-symbols-outlined text-5xl md:text-6xl text-[#6C3EF8] drop-shadow-sm animate-pulse">
+              <span className="material-symbols-outlined text-5xl md:text-6xl text-[#6C3EF8] animate-pulse">
                 auto_awesome
               </span>
             </div>

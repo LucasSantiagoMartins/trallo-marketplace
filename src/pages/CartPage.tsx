@@ -18,6 +18,8 @@ import { BASE_UPLOAD_URL } from "@/api/endpoints";
 import { checkoutFromCart } from "@/services/checkout.service";
 import { PaymentMethod, PaymentMode } from "@/enums/payment";
 import ConfirmAction from "@/components/ConfirmAction";
+import TralloButton from "@/components/TralloButton";
+import { formatPrice } from "@/utils/currency";
 
 interface CartItem {
   id: string;
@@ -210,14 +212,14 @@ const CartPage: React.FC = () => {
                 Total a pagar
               </span>
               <span className="font-black text-3xl mb-6">
-                {total.toLocaleString("pt-AO")} Kz
+                {formatPrice(total)}
               </span>
-              <button
+              <TralloButton
                 onClick={() => setModalType("payment_choice")}
-                className="w-full bg-[#6d3ff8] text-white py-5 rounded-2xl font-black text-lg shadow-lg active:scale-[0.98] transition-transform"
+                className="w-full bg-[#6d3ff8] text-lg shadow-lg active:scale-[0.98] transition-transform"
               >
                 Finalizar Compra
-              </button>
+              </TralloButton>
             </div>
           </motion.div>
         )}
