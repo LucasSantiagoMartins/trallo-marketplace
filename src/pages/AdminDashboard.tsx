@@ -129,11 +129,15 @@ const AdminDashboard: React.FC = () => {
               </h1>
             </div>
 
-            <TabContainer
-              tabs={contextTabs[context]}
-              activeTab={activeTab}
-              setActiveTab={setActiveTab}
-            />
+            <div className="w-full lg:w-auto overflow-x-auto no-scrollbar -mx-4 px-4 lg:mx-0 lg:px-0">
+              <div className="min-w-max">
+                <TabContainer
+                  tabs={contextTabs[context]}
+                  activeTab={activeTab}
+                  setActiveTab={setActiveTab}
+                />
+              </div>
+            </div>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">

@@ -2,14 +2,14 @@ import React from "react";
 import { motion } from "framer-motion";
 import StatCard from "./StatCard";
 import { WalletMetricsResponse } from "@/dtos/admin-metrics.dto";
+import { formatPrice } from "@/utils/currency";
 
 interface Props {
   activeTab: string;
   data: WalletMetricsResponse;
-  formatKz: (v: number) => string;
 }
 
-const WalletsGrid: React.FC<Props> = ({ activeTab, data, formatKz }) => (
+const WalletsGrid: React.FC<Props> = ({ activeTab, data }) => (
   <motion.div
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
@@ -20,19 +20,19 @@ const WalletsGrid: React.FC<Props> = ({ activeTab, data, formatKz }) => (
         <StatCard
           icon="account_balance_wallet"
           label="Saldo Vendedores"
-          value={formatKz(data.stats.totalSellersBalance)}
+          value={formatPrice(data.stats.totalSellersBalance)}
           color="primary"
         />
         <StatCard
           icon="lock"
           label="Saldo Cativo (Hold)"
-          value={formatKz(data.stats.totalSellersHoldBalance)}
+          value={formatPrice(data.stats.totalSellersHoldBalance)}
           color="warning"
         />
         <StatCard
           icon="admin_panel_settings"
           label="Saldo Plataforma"
-          value={formatKz(data.stats.platformBalance)}
+          value={formatPrice(data.stats.platformBalance)}
           color="info"
         />
       </div>
@@ -66,7 +66,7 @@ const WalletsGrid: React.FC<Props> = ({ activeTab, data, formatKz }) => (
         <StatCard
           icon="outbox"
           label="Retirado no Mês"
-          value={formatKz(data.flow.totalWithdrawnThisMonth)}
+          value={formatPrice(data.flow.totalWithdrawnThisMonth)}
           color="primary"
         />
         <StatCard
@@ -78,7 +78,7 @@ const WalletsGrid: React.FC<Props> = ({ activeTab, data, formatKz }) => (
         <StatCard
           icon="payments"
           label="Volume Total Saques"
-          value={formatKz(data.flow.withdrawalTransactionsAmount)}
+          value={formatPrice(data.flow.withdrawalTransactionsAmount)}
           color="success"
         />
       </div>

@@ -18,16 +18,6 @@ const DashboardGrid: React.FC<DashboardGridProps> = ({
   stats,
   loading,
 }) => {
-  const formatKz = (value: number | undefined) => {
-    if (value === undefined || value === null) return "0,00 KZ";
-    return (
-      new Intl.NumberFormat("pt-AO", {
-        style: "decimal",
-        minimumFractionDigits: 2,
-      }).format(value) + " KZ"
-    );
-  };
-
   if (loading) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 animate-pulse">
@@ -52,41 +42,25 @@ const DashboardGrid: React.FC<DashboardGridProps> = ({
       <AnimatePresence mode="wait">
         {context === "overview" && (
           <motion.div key={`overview-${activeTab}`} {...animationProps}>
-            <OverviewGrid
-              activeTab={activeTab}
-              stats={stats}
-              formatKz={formatKz}
-            />
+            <OverviewGrid activeTab={activeTab} stats={stats} />
           </motion.div>
         )}
 
         {context === "payments" && (
           <motion.div key={`payments-${activeTab}`} {...animationProps}>
-            <PaymentsGrid
-              activeTab={activeTab}
-              data={stats}
-              formatKz={formatKz}
-            />
+            <PaymentsGrid activeTab={activeTab} data={stats} />
           </motion.div>
         )}
 
         {context === "transactions" && (
           <motion.div key={`transactions-${activeTab}`} {...animationProps}>
-            <TransactionsGrid
-              activeTab={activeTab}
-              data={stats}
-              formatKz={formatKz}
-            />
+            <TransactionsGrid activeTab={activeTab} data={stats} />
           </motion.div>
         )}
 
         {context === "wallets" && (
           <motion.div key={`wallets-${activeTab}`} {...animationProps}>
-            <WalletsGrid
-              activeTab={activeTab}
-              data={stats}
-              formatKz={formatKz}
-            />
+            <WalletsGrid activeTab={activeTab} data={stats} />
           </motion.div>
         )}
       </AnimatePresence>

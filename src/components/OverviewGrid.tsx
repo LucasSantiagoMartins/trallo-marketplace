@@ -2,14 +2,14 @@ import React from "react";
 import { motion } from "framer-motion";
 import StatCard from "./StatCard";
 import { DashboardOverviewResponse } from "@/dtos/admin-metrics.dto";
+import { formatPrice } from "@/utils/currency";
 
 interface Props {
   activeTab: string;
   stats: DashboardOverviewResponse;
-  formatKz: (v: number) => string;
 }
 
-const OverviewGrid: React.FC<Props> = ({ activeTab, stats, formatKz }) => {
+const OverviewGrid: React.FC<Props> = ({ activeTab, stats }) => {
   const itemVariants = {
     hidden: { opacity: 0, y: 10 },
     visible: { opacity: 1, y: 0 },
@@ -28,25 +28,25 @@ const OverviewGrid: React.FC<Props> = ({ activeTab, stats, formatKz }) => {
           <StatCard
             icon="payments"
             label="Volume Bruto (GMV)"
-            value={formatKz(stats?.financial?.grossMerchandiseVolume)}
+            value={formatPrice(stats?.financial?.grossMerchandiseVolume)}
             color="primary"
           />
           <StatCard
             icon="account_tree"
             label="Receita Plataforma"
-            value={formatKz(stats?.financial?.totalPlatformRevenue)}
+            value={formatPrice(stats?.financial?.totalPlatformRevenue)}
             color="info"
           />
           <StatCard
             icon="wallet"
-            label="Saldo Wallet"
-            value={formatKz(stats?.financial?.platformWalletBalance)}
+            label="Saldo plataforma"
+            value={formatPrice(stats?.financial?.platformWalletBalance)}
             color="slate"
           />
           <StatCard
             icon="store"
             label="Saldo Vendedores"
-            value={formatKz(stats?.financial?.sellersTotalBalance)}
+            value={formatPrice(stats?.financial?.sellersTotalBalance)}
             color="slate"
           />
         </div>
@@ -118,13 +118,13 @@ const OverviewGrid: React.FC<Props> = ({ activeTab, stats, formatKz }) => {
           <StatCard
             icon="today"
             label="Receita Hoje"
-            value={formatKz(stats?.performance?.revenueToday)}
+            value={formatPrice(stats?.performance?.revenueToday)}
             color="success"
           />
           <StatCard
             icon="calendar_month"
             label="Receita Mês"
-            value={formatKz(stats?.performance?.revenueThisMonth)}
+            value={formatPrice(stats?.performance?.revenueThisMonth)}
             color="info"
           />
           <StatCard
@@ -154,13 +154,13 @@ const OverviewGrid: React.FC<Props> = ({ activeTab, stats, formatKz }) => {
           <StatCard
             icon="confirmation_number"
             label="Ticket Médio"
-            value={formatKz(stats?.growth?.averageTicket)}
+            value={formatPrice(stats?.growth?.averageTicket)}
             color="primary"
           />
           <StatCard
             icon="person_pin"
             label="Receita por Vendedor"
-            value={formatKz(stats?.growth?.revenuePerActiveSeller)}
+            value={formatPrice(stats?.growth?.revenuePerActiveSeller)}
             color="success"
           />
         </div>

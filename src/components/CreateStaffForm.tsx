@@ -6,6 +6,7 @@ import TralloButton from "@/components/TralloButton";
 import PasswordTooltip from "@/components/PasswordTooltip";
 import Sidebar from "@/components/Sidebar";
 import { adminItems } from "@/constants/sidebar-items";
+import BottomNavigation from "./BottomNavigation";
 
 const CreateOperatorForm: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -154,6 +155,7 @@ const CreateOperatorForm: React.FC = () => {
           </form>
         </div>
       </main>
+      <BottomNavigation />
     </div>
   );
 };

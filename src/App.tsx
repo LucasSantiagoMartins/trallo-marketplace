@@ -31,7 +31,6 @@ import UsersManagement from "./pages/UsersManagement";
 import TransactionsManagement from "./pages/TransactionsManagement";
 import PaymentsManagement from "./pages/PaymentsManagement";
 import CreateStaffForm from "./components/CreateStaffForm";
-import AdminSettings from "./pages/AdminSettings";
 import InventoryManagement from "./pages/InventoryManagement";
 import OperatorDashboard from "./pages/OperatorDashboard";
 import WalletManagement from "./pages/WalletManagement";
@@ -131,10 +130,6 @@ const App = () => (
               <Route
                 path="/area-administrativa/carteiras"
                 element={<WalletManagement />}
-              />
-              <Route
-                path="/area-administrativa/configuracoes"
-                element={<AdminSettings />}
               />
               <Route
                 path="/area-administrativa/adicionar-operador"

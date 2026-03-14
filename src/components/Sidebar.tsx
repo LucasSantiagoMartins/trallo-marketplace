@@ -78,17 +78,6 @@ const Sidebar: React.FC<SidebarProps> = ({
             active={activePage === item.id}
           />
         ))}
-
-        {showSettings && (
-          <div className="pt-4 mt-4 border-t border-slate-100 w-full flex justify-center shrink-0">
-            <SidebarLink
-              icon="settings"
-              label={isExpanded ? "Configurações" : ""}
-              path="/area-administrativa/configuracoes"
-              active={activePage === "configuracoes"}
-            />
-          </div>
-        )}
       </nav>
 
       <div className="pt-2 mt-auto border-t border-slate-100 w-full flex flex-col items-center shrink-0">
