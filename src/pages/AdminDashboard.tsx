@@ -129,7 +129,7 @@ const AdminDashboard: React.FC = () => {
               </h1>
             </div>
 
-            <div className="w-full lg:w-auto overflow-x-auto no-scrollbar -mx-4 px-4 lg:mx-0 lg:px-0">
+            <div className="w-full lg:w-auto overflow-x-auto overflow-y-hidden no-scrollbar -mx-4 px-4 lg:mx-0 lg:px-0">
               <div className="min-w-max">
                 <TabContainer
                   tabs={contextTabs[context]}

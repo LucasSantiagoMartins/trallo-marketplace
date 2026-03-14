@@ -19,7 +19,8 @@ const TabContainer: React.FC<TabContainerProps> = ({
   setActiveTab,
 }) => {
   return (
-    <div className="flex gap-2 min-w-max px-2 overflow-x-auto pb-2 lg:pb-0">
+    /* Adicionado pb-4 e -mb-4 para permitir que a sombra apareça no overflow */
+    <div className="flex gap-2 min-w-max px-2 overflow-x-auto pb-4 -mb-4 no-scrollbar">
       {tabs.map((tab) => (
         <TabButton
           key={tab.id}
