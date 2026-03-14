@@ -1,17 +1,60 @@
-import React from "react";
-import { motion, useMotionValue, useTransform } from "framer-motion";
+import React, { useEffect, useState, useRef } from "react";
 
 interface ProductFilterProps {
   onClose: () => void;
+  isOpen: boolean;
 }
 
-const OwnProductFilterDrawer: React.FC<ProductFilterProps> = ({ onClose }) => {
-  const [activeStatus, setActiveStatus] = React.useState("Todos");
-  const [activeCategory, setActiveCategory] = React.useState("Todas");
-  const [sortBy, setSortBy] = React.useState("Preço");
+const OwnProductFilterDrawer: React.FC<ProductFilterProps> = ({
+  onClose,
+  isOpen,
+}) => {
+  const [activeStatus, setActiveStatus] = useState("Todos");
+  const [activeCategory, setActiveCategory] = useState("Todas");
+  const [sortBy, setSortBy] = useState("Preço");
+  const [mounted, setMounted] = useState(false);
 
-  const y = useMotionValue(0);
-  const backdropOpacity = useTransform(y, [0, 300], [1, 0]);
+  const touchStart = useRef<number | null>(null);
+  const touchEnd = useRef<number | null>(null);
+  const minSwipeDistance = 50;
+
+  // Função para fechar com animação suave antes de desmontar
+  const handleClose = () => {
+    setMounted(false);
+    // Aguarda o tempo da transição (500ms conforme definido no transform)
+    setTimeout(() => {
+      onClose();
+    }, 500);
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+      const timer = setTimeout(() => setMounted(true), 10);
+      return () => clearTimeout(timer);
+    } else {
+      document.body.style.overflow = "unset";
+    }
+  }, [isOpen]);
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    touchEnd.current = null;
+    touchStart.current = e.targetTouches[0].clientY;
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    touchEnd.current = e.targetTouches[0].clientY;
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart.current || !touchEnd.current) return;
+    const distance = touchEnd.current - touchStart.current;
+    if (distance > minSwipeDistance) {
+      handleClose();
+    }
+  };
+
+  if (!isOpen && !mounted) return null;
 
   const categories = [
     "Todas",
@@ -23,37 +66,33 @@ const OwnProductFilterDrawer: React.FC<ProductFilterProps> = ({ onClose }) => {
   const statuses = ["Todos", "Ativo", "Sem Stock", "Verificando"];
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-end md:items-center justify-center p-0 md:p-4 overflow-hidden">
-      <motion.div
-        style={{ opacity: backdropOpacity }}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-        onClick={onClose}
+    <div className="fixed inset-0 z-[60] flex items-end md:items-center justify-center overflow-hidden">
+      {/* Backdrop */}
+      <div
+        className={`absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-500 ease-in-out ${
+          mounted ? "opacity-100" : "opacity-0"
+        }`}
+        onClick={handleClose}
       />
 
-      <motion.div
-        drag="y"
-        style={{ y }}
-        dragConstraints={{ top: 0 }}
-        dragElastic={0.1}
-        onDragEnd={(_, info) => {
-          if (info.offset.y > 100 || info.velocity.y > 500) {
-            onClose();
-          } else {
-            y.set(0);
-          }
-        }}
-        initial={{ y: "100%" }}
-        animate={{ y: 0 }}
-        exit={{ y: "100%" }}
-        transition={{ type: "spring", damping: 30, stiffness: 300 }}
-        className="relative w-full md:max-w-md bg-white dark:bg-gray-900 rounded-t-[2.5rem] md:rounded-[3rem] p-6 md:p-8 shadow-2xl max-h-[95vh] overflow-y-auto touch-none md:touch-auto"
+      {/* Drawer Container */}
+      <div
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+        className={`relative w-full md:max-w-md bg-white dark:bg-gray-900 rounded-t-[2.5rem] md:rounded-[3rem] p-6 md:p-8 shadow-2xl max-h-[90vh] overflow-y-auto transition-all duration-500 ease-in-out transform ${
+          mounted
+            ? "translate-y-0 opacity-100 scale-100"
+            : "translate-y-full md:translate-y-10 md:scale-95 opacity-0"
+        }`}
+        onClick={(e) => e.stopPropagation()}
       >
-        <div className="w-12 h-1.5 bg-gray-200 dark:bg-gray-800 rounded-full mx-auto mb-6 md:hidden" />
+        {/* Handle de arraste (Mobile) */}
+        <div className="w-full pt-2 pb-6 md:hidden cursor-grab active:cursor-grabbing">
+          <div className="w-12 h-1.5 bg-gray-200 dark:bg-gray-800 rounded-full mx-auto" />
+        </div>
 
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center mb-8">
           <h4 className="text-xl font-black tracking-tight text-foreground">
             Filtrar
           </h4>
@@ -69,9 +108,10 @@ const OwnProductFilterDrawer: React.FC<ProductFilterProps> = ({ onClose }) => {
             >
               Limpar
             </button>
+
             <button
-              onClick={onClose}
-              className="size-8 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 text-slate-500 active:scale-90 transition-transform"
+              onClick={handleClose}
+              className="hidden md:flex size-8 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 text-slate-500 active:scale-90 transition-transform"
             >
               <span className="material-symbols-outlined text-xl">close</span>
             </button>
@@ -81,7 +121,7 @@ const OwnProductFilterDrawer: React.FC<ProductFilterProps> = ({ onClose }) => {
         <div className="space-y-6 mb-8">
           <section>
             <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 block mb-3">
-              Status
+              Estado
             </label>
             <div className="flex flex-wrap gap-2">
               {statuses.map((status) => (
@@ -161,12 +201,12 @@ const OwnProductFilterDrawer: React.FC<ProductFilterProps> = ({ onClose }) => {
         </div>
 
         <button
-          onClick={onClose}
+          onClick={handleClose}
           className="w-full bg-primary text-white py-4 rounded-2xl font-black uppercase tracking-[0.15em] text-[11px] shadow-lg shadow-primary/30 active:scale-95 transition-all"
         >
           Aplicar Filtros
         </button>
-      </motion.div>
+      </div>
     </div>
   );
 };

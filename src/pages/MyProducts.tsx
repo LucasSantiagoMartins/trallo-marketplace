@@ -5,7 +5,7 @@ import BottomNavigation from "@/components/BottomNavigation";
 import OwnProductCard from "../components/OwnProductCard";
 import { AnimatePresence } from "framer-motion";
 import OwnProductFilterDrawer from "../components/OwnProductFilterDrawer";
-import ConfirmAction from "../components/ConfirmAction"; // Certifique-se que o caminho está correto
+import ConfirmAction from "../components/ConfirmAction";
 import { ProductDTO, ProductStatus } from "@/types/product";
 import { getMyProducts } from "@/services/product.service";
 import { useAuth } from "@/context/AuthContext";
@@ -63,7 +63,8 @@ const MyProductsPage: React.FC = () => {
     <div className="bg-background-light dark:bg-background-dark min-h-screen flex flex-col">
       <PageHeader title="Meus Produtos" showUser={true} />
 
-      <main className="max-w-6xl mx-auto w-full px-6 pt-24 pb-20">
+      {/* pb-32 garante que a lista não fique por baixo ou colada ao BottomNavigation no mobile */}
+      <main className="max-w-6xl mx-auto w-full px-6 pt-24 pb-32 lg:pb-20">
         <header className="mb-8">
           <h2 className="font-black text-3xl tracking-tight">
             Centro de Produtos
@@ -115,7 +116,6 @@ const MyProductsPage: React.FC = () => {
 
         <div className="space-y-6">
           <div className="flex flex-col gap-4">
-            {/* Botão Novo Produto Mobile */}
             <button
               onClick={() => navigate("/adicionar-produto")}
               className="lg:hidden w-full bg-primary text-white flex items-center justify-center gap-3 py-4 rounded-[1.5rem] active:scale-[0.98] transition-all shadow-lg shadow-primary/20"
@@ -167,11 +167,10 @@ const MyProductsPage: React.FC = () => {
         </div>
       </main>
 
-      <AnimatePresence>
-        {showFilters && (
-          <OwnProductFilterDrawer onClose={() => setShowFilters(false)} />
-        )}
-      </AnimatePresence>
+      <OwnProductFilterDrawer
+        isOpen={showFilters}
+        onClose={() => setShowFilters(false)}
+      />
 
       <ConfirmAction
         isOpen={!!productToDelete}
