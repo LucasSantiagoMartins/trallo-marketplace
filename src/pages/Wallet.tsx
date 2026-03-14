@@ -104,14 +104,14 @@ const WalletScreen: React.FC = () => {
                 <span>Realizar levantamento</span>
               </TralloButton>
 
-              <div className="p-6 md:p-8 bg-gradient-to-b from-white to-gray-50 dark:from-slate-900/40 dark:to-slate-900/60 rounded-[2.5rem] border border-gray-100 dark:border-white/5 shadow-sm">
-                <div className="size-12 rounded-2xl bg-gradient-to-br from-[#8B5CF6] to-[#6D28D9] flex items-center justify-center text-white mb-4 shadow-lg shadow-purple-500/20">
-                  <span className="material-symbols-outlined">lock_clock</span>
+              <div className="p-5 md:p-6 bg-gradient-to-b from-white to-gray-50 dark:from-slate-900/40 dark:to-slate-900/60 rounded-[2rem] border border-gray-100 dark:border-white/5 shadow-sm lg:mb-10">
+                <div className="size-10 rounded-xl bg-gradient-to-br from-[#8B5CF6] to-[#6D28D9] flex items-center justify-center text-white mb-3 shadow-lg shadow-purple-500/20">
+                  <span className="material-symbols-outlined text-xl">lock_clock</span>
                 </div>
-                <h4 className="font-black text-lg mb-2 tracking-tight text-[#181112] dark:text-white">
+                <h4 className="font-black text-base mb-1.5 tracking-tight text-[#181112] dark:text-white">
                   Por que o saldo está retido?
                 </h4>
-                <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
+                <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
                   Este montante corresponde a pedidos já pagos e aguardando
                   apenas a entrega ao cliente para ser liberado na sua conta.
                 </p>
@@ -119,7 +119,7 @@ const WalletScreen: React.FC = () => {
             </div>
           </div>
 
-          <div className="lg:col-span-7 xl:col-span-8 lg:overflow-y-auto lg:pr-4 lg:pb-40 scrollbar-hide">
+          <div className="lg:col-span-7 xl:col-span-8 lg:overflow-y-auto lg:pr-4 lg:pb-40 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             <div className="flex items-center justify-between mb-3 mt-10 lg:mt-0">
               <h3 className="text-xl font-bold tracking-tight">
                 Transações Recentes
