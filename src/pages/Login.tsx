@@ -97,9 +97,9 @@ const Login: React.FC = () => {
 
   return (
     <MobileLayout className="bg-background">
-      <div className="flex items-center justify-center min-h-screen w-full bg-background/50 md:p-0">
-        <div className="w-full min-h-screen bg-card shadow-2xl border-border/50 flex flex-col lg:grid lg:grid-cols-2 lg:max-w-7xl lg:min-h-[85vh] lg:rounded-[40px] lg:border lg:overflow-hidden">
-          <div className="p-8 md:p-16 lg:p-20 bg-muted/30 border-b lg:border-b-0 lg:border-r border-border/50 flex flex-col justify-center relative overflow-hidden">
+      <div className="flex items-center justify-center min-h-screen w-full bg-background/50 lg:p-4">
+        <div className="w-full min-h-screen bg-card shadow-2xl border-border/50 flex flex-col lg:grid lg:grid-cols-2 lg:max-w-6xl lg:w-[90%] lg:min-h-[auto] lg:rounded-[40px] lg:border lg:overflow-hidden">
+          <div className="p-8 md:p-16 lg:p-12 bg-muted/30 border-b lg:border-b-0 lg:border-r border-border/50 flex flex-col justify-center relative overflow-hidden">
             <div className="relative z-10">
               <div className="mb-8 p-3 bg-card rounded-2xl shadow-sm w-fit">
                 <div className="text-primary flex size-12 items-center justify-center">
@@ -108,20 +108,20 @@ const Login: React.FC = () => {
                   </span>
                 </div>
               </div>
-              <h1 className="text-foreground text-4xl md:text-6xl lg:text-7xl clash-style leading-none mb-6">
+              <h1 className="text-foreground text-4xl md:text-6xl lg:text-5xl clash-style leading-tight mb-6">
                 Bem-vindo {"\n"} de Volta
               </h1>
-              <p className="text-muted-foreground text-base md:text-xl max-w-md leading-relaxed">
+              <p className="text-muted-foreground text-base md:text-xl lg:text-lg max-w-md leading-relaxed">
                 Acesse sua conta para gerenciar suas compras e vendas no maior
                 marketplace de Angola.
               </p>
             </div>
           </div>
 
-          <div className="p-8 md:p-16 lg:p-20 flex flex-col justify-center bg-card">
+          <div className="p-8 md:p-16 lg:p-12 flex flex-col justify-center bg-card">
             <form
               onSubmit={handleSubmit}
-              className="space-y-6 md:space-y-8 w-full max-w-2xl mx-auto lg:max-w-none"
+              className="space-y-6 md:space-y-8 w-full max-w-2xl mx-auto lg:max-w-md"
             >
               <div className="space-y-5 md:space-y-6">
                 <TralloInput
@@ -157,7 +157,7 @@ const Login: React.FC = () => {
                 fullWidth
                 isLoading={loading}
                 disabled={loading}
-                className="py-6 md:text-lg"
+                className="py-6 lg:py-4 md:text-lg lg:text-base"
               >
                 Entrar na Conta
               </TralloButton>
