@@ -33,7 +33,11 @@ const SecurityVerificationModal: React.FC<SecurityVerificationModalProps> = ({
       setCode(new Array(4).fill(""));
       setTimer(300);
       setCanResend(false);
-      setTimeout(() => inputRefs.current[0]?.focus(), 100);
+
+      if (window.innerWidth >= 768) {
+        setTimeout(() => inputRefs.current[0]?.focus(), 100);
+      }
+
       document.body.style.overflow = "hidden";
 
       interval = setInterval(() => {
@@ -142,8 +146,11 @@ const SecurityVerificationModal: React.FC<SecurityVerificationModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
-      <div className="bg-white dark:bg-[#1c182d] w-full max-w-md rounded-[32px] border border-white/5 shadow-2xl p-8 animate-in fade-in zoom-in duration-300">
+    <div className="fixed inset-0 z-[999] flex items-end md:items-center justify-center bg-black/70 backdrop-blur-md transition-all duration-300">
+      {/* Overlay sem evento de clique para obrigar a interação com o modal */}
+      <div className="absolute inset-0" />
+
+      <div className="relative bg-white dark:bg-[#1c182d] w-full md:max-w-md rounded-t-[32px] md:rounded-[32px] border-t md:border border-white/5 shadow-2xl p-8 animate-in slide-in-from-bottom md:slide-in-from-bottom-0 md:zoom-in duration-300">
         <div className="text-center mb-8">
           <div className="size-16 bg-primary/10 text-primary rounded-2xl flex items-center justify-center mx-auto mb-4">
             <span className="material-symbols-outlined !text-3xl">{icon}</span>
@@ -181,7 +188,7 @@ const SecurityVerificationModal: React.FC<SecurityVerificationModalProps> = ({
             ))}
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-4 pb-4 md:pb-0">
             <TralloButton
               type="submit"
               fullWidth
