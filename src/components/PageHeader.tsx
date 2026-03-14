@@ -64,7 +64,6 @@ const PageHeader: React.FC<PageHeaderProps> = ({
   return (
     <header className="fixed top-0 left-0 right-0 z-50 glass-header px-4 py-3 flex items-center justify-center border-b border-border/5">
       <div className="w-full max-w-7xl flex items-center justify-between relative min-h-[40px]">
-        {/* Botão de Voltar */}
         <button
           onClick={handleBack}
           type="button"
@@ -76,12 +75,10 @@ const PageHeader: React.FC<PageHeaderProps> = ({
           </span>
         </button>
 
-        {/* Título Centralizado com posicionamento absoluto */}
-        <h2 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-foreground text-sm font-bold uppercase tracking-widest truncate px-2 max-w-[60%] text-center">
+        <h2 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-foreground text-[10px] sm:text-sm font-bold uppercase tracking-widest truncate px-2 max-w-[55%] text-center">
           {title}
         </h2>
 
-        {/* Elemento da Direita */}
         <div className="flex gap-2 min-w-10 justify-end z-10">
           {rightElement ? (
             rightElement
