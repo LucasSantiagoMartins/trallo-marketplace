@@ -4,12 +4,16 @@ interface PriceInputProps {
   value: string;
   onChange: (value: string) => void;
   title?: string;
+  className?: string;
+  width?: string;
 }
 
 const PriceInput: React.FC<PriceInputProps> = ({
   value,
   onChange,
   title = "Preço de Venda",
+  className = "",
+  width = "w-full",
 }) => {
   const formatValue = (val: string) => {
     const raw = val.replace(/\D/g, "");
@@ -24,7 +28,7 @@ const PriceInput: React.FC<PriceInputProps> = ({
   };
 
   return (
-    <section className="flex flex-col gap-2 w-full max-w-md mx-auto">
+    <section className={`flex flex-col gap-2 ${width} ${className}`}>
       <label className="text-xs font-bold text-muted-foreground uppercase ml-1">
         {title}
       </label>

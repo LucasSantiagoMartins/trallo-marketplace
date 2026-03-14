@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
 import MobileLayout from "@/layouts/MobileLayout";
 import PageHeader from "@/components/PageHeader";
@@ -151,7 +150,7 @@ const WithdrawScreen: React.FC = () => {
     <MobileLayout className="pb-10">
       <PageHeader title="Levantamento" />
 
-      <main className="px-6 max-w-6xl mx-auto pt-32 pb-40 lg:pb-20">
+      <main className="px-6 max-w-6xl mx-auto pt-24 pb-40 lg:pb-20">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           <div className="lg:col-span-7 space-y-4 lg:space-y-6">
             <div className="hidden lg:block bg-gradient-to-br from-[#6C3EF8] to-[#8B5CF6] p-6 lg:p-8 rounded-[2.1rem] text-white shadow-xl shadow-purple-500/20 relative overflow-hidden">
@@ -174,6 +173,7 @@ const WithdrawScreen: React.FC = () => {
             <div className="lg:hidden space-y-4 bg-white dark:bg-slate-900/20 p-6 rounded-[2.1rem] border border-gray-100 dark:border-white/5">
               <PriceInput
                 value={amount}
+                width="max-w-full"
                 title="Valor do levantamento"
                 onChange={(val: any) =>
                   setAmount(String(val).replace(/\D/g, ""))
@@ -248,8 +248,6 @@ const WithdrawScreen: React.FC = () => {
                   );
                 })}
               </div>
-
-               
             </div>
 
             <div className="lg:hidden pt-2">
@@ -272,6 +270,7 @@ const WithdrawScreen: React.FC = () => {
               <div className="space-y-4">
                 <PriceInput
                   value={amount}
+                  width="max-w-full"
                   title="Valor do levantamento"
                   onChange={(val: any) =>
                     setAmount(String(val).replace(/\D/g, ""))
@@ -282,17 +281,17 @@ const WithdrawScreen: React.FC = () => {
                   <ShortcutBadge
                     value={availableBalance / 3}
                     colorClass="bg-blue-50/50 text-blue-600 dark:bg-blue-500/5 dark:text-blue-400"
-                    hoverClass="hover:border-blue-400/50 hover:bg-blue-100/50 dark:hover:bg-blue-500/10"
+                    hoverClass="hover:border-blue-400/50"
                   />
                   <ShortcutBadge
                     value={availableBalance / 2}
                     colorClass="bg-purple-50/50 text-purple-600 dark:bg-purple-500/5 dark:text-purple-400"
-                    hoverClass="hover:border-purple-400/50 hover:bg-purple-100/50 dark:hover:bg-purple-500/10"
+                    hoverClass="hover:border-purple-400/50"
                   />
                   <ShortcutBadge
                     value={availableBalance}
                     colorClass="bg-emerald-50/50 text-emerald-600 dark:bg-emerald-500/5 dark:text-emerald-400"
-                    hoverClass="hover:border-emerald-400/50 hover:bg-emerald-100/50 dark:hover:bg-emerald-500/10"
+                    hoverClass="hover:border-emerald-400/50"
                   />
                 </div>
               </div>
