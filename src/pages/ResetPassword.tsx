@@ -37,7 +37,7 @@ const ResetPassword = () => {
       await requestResetPassword({ email } as any);
       setShowMfaModal(true);
       toast.success("Enviamos o código de redefinição para o seu email");
-    } catch (err) {
+    } catch (err: any) {
       toast.error(err.message || "Erro ao solicitar redefinição");
     } finally {
       setLoading(false);
@@ -68,7 +68,7 @@ const ResetPassword = () => {
       setTimeout(() => {
         navigate("/entrar");
       }, 2000);
-    } catch (err) {
+    } catch (err: any) {
       toast.error(err.message || "Erro ao redefinir senha");
     } finally {
       setLoading(false);
@@ -76,12 +76,10 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="bg-background-light dark:bg-background-dark min-h-screen flex flex-col items-center p-4 sm:p-6">
+    <div className="bg-background-light dark:bg-background-dark min-h-screen flex flex-col items-center justify-center p-0 sm:p-6">
       <PageHeader title="Redefinição de senha" />
 
-      <div className="mt-20 sm:mt-16 w-full" />
-
-      <main className="w-full max-w-2xl bg-white dark:bg-[#1c182d] rounded-[2rem] sm:rounded-[3rem] px-8 sm:px-16 py-6 sm:py-8 shadow-xl dark:shadow-none border border-transparent dark:border-white/5 flex flex-col items-center">
+      <main className="w-full max-w-2xl bg-white dark:bg-[#1c182d] rounded-none sm:rounded-[3rem] px-8 sm:px-16 py-10 sm:py-12 shadow-xl dark:shadow-none border border-transparent dark:border-white/5 flex flex-col items-center min-h-screen sm:min-h-0 sm:h-auto justify-center sm:justify-start">
         <div className="relative w-32 h-32 sm:w-36 sm:h-36 mb-6 flex items-center justify-center shrink-0">
           <div className="absolute inset-0 bg-primary/5 rounded-full blur-2xl"></div>
           <div className="relative z-10 w-24 h-24 sm:w-28 sm:h-28 bg-slate-50 dark:bg-background-dark rounded-3xl shadow-lg flex items-center justify-center transform rotate-3 overflow-hidden border border-white/20">

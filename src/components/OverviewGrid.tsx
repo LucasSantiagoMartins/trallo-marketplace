@@ -147,7 +147,7 @@ const OverviewGrid: React.FC<Props> = ({ activeTab, stats }) => {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <StatCard
             icon="group"
-            label="Usuários Ativos (Fin)"
+            label="Usuários Ativos"
             value={stats?.growth?.monthlyActiveFinancialUsers?.toString()}
             color="info"
           />

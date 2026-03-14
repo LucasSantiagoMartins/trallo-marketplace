@@ -52,9 +52,9 @@ export async function register(
   password: string,
   role: "BUYER" | "SELLER",
   address?: string,
-): Promise<ApiResponse<{ token: string; role: string; fullName: string, id: number }>> {
+): Promise<ApiResponse<AuthUser>> {
   const res = await http.post<
-    { token: string; role: string; fullName: string, id: number },
+    AuthUser,
     RegisterPayload
   >(endpoints.auth.register, {
     fullName,

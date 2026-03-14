@@ -65,6 +65,8 @@ const Register: React.FC = () => {
           fullName: res.data.fullName,
           role: res.data.role as any,
           token: res.data.token,
+          secureLogin: false,
+          secureOperations: false,
         });
         navigate("/");
       } else {
@@ -85,9 +87,9 @@ const Register: React.FC = () => {
 
   return (
     <MobileLayout className="bg-background">
-      <div className="flex items-center justify-center min-h-screen w-full bg-background/50 py-4 md:py-8">
-        <div className="w-full max-w-full lg:max-w-5xl h-fit bg-card shadow-2xl border-border/50 md:border md:rounded-[40px] overflow-hidden flex flex-col lg:grid lg:grid-cols-2">
-          <div className="p-8 lg:p-12 bg-muted/30 border-b lg:border-b-0 lg:border-r border-border/50 flex flex-col justify-center relative">
+      <div className="flex items-center justify-center min-h-screen w-full bg-background/50 md:p-0">
+        <div className="w-full min-h-screen bg-card shadow-2xl border-border/50 flex flex-col lg:grid lg:grid-cols-2 lg:max-w-7xl lg:min-h-[85vh] lg:rounded-[40px] lg:border lg:overflow-hidden">
+          <div className="p-8 md:p-16 lg:p-20 bg-muted/30 border-b lg:border-b-0 lg:border-r border-border/50 flex flex-col justify-center relative">
             <div className="relative z-10">
               <div className="mb-8 p-3 bg-card rounded-2xl shadow-sm w-fit">
                 <div className="text-primary flex size-12 items-center justify-center">
@@ -96,20 +98,23 @@ const Register: React.FC = () => {
                   </span>
                 </div>
               </div>
-              <h1 className="text-foreground text-4xl lg:text-6xl clash-style leading-none mb-4">
+              <h1 className="text-foreground text-4xl md:text-6xl lg:text-7xl clash-style leading-none mb-6">
                 Criar <br /> Conta
               </h1>
-              <p className="text-muted-foreground text-sm md:text-base max-w-xs leading-relaxed">
+              <p className="text-muted-foreground text-base md:text-xl max-w-md leading-relaxed">
                 Junte-se ao marketplace de elite que está a transformar o
                 comércio em Angola.
               </p>
             </div>
           </div>
 
-          <div className="p-8 lg:p-12 flex flex-col justify-center bg-card">
-            <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="p-8 md:p-16 lg:p-20 flex flex-col justify-center bg-card">
+            <form
+              onSubmit={handleSubmit}
+              className="space-y-4 md:space-y-6 w-full max-w-2xl mx-auto lg:max-w-none"
+            >
               <div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-3 md:gap-4">
                   <label className="relative cursor-pointer group">
                     <input
                       type="radio"
@@ -118,14 +123,14 @@ const Register: React.FC = () => {
                       onChange={() => setRole("buyer")}
                       className="peer sr-only"
                     />
-                    <div className="flex flex-col items-center justify-center p-3 rounded-xl border-2 border-border bg-card transition-all peer-checked:border-primary peer-checked:bg-primary/5">
+                    <div className="flex flex-col items-center justify-center p-3 md:p-5 rounded-xl border-2 border-border bg-card transition-all peer-checked:border-primary peer-checked:bg-primary/5">
                       <span
-                        className={`material-symbols-outlined text-xl ${role === "buyer" ? "text-primary" : "text-muted-foreground"}`}
+                        className={`material-symbols-outlined text-xl md:text-2xl ${role === "buyer" ? "text-primary" : "text-muted-foreground"}`}
                       >
                         shopping_bag
                       </span>
                       <span
-                        className={`text-[9px] font-bold ${role === "buyer" ? "text-primary" : "text-muted-foreground"}`}
+                        className={`text-[9px] md:text-xs font-bold ${role === "buyer" ? "text-primary" : "text-muted-foreground"}`}
                       >
                         COMPRADOR
                       </span>
@@ -139,14 +144,14 @@ const Register: React.FC = () => {
                       onChange={() => setRole("seller")}
                       className="peer sr-only"
                     />
-                    <div className="flex flex-col items-center justify-center p-3 rounded-xl border-2 border-border bg-card transition-all peer-checked:border-primary peer-checked:bg-primary/5">
+                    <div className="flex flex-col items-center justify-center p-3 md:p-5 rounded-xl border-2 border-border bg-card transition-all peer-checked:border-primary peer-checked:bg-primary/5">
                       <span
-                        className={`material-symbols-outlined text-xl ${role === "seller" ? "text-primary" : "text-muted-foreground"}`}
+                        className={`material-symbols-outlined text-xl md:text-2xl ${role === "seller" ? "text-primary" : "text-muted-foreground"}`}
                       >
                         storefront
                       </span>
                       <span
-                        className={`text-[9px] font-bold ${role === "seller" ? "text-primary" : "text-muted-foreground"}`}
+                        className={`text-[9px] md:text-xs font-bold ${role === "seller" ? "text-primary" : "text-muted-foreground"}`}
                       >
                         VENDEDOR
                       </span>
@@ -163,7 +168,7 @@ const Register: React.FC = () => {
                 onChange={updateField("fullName")}
               />
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <TralloInput
                   label="E-mail"
                   type="email"
@@ -182,7 +187,7 @@ const Register: React.FC = () => {
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="relative">
                   <PasswordTooltip
                     password={formData.password}
@@ -214,11 +219,12 @@ const Register: React.FC = () => {
                 fullWidth
                 isLoading={loading}
                 disabled={loading}
+                className="py-6 md:text-lg"
               >
                 {loading ? "Criando..." : "Criar Minha Conta"}
               </TralloButton>
 
-              <p className="text-center text-xs text-muted-foreground">
+              <p className="text-center text-sm md:text-base text-muted-foreground">
                 Já tem conta?{" "}
                 <Link to="/entrar" className="text-primary font-black">
                   Entrar agora

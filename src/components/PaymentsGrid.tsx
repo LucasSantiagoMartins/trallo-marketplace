@@ -70,19 +70,34 @@ const PaymentsGrid: React.FC<Props> = ({ activeTab, data }) => (
     {activeTab === "alerts" && (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div
-          className={`p-6 rounded-2xl border ${data.alerts.highFailureRate ? "bg-rose-50 border-rose-100" : "bg-emerald-50 border-emerald-100"}`}
+          className={`flex items-start gap-4 p-6 rounded-2xl bg-white border transition-all ${
+            data.alerts.highFailureRate
+              ? "border-purple-100 shadow-sm"
+              : "border-slate-100"
+          }`}
         >
-          <p className="font-bold text-slate-900">Taxa de Falha Crítica</p>
-          <p
-            className={
-              data.alerts.highFailureRate ? "text-rose-600" : "text-emerald-600"
-            }
+          <div
+            className={`p-3 rounded-xl ${data.alerts.highFailureRate ? "bg-purple-50 text-purple-600" : "bg-[#6C3EF8]/10 text-[#6C3EF8]"}`}
           >
-            {data.alerts.highFailureRate
-              ? "Alerta: Taxa de falhas acima do normal!"
-              : "Sistema operando com estabilidade."}
-          </p>
+            <span className="material-symbols-outlined block">
+              {data.alerts.highFailureRate ? "error" : "verified_user"}
+            </span>
+          </div>
+
+          <div>
+            <h3 className="font-bold text-slate-800 text-[20px] leading-tight mb-1">
+              Taxa de Falha Crítica
+            </h3>
+            <p
+              className={`text-sm font-medium ${data.alerts.highFailureRate ? "text-purple-600" : "text-[#6C3EF8]"}`}
+            >
+              {data.alerts.highFailureRate
+                ? "Taxa de falhas acima do normal"
+                : "Sistema operando com estabilidade."}
+            </p>
+          </div>
         </div>
+
         <StatCard
           icon="emergency"
           label="Pagamentos Presos"
