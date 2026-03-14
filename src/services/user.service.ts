@@ -95,3 +95,10 @@ export async function resetPassword(data: ResetPasswordDto): Promise<ApiResponse
 export async function requestResetPassword(data: ResetPasswordDto): Promise<ApiResponse<void>> {
   return await http.post<void>(endpoints.users.requestResetPassword, data);
 }
+
+
+export async function deleteMyAccount(code: string): Promise<ApiResponse<void>> {
+  return http.delete<void>(endpoints.users.deleteMyAccount, {
+    params: { code }
+  });
+}

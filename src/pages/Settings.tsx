@@ -3,13 +3,18 @@ import PageHeader from "@/components/PageHeader";
 import BottomNavigation from "@/components/BottomNavigation";
 import ConfirmAction from "@/components/ConfirmAction";
 import ActionSheet, { TwoFactorMethod } from "@/components/ActionSheet";
-import { Link } from "react-router-dom";
+import SecurityVerificationModal from "@/components/SecurityVerificationModal";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import {
   getUserSecuritySettings,
   updateUserSecuritySettings,
+  requestCode,
 } from "@/services/user-security.service";
 import { useAuth } from "@/context/AuthContext";
+import { VerificationType } from "@/enums/verification-type.enum";
+import { deleteMyAccount } from "@/services/user.service";
+import { logout } from "@/services/auth.service";
 
 export const CustomToggle = ({
   checked,
@@ -35,9 +40,12 @@ export const CustomToggle = ({
 );
 
 const SettingsScreen: React.FC = () => {
-  const { user, setUser } = useAuth(); // Acessando contexto para atualizar cache global
+  const { user, setUser } = useAuth();
+  const navigate = useNavigate();
+
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isMfaOpen, setIsMfaOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const [isLanguageSheetOpen, setIsLanguageSheetOpen] = useState(false);
@@ -51,7 +59,6 @@ const SettingsScreen: React.FC = () => {
   const [secureOperations, setSecureOperations] = useState(false);
   const [activeTwoFAMethod, setActiveTwoFAMethod] =
     useState<TwoFactorMethod>("EMAIL");
-
   const [tempTwoFAMethod, setTempTwoFAMethod] =
     useState<TwoFactorMethod>("EMAIL");
 
@@ -73,9 +80,6 @@ const SettingsScreen: React.FC = () => {
     }
   };
 
-  /**
-   * Atualiza as configurações no Banco e sincroniza com o Contexto/Cache
-   */
   const handleConfirmSecurityUpdate = async (payload: any) => {
     setIsUpdatingSecurity(true);
     try {
@@ -86,53 +90,69 @@ const SettingsScreen: React.FC = () => {
       });
 
       if (response.success) {
-        // 1. Atualiza estados locais da tela
         setSecureLogin(response.data.secureLogin);
         setSecureOperations(response.data.secureOperations);
         setActiveTwoFAMethod(response.data.twoFactorMethod);
         setTempTwoFAMethod(response.data.twoFactorMethod);
 
-        // 2. SINCRONIZAÇÃO COM AUTH CONTEXT E CACHE
         if (user) {
           const updatedUser = {
             ...user,
             secureLogin: response.data.secureLogin,
             secureOperations: response.data.secureOperations,
           };
-
-          // Atualiza Contexto Global
           setUser(updatedUser as any);
-
-          // Atualiza LocalStorage para persistência no reload
           localStorage.setItem("user_session", JSON.stringify(updatedUser));
         }
 
         setIs2FASheetOpen(false);
         toast.success(
-          response.message ??
-            "Configurações de segurança atualizadas com sucesso",
+          response.message ?? "Configurações de segurança atualizadas",
         );
       }
-    } catch (err) {
+    } catch (err: any) {
       toast.error(err.message || "Falha ao atualizar configurações");
     } finally {
       setIsUpdatingSecurity(false);
     }
   };
 
-  const languages = [
-    "Português (Angola)",
-    "Português (Portugal)",
-    "English (US)",
-    "Français",
-  ];
-
-  const handleDeleteAccount = () => {
-    setIsDeleting(true);
-    setTimeout(() => {
-      setIsDeleting(false);
+  const handleInitiateDelete = async () => {
+    if (user?.secureOperations === false) {
       setIsDeleteModalOpen(false);
-    }, 2000);
+      return handleFinalDelete("");
+    }
+
+    setIsDeleting(true);
+    try {
+      const res = await requestCode(VerificationType.DELETE_ACCOUNT);
+      if (res.success) {
+        setIsDeleteModalOpen(false);
+        setIsMfaOpen(true);
+      } else {
+        toast.error(res.message || "Erro ao solicitar código.");
+      }
+    } catch (err) {
+      toast.error("Falha ao enviar código de verificação.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleFinalDelete = async (code: string) => {
+    setIsDeleting(true);
+    try {
+      const response = await deleteMyAccount(code);
+      if (response.success) {
+        toast.success("Sua conta foi eliminada permanentemente");
+        logout();
+        navigate("/entrar");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Erro ao eliminar conta");
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const SettingItem = ({
@@ -194,7 +214,6 @@ const SettingsScreen: React.FC = () => {
       <div className="max-w-7xl mx-auto flex flex-col pt-24 sm:pt-32 pb-32 px-4 sm:px-6 lg:px-8">
         <main className="flex flex-col gap-8 sm:gap-12">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 items-start">
-            {/* Preferências */}
             <section className="flex flex-col gap-4">
               <h3 className="text-primary font-black text-[10px] sm:text-[11px] uppercase tracking-[0.2em] ml-2 opacity-80">
                 Preferências
@@ -222,7 +241,6 @@ const SettingsScreen: React.FC = () => {
               </div>
             </section>
 
-            {/* Segurança */}
             <section className="flex flex-col gap-4">
               <h3 className="text-primary font-black text-[10px] sm:text-[11px] uppercase tracking-[0.2em] ml-2 opacity-80">
                 Segurança
@@ -234,7 +252,6 @@ const SettingsScreen: React.FC = () => {
                   to="/alterar-senha"
                 />
                 <div className="h-[1px] mx-6 bg-gray-50 dark:bg-white/5" />
-
                 <SettingItem
                   icon="verified_user"
                   title="Verificação de Segurança"
@@ -247,7 +264,6 @@ const SettingsScreen: React.FC = () => {
               </div>
             </section>
 
-            {/* Conta */}
             <section className="flex flex-col gap-4">
               <h3 className="text-[#866565] dark:text-gray-400 font-black text-[10px] sm:text-[11px] uppercase tracking-[0.2em] ml-2 opacity-80">
                 Conta & Informações
@@ -279,11 +295,13 @@ const SettingsScreen: React.FC = () => {
         onClose={() => setIsLanguageSheetOpen(false)}
         title="Escolher Idioma"
         type="language"
-        data={{ languages, selectedLanguage }}
+        data={{
+          languages: ["Português (Angola)", "English (US)"],
+          selectedLanguage,
+        }}
         onAction={(lang) => {
           setSelectedLanguage(lang);
           setIsLanguageSheetOpen(false);
-          toast.success(`Idioma alterado para ${lang}`);
         }}
       />
 
@@ -307,13 +325,21 @@ const SettingsScreen: React.FC = () => {
       <ConfirmAction
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
-        onConfirm={handleDeleteAccount}
+        onConfirm={handleInitiateDelete}
         isLoading={isDeleting}
         title="Eliminar Conta?"
-        description="Esta ação removerá todos os seus dados permanentemente."
+        description="Esta ação removerá todos os seus dados permanentemente. Deseja prosseguir?"
         confirmText="Sim, Eliminar"
         variant="danger"
         icon="delete_forever"
+      />
+
+      <SecurityVerificationModal
+        isOpen={isMfaOpen}
+        onClose={() => setIsMfaOpen(false)}
+        onSubmit={handleFinalDelete}
+        isLoading={isDeleting}
+        type={VerificationType.DELETE_ACCOUNT}
       />
     </div>
   );

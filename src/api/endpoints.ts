@@ -14,8 +14,8 @@ export const endpoints = {
     myInfo: "/users/me",
     changePassword: "/users/change-password",
     resetPassword: "/users/reset-password",
-    requestResetPassword: "/users/request-reset-password"
-
+    requestResetPassword: "/users/request-reset-password",
+    deleteMyAccount: "/users/my-account"
   },
   warehouseInventories: {
     dashboard: "/warehouse-inventories/dashboard",

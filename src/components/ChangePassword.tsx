@@ -3,33 +3,59 @@ import TralloInput from "@/components/TralloInput";
 import TralloButton from "@/components/TralloButton";
 import PageHeader from "@/components/PageHeader";
 import PasswordTooltip from "@/components/PasswordTooltip";
+import SecurityVerificationModal from "@/components/SecurityVerificationModal";
 import { changePassword } from "@/services/user.service";
+import { requestCode } from "@/services/user-security.service";
+import { VerificationType } from "@/enums/verification-type.enum";
+import { useAuth } from "@/context/AuthContext";
 import toast from "react-hot-toast";
 
 const ChangePassword = () => {
+  const { user } = useAuth();
+
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showTooltip, setShowTooltip] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isMfaOpen, setIsMfaOpen] = useState(false);
 
   const isPasswordValid = newPassword.length >= 8;
   const passwordsMatch = newPassword === confirmPassword;
   const isFormValid =
     isPasswordValid && passwordsMatch && currentPassword.length > 0;
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleInitiateChange = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!isFormValid) return;
 
-    setIsLoading(true);
+    if (user?.secureOperations === false) {
+      return handleFinalSubmit("");
+    }
 
+    setIsLoading(true);
+    try {
+      const res = await requestCode(VerificationType.CHANGE_PASSWORD);
+      if (res.success) {
+        setIsMfaOpen(true);
+      } else {
+        toast.error(res.message || "Erro ao solicitar código de verificação.");
+      }
+    } catch (err) {
+      toast.error("Falha ao enviar código de segurança.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleFinalSubmit = async (code: string) => {
+    setIsLoading(true);
     try {
       const res = await changePassword({
         currentPassword,
         newPassword,
         confirmPassword,
+        code,
       });
 
       toast.success(res.message ?? "Senha alterada com sucesso");
@@ -37,7 +63,8 @@ const ChangePassword = () => {
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
-    } catch (err) {
+      setIsMfaOpen(false);
+    } catch (err: any) {
       toast.error(err.message || "Erro ao alterar senha");
     } finally {
       setIsLoading(false);
@@ -50,9 +77,10 @@ const ChangePassword = () => {
         <PageHeader title="Alterar Senha" showUser={true} />
       </div>
 
-      <div className="flex-1 flex flex-col w-full overflow-hidden mt-12 sm:mt-0 sm:items-center sm:justify-center sm:p-4">
-        <main className="w-full h-full sm:h-auto max-w-4xl bg-white dark:bg-[#1c182d] rounded-none sm:rounded-[2.5rem] p-6 sm:p-16 shadow-xl dark:shadow-none border-none sm:border sm:border-transparent sm:dark:border-white/5 overflow-y-auto pb-20 sm:pb-16">
-          <div className="flex flex-col lg:flex-row gap-10 items-center lg:items-start">
+      {/* Ajustado: overflow-y-auto apenas no mobile, sm:overflow-visible no desktop */}
+      <div className="flex-1 flex flex-col w-full mt-12 sm:mt-0 sm:items-center sm:justify-center sm:p-4 overflow-y-auto sm:overflow-visible">
+        <main className="w-full h-full sm:h-auto max-w-4xl bg-white dark:bg-[#1c182d] rounded-none sm:rounded-[2.5rem] p-6 sm:p-16 shadow-xl dark:shadow-none border-none sm:border sm:border-transparent sm:dark:border-white/5 pb-20 sm:pb-16 sm:overflow-visible">
+          <div className="flex flex-col lg:flex-row gap-10 items-center lg:items-start sm:overflow-visible">
             <div className="flex flex-col items-center lg:items-start lg:w-1/3 text-center lg:text-left">
               <div className="relative w-16 h-16 mb-4 flex items-center justify-center shrink-0">
                 <div className="absolute inset-0 bg-primary/5 rounded-full blur-xl"></div>
@@ -79,8 +107,8 @@ const ChangePassword = () => {
             </div>
 
             <form
-              onSubmit={handleSubmit}
-              className="w-full lg:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5"
+              onSubmit={handleInitiateChange}
+              className="w-full lg:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5 sm:overflow-visible"
             >
               <div className="sm:col-span-2">
                 <TralloInput
@@ -94,11 +122,14 @@ const ChangePassword = () => {
                 />
               </div>
 
-              <div className="relative w-full">
-                <PasswordTooltip
-                  password={newPassword}
-                  isVisible={showTooltip}
-                />
+              <div className="relative w-full sm:static lg:relative">
+                {/* PasswordTooltip agora tem z-50 e o container pai permite overflow no desktop */}
+                <div className="absolute z-50 bottom-full mb-2 left-0 w-full sm:w-auto">
+                   <PasswordTooltip
+                    password={newPassword}
+                    isVisible={showTooltip}
+                  />
+                </div>
                 <TralloInput
                   label="Nova Senha"
                   type="password"
@@ -129,13 +160,21 @@ const ChangePassword = () => {
                   isLoading={isLoading}
                   disabled={!isFormValid || isLoading}
                 >
-                  Atualizar Senha
+                  Prosseguir
                 </TralloButton>
               </div>
             </form>
           </div>
         </main>
       </div>
+
+      <SecurityVerificationModal
+        isOpen={isMfaOpen}
+        onClose={() => setIsMfaOpen(false)}
+        onSubmit={handleFinalSubmit}
+        isLoading={isLoading}
+        type={VerificationType.CHANGE_PASSWORD}
+      />
     </div>
   );
 };
