@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import SidebarLink from "./SidebarLink";
 import { logout } from "../services/auth.service";
 import { ChevronLeft, ChevronRight, LogOut } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface SidebarItem {
   icon: string;
@@ -23,6 +24,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   activePage,
   showSettings = false,
 }) => {
+  const navigate = useNavigate();
   const [isExpanded, setIsExpanded] = useState(() => {
     const saved = localStorage.getItem("sidebar_expanded");
     return saved !== null ? JSON.parse(saved) : true;
@@ -33,6 +35,11 @@ const Sidebar: React.FC<SidebarProps> = ({
   }, [isExpanded]);
 
   const toggleSidebar = () => setIsExpanded(!isExpanded);
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/entrar");
+  };
 
   return (
     <aside
@@ -86,7 +93,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
       <div className="pt-2 mt-auto border-t border-slate-100 w-full flex flex-col items-center shrink-0">
         <button
-          onClick={logout}
+          onClick={handleLogout}
           className={`group flex items-center text-red-600 transition-all hover:bg-red-50 ${
             isExpanded
               ? "w-full px-4 py-2.5 rounded-lg justify-start"

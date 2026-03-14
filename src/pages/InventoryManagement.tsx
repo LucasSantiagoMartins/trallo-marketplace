@@ -11,6 +11,7 @@ import {
 } from "@/services/warehouse-inventory.service";
 import { RegisterEntryForm } from "@/components/register-entry-form";
 import { RegisterExitForm } from "@/components/register-exit-form";
+import BottomNavigation from "@/components/BottomNavigation";
 
 const InventoryManagement: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"entradas" | "saidas">("entradas");
@@ -77,7 +78,7 @@ const InventoryManagement: React.FC = () => {
 
       <div className="flex-1 flex flex-col min-w-0">
         <motion.main
-          className="max-w-7xl mx-auto w-full px-6 pt-12 pb-12"
+          className="max-w-7xl mx-auto w-full px-6 pt-12 pb-24 lg:pb-12"
           initial="hidden"
           animate="visible"
           variants={containerVariants}
@@ -95,28 +96,51 @@ const InventoryManagement: React.FC = () => {
             <div className="lg:col-span-2">
               <motion.div
                 variants={itemVariants}
-                className="flex p-1.5 bg-gray-200/50 dark:bg-white/5 rounded-2xl w-full md:w-80 mb-6 border border-gray-200/30 dark:border-white/5"
+                className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6"
               >
-                <button
-                  onClick={() => setActiveTab("entradas")}
-                  className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all ${
-                    activeTab === "entradas"
-                      ? "bg-white dark:bg-[#6d3ff8] shadow-md text-[#6d3ff8] dark:text-white"
-                      : "text-gray-500"
-                  }`}
-                >
-                  Entradas
-                </button>
-                <button
-                  onClick={() => setActiveTab("saidas")}
-                  className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all ${
-                    activeTab === "saidas"
-                      ? "bg-white dark:bg-[#6d3ff8] shadow-md text-[#6d3ff8] dark:text-white"
-                      : "text-gray-500"
-                  }`}
-                >
-                  Saídas
-                </button>
+                <div className="flex p-1.5 bg-gray-200/50 dark:bg-white/5 rounded-2xl w-full md:w-80 border border-gray-200/30 dark:border-white/5">
+                  <button
+                    onClick={() => setActiveTab("entradas")}
+                    className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all ${
+                      activeTab === "entradas"
+                        ? "bg-white dark:bg-[#6d3ff8] shadow-md text-[#6d3ff8] dark:text-white"
+                        : "text-gray-500"
+                    }`}
+                  >
+                    Entradas
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("saidas")}
+                    className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all ${
+                      activeTab === "saidas"
+                        ? "bg-white dark:bg-[#6d3ff8] shadow-md text-[#6d3ff8] dark:text-white"
+                        : "text-gray-500"
+                    }`}
+                  >
+                    Saídas
+                  </button>
+                </div>
+
+                  <div className="flex gap-2 lg:hidden">
+                    <button
+                      onClick={() => handleOpenModal("entradas")}
+                      className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2.5 rounded-xl text-sm font-bold transition-colors"
+                    >
+                      <span className="material-symbols-outlined text-lg">
+                        add_circle
+                      </span>
+                      Entrada
+                    </button>
+                    <button
+                      onClick={() => handleOpenModal("saidas")}
+                      className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-rose-500 hover:bg-rose-600 text-white px-4 py-2.5 rounded-xl text-sm font-bold transition-colors"
+                    >
+                      <span className="material-symbols-outlined text-lg">
+                        remove_circle
+                      </span>
+                      Saída
+                    </button>
+                  </div>
               </motion.div>
 
               <motion.div
@@ -166,7 +190,6 @@ const InventoryManagement: React.FC = () => {
         </motion.main>
       </div>
 
-      {/* Modal de Registro */}
       <AnimatePresence>
         {isModalOpen && (
           <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
@@ -203,6 +226,8 @@ const InventoryManagement: React.FC = () => {
           </div>
         )}
       </AnimatePresence>
+
+      <BottomNavigation />
     </div>
   );
 };

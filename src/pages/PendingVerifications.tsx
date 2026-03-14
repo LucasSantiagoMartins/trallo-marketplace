@@ -8,6 +8,7 @@ import { pendingVerifications } from "@/services/product.service";
 import ProductVerificationCard from "@/components/ProductVerificationCard";
 import { operatorItems } from "@/constants/sidebar-items";
 import toast from "react-hot-toast";
+import BottomNavigation from "@/components/BottomNavigation";
 
 const PendingVerificationsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -87,7 +88,7 @@ const PendingVerificationsPage: React.FC = () => {
             </h1>
           </motion.header>
 
-          <motion.section 
+          <motion.section
             variants={itemVariants}
             className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8"
           >
@@ -128,7 +129,6 @@ const PendingVerificationsPage: React.FC = () => {
               <h3 className="text-lg font-bold tracking-tight">
                 Produtos em Espera
               </h3>
-            
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -162,7 +162,7 @@ const PendingVerificationsPage: React.FC = () => {
             </div>
 
             {!loading && products.length === 0 && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="text-center py-20 bg-white dark:bg-slate-800/50 rounded-[3rem] border-2 border-dashed border-slate-200 dark:border-slate-700"
@@ -178,7 +178,10 @@ const PendingVerificationsPage: React.FC = () => {
           </motion.div>
 
           {products.length > itemsPerPage && (
-            <motion.div variants={itemVariants} className="mt-8 flex justify-center">
+            <motion.div
+              variants={itemVariants}
+              className="mt-8 flex justify-center"
+            >
               <Pagination
                 currentPage={currentPage}
                 totalPages={Math.ceil(products.length / itemsPerPage)}
@@ -188,6 +191,7 @@ const PendingVerificationsPage: React.FC = () => {
           )}
         </motion.main>
       </div>
+      <BottomNavigation />
     </div>
   );
 };
