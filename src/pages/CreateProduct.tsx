@@ -132,37 +132,47 @@ const CreateProduct: React.FC = () => {
     "Selecionar";
 
   return (
-    <MobileLayout className="pb-32">
+    <MobileLayout className="pb-0 bg-white dark:bg-slate-950">
       <PageHeader title="Criar Novo Produto" showUser={true} />
 
-      <main className="px-4 md:px-6 lg:px-8 max-w-6xl mx-auto pt-32 md:pt-28">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-start">
+      <main className="flex flex-col min-h-screen pt-[72px] pb-[100px] bg-white dark:bg-slate-950">
+        <div className="px-5 py-8 md:p-10 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start max-w-6xl mx-auto w-full">
+          
           <div className="space-y-8 w-full">
-            <ImageUpload
-              images={images}
-              fileInputRef={fileInputRef}
-              onUpload={(e) => {
-                const files = Array.from(e.target.files || []);
-                setFileObjects((prev) => [...prev, ...files]);
-                const urls = files.map((f) => URL.createObjectURL(f));
-                setImages((prev) => [...prev, ...urls]);
-              }}
-              onRemove={(idx) => {
-                setImages((prev) => prev.filter((_, i) => i !== idx));
-                setFileObjects((prev) => prev.filter((_, i) => i !== idx));
-              }}
-            />
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-slate-400 uppercase ml-1 tracking-widest">
+                Fotos do Produto
+              </label>
+              <ImageUpload
+                images={images}
+                fileInputRef={fileInputRef}
+                onUpload={(e) => {
+                  const files = Array.from(e.target.files || []);
+                  setFileObjects((prev) => [...prev, ...files]);
+                  const urls = files.map((f) => URL.createObjectURL(f));
+                  setImages((prev) => [...prev, ...urls]);
+                }}
+                onRemove={(idx) => {
+                  setImages((prev) => prev.filter((_, i) => i !== idx));
+                  setFileObjects((prev) => prev.filter((_, i) => i !== idx));
+                }}
+              />
+            </div>
 
-            <ClassificationDetails
-              category={selectedCategoryLabel}
-              condition={selectedConditionLabel}
-              onOpenCategory={openCategoryDrawer}
-              onOpenCondition={openConditionModal}
-            />
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-slate-400 uppercase ml-1 tracking-widest">
+                Classificação
+              </label>
+              <ClassificationDetails
+                category={selectedCategoryLabel}
+                condition={selectedConditionLabel}
+                onOpenCategory={openCategoryDrawer}
+                onOpenCondition={openConditionModal}
+              />
+            </div>
           </div>
 
-         
-          <div className="space-y-6 bg-white dark:bg-slate-900/20 p-5 md:p-10 rounded-[2.5rem] w-full border border-slate-100 dark:border-slate-800 lg:border-none">
+          <div className="space-y-6 w-full">
             <TralloInput
               label="Nome do Produto"
               placeholder="Ex: iPhone 13 Pro Max - 256GB"
@@ -184,6 +194,8 @@ const CreateProduct: React.FC = () => {
               <div className="flex-1 w-full">
                 <PriceInput
                   value={formData.price}
+                  width="max-w-full"
+                  title="Preço de Venda"
                   onChange={(value) => updateField("price", value)}
                 />
               </div>
@@ -210,7 +222,7 @@ const CreateProduct: React.FC = () => {
                 onClick={handleSubmit}
                 fullWidth
                 isLoading={loading}
-                className="py-5 text-lg font-bold"
+                className="py-5 text-lg font-bold shadow-xl shadow-primary/20"
               >
                 Publicar Produto
               </TralloButton>

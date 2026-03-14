@@ -34,7 +34,7 @@ const OwnProductCard = forwardRef<HTMLDivElement, OwnProductCardProps>(
             ? "bg-amber-50/30 dark:bg-amber-500/5 border-dashed border-amber-200 dark:border-amber-900/50 opacity-80"
             : isPending
               ? "bg-blue-50/30 dark:bg-blue-500/5 border-blue-100 dark:border-blue-900/30"
-              : "bg-white dark:bg-gray-800/40 border-gray-100 dark:border-gray-700/50 shadow-sm hover:shadow-md"
+              : "bg-white dark:bg-gray-800/40 border-gray-100 dark:border-gray-700/50 shadow-sm lg:hover:shadow-md"
         }`}
       >
         <div
@@ -95,7 +95,7 @@ const OwnProductCard = forwardRef<HTMLDivElement, OwnProductCardProps>(
                         state: { product },
                       })
                     }
-                    className="size-9 md:size-10 flex items-center justify-center bg-gray-100 dark:bg-gray-700/50 rounded-xl text-gray-500 hover:text-primary transition-colors active:scale-90"
+                    className="size-9 md:size-10 flex items-center justify-center bg-gray-100 dark:bg-gray-700/50 rounded-xl text-gray-500 lg:hover:text-primary transition-colors active:scale-90"
                   >
                     <span className="material-symbols-outlined text-lg md:text-xl">
                       edit

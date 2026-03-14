@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-import toast from "react-hot-toast"; // Importação do hot-toast
+import toast from "react-hot-toast";
 import MobileLayout from "@/layouts/MobileLayout";
 import PageHeader from "@/components/PageHeader";
 import TralloInput from "@/components/TralloInput";
@@ -215,49 +215,48 @@ const EditProduct: React.FC = () => {
     "Selecionar";
 
   return (
-    <MobileLayout className="pb-10">
+    <MobileLayout className="pb-0 bg-white dark:bg-slate-950">
       <PageHeader title="Editar Produto" />
 
-      <main className="px-4 md:px-6 lg:px-8 max-w-6xl mx-auto pt-32 md:pt-28">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-start">
-          <div className="space-y-8">
-            <ImageUpload
-              images={images}
-              fileInputRef={fileInputRef}
-              onUpload={(e) => {
-                const files = Array.from(e.target.files || []);
-                setFileObjects((prev) => [...prev, ...files]);
-                const urls = files.map((f) => URL.createObjectURL(f));
-                setImages((prev) => [...prev, ...urls]);
-              }}
-              onRemove={(idx) => {
-                setImages((prev) => prev.filter((_, i) => i !== idx));
-                setFileObjects((prev) => prev.filter((_, i) => i !== idx));
-              }}
-            />
-
-            <ClassificationDetails
-              category={selectedCategoryLabel}
-              condition={selectedConditionLabel}
-              onOpenCategory={openCategoryDrawer}
-              onOpenCondition={openConditionModal}
-            />
-
-            <div className="p-8 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800/40 dark:to-gray-900/40 rounded-[2.5rem] border border-gray-100 dark:border-white/5 shadow-sm">
-              <div className="size-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white mb-5 shadow-lg shadow-purple-500/20">
-                <span className="material-symbols-outlined">edit_note</span>
-              </div>
-              <h4 className="font-black text-xl mb-3 tracking-tight">
-                Modo de Edição
-              </h4>
-              <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
-                Editando: <span className="font-bold">{formData.name}</span>. As
-                alterações só serão aplicadas após salvar.
-              </p>
+      <main className="flex flex-col min-h-screen pt-[72px] pb-[100px] bg-white dark:bg-slate-950">
+        <div className="px-5 py-8 md:p-10 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start max-w-6xl mx-auto w-full">
+          <div className="space-y-8 w-full">
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-slate-400 uppercase ml-1 tracking-widest">
+                Fotos do Produto
+              </label>
+              <ImageUpload
+                images={images}
+                fileInputRef={fileInputRef}
+                onUpload={(e) => {
+                  const files = Array.from(e.target.files || []);
+                  setFileObjects((prev) => [...prev, ...files]);
+                  const urls = files.map((f) => URL.createObjectURL(f));
+                  setImages((prev) => [...prev, ...urls]);
+                }}
+                onRemove={(idx) => {
+                  setImages((prev) => prev.filter((_, i) => i !== idx));
+                  setFileObjects((prev) => prev.filter((_, i) => i !== idx));
+                }}
+              />
             </div>
+
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-slate-400 uppercase ml-1 tracking-widest">
+                Classificação
+              </label>
+              <ClassificationDetails
+                category={selectedCategoryLabel}
+                condition={selectedConditionLabel}
+                onOpenCategory={openCategoryDrawer}
+                onOpenCondition={openConditionModal}
+              />
+            </div>
+
+            
           </div>
 
-          <div className="space-y-6 bg-white dark:bg-slate-900/20 p-4 md:p-6 rounded-[2.5rem]">
+          <div className="space-y-6 w-full">
             <TralloInput
               label="Nome do Produto"
               value={formData.name}
