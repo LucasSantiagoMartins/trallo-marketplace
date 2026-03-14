@@ -45,15 +45,14 @@ const ChangePassword = () => {
   };
 
   return (
-    <div className="bg-background-light dark:bg-background-dark h-screen flex flex-col p-4 overflow-hidden">
-      <div className="w-full pt-2">
+    <div className="bg-background-light dark:bg-background-dark h-screen flex flex-col overflow-hidden">
+      <div className="w-full pt-2 px-4 shrink-0">
         <PageHeader title="Alterar Senha" showUser={true} />
       </div>
 
-      <div className="flex-1 flex flex-col items-center justify-center w-full">
-        <main className="w-full max-w-4xl bg-white dark:bg-[#1c182d] rounded-[2.5rem] p-10 sm:p-16 shadow-xl dark:shadow-none border border-transparent dark:border-white/5">
+      <div className="flex-1 flex flex-col w-full overflow-hidden mt-12 sm:mt-0 sm:items-center sm:justify-center sm:p-4">
+        <main className="w-full h-full sm:h-auto max-w-4xl bg-white dark:bg-[#1c182d] rounded-none sm:rounded-[2.5rem] p-6 sm:p-16 shadow-xl dark:shadow-none border-none sm:border sm:border-transparent sm:dark:border-white/5 overflow-y-auto pb-20 sm:pb-16">
           <div className="flex flex-col lg:flex-row gap-10 items-center lg:items-start">
-            
             <div className="flex flex-col items-center lg:items-start lg:w-1/3 text-center lg:text-left">
               <div className="relative w-16 h-16 mb-4 flex items-center justify-center shrink-0">
                 <div className="absolute inset-0 bg-primary/5 rounded-full blur-xl"></div>
@@ -96,7 +95,10 @@ const ChangePassword = () => {
               </div>
 
               <div className="relative w-full">
-                <PasswordTooltip password={newPassword} isVisible={showTooltip} />
+                <PasswordTooltip
+                  password={newPassword}
+                  isVisible={showTooltip}
+                />
                 <TralloInput
                   label="Nova Senha"
                   type="password"
