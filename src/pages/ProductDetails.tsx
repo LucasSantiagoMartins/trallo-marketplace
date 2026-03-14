@@ -1,4 +1,3 @@
-// @/pages/ProductDetails.tsx
 import React, { useState, useRef } from "react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -162,7 +161,7 @@ const ProductDetails: React.FC = () => {
         }
       />
 
-      <main className="pb-32 pt-16 md:pt-24">
+      <main className="pb-32 pt-14 lg:pt-20">
         <div className="lg:grid lg:grid-cols-2 lg:gap-12 lg:max-w-7xl lg:mx-auto lg:px-8">
           <div className="relative group">
             <ProductImageGallery
@@ -177,15 +176,15 @@ const ProductDetails: React.FC = () => {
             />
 
             {product.verificationVideo && (
-              <div className="hidden lg:block absolute top-6 right-6 z-30 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <div className="absolute top-4 right-4 z-30 transition-opacity duration-300 lg:opacity-0 lg:group-hover:opacity-100">
                 <button
                   onClick={() => setModalType("video")}
-                  className="flex items-center gap-2 bg-black/60 hover:bg-primary backdrop-blur-md text-white px-4 py-2.5 rounded-full border border-white/20 transition-all duration-300 shadow-xl active:scale-95 group/vid"
+                  className="flex items-center gap-2 bg-black/60 hover:bg-primary backdrop-blur-md text-white px-3 py-2 rounded-full border border-white/20 transition-all duration-300 shadow-xl active:scale-95 group/vid lg:px-4 lg:py-2.5"
                 >
                   <span className="material-symbols-outlined text-xl group-hover/vid:animate-pulse">
                     play_circle
                   </span>
-                  <span className="text-xs font-bold uppercase tracking-wider">
+                  <span className="text-[10px] lg:text-xs font-bold uppercase tracking-wider">
                     Ver Vídeo Real
                   </span>
                 </button>
@@ -193,7 +192,7 @@ const ProductDetails: React.FC = () => {
             )}
           </div>
 
-          <div className="px-4 md:px-6 lg:px-0 -mt-8 lg:mt-0 space-y-4 relative z-10">
+          <div className="px-4 md:px-6 lg:px-0 -mt-10 lg:mt-0 space-y-4 relative z-10">
             <div className="bg-card p-6 rounded-xl shadow-soft border border-border">
               <div className="flex justify-between items-start mb-2 gap-4">
                 <h1 className="text-2xl md:text-3xl font-bold leading-tight flex-1">
@@ -244,39 +243,6 @@ const ProductDetails: React.FC = () => {
                 {product.description || "Sem descrição disponível."}
               </p>
             </div>
-
-            {product.verificationVideo && (
-              <button
-                onClick={() => setModalType("video")}
-                className="block lg:hidden w-full bg-card p-4 rounded-xl flex items-center gap-4 active:scale-[0.98] transition-all group relative overflow-hidden border-2 border-primary/40 shadow-[0_0_15px_rgba(var(--primary-rgb),0.15)]"
-              >
-                <div className="relative size-14 shrink-0 rounded-lg overflow-hidden bg-primary/5 flex items-center justify-center border border-primary/20">
-                  <div className="absolute inset-0 bg-primary/10 flex items-center justify-center z-10">
-                    <span className="material-symbols-outlined text-primary text-2xl fill-1">
-                      play_circle
-                    </span>
-                  </div>
-                </div>
-                <div className="flex-1 text-left">
-                  <div className="flex items-center gap-1.5 mb-0.5">
-                    <span className="material-symbols-outlined text-primary text-lg">
-                      verified_user
-                    </span>
-                    <h4 className="font-bold text-sm uppercase tracking-tight text-foreground">
-                      Verificação Real
-                    </h4>
-                  </div>
-                  <p className="text-[11px] text-muted-foreground leading-tight">
-                    Toque para confirmar o estado do produto em vídeo.
-                  </p>
-                </div>
-                <div className="size-8 rounded-full bg-primary/5 flex items-center justify-center">
-                  <span className="material-symbols-outlined text-primary text-xl">
-                    chevron_right
-                  </span>
-                </div>
-              </button>
-            )}
 
             {user?.role !== "SELLER" && (
               <div className="pt-4 lg:pt-6">
