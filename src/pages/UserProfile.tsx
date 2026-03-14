@@ -107,10 +107,10 @@ const UserProfileScreen: React.FC = () => {
                     </span>
                   </div>
                 </div>
-
+{/* 
                 <div className="flex justify-center w-full mt-8 pt-6 border-t border-gray-50 dark:border-gray-700">
                   <StatItem label="Avaliação" value="4.9" hasStar />
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
