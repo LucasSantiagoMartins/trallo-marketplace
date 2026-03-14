@@ -2,12 +2,15 @@ import React, { forwardRef } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { ProductDTO, ProductStatus } from "@/types/product";
-import { getProductStatusLabel, getProductStatusColor } from "@/utils/mappers/product.mapper";
+import {
+  getProductStatusLabel,
+  getProductStatusColor,
+} from "@/utils/mappers/product.mapper";
 import { BASE_UPLOAD_URL } from "@/api/endpoints";
 import { formatPrice } from "@/utils/currency";
 
 interface OwnProductCardProps {
-    product: ProductDTO;
+  product: ProductDTO;
   onDelete?: (product: ProductDTO) => void;
 }
 
@@ -16,9 +19,7 @@ const OwnProductCard = forwardRef<HTMLDivElement, OwnProductCardProps>(
     const navigate = useNavigate();
 
     const isVerifying = product.status === ProductStatus.SUBMITTED;
-
     const isPending = product.status === ProductStatus.AWAITING_SUBMISSION;
-
     const isOutOfStock = product.stock.availableQuantity === 0;
 
     return (
@@ -28,7 +29,7 @@ const OwnProductCard = forwardRef<HTMLDivElement, OwnProductCardProps>(
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
-        className={`p-4 rounded-[2rem] flex gap-5 border transition-all duration-300 ${
+        className={`p-4 rounded-[2rem] flex items-center gap-5 border transition-all duration-300 ${
           isVerifying
             ? "bg-amber-50/30 dark:bg-amber-500/5 border-dashed border-amber-200 dark:border-amber-900/50 opacity-80"
             : isPending
@@ -46,7 +47,7 @@ const OwnProductCard = forwardRef<HTMLDivElement, OwnProductCardProps>(
           />
         </div>
 
-        <div className="flex flex-col justify-between flex-1 min-w-0 py-1">
+        <div className="flex flex-col justify-between flex-1 min-w-0 py-1 h-full">
           <div className="relative">
             <div className="flex justify-between items-start gap-2 mb-1">
               <h4
@@ -55,13 +56,15 @@ const OwnProductCard = forwardRef<HTMLDivElement, OwnProductCardProps>(
                 {product.name}
               </h4>
               <span
-                className={`px-2 py-1 text-[9px] font-black rounded-lg uppercase whitespace-nowrap ${
-                  isOutOfStock 
-                    ? "bg-red-500/10 text-red-500" 
+                className={`px-2 py-0.5 text-[8px] md:text-[9px] font-black rounded-lg uppercase whitespace-nowrap ${
+                  isOutOfStock
+                    ? "bg-red-500/10 text-red-500"
                     : getProductStatusColor(product.status)
                 }`}
               >
-                {isOutOfStock ? "Esgotado" : getProductStatusLabel(product.status)}
+                {isOutOfStock
+                  ? "Esgotado"
+                  : getProductStatusLabel(product.status)}
               </span>
             </div>
             <p
@@ -73,13 +76,13 @@ const OwnProductCard = forwardRef<HTMLDivElement, OwnProductCardProps>(
 
           <div className="flex items-center justify-between mt-2">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-slate-400 flex items-center gap-1.5">
+              <span className="text-[10px] md:text-xs font-bold text-slate-400 flex items-center gap-1 whitespace-nowrap">
                 <span
-                  className={`material-symbols-outlined text-sm ${isOutOfStock ? "text-red-500" : ""}`}
+                  className={`material-symbols-outlined text-sm md:text-base ${isOutOfStock ? "text-red-500" : ""}`}
                 >
                   inventory_2
                 </span>
-                {product.stock.availableQuantity} unidades
+                {product.stock.availableQuantity} un.
               </span>
             </div>
 
@@ -92,9 +95,9 @@ const OwnProductCard = forwardRef<HTMLDivElement, OwnProductCardProps>(
                         state: { product },
                       })
                     }
-                    className="size-10 flex items-center justify-center bg-gray-100 dark:bg-gray-700/50 rounded-xl text-gray-500 hover:text-primary transition-colors active:scale-90"
+                    className="size-9 md:size-10 flex items-center justify-center bg-gray-100 dark:bg-gray-700/50 rounded-xl text-gray-500 hover:text-primary transition-colors active:scale-90"
                   >
-                    <span className="material-symbols-outlined text-xl">
+                    <span className="material-symbols-outlined text-lg md:text-xl">
                       edit
                     </span>
                   </button>
@@ -106,19 +109,19 @@ const OwnProductCard = forwardRef<HTMLDivElement, OwnProductCardProps>(
                           state: { product },
                         })
                       }
-                      className="size-10 flex items-center justify-center bg-blue-500 text-white rounded-xl shadow-lg shadow-blue-500/20 active:scale-90"
+                      className="size-9 md:size-10 flex items-center justify-center bg-blue-500 text-white rounded-xl shadow-lg shadow-blue-500/20 active:scale-90"
                       title="Enviar para verificação"
                     >
-                      <span className="material-symbols-outlined text-xl">
+                      <span className="material-symbols-outlined text-lg md:text-xl">
                         published_with_changes
                       </span>
                     </button>
                   ) : (
                     <button
                       onClick={() => onDelete?.(product)}
-                      className="size-10 flex items-center justify-center bg-red-50 dark:bg-red-500/10 rounded-xl text-red-500 active:scale-90"
+                      className="size-9 md:size-10 flex items-center justify-center bg-red-50 dark:bg-red-500/10 rounded-xl text-red-500 active:scale-90"
                     >
-                      <span className="material-symbols-outlined text-xl">
+                      <span className="material-symbols-outlined text-lg md:text-xl">
                         delete
                       </span>
                     </button>
