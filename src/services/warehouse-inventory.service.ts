@@ -6,6 +6,8 @@ import {
   RegisterExitDto,
   StockMovementDTO,
 } from "@/types/warehouse-inventory";
+import { WithdrawalRequestDTO } from "@/dtos/withdrawal";
+import { InventoryDashboardDTO } from "@/dtos/wharehouse-invetory.dto";
 
 export async function registerStockEntry(
   data: RegisterEntryDto,
@@ -43,3 +45,12 @@ export async function getStockExits(): Promise<
   );
   return res;
 }
+export async function getDashboard(): Promise<
+  ApiResponse<InventoryDashboardDTO>
+> {
+  const res = await http.get<InventoryDashboardDTO>(
+    endpoints.warehouseInventories.dashboard,
+  );
+  return res;
+}
+

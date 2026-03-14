@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { motion, Variants } from "framer-motion";
 import PageHeader from "../components/PageHeader";
 import BottomNavigation from "../components/BottomNavigation";
@@ -6,9 +6,34 @@ import StatCard from "../components/StatCard";
 import Sidebar from "@/components/Sidebar";
 import { operatorItems } from "@/constants/sidebar-items";
 import { useAuth } from "@/context/AuthContext";
+import { InventoryDashboardDTO } from "@/dtos/wharehouse-invetory.dto";
+import { getDashboard } from "@/services/warehouse-inventory.service";
+import { formatPrice } from "@/utils/currency";
 
 const OperatorDashboard: React.FC = () => {
   const { user } = useAuth();
+  const [data, setData] = useState<InventoryDashboardDTO | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchDashboardData() {
+      try {
+        const response = await getDashboard();
+        setData(response.data);
+      } catch (error) {
+        console.error("Erro ao carregar dados do dashboard:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchDashboardData();
+  }, []);
+
+  const getOccupancyColor = (rate: number) => {
+    if (rate < 50) return "#22C55E"; // Verde
+    if (rate < 85) return "#6C3EF8"; // Azul/Roxo principal
+    return "#EF4444"; // Vermelho
+  };
 
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -44,6 +69,17 @@ const OperatorDashboard: React.FC = () => {
           },
         ]
       : operatorItems;
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC]">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#6C3EF8]"></div>
+      </div>
+    );
+  }
+
+  const occupancyRate = data?.occupancyRate || 0;
+  const occupancyColor = getOccupancyColor(occupancyRate);
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] font-['Inter'] flex">
@@ -92,36 +128,38 @@ const OperatorDashboard: React.FC = () => {
             <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <motion.div variants={itemVariants} className="w-full">
                 <StatCard
-                  icon="pending_actions"
-                  label="Pendentes"
-                  value="42"
+                  icon="inventory_2"
+                  label="Itens em Estoque"
+                  value={
+                    data?.totalProductsInStock.toLocaleString("pt-BR") || "0"
+                  }
                   color="primary"
                 />
               </motion.div>
 
               <motion.div variants={itemVariants} className="w-full">
                 <StatCard
-                  icon="inventory_2"
-                  label="Itens em Estoque"
-                  value="1.840"
+                  icon="login"
+                  label="Entradas Hoje"
+                  value={data?.entriesToday.toString() || "0"}
                   color="slate"
                 />
               </motion.div>
 
               <motion.div variants={itemVariants} className="w-full">
                 <StatCard
-                  icon="verified"
-                  label="Validados Hoje"
-                  value="128"
+                  icon="logout"
+                  label="Saídas Hoje"
+                  value={data?.exitsToday.toString() || "0"}
                   color="slate"
                 />
               </motion.div>
 
               <motion.div variants={itemVariants} className="w-full">
                 <StatCard
-                  icon="local_shipping"
-                  label="Saídas (24h)"
-                  value="85"
+                  icon="trending_up"
+                  label="Giro de Estoque"
+                  value={`${data?.dailyStockTurnover.toFixed(2)}%` || "0%"}
                   color="slate"
                 />
               </motion.div>
@@ -135,62 +173,55 @@ const OperatorDashboard: React.FC = () => {
             >
               <div className="flex items-center justify-between mb-6">
                 <h3 className="font-bold text-sm uppercase tracking-widest text-slate-400">
-                  Logs de Operação
+                  Infraestrutura do Armazém
                 </h3>
-                <span className="text-[10px] bg-blue-100 text-blue-600 px-2 py-1 rounded-lg font-bold">
-                  SNC
-                </span>
               </div>
 
-              <div className="space-y-4">
-                {[
-                  {
-                    user: "Produto #882",
-                    action: "validado e movido para o estoque",
-                    time: "5 min atrás",
-                    icon: "inventory_2",
-                  },
-                  {
-                    user: "Estoque",
-                    action: "baixa de 12 unidades: SKU-990",
-                    time: "22 min atrás",
-                    icon: "remove_shopping_cart",
-                  },
-                  {
-                    user: "Verificação",
-                    action: "produto #102 recusado (fotos inválidas)",
-                    time: "1h atrás",
-                    icon: "cancel",
-                  },
-                ].map((log, i) => (
-                  <div
-                    key={i}
-                    className="flex items-center justify-between p-3 rounded-2xl hover:bg-slate-50 transition-colors"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="size-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500">
-                        <span className="material-symbols-outlined text-lg">
-                          {log.icon}
-                        </span>
-                      </div>
-                      <div>
-                        <p className="text-xs font-bold">{log.user}</p>
-                        <p className="text-[10px] text-slate-500">
-                          {log.action}
-                        </p>
-                      </div>
-                    </div>
-                    <span className="text-[10px] text-slate-400 font-medium">
-                      {log.time}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50">
+                  <div className="size-10 rounded-xl bg-white flex items-center justify-center shadow-sm">
+                    <span className="material-symbols-outlined text-[#6C3EF8]">
+                      grid_view
                     </span>
                   </div>
-                ))}
+                  <div>
+                    <p className="text-xs text-slate-500 font-medium">
+                      Total de Prateleiras
+                    </p>
+                    <p className="text-xl font-bold">
+                      {data?.totalShelves || 0}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50">
+                  <div className="size-10 rounded-xl bg-white flex items-center justify-center shadow-sm">
+                    <span className="material-symbols-outlined text-[#6C3EF8]">
+                      reorder
+                    </span>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-500 font-medium">
+                      Total de Fileiras
+                    </p>
+                    <p className="text-xl font-bold">{data?.totalRows || 0}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-8 p-6 rounded-3xl bg-[#6C3EF8]/5 border border-[#6C3EF8]/10">
+                <p className="text-xs font-bold text-[#6C3EF8] uppercase tracking-tighter mb-1">
+                  Valor Total em Estoque
+                </p>
+                <p className="text-3xl font-black text-[#0F172A]">
+                  {formatPrice(data?.totalStockValue || 0)}
+                </p>
               </div>
             </motion.section>
 
             <motion.section
               variants={itemVariants}
-              className="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm relative overflow-hidden"
+              className="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm relative overflow-hidden flex flex-col justify-center"
             >
               <div className="relative z-10">
                 <h3 className="font-bold text-sm uppercase tracking-widest text-slate-400 mb-6">
@@ -205,51 +236,27 @@ const OperatorDashboard: React.FC = () => {
                           warehouse
                         </span>
                         <span className="text-[11px] font-bold uppercase tracking-wider text-slate-600">
-                          Ocupação
+                          Taxa de Ocupação
                         </span>
                       </div>
-                      <span className="text-[11px] font-black text-[#6C3EF8]">
-                        82%
+                      <span
+                        className="text-[11px] font-black"
+                        style={{ color: occupancyColor }}
+                      >
+                        {occupancyRate.toFixed(1)}%
                       </span>
                     </div>
                     <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
                       <motion.div
                         initial={{ width: 0 }}
-                        animate={{ width: "82%" }}
+                        animate={{ width: `${occupancyRate}%` }}
                         transition={{ duration: 1, delay: 0.5 }}
-                        className="h-full bg-[#6C3EF8] rounded-full"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center gap-2">
-                        <span className="material-symbols-outlined text-sm text-slate-400">
-                          priority_high
-                        </span>
-                        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-600">
-                          Ruptura (Out of Stock)
-                        </span>
-                      </div>
-                      <span className="text-[11px] font-black text-red-400">
-                        12%
-                      </span>
-                    </div>
-                    <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: "12%" }}
-                        transition={{ duration: 1, delay: 0.7 }}
-                        className="h-full bg-red-400 rounded-full"
+                        className="h-full rounded-full"
+                        style={{ backgroundColor: occupancyColor }}
                       />
                     </div>
                   </div>
                 </div>
-
-                <button className="w-full mt-8 py-3 bg-slate-50 hover:bg-slate-100 text-slate-500 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 border border-slate-100">
-                  Relatório de Inventário
-                </button>
               </div>
 
               <div className="absolute -right-10 -bottom-10 size-40 bg-[#6C3EF8]/5 rounded-full blur-3xl"></div>

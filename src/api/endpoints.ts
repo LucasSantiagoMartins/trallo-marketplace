@@ -18,6 +18,7 @@ export const endpoints = {
 
   },
   warehouseInventories: {
+    dashboard: "/warehouse-inventories/dashboard",
     exits: "/warehouse-inventories/exits",
     entries: "/warehouse-inventories/entries",
     registerEntry: "/warehouse-inventories/entries",
