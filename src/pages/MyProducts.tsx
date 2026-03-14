@@ -3,8 +3,9 @@ import { useNavigate } from "react-router-dom";
 import PageHeader from "../components/PageHeader";
 import BottomNavigation from "@/components/BottomNavigation";
 import OwnProductCard from "../components/OwnProductCard";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import OwnProductFilterDrawer from "../components/OwnProductFilterDrawer";
+import ConfirmAction from "../components/ConfirmAction"; // Certifique-se que o caminho está correto
 import { ProductDTO, ProductStatus } from "@/types/product";
 import { getMyProducts } from "@/services/product.service";
 import { useAuth } from "@/context/AuthContext";
@@ -58,8 +59,6 @@ const MyProductsPage: React.FC = () => {
     ).length,
   };
 
- 
-
   return (
     <div className="bg-background-light dark:bg-background-dark min-h-screen flex flex-col">
       <PageHeader title="Meus Produtos" showUser={true} />
@@ -75,7 +74,7 @@ const MyProductsPage: React.FC = () => {
         </header>
 
         <div className="flex flex-col lg:flex-row gap-6 mb-8">
-          <div className="flex gap-4 overflow-x-auto pb-4 lg:pb-0 no-scrollbar flex-1">
+          <div className="flex gap-4 lg:gap-6 overflow-x-auto pb-4 lg:pb-0 no-scrollbar flex-1 lg:justify-start">
             <SummaryCard
               icon="check_circle"
               value={stats.active.toString()}
@@ -98,36 +97,48 @@ const MyProductsPage: React.FC = () => {
 
           <div
             onClick={() => navigate("/adicionar-produto")}
-            className="hidden lg:flex flex-col cursor-pointer hover:scale-[1.02] transition-transform p-6 bg-gradient-to-b from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-[2.5rem] border border-gray-100 dark:border-gray-700 shadow-sm max-w-sm"
+            className="hidden lg:flex flex-col items-start cursor-pointer hover:scale-[1.02] transition-transform p-6 bg-gradient-to-b from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-[2.5rem] border border-gray-100 dark:border-gray-700 max-w-sm"
           >
             <div className="size-12 rounded-2xl bg-gradient-to-br from-[#8B5CF6] to-[#6D28D9] flex items-center justify-center text-white mb-4 shadow-lg shadow-purple-500/20">
               <span className="material-symbols-outlined font-bold">
                 inventory_2
               </span>
             </div>
-            <h4 className="font-black text-lg mb-2 tracking-tight">
+            <h4 className="font-black text-lg mb-2 tracking-tight text-left">
               Novo Produto
             </h4>
-            <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
+            <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed text-left">
               Expanda sua vitrine e comece a vender novos itens agora mesmo.
             </p>
           </div>
         </div>
 
         <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xl font-bold tracking-tight">
-              Lista de Produtos
-            </h3>
+          <div className="flex flex-col gap-4">
+            {/* Botão Novo Produto Mobile */}
             <button
-              onClick={() => setShowFilters(true)}
-              className="text-primary text-xs font-black flex items-center gap-2 bg-primary/5 px-4 py-2.5 rounded-2xl uppercase tracking-widest hover:bg-primary/10 transition-colors"
+              onClick={() => navigate("/adicionar-produto")}
+              className="lg:hidden w-full bg-primary text-white flex items-center justify-center gap-3 py-4 rounded-[1.5rem] active:scale-[0.98] transition-all shadow-lg shadow-primary/20"
             >
-              Filtrar{" "}
-              <span className="material-symbols-outlined text-base">
-                filter_list
+              <span className="font-black text-sm uppercase tracking-wider">
+                Novo Produto
               </span>
             </button>
+
+            <div className="flex items-center justify-between">
+              <h3 className="text-xl font-bold tracking-tight">
+                Lista de Produtos
+              </h3>
+              <button
+                onClick={() => setShowFilters(true)}
+                className="text-primary text-xs font-black flex items-center gap-2 bg-primary/5 px-4 py-2.5 rounded-2xl uppercase tracking-widest hover:bg-primary/10 transition-colors"
+              >
+                Filtrar{" "}
+                <span className="material-symbols-outlined text-base">
+                  filter_list
+                </span>
+              </button>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 relative">
@@ -152,98 +163,56 @@ const MyProductsPage: React.FC = () => {
                 )}
               </AnimatePresence>
             )}
-            <div className="h-20 lg:hidden" />
           </div>
         </div>
       </main>
-
-      <button
-        onClick={() => navigate("/adicionar-produto")}
-        className="lg:hidden fixed bottom-24 right-6 bg-primary text-white flex items-center gap-3 pl-5 pr-6 py-4 rounded-[2rem] shadow-xl shadow-primary/40 z-40 active:scale-90 transition-all group"
-      >
-        <span className="material-symbols-outlined font-bold group-hover:rotate-90 transition-transform">
-          add_circle
-        </span>
-        <span className="font-black text-sm uppercase tracking-wider">
-          Novo Produto
-        </span>
-      </button>
 
       <AnimatePresence>
         {showFilters && (
           <OwnProductFilterDrawer onClose={() => setShowFilters(false)} />
         )}
-
-        {productToDelete && (
-          <DeleteConfirmPopup
-            productName={productToDelete.name}
-            onClose={() => setProductToDelete(null)}
-            onConfirm={handleConfirmDelete}
-          />
-        )}
       </AnimatePresence>
+
+      <ConfirmAction
+        isOpen={!!productToDelete}
+        onClose={() => setProductToDelete(null)}
+        onConfirm={handleConfirmDelete}
+        title="Eliminar Produto?"
+        description={`Tem certeza que deseja remover "${productToDelete?.name}"? Esta ação não pode ser desfeita.`}
+        confirmText="Sim, Eliminar"
+        variant="danger"
+        icon="delete_forever"
+      />
 
       <BottomNavigation />
     </div>
   );
 };
 
-const DeleteConfirmPopup = ({ productName, onClose, onConfirm }: any) => (
-  <div className="fixed inset-0 z-[110] flex items-center justify-center p-6">
-    <div
-      className="absolute inset-0 bg-black/30 backdrop-blur-sm animate-in fade-in duration-300"
-      onClick={onClose}
-    />
+const SummaryCard = ({ icon, value, label, color }: any) => {
+  const colorMap: any = {
+    emerald: "text-emerald-500 bg-emerald-500/10",
+    blue: "text-blue-500 bg-blue-500/10",
+    amber: "text-amber-500 bg-amber-500/10",
+  };
 
-    <motion.div
-      initial={{ opacity: 0, scale: 0.9, y: 20 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.9, y: 20 }}
-      className="relative w-full max-w-sm bg-white dark:bg-gray-900 rounded-[2.5rem] p-8 shadow-2xl flex flex-col items-center text-center border border-border/50"
-    >
-      <div className="size-20 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mb-6">
-        <span className="material-symbols-outlined text-4xl">
-          delete_forever
+  return (
+    <div className="flex-shrink-0 lg:flex-1 w-36 md:w-40 lg:w-auto bg-white dark:bg-gray-800/60 p-4 lg:p-5 rounded-[1.8rem] border border-gray-100 dark:border-gray-700/50 shadow-sm transition-all">
+      <div
+        className={`${colorMap[color]} size-9 lg:size-10 rounded-xl flex items-center justify-center mb-3 lg:mb-4`}
+      >
+        <span className="material-symbols-outlined text-xl lg:text-2xl">
+          {icon}
         </span>
       </div>
-
-      <h3 className="text-xl font-black mb-2">Eliminar Produto?</h3>
-      <p className="text-slate-500 dark:text-slate-400 text-sm mb-8 leading-relaxed">
-        Tem certeza que deseja remover{" "}
-        <span className="font-bold text-foreground">"{productName}"</span>? Esta
-        ação não pode ser desfeita.
-      </p>
-
-      <div className="flex flex-col w-full gap-3">
-        <button
-          onClick={onConfirm}
-          className="w-full bg-red-500 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-red-500/20 hover:bg-red-600 transition-colors"
-        >
-          Sim, Eliminar
-        </button>
-        <button
-          onClick={onClose}
-          className="w-full py-4 text-sm font-bold border border-border rounded-2xl hover:bg-muted transition-colors"
-        >
-          Cancelar
-        </button>
+      <div className="text-2xl lg:text-3xl font-black mb-0.5 truncate">
+        {value}
       </div>
-    </motion.div>
-  </div>
-);
-
-const SummaryCard = ({ icon, value, label, color }: any) => (
-  <div className="flex-shrink-0 w-48 md:w-52 bg-white dark:bg-gray-800/60 p-6 rounded-[2rem] border border-gray-100 dark:border-gray-700/50 shadow-sm">
-    <div
-      className={`text-${color}-500 mb-4 bg-${color}-500/10 size-12 rounded-2xl flex items-center justify-center`}
-    >
-      <span className="material-symbols-outlined text-2xl">{icon}</span>
+      <div className="text-[9px] lg:text-[10px] text-slate-400 font-black uppercase tracking-wider">
+        {label}
+      </div>
     </div>
-    <div className="text-3xl font-black mb-1 truncate">{value}</div>
-    <div className="text-[10px] text-slate-400 font-black uppercase tracking-[0.15em]">
-      {label}
-    </div>
-  </div>
-);
+  );
+};
 
 export default MyProductsPage;

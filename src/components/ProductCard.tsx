@@ -9,6 +9,7 @@ import {
   getProductStatusColor,
 } from "@/utils/mappers/product.mapper";
 import { formatPrice } from "@/utils/currency";
+import { useAuth } from "@/context/AuthContext";
 
 interface ProductCardProps {
   product: SearchedProductDTO;
@@ -17,6 +18,9 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const isBuyer = user?.role === "buyer";
 
   const displayImage = product.coverImage
     ? `${BASE_UPLOAD_URL}${product.coverImage}`
@@ -37,7 +41,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
       onClick={handleNavigate}
       className="group relative bg-white rounded-3xl overflow-hidden transition-all duration-500 hover:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.1)] border border-slate-100 flex flex-col w-full cursor-pointer"
     >
-      {/* Reduzi um pouco a altura da imagem usando max-height */}
       <div className="relative aspect-square max-h-[220px] overflow-hidden bg-slate-50">
         <img
           src={displayImage}
@@ -65,7 +68,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
         <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       </div>
 
-      {/* Reduzi o padding de p-5 para p-3.5 para encolher o card */}
       <div className="p-3.5 flex flex-col flex-1 gap-2">
         <div className="flex flex-col gap-1">
           <div
@@ -99,7 +101,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
             </div>
           </div>
 
-          {onAddToCart && (
+          {onAddToCart && isBuyer && (
             <button
               onClick={handleAddToCart}
               className="w-12 h-12 rounded-2xl flex items-center justify-center bg-primary text-white shadow-lg shadow-primary/30 transition-all duration-500 ease-out hover:bg-primary/90 active:scale-90 lg:translate-y-4 lg:opacity-0 lg:group-hover:translate-y-0 lg:group-hover:opacity-100 opacity-100 translate-y-0"

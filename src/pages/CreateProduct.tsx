@@ -131,19 +131,13 @@ const CreateProduct: React.FC = () => {
     PRODUCT_CONDITIONS.find((c) => c.value === formData.condition)?.label ||
     "Selecionar";
 
-  
-
   return (
     <MobileLayout className="pb-32">
-      <PageHeader
-        title="Criar Novo Produto"
-        backTo="/"
-        showUser={true}
-      />
+      <PageHeader title="Criar Novo Produto" showUser={true} />
 
       <main className="px-4 md:px-6 lg:px-8 max-w-6xl mx-auto pt-32 md:pt-28">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-start">
-          <div className="space-y-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-start">
+          <div className="space-y-8 w-full">
             <ImageUpload
               images={images}
               fileInputRef={fileInputRef}
@@ -167,7 +161,8 @@ const CreateProduct: React.FC = () => {
             />
           </div>
 
-          <div className="space-y-6 bg-white dark:bg-slate-900/20 p-4 md:p-6 rounded-[2.5rem]">
+         
+          <div className="space-y-6 bg-white dark:bg-slate-900/20 p-5 md:p-10 rounded-[2.5rem] w-full border border-slate-100 dark:border-slate-800 lg:border-none">
             <TralloInput
               label="Nome do Produto"
               placeholder="Ex: iPhone 13 Pro Max - 256GB"
@@ -215,8 +210,7 @@ const CreateProduct: React.FC = () => {
                 onClick={handleSubmit}
                 fullWidth
                 isLoading={loading}
-                className="py-5 text-lg font-bold shadow-xl shadow-primary/20"
-                icon="add_circle"
+                className="py-5 text-lg font-bold"
               >
                 Publicar Produto
               </TralloButton>

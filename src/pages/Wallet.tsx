@@ -3,12 +3,12 @@ import { useNavigate } from "react-router-dom";
 import MobileLayout from "@/layouts/MobileLayout";
 import PageHeader from "@/components/PageHeader";
 import BottomNavigation from "@/components/BottomNavigation";
-import PerformanceCard from "../components/PerformanceCard";
 import MyTransactionCard from "@/components/MyTransactionCard";
 import { useAuth } from "@/context/AuthContext";
 import { walletService } from "@/services/wallet.service";
 import { WalletSummaryDTO } from "@/dtos/wallet";
 import { formatPrice } from "@/utils/currency";
+import TralloButton from "@/components/TralloButton";
 
 const WalletScreen: React.FC = () => {
   const [isVisible, setIsVisible] = useState(true);
@@ -42,12 +42,11 @@ const WalletScreen: React.FC = () => {
     <MobileLayout>
       <PageHeader title="Minha Carteira" showUser={true} />
 
-      <main className="max-w-6xl mx-auto px-6 pt-24 pb-32 lg:pt-24 lg:h-screen lg:overflow-hidden">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:h-full">
-          {/* Coluna Esquerda: Carteira FIXA */}
-          <div className="lg:col-span-5">
-            <div className="space-y-6 max-w-[440px]">
-              <div className="relative overflow-hidden rounded-[2.5rem] p-6 min-h-[220px] flex flex-col justify-between bg-gradient-to-br from-[#6C3EF8] to-[#8B5CF6] shadow-xl shadow-purple-500/20">
+      <main className="max-w-7xl mx-auto px-4 md:px-8 pt-24 pb-32 lg:pt-24 lg:h-screen lg:overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-10 lg:h-full">
+          <div className="lg:col-span-5 xl:col-span-4">
+            <div className="space-y-6 w-full">
+              <div className="relative overflow-hidden rounded-[2.5rem] p-6 md:p-8 min-h-[220px] flex flex-col justify-between bg-gradient-to-br from-[#6C3EF8] to-[#8B5CF6] shadow-xl shadow-purple-500/20">
                 <div className="absolute -right-10 -top-10 size-40 bg-white/10 rounded-full blur-2xl"></div>
 
                 <div className="relative z-10">
@@ -55,7 +54,7 @@ const WalletScreen: React.FC = () => {
                     <p className="text-white/80 text-sm font-medium">
                       Saldo Disponível
                     </p>
-                    <h2 className="text-white text-3xl font-black mt-1">
+                    <h2 className="text-white text-3xl md:text-4xl font-black mt-1">
                       {isVisible
                         ? formatPrice(walletData?.availableBalance || 0, false)
                         : "••••••••"}{" "}
@@ -98,14 +97,14 @@ const WalletScreen: React.FC = () => {
                 </div>
               </div>
 
-              <button
+              <TralloButton
                 onClick={() => navigate("/realizar-levantamento")}
                 className="w-full bg-primary text-white h-14 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-primary/30 active:scale-[0.98] transition-all"
               >
                 <span>Realizar levantamento</span>
-              </button>
+              </TralloButton>
 
-              <div className="p-6 bg-gradient-to-b from-white to-gray-50 dark:from-slate-900/40 dark:to-slate-900/60 rounded-[2.5rem] border border-gray-100 dark:border-white/5 shadow-sm">
+              <div className="p-6 md:p-8 bg-gradient-to-b from-white to-gray-50 dark:from-slate-900/40 dark:to-slate-900/60 rounded-[2.5rem] border border-gray-100 dark:border-white/5 shadow-sm">
                 <div className="size-12 rounded-2xl bg-gradient-to-br from-[#8B5CF6] to-[#6D28D9] flex items-center justify-center text-white mb-4 shadow-lg shadow-purple-500/20">
                   <span className="material-symbols-outlined">lock_clock</span>
                 </div>
@@ -120,9 +119,8 @@ const WalletScreen: React.FC = () => {
             </div>
           </div>
 
-          {/* Coluna Direita: Desempenho e Transações com SCROLL */}
-          <div className="lg:col-span-7 lg:overflow-y-auto lg:pr-4 lg:pb-40 scrollbar-hide">
-            <div className="flex items-center justify-between mb-6 mt-10 lg:mt-0">
+          <div className="lg:col-span-7 xl:col-span-8 lg:overflow-y-auto lg:pr-4 lg:pb-40 scrollbar-hide">
+            <div className="flex items-center justify-between mb-3 mt-10 lg:mt-0">
               <h3 className="text-xl font-bold tracking-tight">
                 Transações Recentes
               </h3>

@@ -63,23 +63,26 @@ const PageHeader: React.FC<PageHeaderProps> = ({
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 glass-header px-4 py-3 flex items-center justify-center border-b border-border/5">
-      <div className="w-full max-w-7xl flex items-center justify-between">
+      <div className="w-full max-w-7xl flex items-center justify-between relative min-h-[40px]">
+        {/* Botão de Voltar */}
         <button
           onClick={handleBack}
           type="button"
           aria-label="Voltar"
-          className="size-10 flex items-center justify-center bg-card rounded-full shadow-soft active:scale-95 transition-transform"
+          className="size-10 flex items-center justify-center bg-card rounded-full shadow-soft active:scale-95 transition-transform z-10"
         >
           <span className="material-symbols-outlined text-foreground">
             arrow_back
           </span>
         </button>
 
-        <h2 className="text-foreground text-sm font-bold uppercase tracking-widest truncate px-2">
+        {/* Título Centralizado com posicionamento absoluto */}
+        <h2 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-foreground text-sm font-bold uppercase tracking-widest truncate px-2 max-w-[60%] text-center">
           {title}
         </h2>
 
-        <div className="flex gap-2 min-w-10 justify-end">
+        {/* Elemento da Direita */}
+        <div className="flex gap-2 min-w-10 justify-end z-10">
           {rightElement ? (
             rightElement
           ) : showUser ? (
