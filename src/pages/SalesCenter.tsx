@@ -191,10 +191,8 @@ const SalesCenter: React.FC = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-10 flex-1 min-h-0 pb-32 sm:pb-32">
           <div className="lg:col-span-7 xl:col-span-8 flex flex-col">
-            <div className="bg-card rounded-[2.5rem] border border-border overflow-hidden shadow-soft flex flex-col flex-1 min-h-[300px]">
-              <div className="flex-1 w-full">
-                <PerformanceCard data={performance} />
-              </div>
+            <div className="flex-1 w-full min-h-[300px]">
+              <PerformanceCard data={performance} />
             </div>
           </div>
 
