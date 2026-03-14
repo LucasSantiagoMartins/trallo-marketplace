@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "@/hooks/use-cart";
+import { BASE_UPLOAD_URL } from "@/api/endpoints";
 
 interface HeaderProps {
   showBack?: boolean;
@@ -55,7 +56,7 @@ const Header: React.FC<HeaderProps> = ({
       { name: "Favoritos", path: "/favoritos" },
     ],
     OPERATOR: [
-      { name: "Pedidos Pendentes", path: "/operacao/pedidos" },
+      { name: "Pedidos Pendentes", path: "/area-operacional/pedidos-pendentes" },
       {
         name: "Verificações Pendentes",
         path: "/area-operacional/verificacoes-pendentes",
@@ -87,12 +88,12 @@ const Header: React.FC<HeaderProps> = ({
             onClick={onBack}
             className="size-10 flex items-center justify-center bg-card rounded-full shadow-soft active:scale-90 transition-transform"
           >
-            <span className="material-symbols-outlined text-foreground">
+            <span className="material-symbols-outlined text-foreground text-[22px]">
               arrow_back
             </span>
           </button>
           {title && (
-            <h2 className="text-foreground text-sm font-bold uppercase tracking-widest">
+            <h2 className="text-foreground text-[11px] sm:text-sm font-bold uppercase tracking-widest truncate max-w-[60%] text-center">
               {title}
             </h2>
           )}
@@ -146,11 +147,13 @@ const Header: React.FC<HeaderProps> = ({
             {!isSeller && (
               <Link
                 to="/carrinho"
-                className="hidden lg:flex items-center gap-2 px-4 py-2 rounded-full bg-card hover:bg-muted transition-colors active:scale-95"
+                className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-card hover:bg-muted border border-border/5 transition-colors active:scale-95"
               >
-                <span className="material-symbols-outlined">shopping_cart</span>
+                <span className="material-symbols-outlined text-[22px]">
+                  shopping_cart
+                </span>
                 {cartCount > 0 && (
-                  <span className="bg-primary text-primary-foreground text-xs font-bold px-2 py-0.5 rounded-full animate-in zoom-in">
+                  <span className="bg-primary text-primary-foreground text-[10px] font-bold px-1.5 py-0.5 rounded-full">
                     {cartCount}
                   </span>
                 )}
@@ -159,19 +162,33 @@ const Header: React.FC<HeaderProps> = ({
 
             <Link
               to="/notifications"
-              className="flex items-center gap-2 px-4 py-2 rounded-full bg-card hover:bg-muted transition-colors active:scale-95"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-card hover:bg-muted border border-border/5 transition-colors active:scale-95"
             >
-              <span className="material-symbols-outlined">notifications</span>
-              <span className="bg-primary text-primary-foreground text-xs font-bold px-2 py-0.5 rounded-full">
+              <span className="material-symbols-outlined text-[22px]">
+                notifications
+              </span>
+              <span className="bg-primary text-primary-foreground text-[10px] font-bold px-1.5 py-0.5 rounded-full">
                 3
               </span>
             </Link>
 
             <Link
               to="/perfil"
-              className="hidden lg:flex size-10 items-center justify-center rounded-full bg-card hover:bg-muted transition-colors active:scale-90"
+              className="flex size-10 items-center justify-center rounded-full bg-card hover:bg-muted transition-colors active:scale-90 overflow-hidden border-[1.5px] border-primary/20 p-[1.5px]"
             >
-              <span className="material-symbols-outlined">person</span>
+              <div className="w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-background">
+                {user?.profilePicture ? (
+                  <img
+                    src={`${BASE_UPLOAD_URL}${user.profilePicture}`}
+                    alt={user.fullName || "User"}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span className="material-symbols-outlined text-foreground text-2xl">
+                    person
+                  </span>
+                )}
+              </div>
             </Link>
           </div>
         </div>
