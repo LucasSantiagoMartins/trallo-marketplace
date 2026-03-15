@@ -142,11 +142,12 @@ const OrdersManagement: React.FC = () => {
                     onClick={() => setActiveStatus(status)}
                     className={`px-5 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all whitespace-nowrap ${
                       activeStatus === status
-                        ? "bg-[#6C3EF8] text-white shadow-lg shadow-purple-200"
+                        ? "bg-[#6C3EF8] text-white"
                         : "bg-white text-slate-400 border border-slate-100 hover:bg-slate-50"
                     }`}
                   >
-                    {/* Aqui usamos o orderStatusLabel para exibir o texto bonito */}
+                    {
+                    }
                     {status === "Tudo"
                       ? "Todos"
                       : orderStatusLabel(status as OrderStatus)}
@@ -156,7 +157,6 @@ const OrdersManagement: React.FC = () => {
             </div>
           </motion.div>
 
-          {/* Grid atualizado para 2 colunas (md:grid-cols-2) */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {isLoading ? (
               <div className="col-span-full py-32 text-center">
@@ -168,7 +168,7 @@ const OrdersManagement: React.FC = () => {
             ) : filteredOrders.length > 0 ? (
               filteredOrders.map((order) => (
                 <motion.div key={order.orderNumber} variants={itemVariants}>
-                  <OrderCard order={order} isSeller={false} />
+                  <OrderCard order={order} isSeller={false} isAdmin={true} />
                 </motion.div>
               ))
             ) : (

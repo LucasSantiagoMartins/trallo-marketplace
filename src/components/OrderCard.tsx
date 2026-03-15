@@ -13,9 +13,15 @@ interface OrderItemProps {
   order: OrderDTO;
   active?: boolean;
   isSeller?: boolean;
+  isAdmin?: boolean;
 }
 
-const OrderCard: React.FC<OrderItemProps> = ({ order, active, isSeller }) => {
+const OrderCard: React.FC<OrderItemProps> = ({
+  order,
+  active,
+  isSeller,
+  isAdmin, // Extraído das props
+}) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const navigate = useNavigate();
 
@@ -73,13 +79,16 @@ const OrderCard: React.FC<OrderItemProps> = ({ order, active, isSeller }) => {
                 </p>
                 <p className="text-[11px] text-purple-700/80 dark:text-purple-300/70 leading-relaxed">
                   Por favor, leve este produto até à instalação da{" "}
-                  <span className="font-semibold text-purple-600">Trallo</span> em até 24h.
+                  <span className="font-semibold text-purple-600">Trallo</span>{" "}
+                  em até 24h.
                 </p>
                 <button
                   onClick={openTralloMap}
                   className="mt-3 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-purple-600 hover:text-purple-700 transition-colors"
                 >
-                  <span className="material-symbols-outlined text-sm">location_on</span>
+                  <span className="material-symbols-outlined text-sm">
+                    location_on
+                  </span>
                   Ver no mapa
                 </button>
               </div>
@@ -127,6 +136,7 @@ const OrderCard: React.FC<OrderItemProps> = ({ order, active, isSeller }) => {
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
         order={order}
+        isAdmin={isAdmin} 
       />
     </>
   );

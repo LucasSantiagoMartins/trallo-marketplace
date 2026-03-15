@@ -5,6 +5,7 @@ import {
   movementTypeMap,
   movementOriginMap,
 } from "@/utils/mappers/warehouse-inventory.mapper";
+import { toast } from "react-hot-toast"; // Assumindo o uso do react-hot-toast
 
 interface ProductProps {
   movement: StockMovementDTO;
@@ -18,16 +19,20 @@ export const ProductStockCard: React.FC<ProductProps> = ({ movement }) => {
   const typeConfig = movementTypeMap[type];
   const originConfig = movementOriginMap[origin];
 
-  const handleCopy = (text: string, setter: (v: boolean) => void) => {
+  const handleCopy = (
+    text: string,
+    setter: (v: boolean) => void,
+    message: string,
+  ) => {
     navigator.clipboard.writeText(text);
     setter(true);
+    toast.success(message); // Exibe o toast
     setTimeout(() => setter(false), 2000);
   };
 
   return (
     <div className="bg-white dark:bg-[#1c182d] rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-100 dark:border-white/5 hover:border-[#6C3EF8]/30 transition-all group">
       <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-5">
-        
         {/* Container da Imagem e Badge Mobile */}
         <div className="relative w-full sm:w-24 h-48 sm:h-24 rounded-xl bg-slate-100 dark:bg-white/5 flex-shrink-0 overflow-hidden border border-slate-200 dark:border-white/10">
           <img
@@ -39,11 +44,13 @@ export const ProductStockCard: React.FC<ProductProps> = ({ movement }) => {
             }
             alt={product.name}
           />
-          {/* Badge apenas para Mobile: Fundo sólido para garantir leitura sobre a imagem */}
+          {/* Badge apenas para Mobile */}
           <div className="absolute top-2 right-2 sm:hidden">
-             <span className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-xl bg-white dark:bg-slate-900 ${typeConfig.color} !bg-opacity-100`}>
-                {typeConfig.label}
-              </span>
+            <span
+              className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-xl bg-white dark:bg-slate-900 ${typeConfig.color} !bg-opacity-100`}
+            >
+              {typeConfig.label}
+            </span>
           </div>
         </div>
 
@@ -57,10 +64,16 @@ export const ProductStockCard: React.FC<ProductProps> = ({ movement }) => {
               <div className="flex flex-wrap gap-3 mt-2">
                 <div className="flex items-center gap-1.5">
                   <p className="text-[11px] font-numbers text-slate-400 tracking-wider">
-                    SKU: {product.sku}
+                    {product.sku}
                   </p>
                   <button
-                    onClick={() => handleCopy(product.sku, setCopiedSku)}
+                    onClick={() =>
+                      handleCopy(
+                        product.sku,
+                        setCopiedSku,
+                        "Código copiado com sucesso",
+                      )
+                    }
                     className="flex items-center justify-center p-1 rounded-md hover:bg-slate-100 dark:hover:bg-white/10 transition-colors text-slate-400"
                   >
                     <span className="material-symbols-outlined text-[16px]">
@@ -80,7 +93,13 @@ export const ProductStockCard: React.FC<ProductProps> = ({ movement }) => {
                       </p>
                     </div>
                     <button
-                      onClick={() => handleCopy(delivery.trackingCode, setCopiedTracking)}
+                      onClick={() =>
+                        handleCopy(
+                          delivery.trackingCode,
+                          setCopiedTracking,
+                          "Código de rastreio copiado!",
+                        )
+                      }
                       className="flex items-center justify-center p-1 rounded-md hover:bg-slate-100 dark:hover:bg-white/10 transition-colors text-slate-400"
                     >
                       <span className="material-symbols-outlined text-[16px]">
@@ -92,9 +111,11 @@ export const ProductStockCard: React.FC<ProductProps> = ({ movement }) => {
               </div>
             </div>
 
-            {/* Badge para Desktop (se mantêm original) */}
+            {/* Badge para Desktop */}
             <div className="hidden sm:flex flex-col items-end gap-1.5 flex-shrink-0">
-              <span className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-sm ${typeConfig.color}`}>
+              <span
+                className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-sm ${typeConfig.color}`}
+              >
                 {typeConfig.label}
               </span>
             </div>
@@ -103,7 +124,6 @@ export const ProductStockCard: React.FC<ProductProps> = ({ movement }) => {
           <div className="h-px w-full bg-slate-100 dark:bg-white/5 my-4" />
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-y-4 gap-x-2">
-            {/* Bloco de Quantidade - Condicional */}
             <div>
               {product.quantity > 0 ? (
                 <>
@@ -133,12 +153,15 @@ export const ProductStockCard: React.FC<ProductProps> = ({ movement }) => {
                 Pratileira / Fileira
               </p>
               <p className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                {product.shelfCode} <span className="text-slate-400 mx-1">|</span> {product.row}
+                {product.shelfCode}{" "}
+                <span className="text-slate-400 mx-1">|</span> {product.row}
               </p>
             </div>
 
             <div className="col-span-2 md:col-span-1 flex flex-col md:items-end justify-center pt-2 md:pt-0 border-t md:border-t-0 border-slate-50 dark:border-white/5">
-              <span className={`w-fit px-2 py-0.5 rounded-md text-[9px] font-bold uppercase mb-1.5 ${originConfig.color}`}>
+              <span
+                className={`w-fit px-2 py-0.5 rounded-md text-[9px] font-bold uppercase mb-1.5 ${originConfig.color}`}
+              >
                 {originConfig.label}
               </span>
 
@@ -149,7 +172,11 @@ export const ProductStockCard: React.FC<ProductProps> = ({ movement }) => {
               )}
 
               <p className="text-[10px] text-slate-400 font-numbers mt-0.5">
-                {new Date(createdAt).toLocaleDateString("pt-BR")} • {new Date(createdAt).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
+                {new Date(createdAt).toLocaleDateString("pt-BR")} •{" "}
+                {new Date(createdAt).toLocaleTimeString("pt-BR", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
               </p>
             </div>
           </div>

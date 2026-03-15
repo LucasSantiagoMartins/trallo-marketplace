@@ -10,6 +10,7 @@ import {
 } from "@/utils/mappers/product.mapper";
 import { formatPrice } from "@/utils/currency";
 import { useAuth } from "@/context/AuthContext";
+import { UserRole } from "@/enums/user";
 
 interface ProductCardProps {
   product: SearchedProductDTO;
@@ -20,7 +21,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const isBuyer = user?.role === "buyer";
+  const isBuyer = user?.role === UserRole.BUYER;
 
   const displayImage = product.coverImage
     ? `${BASE_UPLOAD_URL}${product.coverImage}`

@@ -3,17 +3,20 @@ import { OrderDTO } from "@/dtos/order";
 import { BASE_UPLOAD_URL } from "@/api/endpoints";
 import { formatPrice } from "@/utils/currency";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "react-hot-toast";
 
 interface OrderDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
   order: OrderDTO;
+  isAdmin?: boolean;
 }
 
 const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
   isOpen,
   onClose,
   order,
+  isAdmin,
 }) => {
   const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
 
@@ -27,6 +30,11 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
       document.body.style.overflow = "unset";
     };
   }, [isOpen]);
+
+  const handleCopySku = (sku: string) => {
+    navigator.clipboard.writeText(sku);
+    toast.success("Código copiado com sucesso");
+  };
 
   return (
     <AnimatePresence>
@@ -105,9 +113,26 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
                             {item.name}
                           </p>
                         </div>
-                        <p className="text-xs text-slate-500 mt-0.5">
-                          {formatPrice(item.price)}
-                        </p>
+
+                        <div className="flex items-center justify-between mt-0.5">
+                          <p className="text-xs text-slate-500">
+                            {formatPrice(item.price)}
+                          </p>
+
+                          {isAdmin && (
+                            <button
+                              onClick={() => handleCopySku(item.productSku)}
+                              className="flex items-center gap-1 text-[10px] font-medium text-slate-400 hover:text-primary transition-colors"
+                            >
+                              <span className="truncate max-w-[80px]">
+                                {item.productSku}
+                              </span>
+                              <span className="material-symbols-outlined text-sm">
+                                content_copy
+                              </span>
+                            </button>
+                          )}
+                        </div>
                       </div>
                     </div>
                   ))}
