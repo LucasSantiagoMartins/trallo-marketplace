@@ -45,7 +45,6 @@ export const operatorItems = [
     label: "Visão Geral",
     path: "/area-operacional",
   },
-
   {
     id: "verificacoes-pendentes",
     icon: "pending_actions",
@@ -63,5 +62,11 @@ export const operatorItems = [
     icon: "inventory_2",
     label: "Gestão de Estoque",
     path: "/area-operacional/gestao-estoque",
+  },
+  {
+    id: "prateleiras",
+    icon: "shelves",
+    label: "Prateleiras",
+    path: "/area-operacional/prateleiras",
   },
 ];

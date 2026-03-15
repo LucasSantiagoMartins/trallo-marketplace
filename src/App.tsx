@@ -42,6 +42,7 @@ import SellerOrdersHistory from "./pages/SellerOrdersHistory";
 import OrdersManagement from "./pages/OrdersManagement";
 import RegisterEntry from "./pages/RegisterEntry";
 import RegisterExit from "./pages/RegisterExit";
+import ShelvesManagement from "./pages/ShelvesManagement";
 
 const queryClient = new QueryClient();
 
@@ -104,6 +105,11 @@ const App = () => (
                 path="/area-operacional/pedidos"
                 element={<OrdersManagement />}
               />
+              <Route
+                path="/area-operacional/prateleiras"
+                element={<ShelvesManagement />}
+              />
+
               <Route
                 path="/area-operacional/verificacoes-pendentes"
                 element={<PendingVerificationsPage />}

@@ -8,3 +8,14 @@ export interface InventoryDashboardDTO {
     occupancyRate: number;
     dailyStockTurnover: number;
 }
+
+export interface CreateShelfDto {
+    totalRows: number;
+}
+
+export interface ShelfDTO {
+    id: string;
+    code: string;
+    totalRows: number;
+    createdAt: string;
+}

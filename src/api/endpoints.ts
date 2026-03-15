@@ -21,6 +21,8 @@ export const endpoints = {
     dashboard: "/warehouse-inventories/dashboard",
     exits: "/warehouse-inventories/exits",
     entries: "/warehouse-inventories/entries",
+    shelves: "/warehouse-inventories/shelves",
+    deleteShelf: (id: string) => `/warehouse-inventories/shelves/${id}`,
   },
   products: {
     search: "/products/search",
@@ -44,7 +46,7 @@ export const endpoints = {
     sellerOrders: "/orders/my/seller",
     adminOrders: "/orders",
     getByOrderNumber: (orderNumber: string) => `/orders/${orderNumber}`,
-    
+
   },
   wallets: {
     summary: "/wallets/summary",

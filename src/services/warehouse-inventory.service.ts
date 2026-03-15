@@ -6,7 +6,9 @@ import {
   RegisterExitDto,
   StockMovementDTO,
 } from "@/types/warehouse-inventory";
-import { InventoryDashboardDTO } from "@/dtos/wharehouse-invetory.dto";
+import { CreateShelfDto, InventoryDashboardDTO, ShelfDTO } from "@/dtos/wharehouse-invetory.dto";
+
+
 
 export async function registerStockEntry(
   data: RegisterEntryDto,
@@ -42,6 +44,7 @@ export async function getStockExits(): Promise<
     endpoints.warehouseInventories.exits,
   );
 }
+
 export async function getDashboard(): Promise<
   ApiResponse<InventoryDashboardDTO>
 > {
@@ -50,3 +53,21 @@ export async function getDashboard(): Promise<
   );
 }
 
+export async function createShelf(
+  data: CreateShelfDto,
+): Promise<ApiResponse<ShelfDTO>> {
+  return await http.post<ShelfDTO>(
+    endpoints.warehouseInventories.shelves,
+    data,
+  );
+}
+
+export async function getShelves(): Promise<ApiResponse<ShelfDTO[]>> {
+  return await http.get<ShelfDTO[]>(endpoints.warehouseInventories.shelves);
+}
+
+export async function deleteShelf(id: string): Promise<ApiResponse<void>> {
+  return await http.delete<void>(
+    endpoints.warehouseInventories.deleteShelf(id),
+  );
+}
