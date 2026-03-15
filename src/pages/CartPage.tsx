@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import toast from "react-hot-toast"; // Importação do novo toast
+import toast from "react-hot-toast";
 import PageHeader from "../components/PageHeader";
 import CartItemCard from "../components/CartItemCard";
 import PaymentChoiceModal from "@/components/PaymentChoiceModal";
 import CheckoutModal from "@/components/CheckoutModal";
 import EmptyCartCard from "../components/EmptyCartCard";
-import ConfirmActionModal from "../components/ConfirmActionModal";
 import {
   getMyCart,
   updateCartItemQuantity,
@@ -20,6 +19,7 @@ import { PaymentMethod, PaymentMode } from "@/enums/payment";
 import ConfirmAction from "@/components/ConfirmAction";
 import TralloButton from "@/components/TralloButton";
 import { formatPrice } from "@/utils/currency";
+import { useCart } from "@/hooks/use-cart";
 
 interface CartItem {
   id: string;
@@ -32,7 +32,9 @@ interface CartItem {
 
 const CartPage: React.FC = () => {
   const navigate = useNavigate();
+  const { syncCartWithServer } = useCart();
   const [items, setItems] = useState<CartItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [modalType, setModalType] = useState<
     "single" | "all" | "payment_choice" | "checkout" | null
   >(null);
@@ -58,6 +60,8 @@ const CartPage: React.FC = () => {
       }
     } catch (err) {
       toast.error("Erro ao carregar o carrinho.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -92,6 +96,7 @@ const CartPage: React.FC = () => {
         const res = await removeFromCart(idToRemove);
         if (res.success) {
           setItems((prev) => prev.filter((item) => item.id !== idToRemove));
+          syncCartWithServer();
           toast.success("Item removido.");
         }
       } catch (error) {
@@ -102,6 +107,7 @@ const CartPage: React.FC = () => {
         const res = await clearCart();
         if (res.success) {
           setItems([]);
+          syncCartWithServer();
           toast.success("Carrinho limpo com sucesso.");
         }
       } catch (error) {
@@ -133,6 +139,7 @@ const CartPage: React.FC = () => {
 
       if (response && response.success) {
         toast.success("Pedido realizado com sucesso.");
+        syncCartWithServer();
         navigate("/meus-pedidos", { state: { order: response.data } });
         return response.data;
       } else {
@@ -154,6 +161,8 @@ const CartPage: React.FC = () => {
   const deliveryFee = paymentType === "presencial" ? 0 : 2500;
   const total = subtotal + deliveryFee;
 
+  const isClearingAll = modalType === "all";
+
   return (
     <div className="min-h-screen bg-[#f6f5f8] dark:bg-[#141022] text-[#121118] dark:text-white pb-60">
       <PageHeader
@@ -173,7 +182,11 @@ const CartPage: React.FC = () => {
 
       <main className="px-4 pt-24 space-y-4 max-w-3xl mx-auto">
         <AnimatePresence mode="popLayout" initial={false}>
-          {items.length > 0 ? (
+          {isLoading ? (
+            <div className="flex justify-center pt-10">
+              <div className="w-8 h-8 border-4 border-[#6d3ff8] border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : items.length > 0 ? (
             items.map((item) => (
               <motion.div
                 key={item.id}
@@ -196,7 +209,7 @@ const CartPage: React.FC = () => {
       </main>
 
       <AnimatePresence>
-        {items.length > 0 && !modalType && (
+        {items.length > 0 && !modalType && !isLoading && (
           <motion.div
             initial={{ y: "100%" }}
             animate={{ y: 0 }}
@@ -250,9 +263,17 @@ const CartPage: React.FC = () => {
 
         <ConfirmAction
           isLoading={false}
-          description="ira limpar todos os items do seu carrinho"
-          title="Tem a certeza que quer limpar o carrinho ?"
-          confirmText="limpar carrinho"
+          description={
+            isClearingAll
+              ? "irá limpar todos os itens do seu carrinho"
+              : "este item será removido do seu carrinho"
+          }
+          title={
+            isClearingAll
+              ? "Tem a certeza que quer limpar o carrinho?"
+              : "Remover este item?"
+          }
+          confirmText={isClearingAll ? "limpar carrinho" : "remover"}
           isOpen={modalType === "single" || modalType === "all"}
           onConfirm={handleConfirmAction}
           onClose={closeModal}
