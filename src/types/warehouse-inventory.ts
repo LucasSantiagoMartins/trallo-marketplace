@@ -38,15 +38,20 @@ export interface StockMovementDTO {
   product: StockMovementProductDTO;
   delivery?: DeliveryDetailsDTO;
 }
-export interface RegisterEntryDto {
+
+export interface RegisterExitDto {
   orderNumber: string;
+  delivererId: number;
+}
+
+export interface StockEntryItem {
   productSku: string;
   shelfCode: string;
   row: number;
   quantity: number;
 }
 
-export interface RegisterExitDto {
+export interface RegisterEntryDto {
   orderNumber: string;
-  delivererId: number;
+  items: StockEntryItem[];
 }

@@ -44,6 +44,8 @@ export const endpoints = {
     buyerOrders: "/orders/my/buyer",
     sellerOrders: "/orders/my/seller",
     adminOrders: "/orders",
+    getByOrderNumber: (orderNumber: string) => `/orders/${orderNumber}`,
+    
   },
   wallets: {
     summary: "/wallets/summary",

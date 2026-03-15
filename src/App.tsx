@@ -40,6 +40,8 @@ import AddBankAccountScreen from "./pages/AddBankAccountScreen";
 import SupportPage from "./pages/SupportPage";
 import SellerOrdersHistory from "./pages/SellerOrdersHistory";
 import OrdersManagement from "./pages/OrdersManagement";
+import RegisterEntry from "./pages/RegisterEntry";
+import RegisterExit from "./pages/RegisterExit";
 
 const queryClient = new QueryClient();
 
@@ -113,6 +115,14 @@ const App = () => (
               <Route
                 path="/area-operacional/gestao-estoque"
                 element={<InventoryManagement />}
+              />
+              <Route
+                path="/area-operacional/registar-entrada"
+                element={<RegisterEntry />}
+              />
+              <Route
+                path="/area-operacional/registar-saida"
+                element={<RegisterExit />}
               />
             </Route>
 

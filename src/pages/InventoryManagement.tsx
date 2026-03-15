@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion, Variants, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import Sidebar from "@/components/Sidebar";
 import { ProductStockCard } from "@/components/ProductStockCard";
 import { InventoryControlCard } from "@/components/InventoryControlCard";
@@ -9,16 +10,13 @@ import {
   getStockEntries,
   getStockExits,
 } from "@/services/warehouse-inventory.service";
-import { RegisterEntryForm } from "@/components/register-entry-form";
-import { RegisterExitForm } from "@/components/register-exit-form";
 import BottomNavigation from "@/components/BottomNavigation";
 
 const InventoryManagement: React.FC = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"entradas" | "saidas">("entradas");
   const [movements, setMovements] = useState<StockMovementDTO[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalType, setModalType] = useState<"entradas" | "saidas">("entradas");
 
   useEffect(() => {
     fetchMovements();
@@ -41,14 +39,12 @@ const InventoryManagement: React.FC = () => {
     }
   };
 
-  const handleOpenModal = (type: "entradas" | "saidas") => {
-    setModalType(type);
-    setIsModalOpen(true);
-  };
-
-  const handleRegisterSuccess = () => {
-    setIsModalOpen(false);
-    fetchMovements();
+  const handleNavigateToRegister = (type: "entradas" | "saidas") => {
+    if (type === "entradas") {
+      navigate("/area-operacional/registar-entrada");
+    } else {
+      navigate("/area-operacional/registar-saida");
+    }
   };
 
   const containerVariants: Variants = {
@@ -121,26 +117,26 @@ const InventoryManagement: React.FC = () => {
                   </button>
                 </div>
 
-                  <div className="flex gap-2 lg:hidden">
-                    <button
-                      onClick={() => handleOpenModal("entradas")}
-                      className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2.5 rounded-xl text-sm font-bold transition-colors"
-                    >
-                      <span className="material-symbols-outlined text-lg">
-                        add_circle
-                      </span>
-                      Entrada
-                    </button>
-                    <button
-                      onClick={() => handleOpenModal("saidas")}
-                      className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-rose-500 hover:bg-rose-600 text-white px-4 py-2.5 rounded-xl text-sm font-bold transition-colors"
-                    >
-                      <span className="material-symbols-outlined text-lg">
-                        remove_circle
-                      </span>
-                      Saída
-                    </button>
-                  </div>
+                <div className="flex gap-2 lg:hidden">
+                  <button
+                    onClick={() => handleNavigateToRegister("entradas")}
+                    className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2.5 rounded-xl text-sm font-bold transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-lg">
+                      add_circle
+                    </span>
+                    Entrada
+                  </button>
+                  <button
+                    onClick={() => handleNavigateToRegister("saidas")}
+                    className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-rose-500 hover:bg-rose-600 text-white px-4 py-2.5 rounded-xl text-sm font-bold transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-lg">
+                      remove_circle
+                    </span>
+                    Saída
+                  </button>
+                </div>
               </motion.div>
 
               <motion.div
@@ -184,48 +180,13 @@ const InventoryManagement: React.FC = () => {
             </div>
 
             <motion.div variants={itemVariants} className="hidden lg:block">
-              <InventoryControlCard onAction={handleOpenModal} />
+              <InventoryControlCard
+                onAction={(type) => handleNavigateToRegister(type)}
+              />
             </motion.div>
           </div>
         </motion.main>
       </div>
-
-      <AnimatePresence>
-        {isModalOpen && (
-          <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="w-full max-w-md bg-white dark:bg-[#1c182d] rounded-[2.5rem] p-8 shadow-2xl relative"
-            >
-              <div className="flex justify-between items-center mb-8">
-                <h2 className="text-2xl font-black text-slate-900 dark:text-white">
-                  Nova {modalType === "entradas" ? "Entrada" : "Saída"}
-                </h2>
-                <button
-                  onClick={() => setIsModalOpen(false)}
-                  className="text-gray-400 hover:text-gray-600 dark:hover:text-white transition-colors"
-                >
-                  <span className="material-symbols-outlined">close</span>
-                </button>
-              </div>
-
-              {modalType === "entradas" ? (
-                <RegisterEntryForm
-                  onSuccess={handleRegisterSuccess}
-                  onCancel={() => setIsModalOpen(false)}
-                />
-              ) : (
-                <RegisterExitForm
-                  onSuccess={handleRegisterSuccess}
-                  onCancel={() => setIsModalOpen(false)}
-                />
-              )}
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
 
       <BottomNavigation />
     </div>

@@ -18,6 +18,7 @@ export async function registerStockEntry(
   );
   return res;
 }
+
 export async function registerStockExit(
   data: RegisterExitDto,
 ): Promise<ApiResponse<StockMovementDTO>> {

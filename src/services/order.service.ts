@@ -1,7 +1,7 @@
 import { http } from "../api/http";
 import { endpoints } from "../api/endpoints";
 import type { ApiResponse } from "@/types/api";
-import { OrderDTO, PaginatedOrdersDTO } from "@/dtos/order";
+import { OrderDTO, OrderStockResponseDto, PaginatedOrdersDTO } from "@/dtos/order";
 
 export const orderService = {
   async getBuyerOrders(page: number, limit: number): Promise<ApiResponse<PaginatedOrdersDTO[]>> {
@@ -19,5 +19,9 @@ export const orderService = {
     return await http.get<PaginatedOrdersDTO>(endpoints.orders.adminOrders, {
       params: { page, limit }
     });
-  }
+  },
+
+  async getOrderByNumber(orderNumber: string): Promise<ApiResponse<OrderStockResponseDto>> {
+    return await http.get<OrderStockResponseDto>(endpoints.orders.getByOrderNumber(orderNumber));
+  },
 };

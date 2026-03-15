@@ -19,9 +19,21 @@ export interface OrderDTO {
 }
 
 export interface PaginatedOrdersDTO {
-  orders: OrderDTO[]; 
+  orders: OrderDTO[];
   pagination: PaginationDTO;
 }
 
 
+export interface OrderStockItem {
+  productSku: string;
+  name: string;
+  quantity: number;
+  coverImage: string;
+}
+
+export interface OrderStockResponseDto {
+  orderNumber: string;
+  status: string;
+  items: OrderStockItem[];
+}
 
