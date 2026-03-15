@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import PageHeader from "../components/PageHeader";
@@ -7,6 +6,7 @@ import CartItemCard from "../components/CartItemCard";
 import PaymentChoiceModal from "@/components/PaymentChoiceModal";
 import CheckoutModal from "@/components/CheckoutModal";
 import EmptyCartCard from "../components/EmptyCartCard";
+import CartTotalPanel from "../components/CartTotalPanel";
 import {
   getMyCart,
   updateCartItemQuantity,
@@ -17,23 +17,14 @@ import { BASE_UPLOAD_URL } from "@/api/endpoints";
 import { checkoutFromCart } from "@/services/checkout.service";
 import { PaymentMethod, PaymentMode } from "@/enums/payment";
 import ConfirmAction from "@/components/ConfirmAction";
-import TralloButton from "@/components/TralloButton";
-import { formatPrice } from "@/utils/currency";
 import { useCart } from "@/hooks/use-cart";
+import { CartItemDto } from "@/dtos/cart";
 
-interface CartItem {
-  id: string;
-  name: string;
-  attr: string;
-  price: number;
-  qty: number;
-  image: string;
-}
 
 const CartPage: React.FC = () => {
   const navigate = useNavigate();
   const { syncCartWithServer } = useCart();
-  const [items, setItems] = useState<CartItem[]>([]);
+  const [items, setItems] = useState<CartItemDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [modalType, setModalType] = useState<
     "single" | "all" | "payment_choice" | "checkout" | null
@@ -48,13 +39,14 @@ const CartPage: React.FC = () => {
     try {
       const res = await getMyCart();
       if (res.success && res.data) {
-        const formattedItems: CartItem[] = res.data.items.map((item) => ({
+        const formattedItems: CartItemDto[] = res.data.items.map((item) => ({
           id: item.id,
           name: item.product.name,
           attr: item.product.description,
           price: item.priceSnapshot,
           qty: item.quantity,
           image: `${BASE_UPLOAD_URL}/${item.product.coverImage}`,
+          availableQuantity: item.product.availableQuantity
         }));
         setItems(formattedItems);
       }
@@ -72,10 +64,8 @@ const CartPage: React.FC = () => {
   const updateQty = async (id: string, delta: number) => {
     const item = items.find((i) => i.id === id);
     if (!item) return;
-
     const newQty = Math.max(1, item.qty + delta);
     const res = await updateCartItemQuantity(id, newQty);
-
     if (res.success) {
       setItems((prev) =>
         prev.map((i) => (i.id === id ? { ...i, qty: newQty } : i)),
@@ -123,7 +113,6 @@ const CartPage: React.FC = () => {
         paymentType === "online"
           ? PaymentMode.ONLINE_PAYMENT
           : PaymentMode.ONSITE_PAYMENT;
-
       let method;
       if (paymentType === "online") {
         method =
@@ -131,12 +120,10 @@ const CartPage: React.FC = () => {
             ? PaymentMethod.MULTICAIXA_EXPRESS
             : PaymentMethod.REFERENCE;
       }
-
       const response = await checkoutFromCart({
         paymentMode: mode,
         paymentMethod: method,
       });
-
       if (response && response.success) {
         toast.success("Pedido realizado com sucesso.");
         syncCartWithServer();
@@ -160,7 +147,6 @@ const CartPage: React.FC = () => {
   const subtotal = items.reduce((acc, item) => acc + item.price * item.qty, 0);
   const deliveryFee = paymentType === "presencial" ? 0 : 2500;
   const total = subtotal + deliveryFee;
-
   const isClearingAll = modalType === "all";
 
   return (
@@ -181,65 +167,39 @@ const CartPage: React.FC = () => {
       />
 
       <main className="px-4 pt-24 space-y-4 max-w-3xl mx-auto">
-        <AnimatePresence mode="popLayout" initial={false}>
-          {isLoading ? (
-            <div className="flex justify-center pt-10">
-              <div className="w-8 h-8 border-4 border-[#6d3ff8] border-t-transparent rounded-full animate-spin" />
+        {isLoading ? (
+          <div className="flex justify-center pt-10">
+            <div className="w-8 h-8 border-4 border-[#6d3ff8] border-t-transparent rounded-full animate-spin" />
+          </div>
+        ) : items.length > 0 ? (
+          items.map((item) => (
+            <div
+              key={item.id}
+              className="animate-in fade-in zoom-in-95 duration-300"
+            >
+              <CartItemCard
+                item={item}
+                onUpdateQty={updateQty}
+                onRemove={handleOpenRemoveModal}
+              />
             </div>
-          ) : items.length > 0 ? (
-            items.map((item) => (
-              <motion.div
-                key={item.id}
-                layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.2 } }}
-              >
-                <CartItemCard
-                  item={item}
-                  onUpdateQty={updateQty}
-                  onRemove={handleOpenRemoveModal}
-                />
-              </motion.div>
-            ))
-          ) : (
+          ))
+        ) : (
+          <div className="animate-in fade-in duration-500">
             <EmptyCartCard />
-          )}
-        </AnimatePresence>
+          </div>
+        )}
       </main>
 
-      <AnimatePresence>
-        {items.length > 0 && !modalType && !isLoading && (
-          <motion.div
-            initial={{ y: "100%" }}
-            animate={{ y: 0 }}
-            exit={{ y: "100%", transition: { duration: 0.3 } }}
-            drag="y"
-            dragConstraints={{ top: 0, bottom: 180 }}
-            dragElastic={0.1}
-            className="fixed bottom-0 left-0 right-0 z-[70] bg-white dark:bg-[#1c182d] rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.1)] border-t border-gray-100 dark:border-white/10 px-6 pb-12 pt-4 touch-none"
-          >
-            <div className="max-w-3xl mx-auto flex flex-col items-center">
-              <div className="w-12 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full mb-6" />
-              <span className="text-xs text-gray-400 uppercase font-black">
-                Total a pagar
-              </span>
-              <span className="font-black text-3xl mb-6">
-                {formatPrice(total)}
-              </span>
-              <TralloButton
-                onClick={() => setModalType("payment_choice")}
-                className="w-full bg-[#6d3ff8] text-lg shadow-lg active:scale-[0.98] transition-transform"
-              >
-                Finalizar Compra
-              </TralloButton>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {items.length > 0 && !modalType && !isLoading && (
+        <CartTotalPanel
+          total={total}
+          onCheckout={() => setModalType("payment_choice")}
+        />
+      )}
 
-      <AnimatePresence>
-        {modalType === "payment_choice" && (
+      {modalType === "payment_choice" && (
+        <div className="fixed inset-0 z-[80] animate-in fade-in duration-200">
           <PaymentChoiceModal
             onClose={closeModal}
             onSelect={(type) => {
@@ -247,9 +207,11 @@ const CartPage: React.FC = () => {
               setModalType("checkout");
             }}
           />
-        )}
+        </div>
+      )}
 
-        {modalType === "checkout" && (
+      {modalType === "checkout" && (
+        <div className="fixed inset-0 z-[80] animate-in slide-in-from-right duration-300">
           <CheckoutModal
             paymentType={paymentType}
             paymentMethod={paymentMethod}
@@ -259,26 +221,26 @@ const CartPage: React.FC = () => {
             onClose={closeModal}
             onConfirm={handleConfirmCheckout}
           />
-        )}
+        </div>
+      )}
 
-        <ConfirmAction
-          isLoading={false}
-          description={
-            isClearingAll
-              ? "irá limpar todos os itens do seu carrinho"
-              : "este item será removido do seu carrinho"
-          }
-          title={
-            isClearingAll
-              ? "Tem a certeza que quer limpar o carrinho?"
-              : "Remover este item?"
-          }
-          confirmText={isClearingAll ? "limpar carrinho" : "remover"}
-          isOpen={modalType === "single" || modalType === "all"}
-          onConfirm={handleConfirmAction}
-          onClose={closeModal}
-        />
-      </AnimatePresence>
+      <ConfirmAction
+        isLoading={false}
+        description={
+          isClearingAll
+            ? "irá limpar todos os itens do seu carrinho"
+            : "este item será removido do seu carrinho"
+        }
+        title={
+          isClearingAll
+            ? "Tem a certeza que quer limpar o carrinho?"
+            : "Remover este item?"
+        }
+        confirmText={isClearingAll ? "limpar carrinho" : "remover"}
+        isOpen={modalType === "single" || modalType === "all"}
+        onConfirm={handleConfirmAction}
+        onClose={closeModal}
+      />
     </div>
   );
 };
