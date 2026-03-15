@@ -124,10 +124,10 @@ const Carousel: React.FC<CarouselProps> = ({ slides, activeIndex = 0 }) => {
         ))}
       </div>
 
-      <div className="absolute inset-y-0 left-6 md:left-8 right-6 md:right-8 flex items-center justify-between z-30 pointer-events-none">
+      <div className="absolute inset-y-0 left-6 md:left-8 right-6 md:right-8 hidden md:flex items-center justify-between z-30 pointer-events-none">
         <button
           onClick={handlePrev}
-          className="size-9 md:size-10 rounded-full bg-white/10 md:bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center text-white pointer-events-auto opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all hover:bg-white/40 active:scale-90 shadow-lg"
+          className="size-9 md:size-10 rounded-full bg-white/10 md:bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center text-white pointer-events-auto md:opacity-0 md:group-hover:opacity-100 transition-all hover:bg-white/40 active:scale-90 shadow-lg"
         >
           <span className="material-symbols-outlined text-xl md:text-2xl font-bold">
             chevron_left
@@ -135,7 +135,7 @@ const Carousel: React.FC<CarouselProps> = ({ slides, activeIndex = 0 }) => {
         </button>
         <button
           onClick={handleNext}
-          className="size-9 md:size-10 rounded-full bg-white/10 md:bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center text-white pointer-events-auto opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all hover:bg-white/40 active:scale-90 shadow-lg"
+          className="size-9 md:size-10 rounded-full bg-white/10 md:bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center text-white pointer-events-auto md:opacity-0 md:group-hover:opacity-100 transition-all hover:bg-white/40 active:scale-90 shadow-lg"
         >
           <span className="material-symbols-outlined text-xl md:text-2xl font-bold">
             chevron_right
@@ -143,7 +143,6 @@ const Carousel: React.FC<CarouselProps> = ({ slides, activeIndex = 0 }) => {
         </button>
       </div>
 
-      {/* Indicadores - Agora 100% decorativos (div sem clique) */}
       <div className="absolute bottom-4 md:bottom-8 right-0 left-0 flex items-center justify-center gap-2 z-20 pointer-events-none">
         {slides.map((_, index) => (
           <div

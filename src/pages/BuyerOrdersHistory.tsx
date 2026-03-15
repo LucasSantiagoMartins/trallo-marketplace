@@ -3,6 +3,7 @@ import BottomNavigation from "../components/BottomNavigation";
 import OrderItem from "../components/OrderCard";
 import PageHeader from "../components/PageHeader";
 import Pagination from "../components/Pagination";
+import SegmentedControl from "../components/SegmentedControl";
 import { OrderStatus } from "@/enums/order-status";
 import { OrderDTO } from "@/dtos/order";
 import { orderService } from "@/services/order.service";
@@ -22,7 +23,6 @@ const BuyerOrdersHistory: React.FC = () => {
     try {
       setLoading(true);
       const response = await orderService.getBuyerOrders(page, ITEMS_PER_PAGE);
-      console.log(response.data);
       if (response.success && response.data) {
         const data = response.data as any;
         setOrders(Array.isArray(data.orders) ? data.orders : []);
@@ -55,6 +55,11 @@ const BuyerOrdersHistory: React.FC = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const handleTabChange = (tab: "ativos" | "finalizados") => {
+    setActiveTab(tab);
+    setCurrentPage(1);
+  };
+
   return (
     <div className="min-h-screen bg-[#f6f5f8] dark:bg-[#141022] text-[#121118] dark:text-white pb-24 font-['Inter']">
       <PageHeader title="Meus Pedidos" />
@@ -62,34 +67,15 @@ const BuyerOrdersHistory: React.FC = () => {
       <main className="max-w-7xl mx-auto px-4 pt-24">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
-            <div className="flex p-1.5 bg-gray-200/50 dark:bg-white/5 rounded-2xl w-full md:w-80 mb-6 border border-gray-200/30 dark:border-white/5">
-              <button
-                onClick={() => {
-                  setActiveTab("ativos");
-                  setCurrentPage(1);
-                }}
-                className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all ${
-                  activeTab === "ativos"
-                    ? "bg-white dark:bg-[#6d3ff8] shadow-md text-[#6d3ff8] dark:text-white"
-                    : "text-gray-500"
-                }`}
-              >
-                Ativos
-              </button>
-              <button
-                onClick={() => {
-                  setActiveTab("finalizados");
-                  setCurrentPage(1);
-                }}
-                className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all ${
-                  activeTab === "finalizados"
-                    ? "bg-white dark:bg-[#6d3ff8] shadow-md text-[#6d3ff8] dark:text-white"
-                    : "text-gray-500"
-                }`}
-              >
-                Finalizados
-              </button>
-            </div>
+            <SegmentedControl
+              className="w-full md:w-80 mb-6"
+              activeId={activeTab}
+              onChange={handleTabChange}
+              options={[
+                { id: "ativos", label: "Ativos" },
+                { id: "finalizados", label: "Finalizados" },
+              ]}
+            />
 
             <div className="grid grid-cols-1 gap-4">
               {loading ? (
@@ -146,7 +132,7 @@ const BuyerOrdersHistory: React.FC = () => {
                 , garantindo total segurança para você.
               </p>
               <div className="border-t border-gray-100 dark:border-white/5">
-                <div className="flex items-center gap-1 text-[#6d3ff8]">
+                <div className="flex items-center gap-1 mt-6 text-[#6d3ff8]">
                   <span className="material-symbols-outlined">shield</span>
                   <span className="text-xs font-black uppercase tracking-widest">
                     Compra Protegida
