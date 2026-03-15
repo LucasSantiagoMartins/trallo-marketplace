@@ -31,19 +31,16 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
     if (isOpen) {
       setMounted(true);
       setDragY(0);
-      document.documentElement.style.overflow = "hidden";
       document.body.style.overflow = "hidden";
       setTimeout(() => setAnimate(true), 10);
     } else {
       setAnimate(false);
       const timer = setTimeout(() => {
         setMounted(false);
-        document.documentElement.style.overflow = "";
         document.body.style.overflow = "";
       }, 300);
       return () => {
         clearTimeout(timer);
-        window.removeEventListener("resize", checkDevice);
       };
     }
     return () => window.removeEventListener("resize", checkDevice);
@@ -86,14 +83,22 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
 
   if (!mounted) return null;
 
-  const mobileStyle = isMobile 
-    ? { transform: animate ? `translateY(${dragY}px)` : 'translateY(100%)', transition: touchStart.current ? 'none' : 'transform 0.3s ease-out' }
-    : {};
+  const currentTranslateY = isMobile
+    ? animate
+      ? dragY
+      : "100%"
+    : animate
+      ? 0
+      : "40px";
+
+  const desktopClasses = !isMobile
+    ? `transition-all duration-300 ease-out ${animate ? "opacity-100 scale-100" : "opacity-0 scale-95"}`
+    : "";
 
   return (
-    <div className="fixed inset-0 z-[70] flex items-end lg:items-center justify-center overflow-hidden touch-none">
+    <div className="fixed inset-0 z-[100] flex items-end lg:items-center justify-center overflow-hidden">
       <div
-        className={`absolute inset-0 bg-black/60 transition-opacity duration-300 ease-in-out ${
+        className={`absolute inset-0 bg-black/60 transition-opacity duration-300 ease-in-out cursor-pointer ${
           animate ? "opacity-100" : "opacity-0"
         }`}
         onClick={handleClose}
@@ -103,34 +108,41 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
-        style={mobileStyle}
+        style={{
+          transform: `translateY(${typeof currentTranslateY === "number" ? currentTranslateY + "px" : currentTranslateY})`,
+          transition:
+            isMobile && touchStart.current !== null
+              ? "none"
+              : "all 0.3s ease-out",
+        }}
         className={`
           relative w-full lg:max-w-2xl bg-white dark:bg-[#1c182d] 
           rounded-t-[2.5rem] lg:rounded-[2rem] shadow-2xl flex flex-col 
-          pointer-events-auto overflow-hidden touch-auto
+          pointer-events-auto overflow-hidden
           h-[75vh] lg:h-auto lg:max-h-[85vh]
-          ${!isMobile ? `transition-all duration-300 ease-out ${animate ? "translate-y-0 opacity-100 scale-100" : "translate-y-10 opacity-0 scale-95"}` : ""}
+          ${desktopClasses}
         `}
       >
         {isMobile ? (
-          <div
-            className="w-full pt-4 pb-2 cursor-grab active:cursor-grabbing shrink-0"
-          >
+          <div className="w-full pt-4 pb-2 cursor-grab active:cursor-grabbing shrink-0">
             <div className="w-12 h-1.5 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto" />
           </div>
         ) : (
-          <div className="flex justify-end px-6 pt-6 shrink-0">
+          <div className="absolute top-6 right-6 z-[110]">
             <button
+              type="button"
               onClick={handleClose}
-              className="p-2 rounded-full bg-slate-100 dark:bg-white/5 text-slate-900 dark:text-white hover:bg-slate-200 dark:hover:bg-white/10 transition-colors"
+              className="flex items-center justify-center w-10 h-10 rounded-full bg-slate-100 dark:bg-white/10 text-slate-900 dark:text-white hover:bg-slate-200 dark:hover:bg-white/20 transition-all cursor-pointer border-none outline-none active:scale-90"
             >
-              <span className="material-symbols-outlined block">close</span>
+              <span className="material-symbols-outlined pointer-events-none">
+                close
+              </span>
             </button>
           </div>
         )}
 
         <div
-          className={`flex justify-between items-center px-6 pb-2 shrink-0 ${!isMobile ? "-mt-8" : ""}`}
+          className={`flex justify-between items-center px-6 pt-8 pb-2 shrink-0`}
         >
           <h2 className="text-xl font-bold text-slate-900 dark:text-white">
             Pedido {order.orderNumber}
@@ -172,7 +184,7 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
                     {isAdmin && (
                       <button
                         onClick={() => handleCopySku(item.productSku)}
-                        className="flex items-center gap-1 text-[10px] font-medium text-slate-400 hover:text-[#6d3ff8] transition-colors"
+                        className="flex items-center gap-1 text-[10px] font-medium text-slate-400 hover:text-[#6d3ff8] transition-colors cursor-pointer"
                       >
                         <span className="truncate max-w-[80px]">
                           {item.productSku}

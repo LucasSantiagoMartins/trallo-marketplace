@@ -39,7 +39,7 @@ const SellerOrdersHistory: React.FC = () => {
     fetchOrders(currentPage);
   }, [currentPage, fetchOrders]);
 
-  const filteredOrders = (Array.isArray(orders) ? orders : []).filter((order) => {
+  const filteredOrders = orders.filter((order) => {
     const isFinalized = [
       OrderStatus.DELIVERED,
       OrderStatus.PAID,
@@ -55,16 +55,16 @@ const SellerOrdersHistory: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f6f5f8] dark:bg-[#141022] text-[#121118] dark:text-white pb-24 font-['Inter']">
+    <div className="min-h-screen bg-[#f6f5f8] dark:bg-[#141022] text-[#121118] dark:text-white pb-24 font-['Inter'] relative z-0">
       <PageHeader title="Minhas Vendas" />
 
-      <main className="max-w-7xl mx-auto px-4 pt-24">
+      <main className="max-w-7xl mx-auto px-4 pt-24 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
             <div className="flex p-1.5 bg-gray-200/50 dark:bg-white/5 rounded-2xl w-full md:w-80 mb-6 border border-gray-200/30 dark:border-white/5">
               <button
                 onClick={() => { setActiveTab("ativos"); setCurrentPage(1); }}
-                className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all ${
+                className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
                   activeTab === "ativos"
                     ? "bg-white dark:bg-[#6d3ff8] shadow-md text-[#6d3ff8] dark:text-white"
                     : "text-gray-500"
@@ -74,7 +74,7 @@ const SellerOrdersHistory: React.FC = () => {
               </button>
               <button
                 onClick={() => { setActiveTab("finalizados"); setCurrentPage(1); }}
-                className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all ${
+                className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
                   activeTab === "finalizados"
                     ? "bg-white dark:bg-[#6d3ff8] shadow-md text-[#6d3ff8] dark:text-white"
                     : "text-gray-500"
@@ -140,7 +140,7 @@ const SellerOrdersHistory: React.FC = () => {
                 venda, já com a comissão padrão da plataforma, será liberado
                 para levantamento.
               </p>
-              <div className="border-t border-gray-100 dark:border-white/5">
+              <div className="border-t border-gray-100 dark:border-white/5 pt-4">
                 <div className="flex items-center gap-1 text-[#6d3ff8]">
                   <span className="material-symbols-outlined">
                     verified_user
