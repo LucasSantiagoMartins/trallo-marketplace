@@ -94,7 +94,7 @@ const EditProfile = () => {
         }
         setInitialData({ name, email, phone, address });
       }
-    } catch (err: any) {
+    } catch (err) {
       toast.error(err.message ?? "Erro ao atualizar perfil");
     } finally {
       setIsLoading(false);
@@ -120,7 +120,7 @@ const EditProfile = () => {
           setProfileImage(res.data.profilePicture || null);
           toast.success("Foto atualizada");
         }
-      } catch (err: any) {
+      } catch (err) {
         toast.error(
           err.message ?? "Não foi possível atualizar a foto de perfil",
         );
@@ -135,109 +135,109 @@ const EditProfile = () => {
     <div className="bg-background-light dark:bg-background-dark min-h-screen flex flex-col items-center">
       <PageHeader title="Editar Perfil" />
       
-      <div className="w-full flex justify-center flex-1 md:flex-none">
-        <main className="w-full md:max-w-4xl bg-white dark:bg-[#1c182d] md:rounded-[3rem] md:mt-24 px-6 md:px-16 py-10 md:py-6 md:shadow-xl border-none dark:border-white/5 flex flex-col items-center h-full md:h-fit md:mb-10">
-          <div className="relative mb-6 mt-6 md:mt-0 flex flex-col items-center">
-            <div
-              className={`relative group ${isImageLoading ? "cursor-wait" : "cursor-pointer"}`}
-              onClick={handleImageClick}
-            >
-              <div className="absolute inset-0 bg-primary/20 rounded-full blur-2xl group-hover:bg-primary/40 transition-all duration-500"></div>
-              <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full border-4 border-white dark:border-slate-800 shadow-xl overflow-hidden bg-slate-200 flex items-center justify-center">
-                {profileImage ? (
-                  <img
-                    className={`w-full h-full object-cover transition-transform duration-500 ${!isImageLoading && "group-hover:scale-110"}`}
-                    src={BASE_UPLOAD_URL + profileImage}
-                    alt="Profile"
-                  />
-                ) : (
-                  <span className="material-symbols-outlined text-slate-400 text-5xl">
-                    account_circle
-                  </span>
-                )}
-                <div
-                  className={`absolute inset-0 bg-black/50 flex flex-col items-center justify-center transition-opacity duration-300 ${isImageLoading ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
-                >
-                  {isImageLoading ? (
-                    <span className="material-symbols-outlined text-white text-2xl animate-spin">
-                      sync
-                    </span>
-                  ) : (
-                    <>
-                      <span className="material-symbols-outlined text-white text-2xl">
-                        photo_camera
-                      </span>
-                      <span className="text-white text-[9px] font-bold uppercase mt-1 tracking-widest">
-                        Alterar
-                      </span>
-                    </>
-                  )}
-                </div>
-              </div>
-              <input
-                type="file"
-                ref={fileInputRef}
-                className="hidden"
-                accept="image/*"
-                onChange={handleFileChange}
-                disabled={isImageLoading}
-              />
-            </div>
-            {role && (
-              <div className="mt-3 px-4 py-1 bg-primary/10 border border-primary/20 rounded-full flex items-center gap-2">
-                <span className="w-2 h-2 bg-primary rounded-full animate-pulse"></span>
-                <span className="text-primary font-bold text-[10px] uppercase tracking-widest">
-                  {userRoleLabel[role]}
+      <main className="w-full sm:max-w-4xl bg-white dark:bg-[#1c182d] sm:rounded-[3rem] mt-12 sm:mt-20 px-6 sm:px-16 py-8 sm:py-6 sm:shadow-xl border-none dark:border-white/5 flex flex-col items-center flex-1 sm:flex-none sm:h-fit sm:mb-10">
+        <div className="relative mb-6 flex flex-col items-center">
+          <div
+            className={`relative group ${isImageLoading ? "cursor-wait" : "cursor-pointer"}`}
+            onClick={handleImageClick}
+          >
+            <div className="absolute inset-0 bg-primary/20 rounded-full blur-2xl group-hover:bg-primary/40 transition-all duration-500"></div>
+            <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full border-4 border-white dark:border-slate-800 shadow-xl overflow-hidden bg-slate-200 flex items-center justify-center">
+              {profileImage ? (
+                <img
+                  className={`w-full h-full object-cover transition-transform duration-500 ${!isImageLoading && "group-hover:scale-110"}`}
+                  src={BASE_UPLOAD_URL + profileImage}
+                  alt="Profile"
+                />
+              ) : (
+                <span className="material-symbols-outlined text-slate-400 text-5xl">
+                  account_circle
                 </span>
-              </div>
-            )}
-          </div>
-
-          <form onSubmit={handleSave} className="w-full space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
-              <TralloInput
-                label="Nome Completo"
-                icon="person"
-                placeholder="Ex: João Manuel"
-                value={name}
-                onChange={setName}
-              />
-              <TralloInput
-                label="E-mail"
-                type="email"
-                icon="alternate_email"
-                placeholder="exemplo@trallo.ao"
-                value={email}
-                onChange={setEmail}
-              />
-              <TralloInput
-                label="Telemóvel"
-                icon="call"
-                placeholder="9XX XXX XXX"
-                value={phone}
-                onChange={setPhone}
-              />
-              <TralloInput
-                label="Morada em Luanda"
-                icon="location_on"
-                placeholder="Bairro, Rua, Casa nº"
-                value={address}
-                onChange={setAddress}
-              />
-            </div>
-            <div className="pt-8 pb-10 md:pb-2">
-              <TralloButton
-                fullWidth
-                type="submit"
-                icon={isLoading ? "sync" : undefined}
-                disabled={isLoading}
+              )}
+              <div
+                className={`absolute inset-0 bg-black/50 flex flex-col items-center justify-center transition-opacity duration-300 ${
+                  isImageLoading ? "opacity-100" : "opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
+                }`}
               >
-                {isLoading ? "A guardar..." : "Guardar Alterações"}
-              </TralloButton>
+                {isImageLoading ? (
+                  <span className="material-symbols-outlined text-white text-2xl animate-spin">
+                    sync
+                  </span>
+                ) : (
+                  <>
+                    <span className="material-symbols-outlined text-white text-2xl">
+                      photo_camera
+                    </span>
+                    <span className="text-white text-[9px] font-bold uppercase mt-1 tracking-widest">
+                      Alterar
+                    </span>
+                  </>
+                )}
+              </div>
             </div>
-          </form>
-        </main>
-      </div>
+            <input
+              type="file"
+              ref={fileInputRef}
+              className="hidden"
+              accept="image/*"
+              onChange={handleFileChange}
+              disabled={isImageLoading}
+            />
+          </div>
+          {role && (
+            <div className="mt-3 px-4 py-1 bg-primary/10 border border-primary/20 rounded-full flex items-center gap-2">
+              <span className="w-2 h-2 bg-primary rounded-full animate-pulse"></span>
+              <span className="text-primary font-bold text-[10px] uppercase tracking-widest">
+                {userRoleLabel[role]}
+              </span>
+            </div>
+          )}
+        </div>
+
+        <form onSubmit={handleSave} className="w-full space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
+            <TralloInput
+              label="Nome Completo"
+              icon="person"
+              placeholder="Ex: João Manuel"
+              value={name}
+              onChange={setName}
+            />
+            <TralloInput
+              label="E-mail"
+              type="email"
+              icon="alternate_email"
+              placeholder="exemplo@trallo.ao"
+              value={email}
+              onChange={setEmail}
+            />
+            <TralloInput
+              label="Telemóvel"
+              icon="call"
+              placeholder="9XX XXX XXX"
+              value={phone}
+              onChange={setPhone}
+            />
+            <TralloInput
+              label="Morada em Luanda"
+              icon="location_on"
+              placeholder="Bairro, Rua, Casa nº"
+              value={address}
+              onChange={setAddress}
+            />
+          </div>
+          <div className="pt-4 pb-10 sm:pb-2">
+            <TralloButton
+              fullWidth
+              type="submit"
+              icon={isLoading && "sync"}
+              disabled={isLoading}
+            >
+              {isLoading ? "A guardar..." : "Guardar Alterações"}
+            </TralloButton>
+          </div>
+        </form>
+      </main>
 
       {showReauthModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
