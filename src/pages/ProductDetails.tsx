@@ -1,14 +1,12 @@
 import React, { useState, useRef } from "react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import MobileLayout from "@/layouts/MobileLayout";
 import PageHeader from "@/components/PageHeader";
 import { SearchedProductDTO } from "@/types/product";
 import { formatPrice } from "@/utils/currency";
 import {
   getProductConditionLabel,
-  getProductStatusColor,
-  getProductStatusLabel,
   productConditionColor,
   productConditionIcon,
 } from "@/utils/mappers/product.mapper";
@@ -22,6 +20,7 @@ import { checkoutFromProduct } from "@/services/checkout.service";
 import { PaymentMethod, PaymentMode } from "@/enums/payment";
 import { useAuth } from "@/context/AuthContext";
 import toast from "react-hot-toast";
+import { UserRole } from "@/enums/user";
 
 const ProductDetails: React.FC = () => {
   const { id: paramId } = useParams<{ id: string }>();
@@ -245,7 +244,7 @@ const ProductDetails: React.FC = () => {
               </p>
             </div>
 
-            {user?.role !== "SELLER" && (
+            {user?.role !== UserRole.SELLER && (
               <div className="pt-4 lg:pt-6">
                 <button
                   disabled={product.stock.availableQuantity <= 0}
@@ -255,9 +254,7 @@ const ProductDetails: React.FC = () => {
                   {product.stock.availableQuantity <= 0
                     ? "Esgotado"
                     : "Comprar Agora"}
-                  <span className="material-symbols-outlined">
-                    arrow_forward
-                  </span>
+                  
                 </button>
               </div>
             )}
@@ -265,63 +262,53 @@ const ProductDetails: React.FC = () => {
         </div>
       </main>
 
-      <AnimatePresence>
-        {modalType === "payment_choice" && (
-          <PaymentChoiceModal
-            onClose={closeModal}
-            onSelect={(type) => {
-              setPaymentType(type);
-              setModalType("checkout");
-            }}
-          />
-        )}
+      {modalType === "payment_choice" && (
+        <PaymentChoiceModal
+          onClose={closeModal}
+          onSelect={(type) => {
+            setPaymentType(type);
+            setModalType("checkout");
+          }}
+        />
+      )}
 
-        {modalType === "checkout" && (
-          <CheckoutModal
-            paymentType={paymentType}
-            paymentMethod={paymentMethod}
-            setPaymentMethod={setPaymentMethod}
-            deliveryFee={deliveryFee}
-            total={total}
-            onClose={closeModal}
-            onConfirm={handleConfirmCheckout}
-          />
-        )}
+      {modalType === "checkout" && (
+        <CheckoutModal
+          paymentType={paymentType}
+          paymentMethod={paymentMethod}
+          setPaymentMethod={setPaymentMethod}
+          deliveryFee={deliveryFee}
+          total={total}
+          onClose={closeModal}
+          onConfirm={handleConfirmCheckout}
+        />
+      )}
 
-        {modalType === "video" && product.verificationVideo && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+      {modalType === "video" && product.verificationVideo && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden">
+          <div
+            onClick={closeModal}
+            className="absolute inset-0 bg-black backdrop-blur-md animate-in fade-in duration-300"
+          />
+
+          <div className="relative w-full h-full md:h-auto md:max-w-4xl md:aspect-video md:rounded-3xl overflow-hidden shadow-2xl z-10 bg-black animate-in fade-in zoom-in-95 slide-in-from-bottom-10 duration-300 ease-out">
+            <button
               onClick={closeModal}
-              className="absolute inset-0 bg-black backdrop-blur-md"
-            />
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 30 }}
-              className="relative w-full h-full md:h-auto md:max-w-4xl md:aspect-video md:rounded-3xl overflow-hidden shadow-2xl z-10 bg-black"
+              className="absolute top-6 right-6 z-50 size-12 flex items-center justify-center bg-black/30 text-white rounded-full hover:bg-black/50 transition-colors backdrop-blur-md border border-white/10 shadow-lg active:scale-90"
             >
-              <button
-                onClick={closeModal}
-                className="absolute top-6 right-6 z-50 size-12 flex items-center justify-center bg-black/30 text-white rounded-full hover:bg-black/50 transition-colors backdrop-blur-md border border-white/10 shadow-lg active:scale-90"
-              >
-                <span className="material-symbols-outlined text-3xl">
-                  close
-                </span>
-              </button>
-              <VideoPlayer
-                src={
-                  product.verificationVideo.startsWith("http")
-                    ? product.verificationVideo
-                    : `${BASE_UPLOAD_URL}/${product.verificationVideo}`
-                }
-              />
-            </motion.div>
+              <span className="material-symbols-outlined text-3xl">close</span>
+            </button>
+
+            <VideoPlayer
+              src={
+                product.verificationVideo.startsWith("http")
+                  ? product.verificationVideo
+                  : `${BASE_UPLOAD_URL}/${product.verificationVideo}`
+              }
+            />
           </div>
-        )}
-      </AnimatePresence>
+        </div>
+      )}
     </MobileLayout>
   );
 };
