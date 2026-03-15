@@ -1,5 +1,6 @@
 import { OrderStatus } from "@/enums/order-status";
 import { PaginationDTO } from "./pagination";
+import { PaymentMethod } from "@/enums/payment";
 
 export interface OrderItemDTO {
   name: string;
@@ -16,6 +17,7 @@ export interface OrderDTO {
   items: OrderItemDTO[];
   totalQuantity: number;
   totalAmount: number;
+  paymentMethod?: PaymentMethod
 }
 
 export interface PaginatedOrdersDTO {

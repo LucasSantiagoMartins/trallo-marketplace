@@ -16,6 +16,19 @@ interface OrderItemProps {
   isAdmin?: boolean;
 }
 
+const TRACKING_STATUSES = [
+  OrderStatus.READY_FOR_SHIPMENT,
+  OrderStatus.PREPARING_ORDER,
+  OrderStatus.SHIPPED,
+  OrderStatus.OUT_FOR_DELIVERY,
+  OrderStatus.DELIVERED,
+  OrderStatus.DELIVERY_FAILED,
+];
+
+function canTrackOrder(status: OrderStatus) {
+  return TRACKING_STATUSES.includes(status);
+}
+
 const OrderCard: React.FC<OrderItemProps> = ({
   order,
   active,
@@ -28,6 +41,11 @@ const OrderCard: React.FC<OrderItemProps> = ({
   const firstItemName =
     order.items.length > 0 ? order.items[0].name : "Sem itens";
   const extraItemsCount = order.items.length - 1;
+
+  const handleTrackOrder = () => {
+    // Passamos o objeto 'order' completo para a próxima rota
+    navigate("/detalhe-pedido", { state: { order } });
+  };
 
   const openTralloMap = () => {
     const address = "Trallo Instalação, Luanda, Angola";
@@ -56,7 +74,7 @@ const OrderCard: React.FC<OrderItemProps> = ({
               </p>
             </div>
           </div>
-          
+
           <div
             className={`${getOrderStatusColor(order.status)} px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-full flex items-center justify-center flex-shrink-0`}
           >
@@ -107,15 +125,18 @@ const OrderCard: React.FC<OrderItemProps> = ({
               </span>
             )}
           </p>
-          <p className="text-xl font-black text-[#6d3ff8]">
-            {formatPrice(order.totalAmount)}
-          </p>
+          <div className="flex items-center justify-between">
+            <p className="text-xl font-black text-[#6d3ff8]">
+              {formatPrice(order.totalAmount)}
+            </p>
+            
+          </div>
         </div>
 
         <div className="flex gap-2">
-          {active && order.status === OrderStatus.SHIPPED && (
+          {active && canTrackOrder(order.status) && (
             <button
-              onClick={() => navigate("/detalhe-pedido")}
+              onClick={handleTrackOrder}
               className="flex-[2] bg-[#6d3ff8] text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 text-sm shadow-lg shadow-[#6d3ff8]/25 lg:hover:bg-[#5a32d1] transition-all"
             >
               <span className="material-symbols-outlined text-lg">
