@@ -12,6 +12,12 @@ export const productConditionColor: Record<ProductCondition, string> = {
   [ProductCondition.USED]: "text-orange-600",
 };
 
+export const productConditionIcon: Record<ProductCondition, string> = {
+  [ProductCondition.NEW]: "new_releases",
+  [ProductCondition.SEMI_NEW]: "auto_awesome",
+  [ProductCondition.USED]: "history",
+};
+
 export const productStatusLabel: Record<ProductStatus, string> = {
   [ProductStatus.AWAITING_SUBMISSION]: "Aguardando envio",
   [ProductStatus.SUBMITTED]: "Enviado",

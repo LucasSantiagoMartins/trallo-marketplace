@@ -9,6 +9,8 @@ import {
   getProductConditionLabel,
   getProductStatusColor,
   getProductStatusLabel,
+  productConditionColor,
+  productConditionIcon,
 } from "@/utils/mappers/product.mapper";
 import ProductImageGallery from "@/components/ProductImageGallery";
 import ProductDetailSellerInfo from "@/components/ProductDetailSellerInfo";
@@ -193,18 +195,15 @@ const ProductDetails: React.FC = () => {
           </div>
 
           <div className="px-4 md:px-6 lg:px-0 -mt-10 lg:mt-0 space-y-4 relative z-10">
-            <div className="bg-card p-6 rounded-xl shadow-soft border border-border">
-              <div className="flex justify-between items-start mb-2 gap-4">
-                <h1 className="text-2xl md:text-3xl font-bold leading-tight flex-1">
+            <div className="bg-card p-5 rounded-xl shadow-soft border border-border">
+              {/* Título ocupando toda a largura */}
+              <div className="mb-3">
+                <h1 className="text-xl md:text-3xl font-bold leading-tight text-[#121118] dark:text-white">
                   {product.name}
                 </h1>
-                <div className="bg-primary/10 text-primary px-3 py-1 rounded-lg shrink-0">
-                  <span className="text-xs font-bold uppercase">
-                    {getProductConditionLabel(product.condition)}
-                  </span>
-                </div>
               </div>
 
+              {/* Preço com destaque */}
               <div className="flex items-baseline gap-1">
                 <span className="text-3xl md:text-4xl font-price font-bold text-primary">
                   {formatPrice(product.price, false)}
@@ -214,22 +213,24 @@ const ProductDetails: React.FC = () => {
                 </span>
               </div>
 
-              <div className="mt-4 flex flex-wrap items-center gap-y-2 text-muted-foreground text-sm">
-                <div className="flex items-center gap-1">
-                  <span className="material-symbols-outlined text-sm">
+              <div className="mt-3 flex items-center justify-between border-t border-gray-100 dark:border-white/5 pt-4">
+                <div
+                  className={`flex items-center gap-1.5 ${productConditionColor[product.condition]}`}
+                >
+                  <span className="material-symbols-outlined text-[18px]">
+                    {productConditionIcon[product.condition]}
+                  </span>
+                  <span className="text-xs font-black uppercase tracking-wide">
+                    {getProductConditionLabel(product.condition)}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-1.5 text-muted-foreground">
+                  <span className="material-symbols-outlined text-[18px]">
                     inventory_2
                   </span>
-                  <span>{product.stock.availableQuantity} disponíveis</span>
-                </div>
-                <span className="mx-2 text-border">•</span>
-                <div
-                  className={`flex items-center gap-1 ${getProductStatusColor(product.status)} bg-transparent font-bold`}
-                >
-                  <span className="material-symbols-outlined text-[16px]">
-                    check_circle
-                  </span>
-                  <span className="text-xs uppercase tracking-wide">
-                    {getProductStatusLabel(product.status)}
+                  <span className="text-xs font-bold uppercase tracking-wide">
+                    {product.stock.availableQuantity} disponíveis
                   </span>
                 </div>
               </div>
