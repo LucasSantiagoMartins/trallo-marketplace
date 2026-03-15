@@ -70,7 +70,7 @@ const SalesCenter: React.FC = () => {
     if (!mom) return null;
 
     return (
-      <div className="absolute top-4 right-4 flex flex-col items-end gap-1">
+      <div className="flex flex-col items-end justify-center gap-1 ml-auto shrink-0">
         <div
           className={`flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-black shadow-sm ${
             mom.isGrowth
@@ -86,7 +86,7 @@ const SalesCenter: React.FC = () => {
         </div>
 
         <div
-          className={`flex items-center gap-1 text-[12px] font-bold ${
+          className={`flex items-center gap-1 text-[10px] sm:text-[12px] font-bold ${
             mom.isGrowth ? "text-emerald-600/60" : "text-rose-600/60"
           }`}
         >
@@ -143,7 +143,6 @@ const SalesCenter: React.FC = () => {
       <PageHeader title="Centro de Vendas" showUser={true} />
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 pt-24 flex flex-col space-y-6 sm:space-y-10 h-auto sm:h-[calc(100vh-theme(spacing.2))] overflow-visible sm:overflow-hidden">
-        {/* Container de Stats atualizado para scroll lateral no mobile */}
         <section className="flex overflow-x-auto pb-4 -mx-4 px-4 snap-x snap-mandatory sm:grid sm:grid-cols-3 sm:gap-6 sm:pb-0 sm:mx-0 sm:px-0 hide-scrollbar shrink-0">
           <style>{`.hide-scrollbar::-webkit-scrollbar { display: none; } .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }`}</style>
           {stats.map((stat, index) => (
@@ -153,16 +152,14 @@ const SalesCenter: React.FC = () => {
               onClick={() =>
                 stat.isClickable && stat.path && navigate(stat.path)
               }
-              className={`relative bg-card p-4 sm:p-5 rounded-[2rem] border border-border shadow-soft flex items-center gap-4 transition-all shrink-0 w-[280px] sm:w-auto snap-center mr-4 sm:mr-0 ${
+              className={`relative bg-card p-4 sm:p-5 rounded-[2rem] border border-border shadow-soft flex items-center transition-all shrink-0 w-[300px] sm:w-auto snap-center mr-4 sm:mr-0 ${
                 stat.isClickable
                   ? "cursor-pointer hover:border-primary/40 hover:shadow-md"
                   : ""
               }`}
             >
-              {renderGrowthBadge(stat.mom, stat.isCurrency)}
-
               <div
-                className={`size-11 sm:size-14 rounded-2xl flex items-center justify-center shrink-0 shadow-sm ${
+                className={`size-11 sm:size-14 rounded-2xl flex items-center justify-center shrink-0 shadow-sm mr-3 ${
                   stat.color === "emerald"
                     ? "bg-emerald-500/10 text-emerald-500"
                     : stat.color === "orange"
@@ -175,16 +172,16 @@ const SalesCenter: React.FC = () => {
                 </span>
               </div>
 
-              <div className="flex flex-col min-w-0 flex-1 mt-1">
+              <div className="flex flex-col min-w-0 flex-1 justify-center mr-2">
                 <p className="text-[9px] sm:text-[10px] text-muted-foreground font-black uppercase tracking-widest mb-0.5">
                   {stat.label}
                 </p>
-                <div className="flex items-center gap-2">
-                  <div className="text-base sm:text-lg font-black truncate tracking-tight text-foreground">
-                    {stat.value}
-                  </div>
+                <div className="text-base sm:text-lg font-black truncate tracking-tight text-foreground">
+                  {stat.value}
                 </div>
               </div>
+
+              {renderGrowthBadge(stat.mom, stat.isCurrency)}
             </motion.div>
           ))}
         </section>
