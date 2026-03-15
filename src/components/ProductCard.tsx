@@ -23,9 +23,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
 
   const isBuyer = user?.role === UserRole.BUYER;
 
-  const displayImage = product.coverImage
-    ? `${BASE_UPLOAD_URL}${product.coverImage}`
-    : "/placeholder-product.png";
+  const displayImage = `${BASE_UPLOAD_URL}${product.coverImage}`;
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
