@@ -39,6 +39,7 @@ import BankAccountsScreen from "./pages/BankAccountsScreen";
 import AddBankAccountScreen from "./pages/AddBankAccountScreen";
 import SupportPage from "./pages/SupportPage";
 import SellerOrdersHistory from "./pages/SellerOrdersHistory";
+import OrdersManagement from "./pages/OrdersManagement";
 
 const queryClient = new QueryClient();
 
@@ -97,6 +98,10 @@ const App = () => (
               element={<ProtectedRoute allowedRoles={["OPERATOR", "ADMIN"]} />}
             >
               <Route path="/area-operacional" element={<OperatorDashboard />} />
+              <Route
+                path="/area-operacional/pedidos"
+                element={<OrdersManagement />}
+              />
               <Route
                 path="/area-operacional/verificacoes-pendentes"
                 element={<PendingVerificationsPage />}

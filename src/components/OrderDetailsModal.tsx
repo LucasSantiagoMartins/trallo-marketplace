@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { MyOrderDTO } from "@/dtos/order";
+import { OrderDTO } from "@/dtos/order";
 import { BASE_UPLOAD_URL } from "@/api/endpoints";
 import { formatPrice } from "@/utils/currency";
 import { motion, AnimatePresence } from "framer-motion";
@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 interface OrderDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  order: MyOrderDTO;
+  order: OrderDTO;
 }
 
 const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({

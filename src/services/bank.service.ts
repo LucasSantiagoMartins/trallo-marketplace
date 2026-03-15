@@ -13,7 +13,6 @@ export const bankService = {
     },
 
     async updateAccount(id: string, data: UpdateBankAccountDTO): Promise<ApiResponse<BankAccountDTO>> {
-        console.log(data);
         return http.patch<BankAccountDTO>(endpoints.bankAccounts.update(id), data);
     },
 

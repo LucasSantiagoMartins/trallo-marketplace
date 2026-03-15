@@ -33,7 +33,6 @@ export const endpoints = {
     verify: (id: string) => `/products/${id}/verification`,
     update: (id: string) => `/products/${id}`,
   },
-
   carts: {
     getMyCart: "/carts",
     addToCart: (productId: string) => `/carts/add/${productId}`,
@@ -44,6 +43,7 @@ export const endpoints = {
   orders: {
     buyerOrders: "/orders/my/buyer",
     sellerOrders: "/orders/my/seller",
+    adminOrders: "/orders",
   },
   wallets: {
     summary: "/wallets/summary",

@@ -5,12 +5,12 @@ import {
   getOrderStatusLabel,
 } from "@/utils/mappers/order.mapper";
 import { OrderStatus } from "@/enums/order-status";
-import { MyOrderDTO } from "@/dtos/order";
+import { OrderDTO } from "@/dtos/order";
 import OrderDetailsModal from "./OrderDetailsModal";
 import { formatPrice } from "@/utils/currency";
 
 interface OrderItemProps {
-  order: MyOrderDTO;
+  order: OrderDTO;
   active?: boolean;
   isSeller?: boolean;
 }

@@ -38,10 +38,18 @@ const BottomNavigation: React.FC = () => {
           break;
 
         case "OPERATOR":
+          // Criamos a lista: Visão Geral, Pedidos, VER. PENDENTES (Centro), Estoque, Perfil
+          const baseOperatorItems = [
+            operatorItems.find((i) => i.id === "dashboard"),
+            operatorItems.find((i) => i.id === "pedidos"),
+            operatorItems.find((i) => i.id === "verificacoes-pendentes"), // Este será o centro
+            operatorItems.find((i) => i.id === "gestao-estoque"),
+          ].filter(Boolean) as NavItem[];
+
           items = [
-            ...operatorItems.map((item, index) => ({
+            ...baseOperatorItems.map((item, index) => ({
               ...item,
-              isCenter: index === 1,
+              isCenter: index === 2, // O terceiro item (índice 2) fica no centro realçado
             })),
             { icon: "person", label: "Perfil", path: "/perfil" },
           ];
@@ -82,26 +90,12 @@ const BottomNavigation: React.FC = () => {
           ];
           break;
 
-        case "DELIVERER":
-          items = [
-            { icon: "home", label: "Início", path: "/" },
-            { icon: "local_shipping", label: "Entregas", path: "/entregas" },
-            { icon: "map", label: "Rotas", path: "/rotas", isCenter: true },
-            { icon: "history", label: "Histórico", path: "/historico" },
-            { icon: "person", label: "Perfil", path: "/perfil" },
-          ];
-          break;
-
         default:
           items = [
             { icon: "home", label: "Início", path: "/" },
             { icon: "person", label: "Perfil", path: "/perfil" },
           ];
       }
-    }
-
-    if (items.length % 2 === 0) {
-      return items.map((item) => ({ ...item, isCenter: false }));
     }
 
     return items;

@@ -44,6 +44,7 @@ const Header: React.FC<HeaderProps> = ({
       { name: "Área Administrativa", path: "/area-administrativa" },
       { name: "Pagamentos", path: "/area-administrativa/pagamentos" },
       { name: "Transacões", path: "/area-administrativa/transacoes" },
+      { name: "Pedidos", path: "/area-operacional/pedidos" },
     ],
     SELLER: [
       { name: "Início", path: "/" },
@@ -56,7 +57,7 @@ const Header: React.FC<HeaderProps> = ({
       { name: "Favoritos", path: "/favoritos" },
     ],
     OPERATOR: [
-      { name: "Pedidos Pendentes", path: "/area-operacional/pedidos-pendentes" },
+      { name: "Área Operacional", path: "/area-operacional" },
       {
         name: "Verificações Pendentes",
         path: "/area-operacional/verificacoes-pendentes",

@@ -3,11 +3,11 @@ import BottomNavigation from "../components/BottomNavigation";
 import OrderCard from "../components/OrderCard";
 import PageHeader from "../components/PageHeader";
 import { OrderStatus } from "@/enums/order-status";
-import { MyOrderDTO } from "@/dtos/order";
+import { OrderDTO } from "@/dtos/order";
 import { orderService } from "@/services/order.service";
 
 const SellerOrdersHistory: React.FC = () => {
-  const [orders, setOrders] = useState<MyOrderDTO[]>([]);
+  const [orders, setOrders] = useState<OrderDTO[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"ativos" | "finalizados">(
     "ativos",

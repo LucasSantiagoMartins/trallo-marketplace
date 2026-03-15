@@ -45,11 +45,18 @@ export const operatorItems = [
     label: "Visão Geral",
     path: "/area-operacional",
   },
+
   {
     id: "verificacoes-pendentes",
     icon: "pending_actions",
     label: "Ver. Pendentes",
     path: "/area-operacional/verificacoes-pendentes",
+  },
+  {
+    id: "pedidos",
+    icon: "order_approve",
+    label: "Pedidos",
+    path: "/area-operacional/pedidos",
   },
   {
     id: "gestao-estoque",
