@@ -27,7 +27,7 @@ const OrdersManagement: React.FC = () => {
         ITEMS_PER_PAGE,
       );
       if (response.success) {
-        setOrders(response.data.data);
+        setOrders(response.data.orders);
         setTotalPages(response.data.pagination.totalPages);
       }
     } catch (err) {

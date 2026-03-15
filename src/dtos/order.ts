@@ -19,7 +19,7 @@ export interface OrderDTO {
 }
 
 export interface PaginatedOrdersDTO {
-  data: OrderDTO[]; 
+  orders: OrderDTO[]; 
   pagination: PaginationDTO;
 }
 

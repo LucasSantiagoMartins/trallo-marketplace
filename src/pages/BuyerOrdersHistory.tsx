@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import BottomNavigation from "../components/BottomNavigation";
 import OrderItem from "../components/OrderCard";
 import PageHeader from "../components/PageHeader";
+import Pagination from "../components/Pagination";
 import { OrderStatus } from "@/enums/order-status";
 import { OrderDTO } from "@/dtos/order";
 import { orderService } from "@/services/order.service";
@@ -9,37 +10,52 @@ import { orderService } from "@/services/order.service";
 const BuyerOrdersHistory: React.FC = () => {
   const [orders, setOrders] = useState<OrderDTO[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [activeTab, setActiveTab] = useState<"ativos" | "finalizados">(
     "ativos",
   );
 
-  useEffect(() => {
-    fetchOrders();
-  }, []);
+  const ITEMS_PER_PAGE = 10;
 
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async (page: number) => {
     try {
       setLoading(true);
-      const response = await orderService.getBuyerOrders();
-      if (response.success) {
-        setOrders(response.data);
+      const response = await orderService.getBuyerOrders(page, ITEMS_PER_PAGE);
+      if (response.success && response.data) {
+        const data = response.data as any;
+        setOrders(Array.isArray(data.orders) ? data.orders : []);
+        setTotalPages(data.pagination?.totalPages || 1);
       }
     } catch (error) {
       console.error("Erro ao carregar pedidos", error);
+      setOrders([]);
     } finally {
       setLoading(false);
     }
+  }, []);
+
+  useEffect(() => {
+    fetchOrders(currentPage);
+  }, [currentPage, fetchOrders]);
+
+  const filteredOrders = (Array.isArray(orders) ? orders : []).filter(
+    (order) => {
+      const isFinalized = [
+        OrderStatus.DELIVERED,
+        OrderStatus.CANCELLED,
+      ].includes(order.status);
+      return activeTab === "finalizados" ? isFinalized : !isFinalized;
+    },
+  );
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const filteredOrders = orders.filter((order) => {
-    const isFinalized = [OrderStatus.DELIVERED, OrderStatus.CANCELLED].includes(
-      order.status,
-    );
-    return activeTab === "finalizados" ? isFinalized : !isFinalized;
-  });
-
   return (
-    <div className="min-h-screen bg-[#f6f5f8] dark:bg-[#141022] text-[#121118] dark:text-white pb-24">
+    <div className="min-h-screen bg-[#f6f5f8] dark:bg-[#141022] text-[#121118] dark:text-white pb-24 font-['Inter']">
       <PageHeader title="Meus Pedidos" />
 
       <main className="max-w-7xl mx-auto px-4 pt-24">
@@ -47,20 +63,26 @@ const BuyerOrdersHistory: React.FC = () => {
           <div className="lg:col-span-2">
             <div className="flex p-1.5 bg-gray-200/50 dark:bg-white/5 rounded-2xl w-full md:w-80 mb-6 border border-gray-200/30 dark:border-white/5">
               <button
-                onClick={() => setActiveTab("ativos")}
+                onClick={() => {
+                  setActiveTab("ativos");
+                  setCurrentPage(1);
+                }}
                 className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all ${
                   activeTab === "ativos"
-                    ? "bg-white dark:bg-[#6d3ff8] shadow-md"
+                    ? "bg-white dark:bg-[#6d3ff8] shadow-md text-[#6d3ff8] dark:text-white"
                     : "text-gray-500"
                 }`}
               >
                 Ativos
               </button>
               <button
-                onClick={() => setActiveTab("finalizados")}
+                onClick={() => {
+                  setActiveTab("finalizados");
+                  setCurrentPage(1);
+                }}
                 className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all ${
                   activeTab === "finalizados"
-                    ? "bg-white dark:bg-[#6d3ff8] shadow-md"
+                    ? "bg-white dark:bg-[#6d3ff8] shadow-md text-[#6d3ff8] dark:text-white"
                     : "text-gray-500"
                 }`}
               >
@@ -75,19 +97,29 @@ const BuyerOrdersHistory: React.FC = () => {
                   <p className="opacity-50">Carregando pedidos...</p>
                 </div>
               ) : filteredOrders.length > 0 ? (
-                filteredOrders.map((order) => (
-                  <OrderItem
-                    key={order.orderNumber}
-                    order={order}
-                    active={activeTab === "ativos"}
-                  />
-                ))
+                <>
+                  {filteredOrders.map((order) => (
+                    <OrderItem
+                      key={order.orderNumber}
+                      order={order}
+                      active={activeTab === "ativos"}
+                    />
+                  ))}
+
+                  <div className="mt-8">
+                    <Pagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      onPageChange={handlePageChange}
+                    />
+                  </div>
+                </>
               ) : (
-                <div className="py-20 text-center opacity-50">
+                <div className="py-20 text-center opacity-50 bg-white dark:bg-white/5 rounded-[2rem] border-2 border-dashed border-gray-200 dark:border-white/5">
                   <span className="material-symbols-outlined text-6xl mb-2">
                     inventory_2
                   </span>
-                  <p>Nenhum pedido encontrado.</p>
+                  <p>Nenhum pedido encontrado</p>
                 </div>
               )}
             </div>
@@ -110,7 +142,7 @@ const BuyerOrdersHistory: React.FC = () => {
                 </span>
                 , garantindo total segurança para você.
               </p>
-              <div className="pt-6 border-t border-gray-100 dark:border-white/5">
+              <div className="border-t border-gray-100 dark:border-white/5">
                 <div className="flex items-center gap-1 text-[#6d3ff8]">
                   <span className="material-symbols-outlined">shield</span>
                   <span className="text-xs font-black uppercase tracking-widest">

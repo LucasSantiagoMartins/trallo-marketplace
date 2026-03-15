@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import BottomNavigation from "../components/BottomNavigation";
 import OrderCard from "../components/OrderCard";
 import PageHeader from "../components/PageHeader";
+import Pagination from "../components/Pagination";
 import { OrderStatus } from "@/enums/order-status";
 import { OrderDTO } from "@/dtos/order";
 import { orderService } from "@/services/order.service";
@@ -9,29 +10,36 @@ import { orderService } from "@/services/order.service";
 const SellerOrdersHistory: React.FC = () => {
   const [orders, setOrders] = useState<OrderDTO[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [activeTab, setActiveTab] = useState<"ativos" | "finalizados">(
     "ativos",
   );
 
-  useEffect(() => {
-    fetchOrders();
-  }, []);
+  const ITEMS_PER_PAGE = 3;
 
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async (page: number) => {
     try {
       setLoading(true);
-      const response = await orderService.getSellerOrders();
-      if (response.success) {
-        setOrders(response.data);
+      const response = await orderService.getSellerOrders(page, ITEMS_PER_PAGE);
+      if (response.success && response.data) {
+        const resData = response.data as any;
+        setOrders(Array.isArray(resData.orders) ? resData.orders : []);
+        setTotalPages(resData.pagination?.totalPages || 1);
       }
     } catch (error) {
       console.error("Erro ao carregar vendas", error);
+      setOrders([]);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const filteredOrders = orders.filter((order) => {
+  useEffect(() => {
+    fetchOrders(currentPage);
+  }, [currentPage, fetchOrders]);
+
+  const filteredOrders = (Array.isArray(orders) ? orders : []).filter((order) => {
     const isFinalized = [
       OrderStatus.DELIVERED,
       OrderStatus.PAID,
@@ -41,8 +49,13 @@ const SellerOrdersHistory: React.FC = () => {
     return activeTab === "finalizados" ? isFinalized : !isFinalized;
   });
 
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
-    <div className="min-h-screen bg-[#f6f5f8] dark:bg-[#141022] text-[#121118] dark:text-white pb-24">
+    <div className="min-h-screen bg-[#f6f5f8] dark:bg-[#141022] text-[#121118] dark:text-white pb-24 font-['Inter']">
       <PageHeader title="Minhas Vendas" />
 
       <main className="max-w-7xl mx-auto px-4 pt-24">
@@ -50,20 +63,20 @@ const SellerOrdersHistory: React.FC = () => {
           <div className="lg:col-span-2">
             <div className="flex p-1.5 bg-gray-200/50 dark:bg-white/5 rounded-2xl w-full md:w-80 mb-6 border border-gray-200/30 dark:border-white/5">
               <button
-                onClick={() => setActiveTab("ativos")}
+                onClick={() => { setActiveTab("ativos"); setCurrentPage(1); }}
                 className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all ${
                   activeTab === "ativos"
-                    ? "bg-white dark:bg-[#6d3ff8] shadow-md"
+                    ? "bg-white dark:bg-[#6d3ff8] shadow-md text-[#6d3ff8] dark:text-white"
                     : "text-gray-500"
                 }`}
               >
                 Em Andamento
               </button>
               <button
-                onClick={() => setActiveTab("finalizados")}
+                onClick={() => { setActiveTab("finalizados"); setCurrentPage(1); }}
                 className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all ${
                   activeTab === "finalizados"
-                    ? "bg-white dark:bg-[#6d3ff8] shadow-md"
+                    ? "bg-white dark:bg-[#6d3ff8] shadow-md text-[#6d3ff8] dark:text-white"
                     : "text-gray-500"
                 }`}
               >
@@ -78,20 +91,30 @@ const SellerOrdersHistory: React.FC = () => {
                   <p className="opacity-50">Carregando vendas...</p>
                 </div>
               ) : filteredOrders.length > 0 ? (
-                filteredOrders.map((order) => (
-                  <OrderCard
-                    key={order.orderNumber}
-                    order={order}
-                    active={activeTab === "ativos"}
-                    isSeller={true}
-                  />
-                ))
+                <>
+                  {filteredOrders.map((order) => (
+                    <OrderCard
+                      key={order.orderNumber}
+                      order={order}
+                      active={activeTab === "ativos"}
+                      isSeller={true}
+                    />
+                  ))}
+
+                  <div className="mt-8">
+                    <Pagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      onPageChange={handlePageChange}
+                    />
+                  </div>
+                </>
               ) : (
-                <div className="py-20 text-center opacity-50">
+                <div className="py-20 text-center opacity-50 bg-white dark:bg-white/5 rounded-[2rem] border-2 border-dashed border-gray-200 dark:border-white/5">
                   <span className="material-symbols-outlined text-6xl mb-2">
                     sell
                   </span>
-                  <p>Nenhuma venda encontrada.</p>
+                  <p>Nenhuma venda encontrada</p>
                 </div>
               )}
             </div>
