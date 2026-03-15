@@ -7,7 +7,6 @@ interface OrderState {
     searchResults: OrderStockItem[];
     lastSearchedOrder: string | null;
     addedItems: StockEntryItem[];
-    // Novos estados para Saída
     confirmedProducts: OrderStockItem[];
     delivererId: number;
 }
@@ -36,10 +35,14 @@ const orderSlice = createSlice({
             if (!state.addedItems) state.addedItems = [];
             state.addedItems.push(action.payload);
         },
+        removeStockItem: (state, action: PayloadAction<string>) => {
+            state.addedItems = state.addedItems.filter(
+                (item) => item.productSku !== action.payload
+            );
+        },
         clearAllocation: (state) => {
             state.addedItems = [];
         },
-        // Actions para Saída
         setDelivererId: (state, action: PayloadAction<number>) => {
             state.delivererId = action.payload;
         },
@@ -69,6 +72,7 @@ export const {
     setOrderNumber,
     setSearchResults,
     addStockItem,
+    removeStockItem,
     clearAllocation,
     setDelivererId,
     confirmProductExit,

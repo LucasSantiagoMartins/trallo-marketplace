@@ -1,6 +1,5 @@
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import toast, { Toaster } from "react-hot-toast";
+import React, { useState, useMemo } from "react";
+import toast from "react-hot-toast";
 import Sidebar from "@/components/Sidebar";
 import { operatorItems } from "@/constants/sidebar-items";
 import { registerStockEntry } from "@/services/warehouse-inventory.service";
@@ -21,11 +20,11 @@ const RegisterEntry: React.FC = () => {
     handleSearch,
     updateOrderNumber,
     addItemToAllocation,
+    removeItemFromAllocation,
     clearLocalAllocation,
   } = useOrderSearch();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const [selectedProduct, setSelectedProduct] = useState<OrderStockItem | null>(
     null,
   );
@@ -37,6 +36,13 @@ const RegisterEntry: React.FC = () => {
     quantity: 1,
   });
 
+  const availableProducts = useMemo(() => {
+    return searchResults?.filter(
+      (product) =>
+        !addedItems?.some((item) => item.productSku === product.productSku),
+    );
+  }, [searchResults, addedItems]);
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       handleSearch();
@@ -45,7 +51,7 @@ const RegisterEntry: React.FC = () => {
 
   const openEntryPopup = (product: OrderStockItem) => {
     setSelectedProduct(product);
-    setFormData((prev) => ({ ...prev, quantity: product.quantity }));
+    setFormData({ shelfCode: "", row: 0, quantity: product.quantity });
     setShowPopup(true);
   };
 
@@ -65,7 +71,6 @@ const RegisterEntry: React.FC = () => {
 
     addItemToAllocation(newItem);
     setShowPopup(false);
-    setFormData({ shelfCode: "", row: 0, quantity: 1 });
     toast.success(`${selectedProduct.productSku} pronto para alocação.`);
   };
 
@@ -87,7 +92,6 @@ const RegisterEntry: React.FC = () => {
         );
       }
     } catch (error: any) {
-      console.error("Erro ao registrar entrada", error);
       const apiError =
         error.response?.data?.message || "Erro ao processar registro.";
       toast.error(apiError);
@@ -98,7 +102,6 @@ const RegisterEntry: React.FC = () => {
 
   return (
     <div className="flex min-h-screen bg-background text-foreground">
-      <Toaster position="top-right" reverseOrder={false} />
 
       <Sidebar
         title="Operacional"
@@ -140,7 +143,7 @@ const RegisterEntry: React.FC = () => {
           </section>
 
           <div className="grid gap-4">
-            {searchResults?.map((product) => (
+            {availableProducts?.map((product) => (
               <div
                 key={product.productSku}
                 className="bg-card p-5 rounded-2xl flex justify-between items-center border border-border hover:border-primary/50 transition-colors"
@@ -188,8 +191,16 @@ const RegisterEntry: React.FC = () => {
             {addedItems?.map((item, idx) => (
               <div
                 key={idx}
-                className="text-sm p-4 bg-background rounded-2xl border border-border"
+                className="text-sm p-4 bg-background rounded-2xl border border-border relative group animate-in fade-in slide-in-from-right-4 duration-300"
               >
+                <button
+                  onClick={() => removeItemFromAllocation(item.productSku)}
+                  className="absolute top-3 right-3 text-muted-foreground hover:text-destructive transition-colors"
+                >
+                  <span className="material-symbols-outlined text-lg">
+                    close
+                  </span>
+                </button>
                 <p className="font-bold text-primary mb-2">{item.productSku}</p>
                 <div className="grid grid-cols-3 gap-2 text-[11px] font-bold uppercase text-muted-foreground">
                   <div className="bg-muted p-2 rounded-lg text-center">
@@ -230,70 +241,66 @@ const RegisterEntry: React.FC = () => {
         </aside>
       </main>
 
-      <AnimatePresence>
-        {showPopup && selectedProduct && (
-          <div className="fixed inset-0 z-[70] flex items-center justify-center bg-background/80 backdrop-blur-md p-4">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-card w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl border border-border"
-            >
-              <h2 className="text-2xl font-bold mb-1">Endereçamento</h2>
-              <p className="text-sm text-muted-foreground mb-6">
-                Informe a localização de{" "}
-                <span className="text-primary font-bold">
-                  {selectedProduct.name}
-                </span>
-              </p>
+      {/* Popup de Endereçamento com Tailwind Transitions */}
+      {showPopup && selectedProduct && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-background/80 backdrop-blur-md transition-opacity duration-300"
+            onClick={() => setShowPopup(false)}
+          />
+          <div className="bg-card w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl border border-border relative animate-in zoom-in-95 fade-in duration-300">
+            <h2 className="text-2xl font-bold mb-1">Endereçamento</h2>
+            <p className="text-sm text-muted-foreground mb-6">
+              Informe a localização de{" "}
+              <span className="text-primary font-bold">
+                {selectedProduct.name}
+              </span>
+            </p>
 
-              <div className="space-y-6">
+            <div className="space-y-6">
+              <TralloInput
+                label="Código da Prateleira"
+                placeholder="Ex.: P-A3"
+                value={formData.shelfCode}
+                onChange={(val) => setFormData({ ...formData, shelfCode: val })}
+                icon="shelves"
+              />
+
+              <div className="grid grid-cols-2 gap-4">
                 <TralloInput
-                  label="Código da Prateleira"
-                  placeholder="Ex.: P-A3"
-                  value={formData.shelfCode}
+                  label="Fileira"
+                  type="number"
                   onChange={(val) =>
-                    setFormData({ ...formData, shelfCode: val })
+                    setFormData({ ...formData, row: parseInt(val) || 0 })
                   }
-                  icon="shelves"
+                  icon="format_list_numbered"
                 />
-
-                <div className="grid grid-cols-2 gap-4">
-                  <TralloInput
-                    label="Fileira"
-                    type="number"
-                    onChange={(val) =>
-                      setFormData({ ...formData, row: parseInt(val) || 0 })
-                    }
-                    icon="format_list_numbered"
-                  />
-                  <TralloInput
-                    label="Quantidade"
-                    type="number"
-                    onChange={(val) =>
-                      setFormData({ ...formData, quantity: parseInt(val) || 0 })
-                    }
-                    icon="pin"
-                  />
-                </div>
-
-                <div className="flex gap-3 pt-4">
-                  <TralloButton
-                    variant="secondary"
-                    className="flex-1"
-                    onClick={() => setShowPopup(false)}
-                  >
-                    Voltar
-                  </TralloButton>
-                  <TralloButton className="flex-1" onClick={addToAddedList}>
-                    Confirmar
-                  </TralloButton>
-                </div>
+                <TralloInput
+                  label="Quantidade"
+                  type="number"
+                  onChange={(val) =>
+                    setFormData({ ...formData, quantity: parseInt(val) || 0 })
+                  }
+                  icon="pin"
+                />
               </div>
-            </motion.div>
+
+              <div className="flex gap-3 pt-4">
+                <TralloButton
+                  variant="secondary"
+                  className="flex-1"
+                  onClick={() => setShowPopup(false)}
+                >
+                  Voltar
+                </TralloButton>
+                <TralloButton className="flex-1" onClick={addToAddedList}>
+                  Confirmar
+                </TralloButton>
+              </div>
+            </div>
           </div>
-        )}
-      </AnimatePresence>
+        </div>
+      )}
 
       <BottomNavigation />
     </div>

@@ -6,6 +6,7 @@ import {
   setOrderNumber,
   setSearchResults,
   addStockItem,
+  removeStockItem,
   clearAllocation,
   setDelivererId,
   confirmProductExit,
@@ -30,7 +31,7 @@ export const useOrderSearch = () => {
 
   const handleSearch = async () => {
     if (!orderNumber) {
-      toast.error("Por favor, digite o número do pedido.");
+      toast.error("Por favor, digite o número do pedido");
       return;
     }
     if (orderNumber === lastSearchedOrder && searchResults?.length > 0) return;
@@ -40,9 +41,9 @@ export const useOrderSearch = () => {
       const response = await orderService.getOrderByNumber(orderNumber);
       if (response.success && response.data) {
         dispatch(setSearchResults(response.data.items));
-        toast.success("Pedido localizado!");
+        toast.success("Pedido localizado");
       } else {
-        toast.error(response.message || "Pedido não encontrado.");
+        toast.error(response.message || "Pedido não encontrado");
       }
     } catch (error: any) {
       toast.error(
@@ -63,6 +64,7 @@ export const useOrderSearch = () => {
     handleSearch,
     updateOrderNumber: (val: string) => dispatch(setOrderNumber(val)),
     addItemToAllocation: (item: StockEntryItem) => dispatch(addStockItem(item)),
+    removeItemFromAllocation: (sku: string) => dispatch(removeStockItem(sku)),
     clearLocalAllocation: () => dispatch(clearAllocation()),
     updateDelivererId: (id: number) => dispatch(setDelivererId(id)),
     confirmExit: (product: OrderStockItem) =>
