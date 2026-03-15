@@ -6,10 +6,10 @@ import { registerStockEntry } from "@/services/warehouse-inventory.service";
 import BottomNavigation from "@/components/BottomNavigation";
 import { RegisterEntryDto, StockEntryItem } from "@/types/warehouse-inventory";
 import { OrderStockItem } from "@/dtos/order";
-import { BASE_UPLOAD_URL } from "@/api/endpoints";
 import TralloInput from "@/components/TralloInput";
 import TralloButton from "@/components/TralloButton";
 import { useOrderSearch } from "@/hooks/use-order-search";
+import ProductActionCard from "@/components/ProductActionCard";
 
 const RegisterEntry: React.FC = () => {
   const {
@@ -91,10 +91,8 @@ const RegisterEntry: React.FC = () => {
           response.message || "Não foi possível registrar a entrada.",
         );
       }
-    } catch (error: any) {
-      const apiError =
-        error.response?.data?.message || "Erro ao processar registro.";
-      toast.error(apiError);
+    } catch (err) {
+      toast.error(err.message ?? "Erro ao processar registro");
     } finally {
       setIsSubmitting(false);
     }
@@ -102,7 +100,6 @@ const RegisterEntry: React.FC = () => {
 
   return (
     <div className="flex min-h-screen bg-background text-foreground">
-
       <Sidebar
         title="Operacional"
         items={operatorItems}
@@ -144,37 +141,12 @@ const RegisterEntry: React.FC = () => {
 
           <div className="grid gap-4">
             {availableProducts?.map((product) => (
-              <div
+              <ProductActionCard
                 key={product.productSku}
-                className="bg-card p-5 rounded-2xl flex justify-between items-center border border-border hover:border-primary/50 transition-colors"
-              >
-                <div className="flex items-center gap-4">
-                  {product.coverImage && (
-                    <img
-                      src={BASE_UPLOAD_URL + product.coverImage}
-                      alt={product.name}
-                      className="w-14 h-14 rounded-xl object-cover bg-muted"
-                    />
-                  )}
-                  <div>
-                    <h3 className="font-bold text-lg leading-tight">
-                      {product.name}
-                    </h3>
-                    <div className="flex gap-3 mt-1.5">
-                      <span className="text-[11px] font-semibold text-muted-foreground bg-secondary/50 px-2.5 py-1 rounded-full border border-border/50">
-                        {product.productSku}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <TralloButton
-                  variant="outline"
-                  className="h-10 text-sm"
-                  onClick={() => openEntryPopup(product)}
-                >
-                  Alocar
-                </TralloButton>
-              </div>
+                product={product}
+                buttonText="Alocar"
+                onAction={openEntryPopup}
+              />
             ))}
           </div>
         </div>
@@ -241,7 +213,6 @@ const RegisterEntry: React.FC = () => {
         </aside>
       </main>
 
-      {/* Popup de Endereçamento com Tailwind Transitions */}
       {showPopup && selectedProduct && (
         <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
           <div

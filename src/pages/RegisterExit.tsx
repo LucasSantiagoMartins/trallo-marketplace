@@ -1,16 +1,15 @@
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import Sidebar from "@/components/Sidebar";
 import { operatorItems } from "@/constants/sidebar-items";
 import { registerStockExit } from "@/services/warehouse-inventory.service";
 import BottomNavigation from "@/components/BottomNavigation";
 import { RegisterExitDto } from "@/types/warehouse-inventory";
 import { OrderStockItem } from "@/dtos/order";
-import { BASE_UPLOAD_URL } from "@/api/endpoints";
 import TralloInput from "@/components/TralloInput";
 import TralloButton from "@/components/TralloButton";
 import { useOrderSearch } from "@/hooks/use-order-search";
+import ProductActionCard from "@/components/ProductActionCard";
 
 const RegisterExit: React.FC = () => {
   const {
@@ -23,6 +22,7 @@ const RegisterExit: React.FC = () => {
     updateOrderNumber,
     updateDelivererId,
     confirmExit,
+    removeItemFromExit,
     resetExit,
   } = useOrderSearch();
 
@@ -55,10 +55,20 @@ const RegisterExit: React.FC = () => {
       return;
     }
 
+    if (!confirmedProducts || confirmedProducts.length === 0) {
+      toast.error("Nenhum item foi conferido para a saída.");
+      return;
+    }
+
     setIsSubmitting(true);
+
     const payload: RegisterExitDto = {
       orderNumber,
       delivererId: Number(delivererId),
+      items: confirmedProducts.map((item) => ({
+        productSku: item.productSku,
+        quantity: item.quantity,
+      })),
     };
 
     try {
@@ -69,7 +79,7 @@ const RegisterExit: React.FC = () => {
       } else {
         toast.error(response.message || "Erro ao registrar saída.");
       }
-    } catch (error: any) {
+    } catch (error) {
       toast.error(error.message || "Erro ao processar registro.");
     } finally {
       setIsSubmitting(false);
@@ -118,45 +128,26 @@ const RegisterExit: React.FC = () => {
           </section>
 
           <div className="grid gap-4">
-            {searchResults?.map((product) => {
-              const isConfirmed = confirmedProducts?.some(
-                (p) => p.productSku === product.productSku,
-              );
-              return (
+            {searchResults
+              ?.filter(
+                (product) =>
+                  !confirmedProducts?.some(
+                    (p) => p.productSku === product.productSku,
+                  ),
+              )
+              .map((product) => (
                 <div
                   key={product.productSku}
-                  className="bg-card p-5 rounded-2xl flex justify-between items-center border border-border"
+                  className="animate-in fade-in zoom-in-95 duration-200"
                 >
-                  <div className="flex items-center gap-4">
-                    {product.coverImage && (
-                      <img
-                        src={BASE_UPLOAD_URL + product.coverImage}
-                        alt={product.name}
-                        className="w-14 h-14 rounded-xl object-cover bg-muted"
-                      />
-                    )}
-                    <div>
-                      <h3 className="font-bold text-lg leading-tight">
-                        {product.name}
-                      </h3>
-                      <div className="flex items-center gap-2 mt-1.5">
-                        <span className="text-[11px] font-semibold text-muted-foreground bg-secondary/50 px-2.5 py-1 rounded-full border border-border/50">
-                          {product.productSku}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <TralloButton
-                    variant={isConfirmed ? "secondary" : "outline"}
-                    className={`h-10 text-sm ${isConfirmed ? "text-emerald-500" : ""}`}
-                    disabled={isConfirmed}
-                    onClick={() => openConfirmPopup(product)}
-                  >
-                    {isConfirmed ? "Conferido ✓" : "Confirmar"}
-                  </TralloButton>
+                  <ProductActionCard
+                    product={product}
+                    buttonText="Confirmar"
+                    buttonVariant="outline"
+                    onAction={openConfirmPopup}
+                  />
                 </div>
-              );
-            })}
+              ))}
           </div>
         </div>
 
@@ -179,30 +170,43 @@ const RegisterExit: React.FC = () => {
             />
           </div>
 
-          <div className="space-y-3 mb-8 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+          <div className="space-y-3 mb-8 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
             <p className="text-xs font-bold uppercase opacity-50">
               Itens na Carga:
             </p>
-            {confirmedProducts?.map((item, idx) => (
+
+            {confirmedProducts?.map((item) => (
               <div
-                key={idx}
-                className="flex justify-between items-center text-sm p-3 bg-background rounded-xl border border-border"
+                key={item.productSku}
+                className="relative group p-4 bg-background rounded-2xl border border-border transition-all hover:border-primary/30 animate-in fade-in slide-in-from-right-4 duration-200"
               >
-                <div className="flex flex-col">
-                  <span className="font-bold text-primary">
+                <button
+                  onClick={() => removeItemFromExit(item.productSku)}
+                  className="absolute top-2 right-2 w-7 h-7 flex items-center justify-center rounded-full bg-muted text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+                >
+                  <span className="material-symbols-outlined text-lg">
+                    close
+                  </span>
+                </button>
+
+                <div className="flex flex-col pr-6">
+                  <span className="font-bold text-primary text-xs tracking-wider">
                     {item.productSku}
                   </span>
-                  <span className="text-[10px] opacity-70 truncate max-w-[150px]">
+                  <span className="text-sm font-medium text-foreground mt-1 truncate">
                     {item.name}
                   </span>
+                  <div className="mt-2 flex items-center">
+                    <span className="text-[11px] font-black bg-primary/10 text-primary px-2 py-0.5 rounded-md">
+                      QUANTIDADE: {item.quantity}
+                    </span>
+                  </div>
                 </div>
-                <span className="font-black text-primary">
-                  x{item.quantity}
-                </span>
               </div>
             ))}
+
             {(!confirmedProducts || confirmedProducts.length === 0) && (
-              <div className="text-center py-8 border-2 border-dashed border-border rounded-2xl">
+              <div className="text-center py-10 border-2 border-dashed border-border rounded-2xl">
                 <p className="text-muted-foreground text-sm italic">
                   Aguardando conferência...
                 </p>
@@ -225,47 +229,40 @@ const RegisterExit: React.FC = () => {
         </aside>
       </main>
 
-      <AnimatePresence>
-        {showPopup && selectedProduct && (
-          <div className="fixed inset-0 z-[70] flex items-center justify-center bg-background/80 backdrop-blur-md p-4">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-card w-full max-w-md rounded-[2.5rem] p-8 border border-border"
-            >
-              <div className="text-center mb-6">
-                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="material-symbols-outlined text-primary text-3xl">
-                    fact_check
-                  </span>
-                </div>
-                <h2 className="text-2xl font-bold mb-1">Conferir Item</h2>
-                <div className="text-sm text-muted-foreground">
-                  Confirme as <strong>{selectedProduct.quantity}</strong>{" "}
-                  unidades de:
-                  <br />
-                  <span className="text-primary font-bold">
-                    {selectedProduct.name}
-                  </span>
-                </div>
+      {showPopup && selectedProduct && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-background/80 backdrop-blur-md p-4 animate-in fade-in duration-200">
+          <div className="bg-card w-full max-w-md rounded-[2.5rem] p-8 border border-border shadow-2xl animate-in zoom-in-95 duration-200">
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="material-symbols-outlined text-primary text-3xl">
+                  fact_check
+                </span>
               </div>
-              <div className="flex gap-3 pt-4">
-                <TralloButton
-                  variant="secondary"
-                  className="flex-1"
-                  onClick={() => setShowPopup(false)}
-                >
-                  Voltar
-                </TralloButton>
-                <TralloButton className="flex-1" onClick={handleConfirmAction}>
-                  Confirmar
-                </TralloButton>
+              <h2 className="text-2xl font-bold mb-1">Conferir Item</h2>
+              <div className="text-sm text-muted-foreground">
+                Confirme as <strong>{selectedProduct.quantity}</strong> unidades
+                de:
+                <br />
+                <span className="text-primary font-bold">
+                  {selectedProduct.name}
+                </span>
               </div>
-            </motion.div>
+            </div>
+            <div className="flex gap-3 pt-4">
+              <TralloButton
+                variant="secondary"
+                className="flex-1"
+                onClick={() => setShowPopup(false)}
+              >
+                Voltar
+              </TralloButton>
+              <TralloButton className="flex-1" onClick={handleConfirmAction}>
+                Confirmar
+              </TralloButton>
+            </div>
           </div>
-        )}
-      </AnimatePresence>
+        </div>
+      )}
       <BottomNavigation />
     </div>
   );

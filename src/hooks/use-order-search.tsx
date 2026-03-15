@@ -10,6 +10,7 @@ import {
   clearAllocation,
   setDelivererId,
   confirmProductExit,
+  removeProductExit, // Adicione esta action no seu orderSlice
   clearExitData,
 } from "@/store/orderSlice";
 import { RootState } from "@/store/main";
@@ -34,6 +35,7 @@ export const useOrderSearch = () => {
       toast.error("Por favor, digite o número do pedido");
       return;
     }
+
     if (orderNumber === lastSearchedOrder && searchResults?.length > 0) return;
 
     setIsSearching(true);
@@ -62,13 +64,20 @@ export const useOrderSearch = () => {
     delivererId,
     isSearching,
     handleSearch,
+
+    // Métodos de atualização de estado simples
     updateOrderNumber: (val: string) => dispatch(setOrderNumber(val)),
+    updateDelivererId: (id: number) => dispatch(setDelivererId(id)),
+
+    // Métodos para Registrar Entrada (Allocation)
     addItemToAllocation: (item: StockEntryItem) => dispatch(addStockItem(item)),
     removeItemFromAllocation: (sku: string) => dispatch(removeStockItem(sku)),
     clearLocalAllocation: () => dispatch(clearAllocation()),
-    updateDelivererId: (id: number) => dispatch(setDelivererId(id)),
+
+    // Métodos para Registrar Saída (Exit)
     confirmExit: (product: OrderStockItem) =>
       dispatch(confirmProductExit(product)),
+    removeItemFromExit: (sku: string) => dispatch(removeProductExit(sku)),
     resetExit: () => dispatch(clearExitData()),
   };
 };

@@ -6,52 +6,47 @@ import {
   RegisterExitDto,
   StockMovementDTO,
 } from "@/types/warehouse-inventory";
-import { WithdrawalRequestDTO } from "@/dtos/withdrawal";
 import { InventoryDashboardDTO } from "@/dtos/wharehouse-invetory.dto";
 
 export async function registerStockEntry(
   data: RegisterEntryDto,
 ): Promise<ApiResponse<StockMovementDTO>> {
-  const res = await http.post<StockMovementDTO>(
-    endpoints.warehouseInventories.registerEntry,
+  return await http.post<StockMovementDTO>(
+    endpoints.warehouseInventories.entries,
     data,
   );
-  return res;
 }
 
 export async function registerStockExit(
   data: RegisterExitDto,
 ): Promise<ApiResponse<StockMovementDTO>> {
-  const res = await http.post<StockMovementDTO>(
-    endpoints.warehouseInventories.registerEntry,
+  console.log(data);
+  return await http.post<StockMovementDTO>(
+    endpoints.warehouseInventories.exits,
     data,
   );
-  return res;
 }
 
 export async function getStockEntries(): Promise<
   ApiResponse<StockMovementDTO[]>
 > {
-  const res = await http.get<StockMovementDTO[]>(
+  return await http.get<StockMovementDTO[]>(
     endpoints.warehouseInventories.entries,
   );
-  return res;
 }
 
 export async function getStockExits(): Promise<
   ApiResponse<StockMovementDTO[]>
 > {
-  const res = await http.get<StockMovementDTO[]>(
+  return await http.get<StockMovementDTO[]>(
     endpoints.warehouseInventories.exits,
   );
-  return res;
 }
 export async function getDashboard(): Promise<
   ApiResponse<InventoryDashboardDTO>
 > {
-  const res = await http.get<InventoryDashboardDTO>(
+  return await http.get<InventoryDashboardDTO>(
     endpoints.warehouseInventories.dashboard,
   );
-  return res;
 }
 

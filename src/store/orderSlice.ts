@@ -33,7 +33,10 @@ const orderSlice = createSlice({
         },
         addStockItem: (state, action: PayloadAction<StockEntryItem>) => {
             if (!state.addedItems) state.addedItems = [];
-            state.addedItems.push(action.payload);
+            const exists = state.addedItems.find(item => item.productSku === action.payload.productSku);
+            if (!exists) {
+                state.addedItems.push(action.payload);
+            }
         },
         removeStockItem: (state, action: PayloadAction<string>) => {
             state.addedItems = state.addedItems.filter(
@@ -52,6 +55,11 @@ const orderSlice = createSlice({
             if (!exists) {
                 state.confirmedProducts.push(action.payload);
             }
+        },
+        removeProductExit: (state, action: PayloadAction<string>) => {
+            state.confirmedProducts = state.confirmedProducts.filter(
+                (item) => item.productSku !== action.payload
+            );
         },
         clearExitData: (state) => {
             state.confirmedProducts = [];
@@ -76,6 +84,7 @@ export const {
     clearAllocation,
     setDelivererId,
     confirmProductExit,
+    removeProductExit,
     clearExitData,
     clearSearch
 } = orderSlice.actions;

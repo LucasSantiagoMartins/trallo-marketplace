@@ -40,8 +40,13 @@ export interface StockMovementDTO {
 }
 
 export interface RegisterExitDto {
-  orderNumber: string;
   delivererId: number;
+  orderNumber: string;
+  items: StockExitItem[];
+}
+export interface StockExitItem {
+  productSku: string;
+  quantity: number;
 }
 
 export interface StockEntryItem {
@@ -50,6 +55,7 @@ export interface StockEntryItem {
   row: number;
   quantity: number;
 }
+
 
 export interface RegisterEntryDto {
   orderNumber: string;

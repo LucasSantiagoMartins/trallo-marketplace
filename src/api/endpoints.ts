@@ -21,7 +21,6 @@ export const endpoints = {
     dashboard: "/warehouse-inventories/dashboard",
     exits: "/warehouse-inventories/exits",
     entries: "/warehouse-inventories/entries",
-    registerEntry: "/warehouse-inventories/entries",
   },
   products: {
     search: "/products/search",
