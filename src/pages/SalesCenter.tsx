@@ -11,6 +11,7 @@ import { getSalesSummary } from "@/services/sales.service";
 import { formatDateFriendly } from "@/utils/date";
 import OrderDetailsModal from "@/components/OrderDetailsModal";
 import BottomNavigation from "@/components/BottomNavigation";
+import { getOrderStatusColor, getOrderStatusLabel } from "@/utils/mappers/order.mapper";
 
 export interface MonthOverMonth {
   percentage: number;
@@ -220,19 +221,13 @@ const SalesCenter: React.FC = () => {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-start mb-1">
-                      <h4 className="font-bold text-[13px] truncate text-foreground pr-2 uppercase tracking-tight">
-                        {order.orderNumber || "Pedido Sem Nome"}
+                      <h4 className="font-bold text-[10px] truncate text-foreground pr-2 uppercase tracking-tight">
+                        {order.orderNumber }
                       </h4>
                       <span
-                        className={`text-[7px] font-black uppercase px-2 py-0.5 rounded-md shrink-0 ${
-                          order.status === "PAYMENT_PROCESSING"
-                            ? "bg-orange-100 text-orange-600"
-                            : "bg-emerald-100 text-emerald-600"
-                        }`}
+                        className={`text-[7px] font-black uppercase px-2 py-0.5 rounded-md shrink-0 ${getOrderStatusColor(order.status)}`}
                       >
-                        {order.status === "PAYMENT_PROCESSING"
-                          ? "Pendente"
-                          : "Concluído"}
+                        {getOrderStatusLabel(order.status, true)}
                       </span>
                     </div>
                     <div className="flex items-end justify-between mt-1">

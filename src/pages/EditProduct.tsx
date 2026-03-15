@@ -58,12 +58,21 @@ const EditProduct: React.FC = () => {
         stockQuantity: productFromState.stock.availableQuantity,
       });
 
-      if (productFromState.images && productFromState.images.length > 0) {
-        const fullImageUrls = productFromState.images.map(
-          (img) => BASE_UPLOAD_URL + img,
+      let productImages = [...(productFromState.images || [])];
+
+      if (
+        productFromState.coverImage &&
+        !productImages.includes(productFromState.coverImage)
+      ) {
+        productImages = [productFromState.coverImage, ...productImages];
+      }
+
+      if (productImages.length > 0) {
+        const fullImageUrls = productImages.map((img) =>
+          img.startsWith("http") ? img : BASE_UPLOAD_URL + img,
         );
         setImages(fullImageUrls);
-        setFileObjects(productFromState.images);
+        setFileObjects(productImages);
       }
     }
   }, [location.state]);
@@ -170,7 +179,13 @@ const EditProduct: React.FC = () => {
         (file) => typeof file === "string",
       ) as string[];
 
-      const originalImages = productFromState.images || [];
+      let originalImages = [...(productFromState.images || [])];
+      if (
+        productFromState.coverImage &&
+        !originalImages.includes(productFromState.coverImage)
+      ) {
+        originalImages = [productFromState.coverImage, ...originalImages];
+      }
 
       if (newFiles.length > 0) {
         newFiles.forEach((file) => {
@@ -252,8 +267,6 @@ const EditProduct: React.FC = () => {
                 onOpenCondition={openConditionModal}
               />
             </div>
-
-            
           </div>
 
           <div className="space-y-6 w-full">
@@ -280,13 +293,12 @@ const EditProduct: React.FC = () => {
                 />
               </div>
 
-              <div className="flex flex-col gap-2 shrink-0">
+              <div className="flex flex-col gap-2 shrink-0 w-fit">
                 <label className="text-[10px] font-black text-slate-400 uppercase ml-1 tracking-widest">
                   Estoque Disponível
                 </label>
                 <QuantitySelector
                   value={formData.stockQuantity}
-                  className="h-[56px] w-full sm:min-w-[140px]"
                   onChange={(d) =>
                     updateField(
                       "stockQuantity",

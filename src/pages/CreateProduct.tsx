@@ -137,7 +137,6 @@ const CreateProduct: React.FC = () => {
 
       <main className="flex flex-col min-h-screen pt-[72px] pb-[100px] bg-white dark:bg-slate-950">
         <div className="px-5 py-8 md:p-10 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start max-w-6xl mx-auto w-full">
-          
           <div className="space-y-8 w-full">
             <div className="space-y-2">
               <label className="text-[10px] font-black text-slate-400 uppercase ml-1 tracking-widest">
@@ -200,13 +199,12 @@ const CreateProduct: React.FC = () => {
                 />
               </div>
 
-              <div className="flex flex-col gap-2 shrink-0">
+              <div className="flex flex-col gap-2 shrink-0 w-fit">
                 <label className="text-[10px] font-black text-slate-400 uppercase ml-1 tracking-widest">
                   Estoque Disponível
                 </label>
                 <QuantitySelector
                   value={formData.stockQuantity}
-                  className="h-[56px] w-full sm:min-w-[140px]"
                   onChange={(d) =>
                     updateField(
                       "stockQuantity",

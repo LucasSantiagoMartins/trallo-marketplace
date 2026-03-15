@@ -21,7 +21,6 @@ const OwnProductCard = forwardRef<HTMLDivElement, OwnProductCardProps>(
     const isVerifying = product.status === ProductStatus.SUBMITTED;
     const isPending = product.status === ProductStatus.AWAITING_SUBMISSION;
     const isOutOfStock = product.stock.availableQuantity === 0;
-
     return (
       <motion.div
         ref={ref}

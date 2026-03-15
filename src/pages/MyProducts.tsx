@@ -29,6 +29,7 @@ const MyProductsPage: React.FC = () => {
     setIsLoading(true);
     try {
       const response = await getMyProducts();
+      console.log(response.data)
       if (response.data) {
         setProducts(response.data);
       }

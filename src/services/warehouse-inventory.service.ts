@@ -22,7 +22,6 @@ export async function registerStockEntry(
 export async function registerStockExit(
   data: RegisterExitDto,
 ): Promise<ApiResponse<StockMovementDTO>> {
-  console.log(data);
   return await http.post<StockMovementDTO>(
     endpoints.warehouseInventories.exits,
     data,
