@@ -38,18 +38,17 @@ const BottomNavigation: React.FC = () => {
           break;
 
         case "OPERATOR":
-          // Criamos a lista: Visão Geral, Pedidos, VER. PENDENTES (Centro), Estoque, Perfil
           const baseOperatorItems = [
             operatorItems.find((i) => i.id === "dashboard"),
             operatorItems.find((i) => i.id === "pedidos"),
-            operatorItems.find((i) => i.id === "verificacoes-pendentes"), // Este será o centro
+            operatorItems.find((i) => i.id === "verificacoes-pendentes"),
             operatorItems.find((i) => i.id === "gestao-estoque"),
           ].filter(Boolean) as NavItem[];
 
           items = [
             ...baseOperatorItems.map((item, index) => ({
               ...item,
-              isCenter: index === 2, // O terceiro item (índice 2) fica no centro realçado
+              isCenter: index === 2,
             })),
             { icon: "person", label: "Perfil", path: "/perfil" },
           ];
@@ -77,7 +76,6 @@ const BottomNavigation: React.FC = () => {
         case "BUYER":
           items = [
             { icon: "home", label: "Início", path: "/" },
-            { icon: "favorite", label: "Favoritos", path: "/favoritos" },
             {
               icon: "shopping_cart",
               label: "Carrinho",
@@ -102,14 +100,17 @@ const BottomNavigation: React.FC = () => {
   };
 
   const currentNavItems = getNavItems();
+  // Lógica de simetria: Só destaca o centro se o total de itens for ímpar
+  const canShowCenter = currentNavItems.length % 2 !== 0;
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 glass-nav border-t border-border px-6 py-3 flex justify-between items-center z-50 rounded-t-xl lg:hidden">
       <div className="w-full max-w-md mx-auto flex justify-between items-center">
         {currentNavItems.map((item) => {
           const isActive = location.pathname === item.path;
+          const shouldHighlight = item.isCenter && canShowCenter;
 
-          if (item.isCenter) {
+          if (shouldHighlight) {
             return (
               <Link
                 key={item.path}

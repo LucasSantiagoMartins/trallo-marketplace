@@ -54,7 +54,6 @@ const Header: React.FC<HeaderProps> = ({
     BUYER: [
       { name: "Início", path: "/" },
       { name: "Meus Pedidos", path: "/meus-pedidos" },
-      { name: "Favoritos", path: "/favoritos" },
     ],
     OPERATOR: [
       { name: "Área Operacional", path: "/area-operacional" },
