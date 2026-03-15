@@ -135,7 +135,7 @@ const EditProfile = () => {
     <div className="bg-background-light dark:bg-background-dark min-h-screen flex flex-col items-center">
       <PageHeader title="Editar Perfil" />
       
-      <main className="w-full sm:max-w-4xl bg-white dark:bg-[#1c182d] sm:rounded-[3rem] mt-12 sm:mt-20 px-6 sm:px-16 py-8 sm:py-6 sm:shadow-xl border-none dark:border-white/5 flex flex-col items-center flex-1 sm:flex-none sm:h-fit sm:mb-10">
+      <main className="w-full sm:max-w-4xl bg-white dark:bg-[#1c182d] sm:rounded-[3rem] mt-12 sm:mt-24 px-6 sm:px-16 py-8 sm:py-6 sm:shadow-xl border-none dark:border-white/5 flex flex-col items-center flex-1 sm:flex-none sm:h-fit sm:mb-10">
         <div className="relative mb-6 flex flex-col items-center">
           <div
             className={`relative group ${isImageLoading ? "cursor-wait" : "cursor-pointer"}`}
