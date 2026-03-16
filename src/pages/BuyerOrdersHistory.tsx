@@ -61,10 +61,10 @@ const BuyerOrdersHistory: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f6f5f8] dark:bg-[#141022] text-[#121118] dark:text-white pb-24 font-['Inter']">
+    <div className="min-h-screen bg-[#f6f5f8] dark:bg-[#141022] text-[#121118] dark:text-white">
       <PageHeader title="Meus Pedidos" />
 
-      <main className="max-w-7xl mx-auto px-4 pt-24">
+      <main className="max-w-7xl mx-auto px-4 pt-24 pb-20 lg:pb-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
             <SegmentedControl

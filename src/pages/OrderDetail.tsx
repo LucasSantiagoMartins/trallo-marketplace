@@ -26,7 +26,7 @@ const OrderDetail: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#f6f5f8] dark:bg-[#141022] text-[#121118] dark:text-white pb-32">
+    <div className="min-h-screen bg-[#f6f5f8] dark:bg-[#141022] text-[#121118] dark:text-white pb-10">
       <PageHeader title="Detalhe do Pedido" />
 
       <main className="max-w-3xl mx-auto px-4 pt-24 space-y-6">

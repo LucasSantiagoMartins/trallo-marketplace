@@ -26,7 +26,7 @@ const ProductDetails: React.FC = () => {
   const { id: paramId } = useParams<{ id: string }>();
   const location = useLocation();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
 
   const product = location.state?.product as SearchedProductDTO;
 
@@ -90,6 +90,11 @@ const ProductDetails: React.FC = () => {
   const handleConfirmCheckout = async () => {
     if (isSubmitting) return;
 
+    if (!isAuthenticated) {
+      navigate("/entrar");
+      return null;
+    }
+
     const targetId = paramId || product.id;
     if (!targetId) {
       toast.error("ID do produto não encontrado.");
@@ -134,6 +139,27 @@ const ProductDetails: React.FC = () => {
     }
   };
 
+  const handleBuyClick = () => {
+    if (!isAuthenticated) {
+      navigate("/entrar");
+      return;
+    }
+    setModalType("payment_choice");
+  };
+
+  const handleShare = () => {
+    if (!isAuthenticated) {
+      navigate("/entrar");
+      return;
+    }
+    if (navigator.share) {
+      navigator.share({
+        title: product.name,
+        url: window.location.href,
+      });
+    }
+  };
+
   const closeModal = () => setModalType(null);
 
   const deliveryFee = paymentType === "presencial" ? 0 : 2500;
@@ -146,14 +172,7 @@ const ProductDetails: React.FC = () => {
         rightElement={
           <button
             className="size-10 flex items-center justify-center bg-card rounded-full shadow-soft active:scale-90 transition-transform"
-            onClick={() => {
-              if (navigator.share) {
-                navigator.share({
-                  title: product.name,
-                  url: window.location.href,
-                });
-              }
-            }}
+            onClick={handleShare}
           >
             <span className="material-symbols-outlined text-foreground">
               share
@@ -162,7 +181,7 @@ const ProductDetails: React.FC = () => {
         }
       />
 
-      <main className="pb-32 pt-14 lg:pt-20">
+      <main className="pb-10 pt-14 lg:pt-20">
         <div className="lg:grid lg:grid-cols-2 lg:gap-12 lg:max-w-7xl lg:mx-auto lg:px-8">
           <div className="relative group">
             <ProductImageGallery
@@ -195,14 +214,12 @@ const ProductDetails: React.FC = () => {
 
           <div className="px-4 md:px-6 lg:px-0 -mt-10 lg:mt-0 space-y-4 relative z-10">
             <div className="bg-card p-5 rounded-xl shadow-soft border border-border">
-              {/* Título ocupando toda a largura */}
               <div className="mb-3">
                 <h1 className="text-xl md:text-3xl font-bold leading-tight text-[#121118] dark:text-white">
                   {product.name}
                 </h1>
               </div>
 
-              {/* Preço com destaque */}
               <div className="flex items-baseline gap-1">
                 <span className="text-3xl md:text-4xl font-price font-bold text-primary">
                   {formatPrice(product.price, false)}
@@ -248,13 +265,12 @@ const ProductDetails: React.FC = () => {
               <div className="pt-4 lg:pt-6">
                 <button
                   disabled={product.stock.availableQuantity <= 0}
-                  onClick={() => setModalType("payment_choice")}
+                  onClick={handleBuyClick}
                   className={`w-full ${product.stock.availableQuantity <= 0 ? "bg-slate-300 cursor-not-allowed" : "buy-gradient"} text-primary-foreground font-semibold text-lg rounded-full shadow-lg flex items-center justify-center gap-2 active:scale-[0.98] transition-transform py-4 lg:py-5`}
                 >
                   {product.stock.availableQuantity <= 0
                     ? "Esgotado"
                     : "Comprar Agora"}
-                  
                 </button>
               </div>
             )}

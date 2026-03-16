@@ -104,7 +104,7 @@ const BottomNavigation: React.FC = () => {
   const canShowCenter = currentNavItems.length % 2 !== 0;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 glass-nav border-t border-border px-6 py-3 flex justify-between items-center z-50 rounded-t-xl lg:hidden">
+    <nav className="fixed bottom-0 left-0 right-0 glass-nav border-t border-border px-6 py-2 flex justify-between items-center z-50 rounded-t-xl lg:hidden">
       <div className="w-full max-w-md mx-auto flex justify-between items-center">
         {currentNavItems.map((item) => {
           const isActive = location.pathname === item.path;

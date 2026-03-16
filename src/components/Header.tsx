@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "@/hooks/use-cart";
 import { BASE_UPLOAD_URL } from "@/api/endpoints";
@@ -21,6 +21,7 @@ const Header: React.FC<HeaderProps> = ({
   const { user, isAuthenticated } = useAuth();
   const { cartCount, syncCartWithServer } = useCart();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const isSeller = user?.role === "SELLER";
 
@@ -76,6 +77,13 @@ const Header: React.FC<HeaderProps> = ({
         ]
       : [{ name: "Início", path: "/" }];
 
+  const handleProtectedNavigation = (e: React.MouseEvent, path: string) => {
+    if (!isAuthenticated) {
+      e.preventDefault();
+      navigate("/entrar");
+    }
+  };
+
   const headerStyles = isScrolled
     ? "fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg shadow-md border-b border-border/10 py-3 animate-in slide-in-from-top duration-300"
     : "relative bg-background border-b border-transparent py-4";
@@ -125,6 +133,9 @@ const Header: React.FC<HeaderProps> = ({
               <Link
                 key={item.path}
                 to={item.path}
+                onClick={(e) =>
+                  item.path !== "/" && handleProtectedNavigation(e, item.path)
+                }
                 className={`relative py-1 text-sm transition-colors group/link ${
                   location.pathname === item.path
                     ? "font-semibold text-primary"
@@ -147,6 +158,7 @@ const Header: React.FC<HeaderProps> = ({
             {!isSeller && (
               <Link
                 to="/carrinho"
+                onClick={(e) => handleProtectedNavigation(e, "/carrinho")}
                 className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-card hover:bg-muted border border-border/5 transition-colors active:scale-95"
               >
                 <span className="material-symbols-outlined text-[22px]">
@@ -162,6 +174,7 @@ const Header: React.FC<HeaderProps> = ({
 
             <Link
               to="/notifications"
+              onClick={(e) => handleProtectedNavigation(e, "/notifications")}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-card hover:bg-muted border border-border/5 transition-colors active:scale-95"
             >
               <span className="material-symbols-outlined text-[22px]">
@@ -174,10 +187,11 @@ const Header: React.FC<HeaderProps> = ({
 
             <Link
               to="/perfil"
+              onClick={(e) => handleProtectedNavigation(e, "/perfil")}
               className="flex size-10 items-center justify-center rounded-full bg-card hover:bg-muted transition-colors active:scale-90 overflow-hidden border-[1.5px] border-primary/20 p-[1.5px]"
             >
               <div className="w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-background">
-                {user?.profilePicture ? (
+                {isAuthenticated && user?.profilePicture ? (
                   <img
                     src={`${BASE_UPLOAD_URL}${user.profilePicture}`}
                     alt={user.fullName || "User"}
