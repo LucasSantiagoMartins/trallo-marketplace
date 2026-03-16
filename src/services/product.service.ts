@@ -83,3 +83,9 @@ export async function searchProducts(query: {
     params: query,
   });
 }
+
+export async function searchBySlug(
+  slug: string): Promise<ApiResponse<SearchedProductDTO[]>> {
+  return await http.get<SearchedProductDTO[]>(endpoints.products.searchBySlug(slug),
+  );
+}

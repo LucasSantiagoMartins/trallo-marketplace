@@ -69,6 +69,7 @@ export interface SearchedProductDTO {
   condition: ProductCondition;
   status: ProductStatus;
   coverImage: string;
+  slug: string;
   seller: SellerDTO;
   images: string[]; 
   stock: ProductStockDTO;

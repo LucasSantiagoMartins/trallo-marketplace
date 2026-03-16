@@ -26,6 +26,7 @@ export const endpoints = {
   },
   products: {
     search: "/products/search",
+    searchBySlug: (slug: string) => `/products/search/${slug}`,
     create: "/products",
     myProducts: "/products/my",
     submitValidation: (id: string) => `/products/${id}/submit-for-verification`,

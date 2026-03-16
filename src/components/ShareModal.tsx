@@ -4,6 +4,7 @@ interface ShareModalProps {
   isOpen: boolean;
   onClose: () => void;
   productName: string;
+  slug?: string; // Adicionado slug como prop opcional
 }
 
 const shareOptions = [
@@ -33,7 +34,10 @@ const shareOptions = [
     name: "Instagram",
     color: "bg-gradient-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7]",
     icon: (
-      <svg className="size-6 fill-none stroke-current stroke-2" viewBox="0 0 24 24">
+      <svg
+        className="size-6 fill-none stroke-current stroke-2"
+        viewBox="0 0 24 24"
+      >
         <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
         <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
         <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
@@ -45,7 +49,10 @@ const shareOptions = [
     name: "Copiar Link",
     color: "bg-gray-500",
     icon: (
-      <svg className="size-6 fill-none stroke-current stroke-2" viewBox="0 0 24 24">
+      <svg
+        className="size-6 fill-none stroke-current stroke-2"
+        viewBox="0 0 24 24"
+      >
         <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
         <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
       </svg>
@@ -58,6 +65,7 @@ const ShareModal: React.FC<ShareModalProps> = ({
   isOpen,
   onClose,
   productName,
+  slug,
 }) => {
   const [isClosing, setIsClosing] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
@@ -67,9 +75,15 @@ const ShareModal: React.FC<ShareModalProps> = ({
 
   useEffect(() => {
     if (isOpen) {
+      document.body.style.overflow = "hidden";
       setIsClosing(false);
       setIsCopied(false);
+    } else {
+      document.body.style.overflow = "unset";
     }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
   }, [isOpen]);
 
   const handleClose = () => {
@@ -78,13 +92,15 @@ const ShareModal: React.FC<ShareModalProps> = ({
   };
 
   const handleShareClick = async (option: (typeof shareOptions)[0]) => {
-    const url = window.location.href;
+    // Constrói a URL baseada no slug se ele existir, senão usa a URL atual
+    const baseUrl = window.location.origin;
+    const shareUrl = slug
+      ? `${baseUrl}/detalhes-produto/${slug}`
+      : window.location.href;
 
     if (option.name === "Copiar Link") {
-      await navigator.clipboard.writeText(url);
+      await navigator.clipboard.writeText(shareUrl);
       setIsCopied(true);
-      
-      // Espera 800ms para o utilizador ver o check antes de fechar
       setTimeout(() => {
         handleClose();
       }, 800);
@@ -93,7 +109,7 @@ const ShareModal: React.FC<ShareModalProps> = ({
 
     if (option.link) {
       // @ts-ignore
-      window.open(option.link(url, productName), "_blank");
+      window.open(option.link(shareUrl, productName), "_blank");
       handleClose();
     }
   };
@@ -123,7 +139,7 @@ const ShareModal: React.FC<ShareModalProps> = ({
   if (!isOpen && !isClosing) return null;
 
   return (
-    <div className="fixed inset-0 z-[150] flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div className="fixed inset-0 z-[150] flex items-end sm:items-center justify-center p-0 sm:p-4 touch-none">
       <div
         className={`absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-300 ${
           isClosing ? "opacity-0" : "opacity-100"
@@ -137,7 +153,7 @@ const ShareModal: React.FC<ShareModalProps> = ({
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
         className={`relative w-full sm:max-w-md bg-white dark:bg-zinc-900 shadow-2xl transition-all duration-300 ease-out
-          rounded-t-[32px] p-6 pb-10 
+          rounded-t-[32px] p-6 pb-10 touch-auto
           sm:rounded-[24px] sm:pb-6
           ${isClosing ? "translate-y-full sm:scale-95 sm:opacity-0" : "translate-y-0 sm:scale-100 sm:opacity-100"}
           ${!isClosing ? "animate-in slide-in-from-bottom sm:zoom-in-95" : ""}
@@ -146,13 +162,25 @@ const ShareModal: React.FC<ShareModalProps> = ({
         <div className="w-12 h-1.5 bg-gray-200 dark:bg-zinc-700 rounded-full mx-auto mb-6 sm:hidden cursor-grab active:cursor-grabbing" />
 
         <div className="flex justify-between items-start mb-2 px-2">
-          <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">Partilhar Produto</h3>
+          <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
+            Partilhar Produto
+          </h3>
           <button
             onClick={handleClose}
             className="hidden sm:block text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
           >
-            <svg className="size-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="size-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
@@ -164,7 +192,7 @@ const ShareModal: React.FC<ShareModalProps> = ({
         <div className="grid grid-cols-4 gap-4 px-2">
           {shareOptions.map((option) => {
             const isCopyBtn = option.name === "Copiar Link";
-            
+
             return (
               <button
                 key={option.name}
@@ -177,13 +205,18 @@ const ShareModal: React.FC<ShareModalProps> = ({
                     group-active:scale-90`}
                 >
                   {isCopyBtn && isCopied ? (
-                    <svg 
-                      className="size-7 animate-in zoom-in duration-300" 
-                      fill="none" 
-                      stroke="currentColor" 
+                    <svg
+                      className="size-7 animate-in zoom-in duration-300"
+                      fill="none"
+                      stroke="currentColor"
                       viewBox="0 0 24 24"
                     >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="3"
+                        d="M5 13l4 4L19 7"
+                      />
                     </svg>
                   ) : (
                     option.icon

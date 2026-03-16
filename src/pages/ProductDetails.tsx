@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 import MobileLayout from "@/layouts/MobileLayout";
 import PageHeader from "@/components/PageHeader";
@@ -17,18 +17,23 @@ import ShareModal from "@/components/ShareModal";
 import { BASE_UPLOAD_URL } from "@/api/endpoints";
 import VideoPlayer from "@/components/VideoPlayer";
 import { checkoutFromProduct } from "@/services/checkout.service";
+import { searchBySlug } from "@/services/product.service";
 import { PaymentMethod, PaymentMode } from "@/enums/payment";
 import { useAuth } from "@/context/AuthContext";
 import toast from "react-hot-toast";
 import { UserRole } from "@/enums/user";
 
 const ProductDetails: React.FC = () => {
-  const { id: paramId } = useParams<{ id: string }>();
+  const { slug } = useParams<{ slug?: string }>();
   const location = useLocation();
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
 
-  const product = location.state?.product as SearchedProductDTO;
+  const [product, setProduct] = useState<SearchedProductDTO | null>(
+    (location.state?.product as SearchedProductDTO) || null,
+  );
+
+  const [loading, setLoading] = useState(!product && !!slug);
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [modalType, setModalType] = useState<
@@ -43,6 +48,47 @@ const ProductDetails: React.FC = () => {
   const touchStartX = useRef<number | null>(null);
   const touchEndX = useRef<number | null>(null);
 
+  useEffect(() => {
+    async function loadProduct() {
+      if (product) return;
+
+      if (!slug) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const response = await searchBySlug(slug);
+
+        if (response && response.success) {
+          const data = Array.isArray(response.data)
+            ? response.data[0]
+            : response.data;
+          if (data) {
+            setProduct(data);
+          }
+        }
+      } catch (error) {
+        console.error("Erro ao carregar produto:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadProduct();
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <MobileLayout>
+        <div className="flex items-center justify-center h-screen">
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
+        </div>
+      </MobileLayout>
+    );
+  }
+
   if (!product) {
     return (
       <MobileLayout>
@@ -55,7 +101,7 @@ const ProductDetails: React.FC = () => {
           </p>
           <button
             onClick={() => navigate("/")}
-            className="mt-4 text-primary font-bold"
+            className="mt-4 text-primary font-bold bg-primary/10 px-6 py-2 rounded-full"
           >
             Voltar para a Home
           </button>
@@ -64,6 +110,7 @@ const ProductDetails: React.FC = () => {
     );
   }
 
+  // A partir daqui o produto existe com certeza
   const allImages = [product.coverImage, ...(product.images || [])].filter(
     Boolean,
   );
@@ -92,13 +139,12 @@ const ProductDetails: React.FC = () => {
 
     if (!isAuthenticated) {
       navigate("/entrar");
-      return null;
+      return;
     }
 
-    const targetId = paramId || product.id;
-    if (!targetId) {
+    if (!product.id) {
       toast.error("ID do produto não encontrado.");
-      return null;
+      return;
     }
 
     try {
@@ -107,7 +153,6 @@ const ProductDetails: React.FC = () => {
         paymentType === "online"
           ? PaymentMode.ONLINE_PAYMENT
           : PaymentMode.ONSITE_PAYMENT;
-
       let method;
       if (paymentType === "online") {
         method =
@@ -116,24 +161,19 @@ const ProductDetails: React.FC = () => {
             : PaymentMethod.REFERENCE;
       }
 
-      const response = await checkoutFromProduct(targetId, {
+      const response = await checkoutFromProduct(product.id, {
         paymentMode: mode,
         paymentMethod: method,
       });
 
-      if (response && response.success) {
+      if (response?.success) {
         toast.success("Pedido realizado com sucesso.");
         navigate("/meus-pedidos", { state: { order: response.data } });
-        return response.data;
       } else {
         toast.error(response.message || "Erro ao processar checkout.");
       }
     } catch (error) {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Erro ao conectar com o servidor.",
-      );
+      toast.error("Erro ao conectar com o servidor.");
     } finally {
       setIsSubmitting(false);
     }
@@ -147,18 +187,11 @@ const ProductDetails: React.FC = () => {
     setModalType("payment_choice");
   };
 
-  const handleShare = () => {
-    if (!isAuthenticated) {
-      navigate("/entrar");
-      return;
-    }
-    setModalType("share");
-  };
-
+  const handleShare = () => setModalType("share");
   const closeModal = () => setModalType(null);
 
   const deliveryFee = paymentType === "presencial" ? 0 : 2500;
-  const total = product.price + deliveryFee;
+  const total = (product.price || 0) + deliveryFee;
 
   return (
     <MobileLayout>
@@ -191,15 +224,15 @@ const ProductDetails: React.FC = () => {
             />
 
             {product.verificationVideo && (
-              <div className="absolute top-4 right-4 z-30 transition-opacity duration-300 lg:opacity-0 lg:group-hover:opacity-100">
+              <div className="absolute top-4 right-4 z-30 transition-opacity duration-300">
                 <button
                   onClick={() => setModalType("video")}
-                  className="flex items-center gap-2 bg-black/60 hover:bg-primary backdrop-blur-md text-white px-3 py-2 rounded-full border border-white/20 transition-all duration-300 shadow-xl active:scale-95 group/vid lg:px-4 lg:py-2.5"
+                  className="flex items-center gap-2 bg-black/60 backdrop-blur-md text-white px-3 py-2 rounded-full border border-white/20"
                 >
-                  <span className="material-symbols-outlined text-xl group-hover/vid:animate-pulse">
+                  <span className="material-symbols-outlined text-xl">
                     play_circle
                   </span>
-                  <span className="text-[10px] lg:text-xs font-bold uppercase tracking-wider">
+                  <span className="text-[10px] font-bold uppercase">
                     Ver Vídeo Real
                   </span>
                 </button>
@@ -207,31 +240,29 @@ const ProductDetails: React.FC = () => {
             )}
           </div>
 
-          <div className="px-4 md:px-6 lg:px-0 -mt-10 lg:mt-0 space-y-4 relative z-10">
+          <div className="px-4 space-y-4 relative z-10">
             <div className="bg-card p-5 rounded-xl shadow-soft border border-border">
-              <div className="mb-3">
-                <h1 className="text-xl md:text-3xl font-bold leading-tight text-[#121118] dark:text-white">
-                  {product.name}
-                </h1>
-              </div>
+              <h1 className="text-xl md:text-3xl font-bold text-[#121118] dark:text-white">
+                {product.name}
+              </h1>
 
-              <div className="flex items-baseline gap-1">
-                <span className="text-3xl md:text-4xl font-price font-bold text-primary">
+              <div className="flex items-baseline gap-1 mt-2">
+                <span className="text-3xl font-price font-bold text-primary">
                   {formatPrice(product.price, false)}
                 </span>
-                <span className="text-lg md:text-xl font-price font-bold text-primary">
+                <span className="text-lg font-price font-bold text-primary">
                   Kz
                 </span>
               </div>
 
-              <div className="mt-3 flex items-center justify-between border-t border-gray-100 dark:border-white/5 pt-4">
+              <div className="mt-3 flex items-center justify-between border-t pt-4">
                 <div
                   className={`flex items-center gap-1.5 ${productConditionColor[product.condition]}`}
                 >
                   <span className="material-symbols-outlined text-[18px]">
                     {productConditionIcon[product.condition]}
                   </span>
-                  <span className="text-xs font-black uppercase tracking-wide">
+                  <span className="text-xs font-black uppercase">
                     {getProductConditionLabel(product.condition)}
                   </span>
                 </div>
@@ -240,8 +271,8 @@ const ProductDetails: React.FC = () => {
                   <span className="material-symbols-outlined text-[18px]">
                     inventory_2
                   </span>
-                  <span className="text-xs font-bold uppercase tracking-wide">
-                    {product.stock.availableQuantity} disponíveis
+                  <span className="text-xs font-bold uppercase">
+                    {product.stock?.availableQuantity || 0} disponíveis
                   </span>
                 </div>
               </div>
@@ -257,13 +288,13 @@ const ProductDetails: React.FC = () => {
             </div>
 
             {user?.role !== UserRole.SELLER && (
-              <div className="pt-4 lg:pt-6">
+              <div className="pt-4">
                 <button
-                  disabled={product.stock.availableQuantity <= 0}
+                  disabled={(product.stock?.availableQuantity || 0) <= 0}
                   onClick={handleBuyClick}
-                  className={`w-full ${product.stock.availableQuantity <= 0 ? "bg-slate-300 cursor-not-allowed" : "buy-gradient"} text-primary-foreground font-semibold text-lg rounded-full shadow-lg flex items-center justify-center gap-2 active:scale-[0.98] transition-transform py-4 lg:py-5`}
+                  className={`w-full ${(product.stock?.availableQuantity || 0) <= 0 ? "bg-slate-300" : "buy-gradient"} text-primary-foreground font-semibold text-lg rounded-full py-4 shadow-lg active:scale-[0.98] transition-transform`}
                 >
-                  {product.stock.availableQuantity <= 0
+                  {(product.stock?.availableQuantity || 0) <= 0
                     ? "Esgotado"
                     : "Comprar Agora"}
                 </button>
@@ -273,6 +304,7 @@ const ProductDetails: React.FC = () => {
         </div>
       </main>
 
+      {/* Modais */}
       {modalType === "payment_choice" && (
         <PaymentChoiceModal
           onClose={closeModal}
@@ -300,24 +332,23 @@ const ProductDetails: React.FC = () => {
           isOpen={true}
           onClose={closeModal}
           productName={product.name}
+          slug={product.slug}
         />
       )}
 
       {modalType === "video" && product.verificationVideo && (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center overflow-hidden">
+        <div className="fixed inset-0 z-[110] flex items-center justify-center">
           <div
             onClick={closeModal}
-            className="absolute inset-0 bg-black/90 backdrop-blur-md animate-in fade-in duration-300"
+            className="absolute inset-0 bg-black/90 backdrop-blur-md"
           />
-
-          <div className="relative w-full h-full md:h-auto md:max-w-4xl md:aspect-video md:rounded-3xl overflow-hidden shadow-2xl z-[120] bg-black animate-in fade-in zoom-in-95 slide-in-from-bottom-10 duration-300 ease-out">
+          <div className="relative w-full h-full md:h-auto md:max-w-4xl md:rounded-3xl overflow-hidden z-[120]">
             <button
               onClick={closeModal}
-              className="absolute top-6 right-6 z-[130] size-12 flex items-center justify-center bg-black/30 text-white rounded-full hover:bg-black/50 transition-colors backdrop-blur-md border border-white/10 shadow-lg active:scale-90"
+              className="absolute top-6 right-6 z-[130] size-12 bg-black/30 text-white rounded-full"
             >
               <span className="material-symbols-outlined text-3xl">close</span>
             </button>
-
             <VideoPlayer
               src={
                 product.verificationVideo.startsWith("http")

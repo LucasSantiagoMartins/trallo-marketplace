@@ -58,7 +58,10 @@ const App = () => (
             <Route path="/criar-conta" element={<Register />} />
             <Route path="/esqueceu-senha" element={<ResetPassword />} />
             <Route path="/detalhes-produto" element={<ProductDetails />} />
-
+            <Route
+              path="/detalhes-produto/:slug"
+              element={<ProductDetails />}
+            />
             {/* --- 2. ROTAS PRIVADAS (CLIENTES / GERAL) --- */}
             <Route element={<ProtectedRoute />}>
               <Route path="/perfil" element={<UserProfileScreen />} />

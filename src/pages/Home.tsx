@@ -9,7 +9,6 @@ import TralloInput from "@/components/TralloInput";
 import FilterDrawer from "@/components/FilterDrawer";
 import Pagination from "@/components/Pagination";
 import TralloButton from "@/components/TralloButton";
-import { ProductCondition } from "@/types/product";
 import { useCart } from "@/hooks/use-cart";
 import { useProducts } from "@/hooks/use-products";
 import { useAuth } from "@/context/AuthContext";
@@ -87,7 +86,7 @@ const Home: React.FC = () => {
 
   useEffect(() => {
     document.body.style.overflow = isFilterOpen ? "hidden" : "unset";
-    return () => {
+    return () => { 
       document.body.style.overflow = "unset";
     };
   }, [isFilterOpen]);
