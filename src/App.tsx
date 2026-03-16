@@ -44,6 +44,7 @@ import RegisterEntry from "./pages/RegisterEntry";
 import RegisterExit from "./pages/RegisterExit";
 import ShelvesManagement from "./pages/ShelvesManagement";
 import SellerProfileScreen from "./pages/SellerProfile";
+import RateSeller from "./pages/RateSeller";
 
 const queryClient = new QueryClient();
 
@@ -60,6 +61,7 @@ const App = () => (
             <Route path="/esqueceu-senha" element={<ResetPassword />} />
             <Route path="/detalhes-produto" element={<ProductDetails />} />
             <Route path="/perfil-vendedor" element={<SellerProfileScreen />} />
+            <Route path="/avaliar-vendedor" element={<RateSeller />} />
             <Route
               path="/detalhes-produto/:slug"
               element={<ProductDetails />}
