@@ -194,12 +194,12 @@ const EditProduct: React.FC = () => {
         hasChanges = true;
       }
 
-      const imagesChanged =
-        existingImagesRemaining.length !== originalImages.length ||
-        !existingImagesRemaining.every((img) => originalImages.includes(img));
+      const removedImages = originalImages.filter(
+        (img) => !existingImagesRemaining.includes(img),
+      );
 
-      if (imagesChanged) {
-        form.append("existingImages", JSON.stringify(existingImagesRemaining));
+      if (removedImages.length > 0) {
+        form.append("removedImages", JSON.stringify(removedImages));
         hasChanges = true;
       }
 
