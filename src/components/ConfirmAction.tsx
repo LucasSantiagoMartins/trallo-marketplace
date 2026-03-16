@@ -78,14 +78,14 @@ const ConfirmAction: React.FC<ConfirmActionProps> = ({
           <button
             onClick={onClose}
             disabled={isLoading}
-            className="h-12 sm:h-14 rounded-2xl font-bold text-gray-400 text-xs sm:text-sm hover:bg-gray-100 dark:hover:bg-white/5 transition-all truncate px-2"
+            className="h-12 sm:h-14 rounded-full font-bold text-gray-400 text-xs sm:text-sm hover:bg-gray-100 dark:hover:bg-white/5 transition-all truncate px-2"
           >
             {cancelText}
           </button>
           <button
             onClick={onConfirm}
             disabled={isLoading}
-            className={`h-12 sm:h-14 rounded-2xl font-bold text-white text-xs sm:text-sm shadow-lg active:scale-95 transition-all disabled:opacity-50 px-2 truncate ${
+            className={`h-12 sm:h-14 rounded-full font-bold text-white text-xs sm:text-sm shadow-lg active:scale-95 transition-all disabled:opacity-50 px-2 truncate ${
               variant === "danger"
                 ? "bg-red-500 shadow-red-500/20"
                 : "bg-primary shadow-primary/20"

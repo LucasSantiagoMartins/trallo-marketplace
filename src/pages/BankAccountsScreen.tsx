@@ -191,7 +191,7 @@ const BankAccountsScreen: React.FC = () => {
                             ? "Multicaixa Express"
                             : acc.bankName || "Banco"}
                         </p>
-                        <p className="text-sm font-mono font-medium truncate opacity-80">
+                        <p className="text-sm  font-medium truncate opacity-80">
                           {acc.type === "MCX_EXPRESS"
                             ? acc.phoneNumber
                             : acc.iban}
@@ -217,10 +217,10 @@ const BankAccountsScreen: React.FC = () => {
                             className="fixed inset-0 z-10"
                             onClick={() => setActiveMenu(null)}
                           />
-                          <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 py-2 z-20 animate-in fade-in zoom-in duration-200">
+                          <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden z-20 animate-in fade-in zoom-in duration-200">
                             <button
                               onClick={() => openEdit(acc)}
-                              className="w-full px-4 py-3 flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                              className="w-full px-4 py-3 flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                             >
                               <span className="material-symbols-outlined text-lg">
                                 edit
@@ -232,7 +232,7 @@ const BankAccountsScreen: React.FC = () => {
                                 setAccountToDelete(acc);
                                 setActiveMenu(null);
                               }}
-                              className="w-full px-4 py-3 flex items-center gap-3 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+                              className="w-full px-4 py-3 flex items-center gap-3 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                             >
                               <span className="material-symbols-outlined text-lg">
                                 delete

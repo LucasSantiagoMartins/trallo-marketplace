@@ -1,6 +1,5 @@
 import React, { useState, useRef } from "react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
-import { AnimatePresence } from "framer-motion";
 import MobileLayout from "@/layouts/MobileLayout";
 import PageHeader from "@/components/PageHeader";
 import { SearchedProductDTO } from "@/types/product";
@@ -14,6 +13,7 @@ import ProductImageGallery from "@/components/ProductImageGallery";
 import ProductDetailSellerInfo from "@/components/ProductDetailSellerInfo";
 import PaymentChoiceModal from "@/components/PaymentChoiceModal";
 import CheckoutModal from "@/components/CheckoutModal";
+import ShareModal from "@/components/ShareModal";
 import { BASE_UPLOAD_URL } from "@/api/endpoints";
 import VideoPlayer from "@/components/VideoPlayer";
 import { checkoutFromProduct } from "@/services/checkout.service";
@@ -32,7 +32,7 @@ const ProductDetails: React.FC = () => {
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [modalType, setModalType] = useState<
-    "payment_choice" | "checkout" | "video" | null
+    "payment_choice" | "checkout" | "video" | "share" | null
   >(null);
   const [paymentType, setPaymentType] = useState<"online" | "presencial">(
     "online",
@@ -152,12 +152,7 @@ const ProductDetails: React.FC = () => {
       navigate("/entrar");
       return;
     }
-    if (navigator.share) {
-      navigator.share({
-        title: product.name,
-        url: window.location.href,
-      });
-    }
+    setModalType("share");
   };
 
   const closeModal = () => setModalType(null);
@@ -300,17 +295,25 @@ const ProductDetails: React.FC = () => {
         />
       )}
 
+      {modalType === "share" && (
+        <ShareModal
+          isOpen={true}
+          onClose={closeModal}
+          productName={product.name}
+        />
+      )}
+
       {modalType === "video" && product.verificationVideo && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden">
+        <div className="fixed inset-0 z-[110] flex items-center justify-center overflow-hidden">
           <div
             onClick={closeModal}
-            className="absolute inset-0 bg-black backdrop-blur-md animate-in fade-in duration-300"
+            className="absolute inset-0 bg-black/90 backdrop-blur-md animate-in fade-in duration-300"
           />
 
-          <div className="relative w-full h-full md:h-auto md:max-w-4xl md:aspect-video md:rounded-3xl overflow-hidden shadow-2xl z-10 bg-black animate-in fade-in zoom-in-95 slide-in-from-bottom-10 duration-300 ease-out">
+          <div className="relative w-full h-full md:h-auto md:max-w-4xl md:aspect-video md:rounded-3xl overflow-hidden shadow-2xl z-[120] bg-black animate-in fade-in zoom-in-95 slide-in-from-bottom-10 duration-300 ease-out">
             <button
               onClick={closeModal}
-              className="absolute top-6 right-6 z-50 size-12 flex items-center justify-center bg-black/30 text-white rounded-full hover:bg-black/50 transition-colors backdrop-blur-md border border-white/10 shadow-lg active:scale-90"
+              className="absolute top-6 right-6 z-[130] size-12 flex items-center justify-center bg-black/30 text-white rounded-full hover:bg-black/50 transition-colors backdrop-blur-md border border-white/10 shadow-lg active:scale-90"
             >
               <span className="material-symbols-outlined text-3xl">close</span>
             </button>

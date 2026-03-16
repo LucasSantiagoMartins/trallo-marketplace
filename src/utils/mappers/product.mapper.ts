@@ -7,9 +7,9 @@ export const productConditionLabel: Record<ProductCondition, string> = {
 };
 
 export const productConditionColor: Record<ProductCondition, string> = {
-  [ProductCondition.NEW]: "text-emerald-600",
-  [ProductCondition.SEMI_NEW]: "text-blue-600",
-  [ProductCondition.USED]: "text-orange-600",
+  [ProductCondition.NEW]: "text-emerald-700",
+  [ProductCondition.SEMI_NEW]: "text-blue-700",
+  [ProductCondition.USED]: "text-orange-700",
 };
 
 export const productConditionIcon: Record<ProductCondition, string> = {
@@ -28,12 +28,12 @@ export const productStatusLabel: Record<ProductStatus, string> = {
 };
 
 export const productStatusColor: Record<ProductStatus, string> = {
-  [ProductStatus.AWAITING_SUBMISSION]: "bg-blue-500/10 text-blue-600",
-  [ProductStatus.SUBMITTED]: "bg-amber-500/10 text-amber-600",
-  [ProductStatus.ONLINE_VERIFIED]: "bg-emerald-500/10 text-emerald-500",
-  [ProductStatus.TRALLO_VERIFIED]: "bg-purple-500/10 text-purple-600",
-  [ProductStatus.REJECTED_ONLINE]: "bg-red-500/10 text-red-500",
-  [ProductStatus.REJECTED_TRALLO]: "bg-red-600/10 text-red-600",
+  [ProductStatus.AWAITING_SUBMISSION]: "bg-blue-50 text-blue-700 border-blue-200",
+  [ProductStatus.SUBMITTED]: "bg-amber-50 text-amber-700 border-amber-200",
+  [ProductStatus.ONLINE_VERIFIED]: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  [ProductStatus.TRALLO_VERIFIED]: "bg-purple-50 text-purple-700 border-purple-200",
+  [ProductStatus.REJECTED_ONLINE]: "bg-red-50 text-red-700 border-red-200",
+  [ProductStatus.REJECTED_TRALLO]: "bg-red-100 text-red-800 border-red-300",
 };
 
 export function getProductConditionLabel(condition: ProductCondition): string {
@@ -41,7 +41,7 @@ export function getProductConditionLabel(condition: ProductCondition): string {
 }
 
 export function getProductConditionColor(condition: ProductCondition): string {
-  return productConditionColor[condition] || "text-slate-400";
+  return productConditionColor[condition] || "text-slate-600";
 }
 
 export function getProductStatusLabel(status: ProductStatus): string {
@@ -49,5 +49,5 @@ export function getProductStatusLabel(status: ProductStatus): string {
 }
 
 export function getProductStatusColor(status: ProductStatus): string {
-  return productStatusColor[status] || "bg-gray-500/10 text-gray-500";
+  return productStatusColor[status] || "bg-slate-50 text-slate-600 border-slate-200";
 }

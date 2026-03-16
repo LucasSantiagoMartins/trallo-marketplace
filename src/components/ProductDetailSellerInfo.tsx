@@ -44,7 +44,7 @@ const ProductDetailSellerInfo: React.FC<SellerInfoProps> = ({ seller }) => {
           </div>
         </div>
       </div>
-      <button className="bg-muted px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-muted/80 transition-colors">
+      <button className="bg-muted px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider hover:bg-muted/80 transition-colors">
         Perfil
       </button>
     </div>
