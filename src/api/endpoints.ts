@@ -18,7 +18,12 @@ export const endpoints = {
     requestResetPassword: "/users/request-reset-password",
     deleteMyAccount: "/users/my-account",
     profile: (slug: string) => `/users/profile/${slug}`,
-
+  },
+  notifications: {
+    list: "/notifications",
+    read: (id: string) => `/notifications/${id}/read`,
+    delete: (id: string) => `/notifications/${id}`,
+    deleteAll: "/notifications/all",
   },
   warehouseInventories: {
     dashboard: "/warehouse-inventories/dashboard",

@@ -1,10 +1,11 @@
+import { NotificationType } from "@/enums/notification.enums";
+
 export interface Notification {
-    id: string;
     title: string;
-    description: string;
-    time: string;
-    type: 'order' | 'payment' | 'support' | 'shipping';
-    isRead: boolean;
-    highlightText?: string;
-    amount?: string;
+    message: string;
+    type: NotificationType,
+    metadata: any,
+    id: string,
+    read: boolean,
+    createdAt: Date,
 }

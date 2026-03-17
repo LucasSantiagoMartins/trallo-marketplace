@@ -1,119 +1,85 @@
 import React, { useState, useEffect } from "react";
+import toast from "react-hot-toast";
 import NotificationCard from "@/components/NotificationCard";
 import PageHeader from "@/components/PageHeader";
 import BottomNavigation from "@/components/BottomNavigation";
-import ConfirmAction from "@/components/ConfirmAction";
 import Loader from "@/components/Loader";
 import { Notification } from "@/types/notification";
-
-const INITIAL_MOCK: { section: string; data: Notification[] }[] = [
-  {
-    section: "Hoje",
-    data: [
-      {
-        id: "1",
-        title: "Pedido Confirmado",
-        description: "O seu pedido foi processado com sucesso.",
-        time: "14:30",
-        type: "order",
-        isRead: false,
-        highlightText: "#TR1234",
-      },
-      {
-        id: "2",
-        title: "Pagamento Recebido",
-        description: "Confirmamos o recebimento da compra.",
-        time: "10:15",
-        type: "payment",
-        isRead: false,
-        amount: "R$ 254,90",
-      },
-    ],
-  },
-  {
-    section: "Ontem",
-    data: [
-      {
-        id: "4",
-        title: "Ticket Respondido",
-        description: "Suporte respondeu ao seu chamado.",
-        time: "18:20",
-        type: "support",
-        isRead: true,
-      },
-    ],
-  },
-];
+import { useNotifications } from "@/hooks/useNotifications";
+import {
+  getNotifications,
+  markAsRead,
+  deleteNotification,
+  clearAllNotifications,
+} from "@/services/notification.service";
 
 const NotificationsScreen: React.FC = () => {
-  const [notifications, setNotifications] = useState<
-    { section: string; data: Notification[] }[]
-  >([]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isPageLoading, setIsPageLoading] = useState(true);
-  const [isActionLoading, setIsActionLoading] = useState(false);
-  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-  const [pendingAction, setPendingAction] = useState<{
-    id?: string;
-    type: "single" | "all";
-  } | null>(null);
+
+  const { newNotification } = useNotifications();
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setNotifications(INITIAL_MOCK);
-      setIsPageLoading(false);
-    }, 800);
-    return () => clearTimeout(timer);
+    const fetchInitialData = async () => {
+      try {
+        const res = await getNotifications();
+        console.log(res)
+        if (res.success) setNotifications(res.data);
+      } catch (err: any) {
+        toast.error(err.message || "Falha ao carregar notificações");
+      } finally {
+        setIsPageLoading(false);
+      }
+    };
+    fetchInitialData();
   }, []);
 
-  const handleMarkAsRead = (id: string) => {
-    setNotifications((prev) =>
-      prev.map((group) => ({
-        ...group,
-        data: group.data.map((item) =>
-          item.id === id ? { ...item, isRead: true } : item,
-        ),
-      })),
-    );
-  };
+  useEffect(() => {
+    if (newNotification) {
+      setNotifications((prev) => [newNotification, ...prev]);
+      toast.success("Nova notificação recebida!");
+    }
+  }, [newNotification]);
 
-  const triggerRemoveSingle = (id: string) => {
-    setPendingAction({ id, type: "single" });
-    setIsConfirmOpen(true);
-  };
-
-  const triggerRemoveAll = () => {
-    setPendingAction({ type: "all" });
-    setIsConfirmOpen(true);
-  };
-
-  const confirmAction = () => {
-    if (!pendingAction) return;
-
-    setIsActionLoading(true);
-
-    setTimeout(() => {
-      if (pendingAction.type === "single" && pendingAction.id) {
+  const handleMarkAsRead = async (id: string) => {
+    try {
+      const res = await markAsRead(id);
+      if (res.success) {
         setNotifications((prev) =>
-          prev
-            .map((group) => ({
-              ...group,
-              data: group.data.filter((item) => item.id !== pendingAction.id),
-            }))
-            .filter((group) => group.data.length > 0),
+          prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
         );
-      } else if (pendingAction.type === "all") {
-        setNotifications([]);
+        toast.success(res.message);
       }
-
-      setIsActionLoading(false);
-      setIsConfirmOpen(false);
-      setPendingAction(null);
-    }, 1000);
+    } catch (err: any) {
+      toast.error("Erro ao marcar como lida");
+    }
   };
 
-  if (isPageLoading) {
-    return <Loader size="lg" />;
-  }
+  const handleDelete = async (id: string) => {
+    try {
+      const res = await deleteNotification(id);
+      if (res.success) {
+        setNotifications((prev) => prev.filter((n) => n.id !== id));
+        toast.success(res.message);
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Erro ao deletar");
+    }
+  };
+
+  const handleClearAll = async () => {
+    try {
+      const res = await clearAllNotifications();
+      if (res.success) {
+        setNotifications([]);
+        toast.success(res.message);
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Erro ao limpar notificações");
+    }
+  };
+
+  if (isPageLoading) return <Loader size="lg" />;
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-900">
@@ -123,8 +89,8 @@ const NotificationsScreen: React.FC = () => {
           showUser={true}
           rightElement={
             <button
-              onClick={triggerRemoveAll}
-              className="flex items-center gap-1.5 text-xs font-black text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 px-3 py-2 rounded-xl transition-all"
+              onClick={handleClearAll}
+              className="flex items-center gap-1.5 text-xs font-black text-rose-500 px-3 py-2 rounded-xl hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-all"
             >
               <span className="material-symbols-outlined text-xl">
                 delete_sweep
@@ -134,61 +100,30 @@ const NotificationsScreen: React.FC = () => {
           }
         />
 
-        <main className="flex-1 px-4 py-8 space-y-10 overflow-x-hidden overflow-y-auto">
-          {notifications.map((group) => (
-            <section key={group.section}>
-              <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 mb-5 px-2">
-                {group.section}
-              </h3>
-              <div className="space-y-4">
-                {group.data.map((item) => (
-                  <NotificationCard
-                    key={item.id}
-                    notification={item}
-                    onDelete={() => triggerRemoveSingle(item.id)}
-                    onRead={() => handleMarkAsRead(item.id)}
-                  />
-                ))}
-              </div>
-            </section>
-          ))}
-
-          {notifications.length === 0 && (
-            <div className="text-center py-20 text-slate-400">
+        <main className="flex-1 px-4 pt-24 pb-8 space-y-4 overflow-y-auto">
+          {notifications.length > 0 ? (
+            <div className="flex flex-col gap-2">
+              {notifications.map((item) => (
+                <NotificationCard
+                  key={item.id}
+                  notification={item}
+                  onDelete={() => handleDelete(item.id)}
+                  onRead={() => handleMarkAsRead(item.id)}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-32 text-slate-400">
+              <span className="material-symbols-outlined text-5xl mb-2 block opacity-20">
+                notifications_off
+              </span>
               Nenhuma notificação por aqui.
             </div>
           )}
-          <div className="h-24"></div>
+          <div className="h-28"></div>
         </main>
 
         <BottomNavigation />
-
-        <ConfirmAction
-          isOpen={isConfirmOpen}
-          isLoading={isActionLoading}
-          onClose={() => {
-            if (!isActionLoading) {
-              setIsConfirmOpen(false);
-              setPendingAction(null);
-            }
-          }}
-          onConfirm={confirmAction}
-          title={
-            pendingAction?.type === "all"
-              ? "Limpar todas?"
-              : "Apagar notificação?"
-          }
-          description={
-            pendingAction?.type === "all"
-              ? "Você está prestes a remover todas as suas notificações permanentemente."
-              : "Esta ação não poderá ser desfeita e a notificação será removida da sua lista."
-          }
-          confirmText={
-            pendingAction?.type === "all" ? "Sim, limpar tudo" : "Sim, apagar"
-          }
-          variant="danger"
-          icon={pendingAction?.type === "all" ? "delete_sweep" : "delete"}
-        />
       </div>
     </div>
   );
