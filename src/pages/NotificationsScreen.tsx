@@ -1,42 +1,28 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import NotificationCard from "@/components/NotificationCard";
 import PageHeader from "@/components/PageHeader";
 import BottomNavigation from "@/components/BottomNavigation";
 import Loader from "@/components/Loader";
-import { Notification } from "@/types/notification";
-import { useNotifications } from "@/hooks/useNotifications";
+import { useNotifications } from "@/context/NotificationContext"; // Certifique-se de importar do Contexto
 import {
-  getNotifications,
   markAsRead,
   deleteNotification,
   clearAllNotifications,
 } from "@/services/notification.service";
 
 const NotificationsScreen: React.FC = () => {
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [isPageLoading, setIsPageLoading] = useState(true);
+  // Adicionamos valores padrão (fallback) para evitar o erro de 'undefined'
+  const {
+    notifications = [],
+    setNotifications,
+    newNotification,
+  } = useNotifications() || {};
 
-  const { newNotification } = useNotifications();
-
-  useEffect(() => {
-    const fetchInitialData = async () => {
-      try {
-        const res = await getNotifications();
-        console.log(res)
-        if (res.success) setNotifications(res.data);
-      } catch (err: any) {
-        toast.error(err.message || "Falha ao carregar notificações");
-      } finally {
-        setIsPageLoading(false);
-      }
-    };
-    fetchInitialData();
-  }, []);
+  const [isPageLoading, setIsPageLoading] = useState(false);
 
   useEffect(() => {
     if (newNotification) {
-      setNotifications((prev) => [newNotification, ...prev]);
       toast.success("Nova notificação recebida!");
     }
   }, [newNotification]);
@@ -45,7 +31,7 @@ const NotificationsScreen: React.FC = () => {
     try {
       const res = await markAsRead(id);
       if (res.success) {
-        setNotifications((prev) =>
+        setNotifications?.((prev) =>
           prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
         );
         toast.success(res.message);
@@ -59,7 +45,7 @@ const NotificationsScreen: React.FC = () => {
     try {
       const res = await deleteNotification(id);
       if (res.success) {
-        setNotifications((prev) => prev.filter((n) => n.id !== id));
+        setNotifications?.((prev) => prev.filter((n) => n.id !== id));
         toast.success(res.message);
       }
     } catch (err: any) {
@@ -71,7 +57,7 @@ const NotificationsScreen: React.FC = () => {
     try {
       const res = await clearAllNotifications();
       if (res.success) {
-        setNotifications([]);
+        setNotifications?.([]);
         toast.success(res.message);
       }
     } catch (err: any) {
@@ -101,7 +87,7 @@ const NotificationsScreen: React.FC = () => {
         />
 
         <main className="flex-1 px-4 pt-24 pb-8 space-y-4 overflow-y-auto">
-          {notifications.length > 0 ? (
+          {notifications && notifications.length > 0 ? (
             <div className="flex flex-col gap-2">
               {notifications.map((item) => (
                 <NotificationCard

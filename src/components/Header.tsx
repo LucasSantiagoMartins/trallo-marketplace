@@ -3,9 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "@/hooks/use-cart";
 import { BASE_UPLOAD_URL } from "@/api/endpoints";
-import { getNotifications } from "@/services/notification.service";
-import { Notification } from "@/types/notification";
-import { useNotifications } from "@/hooks/useNotifications";
+import { useNotifications } from "@/context/NotificationContext"; // Importação do contexto
 
 interface HeaderProps {
   showBack?: boolean;
@@ -21,10 +19,12 @@ const Header: React.FC<HeaderProps> = ({
   onBack,
 }) => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [unreadCount, setUnreadCount] = useState(0);
   const { user, isAuthenticated } = useAuth();
   const { cartCount, syncCartWithServer } = useCart();
-  const { newNotification } = useNotifications();
+
+  // Consumindo a contagem global do contexto
+  const { unreadCount } = useNotifications();
+
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -35,24 +35,6 @@ const Header: React.FC<HeaderProps> = ({
       syncCartWithServer();
     }
   }, [isAuthenticated, syncCartWithServer]);
-
-  useEffect(() => {
-    const updateUnreadCount = async () => {
-      try {
-        const res = await getNotifications();
-        if (res.success) {
-          const count = res.data.filter((n: Notification) => !n.read).length;
-          setUnreadCount(count);
-        }
-      } catch (err) {
-        console.error("Erro ao buscar contagem de notificações:", err);
-      }
-    };
-
-    if (isAuthenticated) {
-      updateUnreadCount();
-    }
-  }, [isAuthenticated, newNotification, location.pathname]);
 
   useEffect(() => {
     const handleScroll = () => {
