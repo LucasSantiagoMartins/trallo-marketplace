@@ -110,7 +110,6 @@ const ProductDetails: React.FC = () => {
     );
   }
 
-  // A partir daqui o produto existe com certeza
   const allImages = [product.coverImage, ...(product.images || [])].filter(
     Boolean,
   );
@@ -240,8 +239,8 @@ const ProductDetails: React.FC = () => {
             )}
           </div>
 
-          <div className="px-4 space-y-4 relative z-10">
-            <div className="bg-card p-5 rounded-xl shadow-soft border border-border">
+          <div className="px-4 space-y-4 relative z-20 -mt-10 lg:mt-0">
+            <div className="bg-card p-5 rounded-xl shadow-xl border border-border">
               <h1 className="text-xl md:text-3xl font-bold text-[#121118] dark:text-white">
                 {product.name}
               </h1>
@@ -304,7 +303,6 @@ const ProductDetails: React.FC = () => {
         </div>
       </main>
 
-      {/* Modais */}
       {modalType === "payment_choice" && (
         <PaymentChoiceModal
           onClose={closeModal}
