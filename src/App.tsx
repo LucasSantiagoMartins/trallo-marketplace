@@ -45,6 +45,7 @@ import RegisterExit from "./pages/RegisterExit";
 import ShelvesManagement from "./pages/ShelvesManagement";
 import SellerProfileScreen from "./pages/SellerProfile";
 import RateSeller from "./pages/RateSeller";
+import NotificationsScreen from "./pages/NotificationsScreen";
 
 const queryClient = new QueryClient();
 
@@ -60,6 +61,7 @@ const App = () => (
             <Route path="/criar-conta" element={<Register />} />
             <Route path="/esqueceu-senha" element={<ResetPassword />} />
             <Route path="/detalhes-produto" element={<ProductDetails />} />
+            <Route path="/notificacoes" element={<NotificationsScreen />} />
             <Route
               path="/perfil-vendedor/:sellerSlug"
               element={<SellerProfileScreen />}

@@ -173,8 +173,8 @@ const Header: React.FC<HeaderProps> = ({
             )}
 
             <Link
-              to="/notifications"
-              onClick={(e) => handleProtectedNavigation(e, "/notifications")}
+              to="/notificacoes"
+              onClick={(e) => handleProtectedNavigation(e, "/notificacoes")}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-card hover:bg-muted border border-border/5 transition-colors active:scale-95"
             >
               <span className="material-symbols-outlined text-[22px]">

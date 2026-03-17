@@ -6,9 +6,10 @@ import { BASE_UPLOAD_URL } from "@/api/endpoints";
 import { SearchedProductDTO } from "@/types/product";
 import ProductCard from "@/components/ProductCard";
 import ReviewItem from "@/components/reviewItem";
-import { getUserProfile } from "@/services/user.service";
+import { getUserProfile, reviewUser } from "@/services/user.service";
 import { sellerProducts } from "@/services/product.service";
 import toast from "react-hot-toast";
+import Loader from "@/components/Loader";
 
 const SellerProfileScreen: React.FC = () => {
   const { sellerSlug } = useParams<{ sellerSlug: string }>();
@@ -18,7 +19,8 @@ const SellerProfileScreen: React.FC = () => {
   const [profileData, setProfileData] = useState<any>(null);
   const [listings, setListings] = useState<SearchedProductDTO[]>([]);
   const [loading, setLoading] = useState(true);
-  console.log(sellerSlug)
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+
   useEffect(() => {
     const fetchData = async () => {
       if (!sellerSlug) return;
@@ -29,21 +31,35 @@ const SellerProfileScreen: React.FC = () => {
           sellerProducts(sellerSlug),
         ]);
 
-        if (profileRes.data) {
-          setProfileData(profileRes.data);
-        }
-        if (productsRes.data) {
-          setListings(productsRes.data);
-        }
+        if (profileRes.data) setProfileData(profileRes.data);
+        if (productsRes.data) setListings(productsRes.data);
       } catch (err: any) {
         toast.error(err.message ?? "Erro ao buscar dados do vendedor");
       } finally {
         setLoading(false);
       }
     };
-
     fetchData();
   }, [sellerSlug]);
+
+  // Função para testar o service de review com dados fictícios
+  const handleQuickReview = async () => {
+    if (!profileData?.user?.id) return;
+
+    setIsSubmittingReview(true);
+    try {
+      await reviewUser({
+        orderId: "fake-order-id-123", 
+        rating: 5,
+        comment: "Excelente vendedor! (Avaliação de teste)",
+      });
+      toast.success("Avaliação enviada com sucesso!");
+    } catch (err: any) {
+      toast.error(err.message ?? "Erro ao enviar avaliação");
+    } finally {
+      setIsSubmittingReview(false);
+    }
+  };
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const scrollLeft = e.currentTarget.scrollLeft;
@@ -57,13 +73,7 @@ const SellerProfileScreen: React.FC = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        Carregando...
-      </div>
-    );
-  }
+  if (loading) return <Loader />;
 
   if (!profileData || !profileData.user) {
     return (
@@ -84,27 +94,14 @@ const SellerProfileScreen: React.FC = () => {
       "bg-amber-100 text-amber-600",
       "bg-rose-100 text-rose-600",
     ];
-    const index = (name || "").length % colors.length;
-    return colors[index];
+    return colors[(name || "").length % colors.length];
   };
 
   return (
     <div className="bg-slate-50 dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen font-display">
       <style>{`
-        @keyframes scroll {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-        @media (min-width: 768px) {
-          .animate-desktop-scroll {
-            display: flex;
-            width: max-content;
-            animation: scroll 30s linear infinite;
-          }
-          .animate-desktop-scroll:hover {
-            animation-play-state: paused;
-          }
-        }
+        @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        @media (min-width: 768px) { .animate-desktop-scroll { display: flex; width: max-content; animation: scroll 30s linear infinite; } .animate-desktop-scroll:hover { animation-play-state: paused; } }
       `}</style>
 
       <PageHeader title="Informações do Vendedor" backTo="/" />
@@ -136,13 +133,11 @@ const SellerProfileScreen: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 mb-1">
-                <h2 className="text-2xl font-bold tracking-tight">
-                  {user.fullName}
-                </h2>
-              </div>
+              <h2 className="text-2xl font-bold tracking-tight mb-1">
+                {user.fullName}
+              </h2>
 
-              <div className="flex items-center gap-4 text-slate-400 text-xs font-medium mb-6">
+              <div className="flex items-center gap-4 text-slate-400 text-xs font-medium mb-4">
                 <span className="flex items-center gap-1.5">
                   <span className="material-symbols-outlined text-sm text-primary">
                     location_on
@@ -158,12 +153,25 @@ const SellerProfileScreen: React.FC = () => {
                 </span>
               </div>
 
+              {/* Botão de Avaliação Rápida (Teste) */}
+              <button
+                onClick={handleQuickReview}
+                disabled={isSubmittingReview}
+                className="mb-6 px-6 py-2 bg-primary text-white text-xs font-bold rounded-full hover:opacity-90 transition-opacity disabled:opacity-50"
+              >
+                {isSubmittingReview
+                  ? "Enviando..."
+                  : "Avaliar Vendedor (Teste)"}
+              </button>
+
               <div className="grid grid-cols-3 w-full gap-4 pt-5 border-t border-slate-50 dark:border-slate-800">
                 <div className="flex flex-col items-center">
                   <span className="text-[10px] uppercase font-bold text-slate-400 tracking-widest mb-1">
                     Vendas
                   </span>
-                  <span className="font-black text-lg">{stats?.totalSales ?? 0}</span>
+                  <span className="font-black text-lg">
+                    {stats?.totalSales ?? 0}
+                  </span>
                 </div>
                 <div className="flex flex-col items-center border-x border-slate-100 dark:border-slate-800 px-2">
                   <span className="text-[10px] uppercase font-bold text-slate-400 tracking-widest mb-1">
@@ -197,11 +205,9 @@ const SellerProfileScreen: React.FC = () => {
         </section>
 
         <section className="space-y-8">
-          <div className="flex items-center justify-between px-2">
-            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">
-              Produtos Disponíveis
-            </h3>
-          </div>
+          <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 px-2">
+            Produtos Disponíveis
+          </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {listings.map((item) => (
               <ProductCard key={item.id} product={item} />
@@ -214,16 +220,16 @@ const SellerProfileScreen: React.FC = () => {
 
         {recentReviews.length > 0 && (
           <section className="space-y-8 overflow-hidden">
-            <div className="flex items-center px-2">
-              <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">
-                Avaliações dos Clientes
-              </h3>
-            </div>
-
+            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 px-2">
+              Avaliações dos Clientes
+            </h3>
             <div className="relative group">
               <div className="hidden md:flex animate-desktop-scroll gap-6">
                 {doubleReviews.map((review, idx) => (
-                  <div key={`desktop-${idx}`} className="w-[300px] flex-shrink-0">
+                  <div
+                    key={`desktop-${idx}`}
+                    className="w-[300px] flex-shrink-0"
+                  >
                     <ReviewItem
                       name={review.buyerName}
                       comment={review.comment}
@@ -235,7 +241,6 @@ const SellerProfileScreen: React.FC = () => {
                   </div>
                 ))}
               </div>
-
               <div
                 ref={scrollRef}
                 onScroll={handleScroll}
@@ -257,27 +262,18 @@ const SellerProfileScreen: React.FC = () => {
                   </div>
                 ))}
               </div>
-
-              <div className="hidden md:block absolute top-0 left-0 w-20 h-full bg-gradient-to-r from-slate-50 dark:from-background-dark to-transparent z-10" />
-              <div className="hidden md:block absolute top-0 right-0 w-20 h-full bg-gradient-to-l from-slate-50 dark:from-background-dark to-transparent z-10" />
             </div>
-
             <div className="flex md:hidden justify-center gap-2 mt-4">
               {recentReviews.map((_: any, idx: number) => (
                 <div
                   key={idx}
-                  className={`h-1.5 rounded-full transition-all duration-300 ${
-                    activeReviewIndex === idx
-                      ? "w-6 bg-primary"
-                      : "w-1.5 bg-slate-300 dark:bg-slate-700"
-                  }`}
+                  className={`h-1.5 rounded-full transition-all duration-300 ${activeReviewIndex === idx ? "w-6 bg-primary" : "w-1.5 bg-slate-300 dark:bg-slate-700"}`}
                 />
               ))}
             </div>
           </section>
         )}
       </main>
-
       <BottomNavigation />
     </div>
   );

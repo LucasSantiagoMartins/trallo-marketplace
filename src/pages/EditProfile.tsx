@@ -134,15 +134,15 @@ const EditProfile = () => {
   return (
     <div className="bg-background-light dark:bg-background-dark min-h-screen flex flex-col items-center">
       <PageHeader title="Editar Perfil" />
-      
-      <main className="w-full sm:max-w-4xl bg-white dark:bg-[#1c182d] sm:rounded-[3rem] mt-12 sm:mt-24 px-6 sm:px-16 py-8 sm:py-6 sm:shadow-xl border-none dark:border-white/5 flex flex-col items-center flex-1 sm:flex-none sm:h-fit sm:mb-10">
+
+      <main className="w-full sm:max-w-4xl bg-white dark:bg-[#1c182d] sm:rounded-[3rem] mt-12 sm:mt-24 px-6 sm:px-16 py-8 sm:py-6  border-none dark:border-white/5 flex flex-col items-center flex-1 sm:flex-none sm:h-fit sm:mb-10">
         <div className="relative mb-6 flex flex-col items-center">
           <div
             className={`relative group ${isImageLoading ? "cursor-wait" : "cursor-pointer"}`}
             onClick={handleImageClick}
           >
             <div className="absolute inset-0 bg-primary/20 rounded-full blur-2xl group-hover:bg-primary/40 transition-all duration-500"></div>
-            <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full border-4 border-white dark:border-slate-800 shadow-xl overflow-hidden bg-slate-200 flex items-center justify-center">
+            <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full border-4 border-white dark:border-slate-800  overflow-hidden bg-slate-200 flex items-center justify-center">
               {profileImage ? (
                 <img
                   className={`w-full h-full object-cover transition-transform duration-500 ${!isImageLoading && "group-hover:scale-110"}`}
@@ -156,7 +156,9 @@ const EditProfile = () => {
               )}
               <div
                 className={`absolute inset-0 bg-black/50 flex flex-col items-center justify-center transition-opacity duration-300 ${
-                  isImageLoading ? "opacity-100" : "opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
+                  isImageLoading
+                    ? "opacity-100"
+                    : "opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
                 }`}
               >
                 {isImageLoading ? (

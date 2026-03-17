@@ -12,6 +12,7 @@ import TralloButton from "@/components/TralloButton";
 import { useCart } from "@/hooks/use-cart";
 import { useProducts } from "@/hooks/use-products";
 import { useAuth } from "@/context/AuthContext";
+import { Loader } from "lucide-react";
 
 const carouselSlides = [
   {
@@ -86,7 +87,7 @@ const Home: React.FC = () => {
 
   useEffect(() => {
     document.body.style.overflow = isFilterOpen ? "hidden" : "unset";
-    return () => { 
+    return () => {
       document.body.style.overflow = "unset";
     };
   }, [isFilterOpen]);
@@ -171,10 +172,7 @@ const Home: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4 md:px-6 lg:px-8 py-4">
           {loading ? (
-            <div className="col-span-full text-center py-20">
-              <div className="animate-spin size-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4" />
-              <p className="text-muted-foreground">A carregar produtos...</p>
-            </div>
+            <Loader />
           ) : currentProducts.length > 0 ? (
             currentProducts.map((product) => (
               <ProductCard

@@ -25,3 +25,9 @@ export interface UserProfileDTO {
         createdAt: Date;
     }[];
 };
+
+export interface ReviewUserDto {
+    orderId: string;
+    rating: number;
+    comment?: string;
+}

@@ -11,6 +11,7 @@ export const endpoints = {
     list: "/users",
     updateProfilePicture: "/users/profile-picture",
     updateUser: "/users/me",
+    reviewSeller: "/reviews",
     myInfo: "/users/me",
     changePassword: "/users/change-password",
     resetPassword: "/users/reset-password",

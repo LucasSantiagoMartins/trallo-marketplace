@@ -11,7 +11,11 @@ import { getSalesSummary } from "@/services/sales.service";
 import { formatDateFriendly } from "@/utils/date";
 import OrderDetailsModal from "@/components/OrderDetailsModal";
 import BottomNavigation from "@/components/BottomNavigation";
-import { getOrderStatusColor, getOrderStatusLabel } from "@/utils/mappers/order.mapper";
+import {
+  getOrderStatusColor,
+  getOrderStatusLabel,
+} from "@/utils/mappers/order.mapper";
+import Loader from "@/components/Loader"; // Certifique-se de que o caminho está correto
 
 export interface MonthOverMonth {
   percentage: number;
@@ -131,10 +135,7 @@ const SalesCenter: React.FC = () => {
   if (isLoading) {
     return (
       <MobileLayout>
-        <div className="flex h-screen flex-col items-center justify-center">
-          <div className="animate-spin size-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4" />
-          <p className="text-muted-foreground">A carregar dados...</p>
-        </div>
+        <Loader />
       </MobileLayout>
     );
   }
@@ -222,7 +223,7 @@ const SalesCenter: React.FC = () => {
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-start mb-1">
                       <h4 className="font-bold text-[10px] truncate text-foreground pr-2 uppercase tracking-tight">
-                        {order.orderNumber }
+                        {order.orderNumber}
                       </h4>
                       <span
                         className={`text-[7px] font-black uppercase px-2 py-0.5 rounded-md shrink-0 ${getOrderStatusColor(order.status)}`}

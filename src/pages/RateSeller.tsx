@@ -1,18 +1,67 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { Star, CheckCircle2 } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import TralloInput from "@/components/TralloInput";
 import TralloButton from "@/components/TralloButton";
+import { getUserProfile, reviewUser } from "@/services/user.service";
+import { BASE_UPLOAD_URL } from "@/api/endpoints";
+import toast from "react-hot-toast";
+import Loader from "@/components/Loader";
 
 const RateSeller: React.FC = () => {
-  const [rating, setRating] = useState<number>(1);
+  const { sellerSlug } = useParams<{ sellerSlug: string }>();
+  const navigate = useNavigate();
+
+  const [rating, setRating] = useState<number>(5);
   const [comment, setComment] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loadingProfile, setLoadingProfile] = useState(true);
+  const [sellerData, setSellerData] = useState<any>(null);
+
   const starsRef = useRef<HTMLDivElement>(null);
 
-  const handleSubmit = () => {
+  useEffect(() => {
+    const fetchSeller = async () => {
+      if (!sellerSlug) return;
+      try {
+        const response = await getUserProfile(sellerSlug);
+        if (response.data) {
+          setSellerData(response.data.user);
+        }
+      } catch (err: any) {
+        toast.error("Não foi possível carregar os dados do vendedor.");
+      } finally {
+        setLoadingProfile(false);
+      }
+    };
+    fetchSeller();
+  }, [sellerSlug]);
+
+  const handleSubmit = async () => {
+    if (!comment.trim()) {
+      toast.error("Por favor, escreva um comentário antes de publicar.");
+      return;
+    }
+
     setIsSubmitting(true);
-    setTimeout(() => setIsSubmitting(false), 2000);
+
+    const fakeOrderId = "550e8400-e29b-41d4-a716-446655440000";
+
+    try {
+      const res = await reviewUser({
+        orderId: fakeOrderId,
+        rating,
+        comment,
+      });
+
+      toast.success(res.message ?? "Avaliação publicada com sucesso!");
+      setTimeout(() => navigate(-1), 1500);
+    } catch (err: any) {
+      toast.error(err.message ?? "Erro ao publicar avaliação.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
@@ -28,6 +77,8 @@ const RateSeller: React.FC = () => {
     }
   };
 
+  if (loadingProfile) return <Loader />;
+
   return (
     <div className="bg-background-light dark:bg-background-dark h-screen flex flex-col">
       <div className="w-full pt-2 px-6 shrink-0 z-10">
@@ -40,12 +91,20 @@ const RateSeller: React.FC = () => {
             <div className="flex flex-col items-center lg:items-start lg:w-1/3 text-center lg:text-left">
               <div className="relative mb-4">
                 <div className="absolute -inset-1 bg-gradient-to-r from-[#6d3ff8] to-purple-400 rounded-full blur opacity-25"></div>
-                <div className="relative h-24 w-24 rounded-full border-4 border-white dark:border-slate-800 overflow-hidden shadow-lg">
-                  <img
-                    src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=256&h=256&auto=format&fit=crop"
-                    alt="Nivaldo Manuel"
-                    className="h-full w-full object-cover"
-                  />
+                <div className="relative h-24 w-24 rounded-full border-4 border-white dark:border-slate-800 overflow-hidden shadow-lg bg-slate-100">
+                  {sellerData?.profilePicture ? (
+                    <img
+                      src={BASE_UPLOAD_URL + sellerData.profilePicture}
+                      alt={sellerData.fullName}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-slate-200 dark:bg-slate-700">
+                      <span className="text-2xl font-bold text-slate-400">
+                        {sellerData?.fullName?.charAt(0)}
+                      </span>
+                    </div>
+                  )}
                 </div>
                 <div className="absolute bottom-1 right-1 bg-[#6d3ff8] text-white p-1.5 rounded-full border-2 border-white dark:border-slate-800">
                   <CheckCircle2 size={16} fill="currentColor" />
@@ -54,7 +113,7 @@ const RateSeller: React.FC = () => {
 
               <div className="space-y-2">
                 <h1 className="clash-display text-xl sm:text-2xl font-semibold text-slate-900 dark:text-white">
-                  Nivaldo Manuel
+                  {sellerData?.fullName || "Vendedor"}
                 </h1>
                 <p className="text-slate-500 dark:text-slate-400 text-sm font-medium max-w-[240px]">
                   Como foi sua experiência com este vendedor? Sua avaliação
@@ -73,6 +132,7 @@ const RateSeller: React.FC = () => {
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button
                       key={star}
+                      type="button"
                       onClick={() => setRating(star)}
                       className="transition-transform active:scale-125 focus:outline-none"
                     >
@@ -92,7 +152,7 @@ const RateSeller: React.FC = () => {
               <div className="w-full">
                 <TralloInput
                   label="Comentário"
-                  placeholder="O Nivaldo foi muito atencioso e o produto chegou em perfeitas condições..."
+                  placeholder="Conte sua experiência..."
                   multiline
                   rows={4}
                   value={comment}
