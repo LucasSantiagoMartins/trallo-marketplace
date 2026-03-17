@@ -4,3 +4,24 @@ export interface ChangePasswordDto {
     confirmPassword: string;
     code?: string;
 }
+
+export interface UserProfileDTO {
+    user: {
+        fullName: string;
+        location: string;
+        profilePicture?: string;
+        memberSince: number;
+        slug: string;
+    };
+    stats: {
+        totalSales: number;
+        averageRating: number;
+        responseTime: number;
+    };
+    recentReviews: {
+        rating: number;
+        comment: string;
+        buyerName: string;
+        createdAt: Date;
+    }[];
+};

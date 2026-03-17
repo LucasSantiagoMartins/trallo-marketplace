@@ -1,4 +1,4 @@
-import { defaultFilter } from "cmdk";
+import React from "react";
 
 interface ReviewItemProps {
   name: string;
@@ -8,6 +8,7 @@ interface ReviewItemProps {
   date: string;
   colorClass: string;
 }
+
 const ReviewItem: React.FC<ReviewItemProps> = ({
   name,
   initials,
@@ -31,7 +32,7 @@ const ReviewItem: React.FC<ReviewItemProps> = ({
           </p>
         </div>
       </div>
-      <div className="flex text-amber-400">
+      <div className="flex items-center text-amber-400">
         <span className="text-[11px] font-black text-slate-700 dark:text-slate-300">
           {rating}.0
         </span>

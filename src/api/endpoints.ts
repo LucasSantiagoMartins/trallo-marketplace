@@ -15,7 +15,9 @@ export const endpoints = {
     changePassword: "/users/change-password",
     resetPassword: "/users/reset-password",
     requestResetPassword: "/users/request-reset-password",
-    deleteMyAccount: "/users/my-account"
+    deleteMyAccount: "/users/my-account",
+    profile: (slug: string) => `/users/profile/${slug}`,
+
   },
   warehouseInventories: {
     dashboard: "/warehouse-inventories/dashboard",
@@ -34,6 +36,7 @@ export const endpoints = {
     details: (id: string) => `/products/${id}`,
     verify: (id: string) => `/products/${id}/verification`,
     update: (id: string) => `/products/${id}`,
+    sellerProducts: (slug: string) => `/products/seller/${slug}`,
   },
   carts: {
     getMyCart: "/carts",

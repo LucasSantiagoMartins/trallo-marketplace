@@ -89,3 +89,7 @@ export async function searchBySlug(
   return await http.get<SearchedProductDTO[]>(endpoints.products.searchBySlug(slug),
   );
 }
+
+export async function sellerProducts(slug: string): Promise<ApiResponse<SearchedProductDTO[]>> {
+  return await http.get<SearchedProductDTO[]>(endpoints.products.sellerProducts(slug));
+}

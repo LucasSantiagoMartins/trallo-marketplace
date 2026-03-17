@@ -64,14 +64,14 @@ export interface SearchedProductDTO {
   id: string;
   name: string;
   description: string;
-  category?: string; 
+  category?: string;
   price: number;
   condition: ProductCondition;
   status: ProductStatus;
   coverImage: string;
   slug: string;
   seller: SellerDTO;
-  images: string[]; 
+  images: string[];
   stock: ProductStockDTO;
   verificationVideo?: string;
   createdAt: string;
@@ -85,5 +85,6 @@ export interface ProductImageDTO {
 export interface SellerDTO {
   id: number;
   fullName: string;
+  slug: string;
   profilePicture: string;
 }

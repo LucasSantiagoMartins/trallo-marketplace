@@ -1,115 +1,91 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import BottomNavigation from "../components/BottomNavigation";
 import PageHeader from "../components/PageHeader";
 import { BASE_UPLOAD_URL } from "@/api/endpoints";
 import { SearchedProductDTO } from "@/types/product";
 import ProductCard from "@/components/ProductCard";
 import ReviewItem from "@/components/reviewItem";
+import { getUserProfile } from "@/services/user.service";
+import { sellerProducts } from "@/services/product.service";
+import toast from "react-hot-toast";
 
 const SellerProfileScreen: React.FC = () => {
+  const { sellerSlug } = useParams<{ sellerSlug: string }>();
   const [activeReviewIndex, setActiveReviewIndex] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const seller = {
-    fullName: "Lucas Santiago",
-    profilePicture: null,
-    address: "Viana, Luanda",
-    isVerified: true,
-    memberSince: "2024",
-    stats: {
-      sales: "1,482",
-      rating: "4.9",
-      responseTime: "15 min",
-    },
-  };
+  const [profileData, setProfileData] = useState<any>(null);
+  const [listings, setListings] = useState<SearchedProductDTO[]>([]);
+  const [loading, setLoading] = useState(true);
+  console.log(sellerSlug)
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!sellerSlug) return;
+      setLoading(true);
+      try {
+        const [profileRes, productsRes] = await Promise.all([
+          getUserProfile(sellerSlug),
+          sellerProducts(sellerSlug),
+        ]);
 
-  const listings: SearchedProductDTO[] = [
-    {
-      id: "1",
-      name: "Apple Watch Series 9",
-      price: 299000,
-      coverImage:
-        "https://images.unsplash.com/photo-1546868891-d5b8ad0b9044?q=80&w=500&auto=format&fit=crop",
-      condition: "NEW",
-      status: "AVAILABLE",
-      category: "Wearables",
-    } as any,
-    {
-      id: "2",
-      name: "Sony WH-1000XM5",
-      price: 189500,
-      coverImage:
-        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=500&auto=format&fit=crop",
-      condition: "USED",
-      status: "AVAILABLE",
-      category: "Audio",
-    } as any,
-    {
-      id: "3",
-      name: "Logitech MX Master 3S",
-      price: 45000,
-      coverImage:
-        "https://images.unsplash.com/photo-1625773753120-15f8f30026b7?q=80&w=500&auto=format&fit=crop",
-      condition: "NEW",
-      status: "AVAILABLE",
-      category: "Acessórios",
-    } as any,
-    {
-      id: "4",
-      name: "iPhone 15 Pro Max",
-      price: 1250000,
-      coverImage:
-        "https://images.unsplash.com/photo-1696446701796-da61225697cc?q=80&w=500&auto=format&fit=crop",
-      condition: "NEW",
-      status: "AVAILABLE",
-      category: "Smartphones",
-    } as any,
-  ];
+        if (profileRes.data) {
+          setProfileData(profileRes.data);
+        }
+        if (productsRes.data) {
+          setListings(productsRes.data);
+        }
+      } catch (err: any) {
+        toast.error(err.message ?? "Erro ao buscar dados do vendedor");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const reviews = [
-    {
-      name: "Elena J.",
-      initials: "EJ",
-      rating: 5,
-      comment: "Qualidade impressionante. Envio super rápido para Luanda!",
-      date: "há 2 dias",
-      colorClass: "bg-blue-100 text-blue-600",
-    },
-    {
-      name: "Marcos W.",
-      initials: "MW",
-      rating: 5,
-      comment: "Vendedor muito atencioso, produto original e bem embalado.",
-      date: "há 1 semana",
-      colorClass: "bg-emerald-100 text-emerald-600",
-    },
-    {
-      name: "Sara P.",
-      initials: "SP",
-      rating: 4,
-      comment: "Ótima experiência de compra, recomendo a todos!",
-      date: "há 2 semanas",
-      colorClass: "bg-purple-100 text-purple-600",
-    },
-    {
-      name: "Ricardo M.",
-      initials: "RM",
-      rating: 5,
-      comment: "Entrega feita em Viana em menos de 2 horas. Excelente.",
-      date: "há 3 semanas",
-      colorClass: "bg-amber-100 text-amber-600",
-    },
-  ];
-
-  const doubleReviews = [...reviews, ...reviews];
+    fetchData();
+  }, [sellerSlug]);
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const scrollLeft = e.currentTarget.scrollLeft;
     const width = e.currentTarget.offsetWidth;
     const newIndex = Math.round(scrollLeft / width);
-    if (newIndex < reviews.length) {
+    if (
+      profileData?.recentReviews &&
+      newIndex < profileData.recentReviews.length
+    ) {
       setActiveReviewIndex(newIndex);
     }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Carregando...
+      </div>
+    );
+  }
+
+  if (!profileData || !profileData.user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Vendedor não encontrado.
+      </div>
+    );
+  }
+
+  const { user, stats, recentReviews = [] } = profileData;
+  const doubleReviews = [...recentReviews, ...recentReviews];
+
+  const getColorClass = (name: string) => {
+    const colors = [
+      "bg-blue-100 text-blue-600",
+      "bg-emerald-100 text-emerald-600",
+      "bg-purple-100 text-purple-600",
+      "bg-amber-100 text-amber-600",
+      "bg-rose-100 text-rose-600",
+    ];
+    const index = (name || "").length % colors.length;
+    return colors[index];
   };
 
   return (
@@ -139,11 +115,11 @@ const SellerProfileScreen: React.FC = () => {
             <div className="flex flex-col items-center text-center">
               <div className="relative mb-3">
                 <div className="w-24 h-24 rounded-full overflow-hidden bg-slate-100 dark:bg-slate-800 border-4 border-white dark:border-slate-800 shadow-md">
-                  {seller.profilePicture ? (
+                  {user.profilePicture ? (
                     <img
                       className="w-full h-full object-cover"
-                      src={BASE_UPLOAD_URL + seller.profilePicture}
-                      alt={seller.fullName}
+                      src={BASE_UPLOAD_URL + user.profilePicture}
+                      alt={user.fullName}
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
@@ -153,20 +129,17 @@ const SellerProfileScreen: React.FC = () => {
                     </div>
                   )}
                 </div>
-                {seller.isVerified && (
-                  <div className="absolute bottom-1 right-1 bg-blue-500 text-white p-1 rounded-full border-4 border-white dark:border-slate-900 shadow-sm flex items-center justify-center">
-                    <span className="material-symbols-outlined text-[12px] font-bold">
-                      check
-                    </span>
-                  </div>
-                )}
+                <div className="absolute bottom-1 right-1 bg-blue-500 text-white p-1 rounded-full border-4 border-white dark:border-slate-900 shadow-sm flex items-center justify-center">
+                  <span className="material-symbols-outlined text-[12px] font-bold">
+                    check
+                  </span>
+                </div>
               </div>
 
               <div className="flex items-center gap-2 mb-1">
                 <h2 className="text-2xl font-bold tracking-tight">
-                  {seller.fullName}
+                  {user.fullName}
                 </h2>
-                
               </div>
 
               <div className="flex items-center gap-4 text-slate-400 text-xs font-medium mb-6">
@@ -174,14 +147,14 @@ const SellerProfileScreen: React.FC = () => {
                   <span className="material-symbols-outlined text-sm text-primary">
                     location_on
                   </span>
-                  {seller.address}
+                  {user.location}
                 </span>
                 <span className="w-1 h-1 bg-slate-300 rounded-full" />
                 <span className="flex items-center gap-1.5">
                   <span className="material-symbols-outlined text-sm text-primary">
                     calendar_today
                   </span>
-                  Desde {seller.memberSince}
+                  Desde {user.memberSince}
                 </span>
               </div>
 
@@ -190,9 +163,7 @@ const SellerProfileScreen: React.FC = () => {
                   <span className="text-[10px] uppercase font-bold text-slate-400 tracking-widest mb-1">
                     Vendas
                   </span>
-                  <span className="font-black text-lg">
-                    {seller.stats.sales}
-                  </span>
+                  <span className="font-black text-lg">{stats?.totalSales ?? 0}</span>
                 </div>
                 <div className="flex flex-col items-center border-x border-slate-100 dark:border-slate-800 px-2">
                   <span className="text-[10px] uppercase font-bold text-slate-400 tracking-widest mb-1">
@@ -200,7 +171,7 @@ const SellerProfileScreen: React.FC = () => {
                   </span>
                   <div className="flex items-center gap-1">
                     <span className="font-black text-lg">
-                      {seller.stats.rating}
+                      {stats?.averageRating ?? "0.0"}
                     </span>
                     <span className="material-symbols-outlined text-amber-400 fill-1 text-sm">
                       star
@@ -216,7 +187,7 @@ const SellerProfileScreen: React.FC = () => {
                       bolt
                     </span>
                     <span className="font-black text-lg text-slate-900 dark:text-white">
-                      {seller.stats.responseTime}
+                      {stats?.responseTime ?? "--"} min
                     </span>
                   </div>
                 </div>
@@ -235,57 +206,76 @@ const SellerProfileScreen: React.FC = () => {
             {listings.map((item) => (
               <ProductCard key={item.id} product={item} />
             ))}
+            {listings.length === 0 && (
+              <p className="text-slate-500 text-sm">Nenhum produto listado.</p>
+            )}
           </div>
         </section>
 
-        <section className="space-y-8 overflow-hidden">
-          <div className="flex items-center px-2">
-            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">
-              Avaliações dos Clientes
-            </h3>
-          </div>
-
-          <div className="relative group">
-            <div className="hidden md:flex animate-desktop-scroll gap-6">
-              {doubleReviews.map((review, idx) => (
-                <div key={`desktop-${idx}`} className="w-[300px] flex-shrink-0">
-                  <ReviewItem {...review} />
-                </div>
-              ))}
+        {recentReviews.length > 0 && (
+          <section className="space-y-8 overflow-hidden">
+            <div className="flex items-center px-2">
+              <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">
+                Avaliações dos Clientes
+              </h3>
             </div>
 
-            <div
-              ref={scrollRef}
-              onScroll={handleScroll}
-              className="flex md:hidden flex-nowrap gap-6 overflow-x-auto no-scrollbar snap-x snap-mandatory px-2"
-            >
-              {reviews.map((review, idx) => (
-                <div
-                  key={`mobile-${idx}`}
-                  className="w-[calc(100vw-3rem)] flex-shrink-0 snap-center"
-                >
-                  <ReviewItem {...review} />
-                </div>
-              ))}
-            </div>
+            <div className="relative group">
+              <div className="hidden md:flex animate-desktop-scroll gap-6">
+                {doubleReviews.map((review, idx) => (
+                  <div key={`desktop-${idx}`} className="w-[300px] flex-shrink-0">
+                    <ReviewItem
+                      name={review.buyerName}
+                      comment={review.comment}
+                      rating={review.rating}
+                      date={new Date(review.createdAt).toLocaleDateString()}
+                      initials={review.buyerName.substring(0, 2).toUpperCase()}
+                      colorClass={getColorClass(review.buyerName)}
+                    />
+                  </div>
+                ))}
+              </div>
 
-            <div className="hidden md:block absolute top-0 left-0 w-20 h-full bg-gradient-to-r from-slate-50 dark:from-background-dark to-transparent z-10" />
-            <div className="hidden md:block absolute top-0 right-0 w-20 h-full bg-gradient-to-l from-slate-50 dark:from-background-dark to-transparent z-10" />
-          </div>
-
-          <div className="flex md:hidden justify-center gap-2 mt-4">
-            {reviews.map((_, idx) => (
               <div
-                key={idx}
-                className={`h-1.5 rounded-full transition-all duration-300 ${
-                  activeReviewIndex === idx
-                    ? "w-6 bg-primary"
-                    : "w-1.5 bg-slate-300 dark:bg-slate-700"
-                }`}
-              />
-            ))}
-          </div>
-        </section>
+                ref={scrollRef}
+                onScroll={handleScroll}
+                className="flex md:hidden flex-nowrap gap-6 overflow-x-auto no-scrollbar snap-x snap-mandatory px-2"
+              >
+                {recentReviews.map((review: any, idx: number) => (
+                  <div
+                    key={`mobile-${idx}`}
+                    className="w-[calc(100vw-3rem)] flex-shrink-0 snap-center"
+                  >
+                    <ReviewItem
+                      name={review.buyerName}
+                      comment={review.comment}
+                      rating={review.rating}
+                      date={new Date(review.createdAt).toLocaleDateString()}
+                      initials={review.buyerName.substring(0, 2).toUpperCase()}
+                      colorClass={getColorClass(review.buyerName)}
+                    />
+                  </div>
+                ))}
+              </div>
+
+              <div className="hidden md:block absolute top-0 left-0 w-20 h-full bg-gradient-to-r from-slate-50 dark:from-background-dark to-transparent z-10" />
+              <div className="hidden md:block absolute top-0 right-0 w-20 h-full bg-gradient-to-l from-slate-50 dark:from-background-dark to-transparent z-10" />
+            </div>
+
+            <div className="flex md:hidden justify-center gap-2 mt-4">
+              {recentReviews.map((_: any, idx: number) => (
+                <div
+                  key={idx}
+                  className={`h-1.5 rounded-full transition-all duration-300 ${
+                    activeReviewIndex === idx
+                      ? "w-6 bg-primary"
+                      : "w-1.5 bg-slate-300 dark:bg-slate-700"
+                  }`}
+                />
+              ))}
+            </div>
+          </section>
+        )}
       </main>
 
       <BottomNavigation />

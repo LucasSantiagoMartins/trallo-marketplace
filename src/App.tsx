@@ -60,7 +60,10 @@ const App = () => (
             <Route path="/criar-conta" element={<Register />} />
             <Route path="/esqueceu-senha" element={<ResetPassword />} />
             <Route path="/detalhes-produto" element={<ProductDetails />} />
-            <Route path="/perfil-vendedor" element={<SellerProfileScreen />} />
+            <Route
+              path="/perfil-vendedor/:sellerSlug"
+              element={<SellerProfileScreen />}
+            />
             <Route path="/avaliar-vendedor" element={<RateSeller />} />
             <Route
               path="/detalhes-produto/:slug"

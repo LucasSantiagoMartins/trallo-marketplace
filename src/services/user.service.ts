@@ -2,7 +2,7 @@ import { http } from "../api/http";
 import { endpoints } from "../api/endpoints";
 import type { ApiResponse, User, AuthUser } from "@/types/api";
 import { UserResponseDTO, UserFiltersDto } from "@/types/user";
-import { ChangePasswordDto } from "@/dtos/users";
+import { ChangePasswordDto, UserProfileDTO } from "@/dtos/users";
 import { ResetPasswordDto } from "@/dtos/reset-password";
 
 export async function getUsers(
@@ -101,4 +101,9 @@ export async function deleteMyAccount(code: string): Promise<ApiResponse<void>> 
   return http.delete<void>(endpoints.users.deleteMyAccount, {
     params: { code }
   });
+}
+
+export async function getUserProfile(slug: string): Promise<ApiResponse<UserProfileDTO>> {
+  return http.get<UserProfileDTO>(endpoints.users.profile(slug)
+  );
 }

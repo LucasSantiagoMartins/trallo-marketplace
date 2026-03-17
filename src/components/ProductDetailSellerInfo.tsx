@@ -11,8 +11,8 @@ const ProductDetailSellerInfo: React.FC<SellerInfoProps> = ({ seller }) => {
   const navigate = useNavigate();
 
   const handleGoToProfile = () => {
-    if (seller?.id) {
-      navigate(`/perfil-vendedor`);
+    if (seller?.slug) {
+      navigate(`/perfil-vendedor/${seller.slug}`);
     }
   };
 
@@ -49,7 +49,6 @@ const ProductDetailSellerInfo: React.FC<SellerInfoProps> = ({ seller }) => {
             {seller?.fullName}
           </h3>
           <div className="flex items-center gap-1 mt-0.5">
-            
             <span className="text-[8px] md:text-[11px] font-bold text-muted-foreground uppercase tracking-tight truncate">
               Vendedor verificado
             </span>
