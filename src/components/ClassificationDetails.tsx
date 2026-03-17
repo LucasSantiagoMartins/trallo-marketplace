@@ -1,7 +1,9 @@
 import React from "react";
+import { ProductCategory } from "@/enums/product-category.enum";
+import { productCategoryLabel } from "@/utils/mappers/product-category.mapper";
 
 interface ClassificationDetailsProps {
-  category: string;
+  category: ProductCategory | "";
   condition: string;
   onOpenCategory: () => void;
   onOpenCondition: () => void;
@@ -13,6 +15,10 @@ const ClassificationDetails: React.FC<ClassificationDetailsProps> = ({
   onOpenCategory,
   onOpenCondition,
 }) => {
+  const categoryDisplayName = category
+    ? productCategoryLabel[category]
+    : "Não definida";
+
   return (
     <section className="bg-white dark:bg-slate-900/40 rounded-[2rem] p-6 shadow-sm border border-slate-100 dark:border-white/5 space-y-4">
       <div className="flex items-center gap-2 mb-2 px-1">
@@ -22,13 +28,12 @@ const ClassificationDetails: React.FC<ClassificationDetailsProps> = ({
       </div>
 
       <div className="grid gap-3">
-        {/* Categoria */}
         <button
           onClick={onOpenCategory}
-          className="flex items-center justify-between p-4 bg-slate-50 dark:bg-white/5 rounded-2xl group hover:ring-2 hover:ring-primary/20 transition-all active:scale-[0.98] text-left"
+          className="flex items-center justify-between p-4 bg-slate-50 dark:bg-white/5 rounded-2xl group hover:ring-2 hover:ring-primary/20 transition-all active:scale-[0.96] text-left transform-gpu"
         >
           <div className="flex items-center gap-4">
-            <div className="size-10 rounded-xl bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center group-hover:text-primary transition-colors">
+            <div className="size-10 rounded-xl bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center group-hover:text-primary transition-colors duration-300">
               <span className="material-symbols-outlined text-[22px]">
                 widgets
               </span>
@@ -38,22 +43,21 @@ const ClassificationDetails: React.FC<ClassificationDetailsProps> = ({
                 Categoria
               </p>
               <p className="text-sm font-bold text-slate-700 dark:text-slate-200">
-                {category || "Não definida"}
+                {categoryDisplayName}
               </p>
             </div>
           </div>
-          <span className="material-symbols-outlined text-slate-300 group-hover:translate-x-1 transition-transform">
+          <span className="material-symbols-outlined text-slate-300 group-hover:translate-x-1 transition-transform duration-300 ease-out">
             chevron_right
           </span>
         </button>
 
-        {/* Estado/Condição */}
         <button
           onClick={onOpenCondition}
-          className="flex items-center justify-between p-4 bg-slate-50 dark:bg-white/5 rounded-2xl group hover:ring-2 hover:ring-primary/20 transition-all active:scale-[0.98] text-left"
+          className="flex items-center justify-between p-4 bg-slate-50 dark:bg-white/5 rounded-2xl group hover:ring-2 hover:ring-primary/20 transition-all active:scale-[0.96] text-left transform-gpu"
         >
           <div className="flex items-center gap-4">
-            <div className="size-10 rounded-xl bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center group-hover:text-primary transition-colors">
+            <div className="size-10 rounded-xl bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center group-hover:text-primary transition-colors duration-300">
               <span className="material-symbols-outlined text-[22px]">
                 sell
               </span>
@@ -67,7 +71,7 @@ const ClassificationDetails: React.FC<ClassificationDetailsProps> = ({
               </p>
             </div>
           </div>
-          <span className="material-symbols-outlined text-slate-300 group-hover:translate-x-1 transition-transform">
+          <span className="material-symbols-outlined text-slate-300 group-hover:translate-x-1 transition-transform duration-300 ease-out">
             chevron_right
           </span>
         </button>

@@ -16,8 +16,10 @@ import {
   PRODUCT_CATEGORIES,
   PRODUCT_CONDITIONS,
 } from "@/constants/product-options";
+import { getFieldsByCategory } from "@/utils/product-utils"; // Importando o utilitário
 import BottomNavigation from "@/components/BottomNavigation";
 import { useAuth } from "@/context/AuthContext";
+import { ProductCategory } from "@/enums/product-category.enum";
 
 const CreateProduct: React.FC = () => {
   const navigate = useNavigate();
@@ -29,9 +31,10 @@ const CreateProduct: React.FC = () => {
     name: "",
     description: "",
     price: "",
-    category: "",
+    category: "" as ProductCategory | "",
     condition: "NEW",
     stockQuantity: 1,
+    specifications: {} as Record<string, any>,
   });
 
   const [images, setImages] = useState<string[]>([]);
@@ -79,23 +82,30 @@ const CreateProduct: React.FC = () => {
     }, 500);
   };
 
-  const updateField = (field: string, value: string | number) => {
+  const updateField = (field: string, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const updateSpecField = (name: string, value: any) => {
+    setFormData((prev) => ({
+      ...prev,
+      specifications: { ...prev.specifications, [name]: value },
+    }));
   };
 
   const handleSubmit = async () => {
     if (!formData.name) {
-      toast.error("Por favor, informe o nome do produto.");
+      toast.error("Por favor, informe o nome do produto");
       return;
     }
 
     if (!formData.price) {
-      toast.error("Faltou definir o preço de venda do produto.");
+      toast.error("Faltou definir o preço de venda do produto");
       return;
     }
 
     if (fileObjects.length === 0) {
-      toast.error("Adicione pelo menos uma foto do produto.");
+      toast.error("Adicione pelo menos uma foto do produto");
       return;
     }
 
@@ -106,7 +116,11 @@ const CreateProduct: React.FC = () => {
       data.append("description", formData.description);
       data.append("price", formData.price.replace(/\D/g, ""));
       data.append("condition", formData.condition);
+      data.append("category", formData.category);
       data.append("stockQuantity", String(formData.stockQuantity));
+
+      // Enviando as especificações como string JSON para o backend processar
+      data.append("specifications", JSON.stringify(formData.specifications));
 
       fileObjects.forEach((file) => {
         data.append("images", file);
@@ -114,22 +128,23 @@ const CreateProduct: React.FC = () => {
 
       const res = await createProduct(data);
       if (res.success) {
-        toast.success(res.message ?? "Produto criado.");
+        toast.success(res.message ?? "Produto criado");
         navigate("/meus-produtos");
       }
     } catch (err: any) {
-      toast.error(err.message ?? "Erro ao conectar ao servidor.");
+      toast.error(err.message ?? "Erro ao conectar ao servidor");
     } finally {
       setLoading(false);
     }
   };
 
-  const selectedCategoryLabel =
-    PRODUCT_CATEGORIES.find((c) => c.value === formData.category)?.label ||
-    "Selecionar";
   const selectedConditionLabel =
     PRODUCT_CONDITIONS.find((c) => c.value === formData.condition)?.label ||
     "Selecionar";
+
+  const dynamicFields = formData.category
+    ? getFieldsByCategory(formData.category as ProductCategory)
+    : [];
 
   return (
     <MobileLayout className="pb-0 bg-white dark:bg-slate-950">
@@ -163,7 +178,7 @@ const CreateProduct: React.FC = () => {
                 Classificação
               </label>
               <ClassificationDetails
-                category={selectedCategoryLabel}
+                category={formData.category}
                 condition={selectedConditionLabel}
                 onOpenCategory={openCategoryDrawer}
                 onOpenCondition={openConditionModal}
@@ -215,6 +230,27 @@ const CreateProduct: React.FC = () => {
               </div>
             </div>
 
+            {/* RENDERIZAÇÃO DOS CAMPOS DINÂMICOS ABAIXO DO FORM EXISTENTE */}
+            {dynamicFields.length > 0 && (
+              <div className="pt-4 space-y-4 border-t border-slate-100 dark:border-slate-800">
+                <label className="text-[10px] font-black text-slate-400 uppercase ml-1 tracking-widest">
+                  Especificações Técnicas
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {dynamicFields.map((field) => (
+                    <TralloInput
+                      key={field.name}
+                      label={field.label}
+                      placeholder={field.placeholder}
+                      type={field.type}
+                      value={formData.specifications[field.name] || ""}
+                      onChange={(val) => updateSpecField(field.name, val)}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className="pt-6">
               <TralloButton
                 onClick={handleSubmit}
@@ -246,7 +282,10 @@ const CreateProduct: React.FC = () => {
         isClosing={isClosingCategory}
         selectedCategory={formData.category}
         onClose={closeCategoryDrawer}
-        onSelect={(val) => updateField("category", val)}
+        onSelect={(val) => {
+          updateField("category", val);
+          updateField("specifications", {});
+        }}
       />
     </MobileLayout>
   );
