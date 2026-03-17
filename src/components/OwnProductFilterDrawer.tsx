@@ -14,17 +14,16 @@ const OwnProductFilterDrawer: React.FC<ProductFilterProps> = ({
   const [sortBy, setSortBy] = useState("Preço");
   const [mounted, setMounted] = useState(false);
 
-  const touchStart = useRef<number | null>(null);
-  const touchEnd = useRef<number | null>(null);
-  const minSwipeDistance = 50;
+  const [startY, setStartY] = useState<number | null>(null);
+  const [currentY, setCurrentY] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
 
-  // Função para fechar com animação suave antes de desmontar
   const handleClose = () => {
     setMounted(false);
-    // Aguarda o tempo da transição (500ms conforme definido no transform)
     setTimeout(() => {
       onClose();
-    }, 500);
+      setCurrentY(0);
+    }, 400);
   };
 
   useEffect(() => {
@@ -38,20 +37,28 @@ const OwnProductFilterDrawer: React.FC<ProductFilterProps> = ({
   }, [isOpen]);
 
   const onTouchStart = (e: React.TouchEvent) => {
-    touchEnd.current = null;
-    touchStart.current = e.targetTouches[0].clientY;
+    setStartY(e.touches[0].clientY);
+    setIsDragging(true);
   };
 
   const onTouchMove = (e: React.TouchEvent) => {
-    touchEnd.current = e.targetTouches[0].clientY;
+    if (startY === null) return;
+    const deltaY = e.touches[0].clientY - startY;
+    if (deltaY > 0) {
+      window.requestAnimationFrame(() => {
+        setCurrentY(deltaY);
+      });
+    }
   };
 
   const onTouchEnd = () => {
-    if (!touchStart.current || !touchEnd.current) return;
-    const distance = touchEnd.current - touchStart.current;
-    if (distance > minSwipeDistance) {
+    setIsDragging(false);
+    if (currentY > 120) {
       handleClose();
+    } else {
+      setCurrentY(0);
     }
+    setStartY(null);
   };
 
   if (!isOpen && !mounted) return null;
@@ -66,8 +73,7 @@ const OwnProductFilterDrawer: React.FC<ProductFilterProps> = ({
   const statuses = ["Todos", "Ativo", "Sem Stock", "Verificando"];
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-end md:items-center justify-center overflow-hidden">
-      {/* Backdrop */}
+    <div className="fixed inset-0 z-[60] flex items-end md:items-center justify-center overflow-hidden touch-none">
       <div
         className={`absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-500 ease-in-out ${
           mounted ? "opacity-100" : "opacity-0"
@@ -75,19 +81,25 @@ const OwnProductFilterDrawer: React.FC<ProductFilterProps> = ({
         onClick={handleClose}
       />
 
-      {/* Drawer Container */}
       <div
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
-        className={`relative w-full md:max-w-md bg-white dark:bg-gray-900 rounded-t-[2.5rem] md:rounded-[3rem] p-6 md:p-8 shadow-2xl max-h-[90vh] overflow-y-auto transition-all duration-500 ease-in-out transform ${
-          mounted
-            ? "translate-y-0 opacity-100 scale-100"
-            : "translate-y-full md:translate-y-10 md:scale-95 opacity-0"
+        style={{
+          transform: isDragging
+            ? `translateY(${currentY}px)`
+            : mounted
+              ? `translateY(${currentY}px) scale(1)`
+              : "translateY(100%) scale(0.95)",
+          transition: isDragging
+            ? "none"
+            : "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s",
+        }}
+        className={`relative w-full md:max-w-md bg-white dark:bg-gray-900 rounded-t-[2.5rem] md:rounded-[3rem] p-6 md:p-8 shadow-2xl max-h-[90vh] overflow-y-auto will-change-transform ${
+          mounted ? "opacity-100" : "opacity-0"
         }`}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Handle de arraste (Mobile) */}
         <div className="w-full pt-2 pb-6 md:hidden cursor-grab active:cursor-grabbing">
           <div className="w-12 h-1.5 bg-gray-200 dark:bg-gray-800 rounded-full mx-auto" />
         </div>

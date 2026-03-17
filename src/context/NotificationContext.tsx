@@ -9,6 +9,7 @@ import { io } from "socket.io-client";
 import { Notification } from "@/types/notification";
 import { useAuth } from "@/context/AuthContext";
 import { getNotifications } from "@/services/notification.service";
+import { BASE_URL } from "@/api/endpoints";
 
 interface NotificationContextData {
   notifications: Notification[];
@@ -50,7 +51,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     if (!user?.token) return;
 
-    const socket = io("http://localhost:9090/notifications", {
+    const socket = io(`${BASE_URL}/notifications`, {
       auth: { token: `Bearer ${user.token}` },
     });
 

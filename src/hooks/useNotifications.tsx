@@ -9,6 +9,7 @@ import { io, Socket } from "socket.io-client";
 import { Notification } from "@/types/notification";
 import { useAuth } from "@/context/AuthContext";
 import { getNotifications } from "@/services/notification.service";
+import { BASE_URL } from "@/api/endpoints";
 
 interface NotificationContextData {
   notifications: Notification[];
@@ -51,21 +52,31 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     if (!user?.token) return;
-
-    const newSocket = io("http://localhost:9090/notifications", {
+    const newSocket = io(`${BASE_URL}/notifications`, {
       auth: { token: `Bearer ${user.token}` },
+      transports: ["polling", "websocket"],
+      reconnection: true,
+      reconnectionAttempts: Infinity,
     });
 
-    newSocket.on("connect", () => console.log("✅ Connected to Notifications"));
+    newSocket.on("connect", () => {
+      console.log("✅ Conectado ao Socket no Mobile/Desktop");
+    });
 
     newSocket.on("notification", (data: Notification) => {
       setNewNotification(data);
-      setNotifications((prev) => [data, ...prev]);
+      setNotifications((prev) => {
+        const exists = prev.find((n) => n.id === data.id);
+        if (exists) return prev;
+        return [data, ...prev];
+      });
     });
 
     setSocket(newSocket);
 
     return () => {
+      newSocket.off("notification");
+      newSocket.off("connect");
       newSocket.close();
     };
   }, [user?.token]);

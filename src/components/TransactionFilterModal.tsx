@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { motion } from "framer-motion";
+import React, { useState, useEffect } from "react";
 import { TransactionStatus, TransactionType } from "@/enums/transaction";
 
 interface TransactionFilterModalProps {
@@ -16,6 +15,43 @@ const TransactionFilterModal: React.FC<TransactionFilterModalProps> = ({
   onSearchAPI,
 }) => {
   const [tempFilters, setTempFilters] = useState({ ...currentFilters });
+
+  const [startY, setStartY] = useState<number | null>(null);
+  const [currentY, setCurrentY] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, []);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setStartY(e.touches[0].clientY);
+    setIsDragging(true);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (startY === null) return;
+    const deltaY = e.touches[0].clientY - startY;
+
+    if (deltaY > 0) {
+      window.requestAnimationFrame(() => {
+        setCurrentY(deltaY);
+      });
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+    if (currentY > 120) {
+      onClose();
+    } else {
+      setCurrentY(0);
+    }
+    setStartY(null);
+  };
 
   const sections = [
     {
@@ -51,29 +87,26 @@ const TransactionFilterModal: React.FC<TransactionFilterModalProps> = ({
   ];
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-end lg:items-center lg:justify-center">
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+    <div className="fixed inset-0 z-[60] flex items-end lg:items-center lg:justify-center overflow-hidden touch-none">
+      <div
+        className="absolute inset-0 bg-black/40 backdrop-blur-sm animate-in fade-in duration-300"
         onClick={onClose}
       />
 
-      <motion.div
-        initial={{ y: "100%" }}
-        animate={{ y: 0 }}
-        exit={{ y: "100%" }}
-        transition={{ type: "spring", damping: 25, stiffness: 200 }}
-        drag="y"
-        dragConstraints={{ top: 0 }}
-        dragElastic={0.2}
-        onDragEnd={(_, info) => {
-          if (info.offset.y > 150) onClose();
+      <div
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        style={{
+          transform: `translateY(${currentY}px)`,
+          transition: isDragging
+            ? "none"
+            : "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
         }}
-        className="relative w-full lg:max-w-md bg-white dark:bg-[#16161E] rounded-t-[2.5rem] lg:rounded-[2.5rem] p-6 shadow-2xl overflow-hidden"
+        className="relative w-full lg:max-w-md bg-white dark:bg-[#16161E] rounded-t-[2.5rem] lg:rounded-[2.5rem] p-6 shadow-2xl overflow-hidden animate-in slide-in-from-bottom lg:slide-in-from-bottom-0 lg:zoom-in-95 duration-300 ease-out will-change-transform touch-auto"
+        onClick={(e) => e.stopPropagation()}
       >
-        <div className="w-12 h-1.5 bg-gray-200 dark:bg-gray-700 mx-auto rounded-full mb-6 cursor-grab active:cursor-grabbing"></div>
+        <div className="w-12 h-1.5 bg-gray-200 dark:bg-gray-700 mx-auto rounded-full mb-6 lg:hidden cursor-grab active:cursor-grabbing"></div>
 
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-xl font-black tracking-tight text-[#121118] dark:text-white">
@@ -126,7 +159,7 @@ const TransactionFilterModal: React.FC<TransactionFilterModalProps> = ({
             Pesquisar
           </button>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 };

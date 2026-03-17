@@ -4,15 +4,15 @@ import NotificationCard from "@/components/NotificationCard";
 import PageHeader from "@/components/PageHeader";
 import BottomNavigation from "@/components/BottomNavigation";
 import Loader from "@/components/Loader";
-import { useNotifications } from "@/context/NotificationContext"; // Certifique-se de importar do Contexto
+import { useNotifications } from "@/context/NotificationContext";
 import {
   markAsRead,
   deleteNotification,
   clearAllNotifications,
 } from "@/services/notification.service";
+import { BASE_URL } from "@/api/endpoints";
 
 const NotificationsScreen: React.FC = () => {
-  // Adicionamos valores padrão (fallback) para evitar o erro de 'undefined'
   const {
     notifications = [],
     setNotifications,
@@ -88,7 +88,7 @@ const NotificationsScreen: React.FC = () => {
 
         <main className="flex-1 px-4 pt-24 pb-8 space-y-4 overflow-y-auto">
           {notifications && notifications.length > 0 ? (
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 animate-in fade-in slide-in-from-bottom-4 duration-500">
               {notifications.map((item) => (
                 <NotificationCard
                   key={item.id}
@@ -99,7 +99,7 @@ const NotificationsScreen: React.FC = () => {
               ))}
             </div>
           ) : (
-            <div className="text-center py-32 text-slate-400">
+            <div className="text-center py-32 text-slate-400 animate-in fade-in duration-700">
               <span className="material-symbols-outlined text-5xl mb-2 block opacity-20">
                 notifications_off
               </span>

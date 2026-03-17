@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 import PageHeader from "../components/PageHeader";
 import BottomNavigation from "@/components/BottomNavigation";
 import OwnProductCard from "../components/OwnProductCard";
-import { AnimatePresence } from "framer-motion";
 import OwnProductFilterDrawer from "../components/OwnProductFilterDrawer";
 import ConfirmAction from "../components/ConfirmAction";
+import FilterButton from "@/components/FilterButton";
+import Loader from "@/components/Loader";
 import { ProductDTO, ProductStatus } from "@/types/product";
 import { getMyProducts } from "@/services/product.service";
 import { useAuth } from "@/context/AuthContext";
@@ -29,7 +30,6 @@ const MyProductsPage: React.FC = () => {
     setIsLoading(true);
     try {
       const response = await getMyProducts();
-      console.log(response.data)
       if (response.data) {
         setProducts(response.data);
       }
@@ -120,39 +120,35 @@ const MyProductsPage: React.FC = () => {
               <h3 className="text-xl font-bold tracking-tight">
                 Lista de Produtos
               </h3>
-              <button
-                onClick={() => setShowFilters(true)}
-                className="text-primary text-xs font-black flex items-center gap-2 bg-primary/5 px-4 py-2.5 rounded-2xl uppercase tracking-widest hover:bg-primary/10 transition-colors"
-              >
-                Filtrar{" "}
-                <span className="material-symbols-outlined text-base">
-                  filter_list
-                </span>
-              </button>
+              <FilterButton onClick={() => setShowFilters(true)} />
             </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 relative">
             {isLoading ? (
               <div className="col-span-full flex justify-center py-20">
-                <div className="animate-spin size-8 border-4 border-primary border-t-transparent rounded-full" />
+                <Loader size="md" />
               </div>
             ) : (
-              <AnimatePresence mode="popLayout">
+              <div className="col-span-full grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {products.length > 0 ? (
                   products.map((product) => (
-                    <OwnProductCard
+                    <div
                       key={product.id}
-                      product={product}
-                      onDelete={(p) => setProductToDelete(p)}
-                    />
+                      className="animate-in fade-in slide-in-from-bottom-4 duration-500"
+                    >
+                      <OwnProductCard
+                        product={product}
+                        onDelete={(p) => setProductToDelete(p)}
+                      />
+                    </div>
                   ))
                 ) : (
                   <div className="col-span-full text-center py-20 opacity-50">
                     <p className="font-bold">Nenhum produto encontrado.</p>
                   </div>
                 )}
-              </AnimatePresence>
+              </div>
             )}
           </div>
         </div>
