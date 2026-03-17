@@ -64,7 +64,6 @@ const MyProductsPage: React.FC = () => {
     <div className="bg-background-light dark:bg-background-dark min-h-screen flex flex-col">
       <PageHeader title="Meus Produtos" showUser={true} />
 
-      {/* pb-32 garante que a lista não fique por baixo ou colada ao BottomNavigation no mobile */}
       <main className="max-w-6xl mx-auto w-full px-6 pt-24 pb-32 lg:pb-20">
         <header className="mb-8">
           <h2 className="font-black text-3xl tracking-tight">
@@ -75,7 +74,7 @@ const MyProductsPage: React.FC = () => {
           </p>
         </header>
 
-        <div className="flex flex-col lg:flex-row gap-6 mb-8">
+        <div className="flex flex-col lg:flex-row gap-6 mb-4">
           <div className="flex gap-4 lg:gap-6 overflow-x-auto pb-4 lg:pb-0 no-scrollbar flex-1 lg:justify-start">
             <SummaryCard
               icon="check_circle"
@@ -117,15 +116,6 @@ const MyProductsPage: React.FC = () => {
 
         <div className="space-y-6">
           <div className="flex flex-col gap-4">
-            <button
-              onClick={() => navigate("/adicionar-produto")}
-              className="lg:hidden w-full bg-primary text-white flex items-center justify-center gap-3 py-4 rounded-[1.5rem] active:scale-[0.98] transition-all shadow-lg shadow-primary/20"
-            >
-              <span className="font-black text-sm uppercase tracking-wider">
-                Novo Produto
-              </span>
-            </button>
-
             <div className="flex items-center justify-between">
               <h3 className="text-xl font-bold tracking-tight">
                 Lista de Produtos
