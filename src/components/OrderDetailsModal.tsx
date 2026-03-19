@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import { createPortal } from "react-dom";
 import { OrderDTO } from "@/dtos/order";
 import { BASE_UPLOAD_URL } from "@/api/endpoints";
 import { formatPrice } from "@/utils/currency";
@@ -32,12 +33,14 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
       setMounted(true);
       setDragY(0);
       document.body.style.overflow = "hidden";
+      document.body.style.height = "100vh";
       setTimeout(() => setAnimate(true), 10);
     } else {
       setAnimate(false);
       const timer = setTimeout(() => {
         setMounted(false);
         document.body.style.overflow = "";
+        document.body.style.height = "";
       }, 300);
       return () => {
         clearTimeout(timer);
@@ -95,10 +98,10 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
     ? `transition-all duration-300 ease-out ${animate ? "opacity-100 scale-100" : "opacity-0 scale-95"}`
     : "";
 
-  return (
-    <div className="fixed inset-0 z-[100] flex items-end lg:items-center justify-center overflow-hidden">
+  const modalContent = (
+    <div className="fixed inset-0 w-screen h-screen z-[9999] flex items-end lg:items-center justify-center overflow-hidden touch-none">
       <div
-        className={`absolute inset-0 bg-black/60 transition-opacity duration-300 ease-in-out cursor-pointer ${
+        className={`absolute inset-0 w-full h-full bg-black/60 backdrop-blur-sm transition-opacity duration-300 ease-in-out cursor-pointer ${
           animate ? "opacity-100" : "opacity-0"
         }`}
         onClick={handleClose}
@@ -118,8 +121,8 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
         className={`
           relative w-full lg:max-w-2xl bg-white dark:bg-[#1c182d] 
           rounded-t-[2.5rem] lg:rounded-[2rem] shadow-2xl flex flex-col 
-          pointer-events-auto overflow-hidden
-          h-[75vh] lg:h-auto lg:max-h-[85vh]
+          pointer-events-auto overflow-hidden touch-auto
+          h-[85vh] lg:h-auto lg:max-h-[85vh]
           ${desktopClasses}
         `}
       >
@@ -141,9 +144,7 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
           </div>
         )}
 
-        <div
-          className={`flex justify-between items-center px-6 pt-8 pb-2 shrink-0`}
-        >
+        <div className="flex justify-between items-center px-6 pt-8 pb-2 shrink-0">
           <h2 className="text-xl font-bold text-slate-900 dark:text-white">
             Pedido {order.orderNumber}
           </h2>
@@ -219,6 +220,8 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
       `}</style>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 };
 
 export default OrderDetailsModal;
