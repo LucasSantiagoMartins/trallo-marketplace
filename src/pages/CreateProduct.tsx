@@ -16,6 +16,7 @@ import { PRODUCT_CONDITIONS } from "@/constants/product-options";
 import { getFieldsByCategory } from "@/utils/product-utils";
 import BottomNavigation from "@/components/BottomNavigation";
 import { ProductCategory } from "@/enums/product-category.enum";
+import { productCategoryLabel } from "@/utils/mappers/product-category.mapper";
 
 const CreateProduct: React.FC = () => {
   const navigate = useNavigate();
@@ -91,6 +92,11 @@ const CreateProduct: React.FC = () => {
   const handleSubmit = async () => {
     if (!formData.name) {
       toast.error("Por favor, informe o nome do produto");
+      return;
+    }
+
+    if (!formData.category) {
+      toast.error("Você precisa selecionar uma categoria");
       return;
     }
 
@@ -228,9 +234,10 @@ const CreateProduct: React.FC = () => {
             </div>
 
             {dynamicFields.length > 0 && (
-              <div className="pt-4 space-y-4 border-t border-slate-100 dark:border-slate-800">
+              <div className="pt-4 space-y-4 border-t border-slate-100 dark:border-slate-800 animate-in fade-in slide-in-from-top-2 duration-300">
                 <label className="text-[10px] font-black text-slate-400 uppercase ml-1 tracking-widest">
-                  Especificações Técnicas
+                  Especificações de{" "}
+                  {productCategoryLabel[formData.category as ProductCategory]}
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {dynamicFields.map((field) => (

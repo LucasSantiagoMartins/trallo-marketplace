@@ -64,8 +64,8 @@ const CategoryDrawer: React.FC<CategoryDrawerProps> = ({
   const handleConfirm = () => {
     if (tempSelection !== "") {
       onSelect(tempSelection as ProductCategory);
+      onClose();
     }
-    onClose();
   };
 
   return (
