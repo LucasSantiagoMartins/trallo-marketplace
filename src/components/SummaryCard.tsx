@@ -1,7 +1,7 @@
 import React from "react";
 
 interface SummaryCardProps {
-  title: string;
+  label: string; // Alterado de title para label para resolver o erro
   value: string;
   color?: string;
   icon: string;
@@ -9,7 +9,7 @@ interface SummaryCardProps {
 }
 
 const SummaryCard: React.FC<SummaryCardProps> = ({
-  title,
+  label,
   value,
   color = "from-indigo-700 via-purple-700 to-pink-600",
   icon,
@@ -28,7 +28,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
 
     <div className="relative z-10">
       <p className="text-white/80 text-[10px] font-bold uppercase tracking-widest">
-        {title}
+        {label}
       </p>
       <div className="flex items-baseline gap-1">
         <h3

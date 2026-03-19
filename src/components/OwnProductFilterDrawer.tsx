@@ -3,7 +3,6 @@ import { ProductCategory } from "@/enums/product-category.enum";
 import { productCategoryLabel } from "@/utils/mappers/product-category.mapper";
 import { ProductStatus } from "@/types/product";
 import { productStatusLabel } from "@/utils/mappers/product.mapper";
- 
 
 interface ProductFilterProps {
   onClose: () => void;
@@ -37,9 +36,18 @@ const OwnProductFilterDrawer: React.FC<ProductFilterProps> = ({
   const [currentY, setCurrentY] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
 
-  // Listas baseadas nos Enums e Mappers
   const categories = Object.values(ProductCategory);
   const statuses = Object.values(ProductStatus);
+
+  useEffect(() => {
+    if (isOpen) {
+      setActiveStatus(currentStatus);
+      setActiveCategory(currentCategory);
+      setMounted(true);
+    } else {
+      setMounted(false);
+    }
+  }, [isOpen, currentCategory, currentStatus]);
 
   const handleClose = () => {
     setMounted(false);
@@ -60,16 +68,6 @@ const OwnProductFilterDrawer: React.FC<ProductFilterProps> = ({
     handleClose();
   };
 
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-      const timer = setTimeout(() => setMounted(true), 10);
-      return () => clearTimeout(timer);
-    } else {
-      document.body.style.overflow = "unset";
-    }
-  }, [isOpen]);
-
   const onTouchStart = (e: React.TouchEvent) => {
     setStartY(e.touches[0].clientY);
     setIsDragging(true);
@@ -79,9 +77,7 @@ const OwnProductFilterDrawer: React.FC<ProductFilterProps> = ({
     if (startY === null) return;
     const deltaY = e.touches[0].clientY - startY;
     if (deltaY > 0) {
-      window.requestAnimationFrame(() => {
-        setCurrentY(deltaY);
-      });
+      window.requestAnimationFrame(() => setCurrentY(deltaY));
     }
   };
 
@@ -100,7 +96,7 @@ const OwnProductFilterDrawer: React.FC<ProductFilterProps> = ({
   return (
     <div className="fixed inset-0 z-[60] flex items-end md:items-center justify-center overflow-hidden touch-none">
       <div
-        className={`absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-500 ease-in-out ${
+        className={`absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-500 ${
           mounted ? "opacity-100" : "opacity-0"
         }`}
         onClick={handleClose}
@@ -133,7 +129,6 @@ const OwnProductFilterDrawer: React.FC<ProductFilterProps> = ({
           <h4 className="text-xl font-black tracking-tight text-foreground">
             Filtrar
           </h4>
-
           <div className="flex items-center gap-2">
             <button
               onClick={() => {
@@ -145,10 +140,9 @@ const OwnProductFilterDrawer: React.FC<ProductFilterProps> = ({
             >
               Limpar
             </button>
-
             <button
               onClick={handleClose}
-              className="hidden md:flex size-8 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 text-slate-500 active:scale-90 transition-transform"
+              className="hidden md:flex size-8 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 text-slate-500"
             >
               <span className="material-symbols-outlined text-xl">close</span>
             </button>
@@ -165,23 +159,23 @@ const OwnProductFilterDrawer: React.FC<ProductFilterProps> = ({
                 onClick={() => setActiveStatus("Todos")}
                 className={`px-4 py-2.5 rounded-xl text-[11px] font-bold transition-all ${
                   activeStatus === "Todos"
-                    ? "bg-primary text-white shadow-md shadow-primary/30"
+                    ? "bg-primary text-white"
                     : "bg-gray-100 dark:bg-gray-800 text-slate-500"
                 }`}
               >
                 Todos
               </button>
-              {statuses.map((status) => (
+              {statuses.map((s) => (
                 <button
-                  key={status}
-                  onClick={() => setActiveStatus(status)}
+                  key={s}
+                  onClick={() => setActiveStatus(s)}
                   className={`px-4 py-2.5 rounded-xl text-[11px] font-bold transition-all ${
-                    activeStatus === status
-                      ? "bg-primary text-white shadow-md shadow-primary/30"
+                    activeStatus === s
+                      ? "bg-primary text-white"
                       : "bg-gray-100 dark:bg-gray-800 text-slate-500"
                   }`}
                 >
-                  {productStatusLabel[status] || status}
+                  {productStatusLabel[s] || s}
                 </button>
               ))}
             </div>
@@ -234,9 +228,7 @@ const OwnProductFilterDrawer: React.FC<ProductFilterProps> = ({
                 <span className="material-symbols-outlined text-base">
                   trending_up
                 </span>
-                <span className="text-[10px] font-black uppercase tracking-tight">
-                  Preço
-                </span>
+                <span className="text-[10px] font-black uppercase">Preço</span>
               </button>
               <button
                 onClick={() => setSortBy("Novos")}
@@ -249,9 +241,7 @@ const OwnProductFilterDrawer: React.FC<ProductFilterProps> = ({
                 <span className="material-symbols-outlined text-base">
                   history
                 </span>
-                <span className="text-[10px] font-black uppercase tracking-tight">
-                  Novos
-                </span>
+                <span className="text-[10px] font-black uppercase">Novos</span>
               </button>
             </div>
           </section>
@@ -259,7 +249,7 @@ const OwnProductFilterDrawer: React.FC<ProductFilterProps> = ({
 
         <button
           onClick={handleApply}
-          className="w-full bg-primary text-white py-4 rounded-2xl font-black uppercase tracking-[0.15em] text-[11px] shadow-lg shadow-primary/30 active:scale-95 transition-all"
+          className="w-full bg-primary text-white py-4 rounded-2xl font-black uppercase tracking-[0.15em] text-[11px] shadow-lg shadow-primary/30"
         >
           Aplicar Filtros
         </button>

@@ -19,12 +19,22 @@ const MyProductsPage: React.FC = () => {
   );
 
   const [products, setProducts] = useState<ProductDTO[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<ProductDTO[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { user } = useAuth();
+
+  const [activeFilters, setActiveFilters] = useState({
+    category: "Todas",
+    status: "Todos",
+    sortBy: "Preço",
+  });
 
   useEffect(() => {
     fetchProducts();
   }, []);
+
+  useEffect(() => {
+    applyFilters();
+  }, [products, activeFilters]);
 
   const fetchProducts = async () => {
     setIsLoading(true);
@@ -38,6 +48,30 @@ const MyProductsPage: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const applyFilters = () => {
+    let result = [...products];
+
+    if (activeFilters.status !== "Todos") {
+      result = result.filter((p) => p.status === activeFilters.status);
+    }
+
+    if (activeFilters.category !== "Todas") {
+      result = result.filter((p) => p.category === activeFilters.category);
+    }
+
+    if (activeFilters.sortBy === "Preço") {
+      result.sort((a, b) => Number(a.price) - Number(b.price));
+    } else if (activeFilters.sortBy === "Novos") {
+      result.sort(
+        (a, b) =>
+          new Date(b.createdAt || 0).getTime() -
+          new Date(a.createdAt || 0).getTime(),
+      );
+    }
+
+    setFilteredProducts(result);
   };
 
   const handleConfirmDelete = () => {
@@ -105,10 +139,10 @@ const MyProductsPage: React.FC = () => {
                 inventory_2
               </span>
             </div>
-            <h4 className="font-black text-lg mb-2 tracking-tight text-left">
+            <h4 className="font-black text-lg mb-2 tracking-tight">
               Novo Produto
             </h4>
-            <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed text-left">
+            <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
               Expanda sua vitrine e comece a vender novos itens agora mesmo.
             </p>
           </div>
@@ -131,8 +165,8 @@ const MyProductsPage: React.FC = () => {
               </div>
             ) : (
               <div className="col-span-full grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {products.length > 0 ? (
-                  products.map((product) => (
+                {filteredProducts.length > 0 ? (
+                  filteredProducts.map((product) => (
                     <div
                       key={product.id}
                       className="animate-in fade-in slide-in-from-bottom-4 duration-500"
@@ -157,6 +191,9 @@ const MyProductsPage: React.FC = () => {
       <OwnProductFilterDrawer
         isOpen={showFilters}
         onClose={() => setShowFilters(false)}
+        currentCategory={activeFilters.category as any}
+        currentStatus={activeFilters.status as any}
+        onApply={(filters) => setActiveFilters(filters)}
       />
 
       <ConfirmAction
@@ -183,18 +220,18 @@ const SummaryCard = ({ icon, value, label, color }: any) => {
   };
 
   return (
-    <div className="flex-shrink-0 lg:flex-1 w-36 md:w-40 lg:w-auto bg-white dark:bg-gray-800/60 p-4 lg:p-5 rounded-[1.8rem] border border-gray-100 dark:border-gray-700/50 shadow-sm transition-all">
+    <div className="flex-shrink-0 lg:flex-1 w-36 md:w-40 lg:w-full bg-white dark:bg-gray-800/60 p-4 lg:p-5 rounded-[1.8rem] border border-gray-100 dark:border-gray-700/50 shadow-sm transition-all">
       <div
-        className={`${colorMap[color]} size-9 lg:size-10 rounded-xl flex items-center justify-center mb-3 lg:mb-4`}
+        className={`${colorMap[color]} size-9 lg:size-12 rounded-xl flex items-center justify-center mb-2 lg:mb-3`}
       >
         <span className="material-symbols-outlined text-xl lg:text-2xl">
           {icon}
         </span>
       </div>
-      <div className="text-2xl lg:text-3xl font-black mb-0.5 truncate">
+      <div className="text-xl lg:text-2xl font-black truncate leading-tight">
         {value}
       </div>
-      <div className="text-[9px] lg:text-[10px] text-slate-400 font-black uppercase tracking-wider">
+      <div className="text-[9px] lg:text-[10px] text-slate-400 font-black uppercase tracking-wider mt-0.5">
         {label}
       </div>
     </div>

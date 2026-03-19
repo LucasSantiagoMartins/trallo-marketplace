@@ -96,7 +96,7 @@ const CreateProduct: React.FC = () => {
     }
 
     if (!formData.category) {
-      toast.error("Você precisa selecionar uma categoria");
+      toast.error("Selecione uma categoria para o produto");
       return;
     }
 
