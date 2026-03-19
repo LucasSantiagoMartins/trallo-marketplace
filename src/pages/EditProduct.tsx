@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
 import MobileLayout from "@/layouts/MobileLayout";
 import PageHeader from "@/components/PageHeader";
@@ -16,9 +16,11 @@ import {
   PRODUCT_CATEGORIES,
   PRODUCT_CONDITIONS,
 } from "@/constants/product-options";
+import { getFieldsByCategory } from "@/utils/product-utils";
 import BottomNavigation from "@/components/BottomNavigation";
 import { ProductDTO } from "@/types/product";
 import { updateProduct } from "@/services/product.service";
+import { ProductCategory } from "@/enums/product-category.enum";
 
 const EditProduct: React.FC = () => {
   const navigate = useNavigate();
@@ -31,9 +33,10 @@ const EditProduct: React.FC = () => {
     name: "",
     description: "",
     price: "",
-    category: "",
+    category: "" as ProductCategory | "",
     condition: "NEW",
     stockQuantity: 1,
+    specifications: {} as Record<string, any>,
   });
 
   const [images, setImages] = useState<string[]>([]);
@@ -53,9 +56,10 @@ const EditProduct: React.FC = () => {
         name: productFromState.name,
         description: productFromState.description || "",
         price: String(productFromState.price),
-        category: productFromState.category,
+        category: productFromState.category as ProductCategory,
         condition: productFromState.condition,
         stockQuantity: productFromState.stock.availableQuantity,
+        specifications: productFromState.productDetails || {},
       });
 
       let productImages = [...(productFromState.images || [])];
@@ -113,8 +117,15 @@ const EditProduct: React.FC = () => {
     }, 500);
   };
 
-  const updateField = (field: string, value: string | number) => {
+  const updateField = (field: string, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const updateSpecField = (name: string, value: any) => {
+    setFormData((prev) => ({
+      ...prev,
+      specifications: { ...prev.specifications, [name]: value },
+    }));
   };
 
   const handleSubmit = async () => {
@@ -171,6 +182,14 @@ const EditProduct: React.FC = () => {
         hasChanges = true;
       }
 
+      if (
+        JSON.stringify(formData.specifications) !==
+        JSON.stringify(productFromState.productDetails)
+      ) {
+        form.append("productDetails", JSON.stringify(formData.specifications));
+        hasChanges = true;
+      }
+
       const newFiles = fileObjects.filter(
         (file) => file instanceof File,
       ) as File[];
@@ -222,12 +241,13 @@ const EditProduct: React.FC = () => {
     }
   };
 
-  const selectedCategoryLabel =
-    PRODUCT_CATEGORIES.find((c) => c.value === formData.category)?.label ||
-    "Selecionar";
   const selectedConditionLabel =
     PRODUCT_CONDITIONS.find((c) => c.value === formData.condition)?.label ||
     "Selecionar";
+
+  const dynamicFields = formData.category
+    ? getFieldsByCategory(formData.category as ProductCategory)
+    : [];
 
   return (
     <MobileLayout className="pb-0 bg-white dark:bg-slate-950">
@@ -261,7 +281,7 @@ const EditProduct: React.FC = () => {
                 Classificação
               </label>
               <ClassificationDetails
-                category={selectedCategoryLabel}
+                category={formData.category}
                 condition={selectedConditionLabel}
                 onOpenCategory={openCategoryDrawer}
                 onOpenCondition={openConditionModal}
@@ -309,13 +329,32 @@ const EditProduct: React.FC = () => {
               </div>
             </div>
 
+            {dynamicFields.length > 0 && (
+              <div className="pt-4 space-y-4 border-t border-slate-100 dark:border-slate-800">
+                <label className="text-[10px] font-black text-slate-400 uppercase ml-1 tracking-widest">
+                  Especificações Técnicas
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {dynamicFields.map((field) => (
+                    <TralloInput
+                      key={field.name}
+                      label={field.label}
+                      placeholder={field.placeholder}
+                      type={field.type}
+                      value={formData.specifications[field.name] || ""}
+                      onChange={(val) => updateSpecField(field.name, val)}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className="pt-6">
               <TralloButton
                 onClick={handleSubmit}
                 fullWidth
                 isLoading={loading}
                 className="py-5 text-lg font-bold shadow-xl shadow-primary/20"
-                icon="save"
               >
                 Salvar Alterações
               </TralloButton>
@@ -341,7 +380,13 @@ const EditProduct: React.FC = () => {
         isClosing={isClosingCategory}
         selectedCategory={formData.category}
         onClose={closeCategoryDrawer}
-        onSelect={(val) => updateField("category", val)}
+        onSelect={(val) => {
+          const productFromState = location.state?.product as ProductDTO;
+          updateField("category", val);
+          if (productFromState && val !== productFromState.category) {
+            updateField("specifications", {});
+          }
+        }}
       />
     </MobileLayout>
   );

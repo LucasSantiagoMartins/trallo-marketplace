@@ -12,19 +12,14 @@ import QuantitySelector from "@/components/QuantitySelector";
 import ConditionModal from "@/components/ConditionModal";
 import CategoryDrawer from "@/components/CategoryDrawer";
 import { createProduct } from "@/services/product.service";
-import {
-  PRODUCT_CATEGORIES,
-  PRODUCT_CONDITIONS,
-} from "@/constants/product-options";
-import { getFieldsByCategory } from "@/utils/product-utils"; // Importando o utilitário
+import { PRODUCT_CONDITIONS } from "@/constants/product-options";
+import { getFieldsByCategory } from "@/utils/product-utils";
 import BottomNavigation from "@/components/BottomNavigation";
-import { useAuth } from "@/context/AuthContext";
 import { ProductCategory } from "@/enums/product-category.enum";
 
 const CreateProduct: React.FC = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { user } = useAuth();
 
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -119,8 +114,10 @@ const CreateProduct: React.FC = () => {
       data.append("category", formData.category);
       data.append("stockQuantity", String(formData.stockQuantity));
 
-      // Enviando as especificações como string JSON para o backend processar
-      data.append("specifications", JSON.stringify(formData.specifications));
+      const productDetails = {
+        ...formData.specifications,
+      };
+      data.append("productDetails", JSON.stringify(productDetails));
 
       fileObjects.forEach((file) => {
         data.append("images", file);
@@ -230,7 +227,6 @@ const CreateProduct: React.FC = () => {
               </div>
             </div>
 
-            {/* RENDERIZAÇÃO DOS CAMPOS DINÂMICOS ABAIXO DO FORM EXISTENTE */}
             {dynamicFields.length > 0 && (
               <div className="pt-4 space-y-4 border-t border-slate-100 dark:border-slate-800">
                 <label className="text-[10px] font-black text-slate-400 uppercase ml-1 tracking-widest">
