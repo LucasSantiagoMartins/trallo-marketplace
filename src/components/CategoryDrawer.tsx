@@ -85,7 +85,7 @@ const CategoryDrawer: React.FC<CategoryDrawerProps> = ({
           transform: `translateX(${isClosing || isOpening ? "100%" : `${touchTranslation}px`})`,
           transition: touchStart !== null ? "none" : "transform 0.2s ease-out",
         }}
-        className="relative w-[85%] md:w-[400px] h-full bg-card shadow-2xl flex flex-col p-6 rounded-t-[20px] rounded-b-[20px] will-change-transform"
+        className="relative w-[85%] md:w-[400px] h-full bg-card shadow-2xl flex flex-col p-6 rounded-l-[20px] will-change-transform"
       >
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-bold tracking-tight">Categorias</h3>

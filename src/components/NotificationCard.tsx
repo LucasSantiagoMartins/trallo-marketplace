@@ -26,23 +26,35 @@ const NotificationCard: React.FC<Props> = ({
   const [isDragging, setIsDragging] = useState(false);
 
   const startX = useRef(0);
+  const startY = useRef(0);
+  const isScroll = useRef(false);
   const threshold = 100;
   const maxPull = 120;
 
-  const onStart = (clientX: number) => {
-    startX.current = clientX - offsetX;
+  const onStart = (clientX: number, clientY: number) => {
+    startX.current = clientX;
+    startY.current = clientY;
+    isScroll.current = false;
     setIsDragging(true);
     if (containerRef.current) containerRef.current.style.transition = "none";
   };
 
-  const onMove = (clientX: number) => {
-    if (!isDragging) return;
-    const diff = clientX - startX.current;
-    
+  const onMove = (clientX: number, clientY: number) => {
+    if (!isDragging || isScroll.current) return;
+
+    const diffX = clientX - startX.current;
+    const diffY = clientY - startY.current;
+
+    if (!isScroll.current && Math.abs(diffY) > Math.abs(diffX)) {
+      isScroll.current = true;
+      setOffsetX(0);
+      return;
+    }
+
     const minLimit = -maxPull;
     const maxLimit = read ? 0 : maxPull;
-    
-    const clampedDiff = Math.max(minLimit, Math.min(maxLimit, diff));
+    const clampedDiff = Math.max(minLimit, Math.min(maxLimit, diffX));
+
     setOffsetX(clampedDiff);
   };
 
@@ -55,25 +67,24 @@ const NotificationCard: React.FC<Props> = ({
         "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)";
     }
 
-    if (offsetX >= threshold && !read) {
-      onRead();
-      setOffsetX(0);
-    } else if (offsetX <= -threshold) {
-      onDelete();
-      setOffsetX(0);
-    } else {
-      setOffsetX(0);
+    if (!isScroll.current) {
+      if (offsetX >= threshold && !read) {
+        onRead();
+      } else if (offsetX <= -threshold) {
+        onDelete();
+      }
     }
+    setOffsetX(0);
   };
 
   return (
     <div
-      className="relative overflow-hidden h-auto mb-4 select-none"
-      onMouseMove={(e) => onMove(e.clientX)}
+      className="relative overflow-hidden h-auto mb-4 select-none group"
+      onMouseMove={(e) => onMove(e.clientX, e.clientY)}
       onMouseUp={onEnd}
       onMouseLeave={onEnd}
     >
-      <div className="absolute inset-0 flex items-center justify-between rounded-2xl overflow-hidden pointer-events-none">
+      <div className="lg:hidden absolute inset-0 flex items-center justify-between rounded-2xl overflow-hidden pointer-events-none">
         <div
           className={`flex items-center justify-start pl-8 w-1/2 h-full bg-emerald-500 text-white transition-opacity ${offsetX > 20 ? "opacity-100" : "opacity-0"}`}
         >
@@ -98,12 +109,14 @@ const NotificationCard: React.FC<Props> = ({
 
       <div
         ref={containerRef}
-        onMouseDown={(e) => onStart(e.clientX)}
-        onTouchStart={(e) => onStart(e.touches[0].clientX)}
-        onTouchMove={(e) => onMove(e.touches[0].clientX)}
+        onMouseDown={(e) => onStart(e.clientX, e.clientY)}
+        onTouchStart={(e) =>
+          onStart(e.touches[0].clientX, e.touches[0].clientY)
+        }
+        onTouchMove={(e) => onMove(e.touches[0].clientX, e.touches[0].clientY)}
         onTouchEnd={onEnd}
         style={{ transform: `translateX(${offsetX}px)` }}
-        className={`relative z-10 bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 flex gap-4 items-start cursor-grab active:cursor-grabbing shadow-sm transition-colors`}
+        className={`relative z-10 bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 flex gap-4 items-start lg:cursor-default cursor-grab active:cursor-grabbing shadow-sm transition-colors lg:!transform-none`}
       >
         <div
           className={`flex-shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center ${visual.color}`}
@@ -134,6 +147,33 @@ const NotificationCard: React.FC<Props> = ({
           >
             {message}
           </p>
+        </div>
+
+        <div className="hidden lg:flex items-center gap-3 ml-4">
+          {!read && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onRead();
+              }}
+              className="w-10 h-10 rounded-full flex items-center justify-center text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 transition-colors"
+              title="Marcar como lida"
+            >
+              <span className="material-symbols-outlined text-2xl">
+                done_all
+              </span>
+            </button>
+          )}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete();
+            }}
+            className="w-10 h-10 rounded-full flex items-center justify-center text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors"
+            title="Apagar"
+          >
+            <span className="material-symbols-outlined text-2xl">delete</span>
+          </button>
         </div>
       </div>
     </div>

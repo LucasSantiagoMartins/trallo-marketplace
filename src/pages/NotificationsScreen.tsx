@@ -10,7 +10,6 @@ import {
   deleteNotification,
   clearAllNotifications,
 } from "@/services/notification.service";
-import { BASE_URL } from "@/api/endpoints";
 
 const NotificationsScreen: React.FC = () => {
   const {
@@ -19,7 +18,7 @@ const NotificationsScreen: React.FC = () => {
     newNotification,
   } = useNotifications() || {};
 
-  const [isPageLoading, setIsPageLoading] = useState(false);
+  const [isPageLoading] = useState(false);
 
   useEffect(() => {
     if (newNotification) {
@@ -68,7 +67,7 @@ const NotificationsScreen: React.FC = () => {
   if (isPageLoading) return <Loader size="lg" />;
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-900">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
       <div className="max-w-2xl mx-auto min-h-screen flex flex-col relative">
         <PageHeader
           title="Notificações"

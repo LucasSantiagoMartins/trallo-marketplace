@@ -1,16 +1,35 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
+import { ProductCategory } from "@/enums/product-category.enum";
+import { productCategoryLabel } from "@/utils/mappers/product-category.mapper";
+import { ProductStatus } from "@/types/product";
+import { productStatusLabel } from "@/utils/mappers/product.mapper";
+ 
 
 interface ProductFilterProps {
   onClose: () => void;
   isOpen: boolean;
+  currentCategory?: ProductCategory | "Todas";
+  currentStatus?: ProductStatus | "Todos";
+  onApply?: (filters: {
+    category: string;
+    status: string;
+    sortBy: string;
+  }) => void;
 }
 
 const OwnProductFilterDrawer: React.FC<ProductFilterProps> = ({
   onClose,
   isOpen,
+  currentCategory = "Todas",
+  currentStatus = "Todos",
+  onApply,
 }) => {
-  const [activeStatus, setActiveStatus] = useState("Todos");
-  const [activeCategory, setActiveCategory] = useState("Todas");
+  const [activeStatus, setActiveStatus] = useState<ProductStatus | "Todos">(
+    currentStatus,
+  );
+  const [activeCategory, setActiveCategory] = useState<
+    ProductCategory | "Todas"
+  >(currentCategory);
   const [sortBy, setSortBy] = useState("Preço");
   const [mounted, setMounted] = useState(false);
 
@@ -18,12 +37,27 @@ const OwnProductFilterDrawer: React.FC<ProductFilterProps> = ({
   const [currentY, setCurrentY] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
 
+  // Listas baseadas nos Enums e Mappers
+  const categories = Object.values(ProductCategory);
+  const statuses = Object.values(ProductStatus);
+
   const handleClose = () => {
     setMounted(false);
     setTimeout(() => {
       onClose();
       setCurrentY(0);
     }, 400);
+  };
+
+  const handleApply = () => {
+    if (onApply) {
+      onApply({
+        category: activeCategory,
+        status: activeStatus,
+        sortBy,
+      });
+    }
+    handleClose();
   };
 
   useEffect(() => {
@@ -62,15 +96,6 @@ const OwnProductFilterDrawer: React.FC<ProductFilterProps> = ({
   };
 
   if (!isOpen && !mounted) return null;
-
-  const categories = [
-    "Todas",
-    "Calçado",
-    "Eletrônicos",
-    "Acessórios",
-    "Roupas",
-  ];
-  const statuses = ["Todos", "Ativo", "Sem Stock", "Verificando"];
 
   return (
     <div className="fixed inset-0 z-[60] flex items-end md:items-center justify-center overflow-hidden touch-none">
@@ -136,6 +161,16 @@ const OwnProductFilterDrawer: React.FC<ProductFilterProps> = ({
               Estado
             </label>
             <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => setActiveStatus("Todos")}
+                className={`px-4 py-2.5 rounded-xl text-[11px] font-bold transition-all ${
+                  activeStatus === "Todos"
+                    ? "bg-primary text-white shadow-md shadow-primary/30"
+                    : "bg-gray-100 dark:bg-gray-800 text-slate-500"
+                }`}
+              >
+                Todos
+              </button>
               {statuses.map((status) => (
                 <button
                   key={status}
@@ -146,7 +181,7 @@ const OwnProductFilterDrawer: React.FC<ProductFilterProps> = ({
                       : "bg-gray-100 dark:bg-gray-800 text-slate-500"
                   }`}
                 >
-                  {status === "Verificando" ? "Em Verificação" : status}
+                  {productStatusLabel[status] || status}
                 </button>
               ))}
             </div>
@@ -157,6 +192,16 @@ const OwnProductFilterDrawer: React.FC<ProductFilterProps> = ({
               Categoria
             </label>
             <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar -mx-2 px-2">
+              <button
+                onClick={() => setActiveCategory("Todas")}
+                className={`px-4 py-2.5 rounded-xl text-[11px] font-bold whitespace-nowrap transition-all border-2 ${
+                  activeCategory === "Todas"
+                    ? "border-primary bg-primary/5 text-primary"
+                    : "border-transparent bg-gray-100 dark:bg-gray-800 text-slate-500"
+                }`}
+              >
+                Todas
+              </button>
               {categories.map((cat) => (
                 <button
                   key={cat}
@@ -167,7 +212,7 @@ const OwnProductFilterDrawer: React.FC<ProductFilterProps> = ({
                       : "border-transparent bg-gray-100 dark:bg-gray-800 text-slate-500"
                   }`}
                 >
-                  {cat}
+                  {productCategoryLabel[cat] || cat}
                 </button>
               ))}
             </div>
@@ -213,7 +258,7 @@ const OwnProductFilterDrawer: React.FC<ProductFilterProps> = ({
         </div>
 
         <button
-          onClick={handleClose}
+          onClick={handleApply}
           className="w-full bg-primary text-white py-4 rounded-2xl font-black uppercase tracking-[0.15em] text-[11px] shadow-lg shadow-primary/30 active:scale-95 transition-all"
         >
           Aplicar Filtros
