@@ -60,7 +60,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({
     });
 
     newSocket.on("connect", () => {
-      console.log("✅ Conectado ao Socket no Mobile/Desktop");
+      console.log("Conectado ao Socket no Mobile/Desktop");
     });
 
     newSocket.on("notification", (data: Notification) => {

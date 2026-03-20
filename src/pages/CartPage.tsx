@@ -5,7 +5,7 @@ import PageHeader from "../components/PageHeader";
 import CartItemCard from "../components/CartItemCard";
 import PaymentChoiceModal from "@/components/PaymentChoiceModal";
 import CheckoutModal from "@/components/CheckoutModal";
-import EmptyCartCard from "../components/EmptyCartCard";
+import EmptyState from "@/components/EmptyState";
 import CartTotalPanel from "../components/CartTotalPanel";
 import {
   getMyCart,
@@ -19,7 +19,6 @@ import { PaymentMethod, PaymentMode } from "@/enums/payment";
 import ConfirmAction from "@/components/ConfirmAction";
 import { useCart } from "@/hooks/use-cart";
 import { CartItemDto } from "@/dtos/cart";
-
 
 const CartPage: React.FC = () => {
   const navigate = useNavigate();
@@ -46,7 +45,7 @@ const CartPage: React.FC = () => {
           price: item.priceSnapshot,
           qty: item.quantity,
           image: `${BASE_UPLOAD_URL}/${item.product.coverImage}`,
-          availableQuantity: item.product.availableQuantity
+          availableQuantity: item.product.availableQuantity,
         }));
         setItems(formattedItems);
       }
@@ -185,8 +184,12 @@ const CartPage: React.FC = () => {
             </div>
           ))
         ) : (
-          <div className="animate-in fade-in duration-500">
-            <EmptyCartCard />
+          <div className="animate-in fade-in duration-500 pt-10">
+            <EmptyState
+              icon="shopping_cart"
+              title="Teu carrinho está vazio"
+              description="Parece que ainda não adicionaste nenhum produto ao teu carrinho. Explora os nossos produtos e encontra o que precisas."
+            />
           </div>
         )}
       </main>

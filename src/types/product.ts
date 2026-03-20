@@ -1,3 +1,5 @@
+import { ProductCategory } from "@/enums/product-category.enum";
+
 export enum ProductCondition {
   NEW = "NEW",
   SEMI_NEW = "SEMI_NEW",
@@ -65,9 +67,10 @@ export interface SearchedProductDTO {
   id: string;
   name: string;
   description: string;
-  category?: string;
   price: number;
   condition: ProductCondition;
+  category?: ProductCategory;
+  details: Record<string, any>;
   status: ProductStatus;
   coverImage: string;
   slug: string;

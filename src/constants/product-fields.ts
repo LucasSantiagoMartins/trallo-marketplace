@@ -61,3 +61,17 @@ export const PRODUCT_CATEGORY_FIELDS: Record<ProductCategory, DynamicField[]> = 
     [ProductCategory.CONSTRUCTION_AND_TOOLS]: [],
     [ProductCategory.OFFICE_AND_STATIONERY]: [],
 };
+
+export const getLabelByFieldName = (name: string, category?: ProductCategory): string => {
+    if (category && PRODUCT_CATEGORY_FIELDS[category]) {
+        const field = PRODUCT_CATEGORY_FIELDS[category].find((f) => f.name === name);
+        if (field) return field.label;
+    }
+
+    for (const fields of Object.values(PRODUCT_CATEGORY_FIELDS)) {
+        const field = fields.find((f) => f.name === name);
+        if (field) return field.label;
+    }
+
+    return name.charAt(0).toUpperCase() + name.slice(1);
+};

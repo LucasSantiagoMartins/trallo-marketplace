@@ -5,7 +5,7 @@ interface LoaderProps {
   className?: string;
 }
 
-const Loader: React.FC<LoaderProps> = ({ size = "md", className = "" }) => {
+const LoaderAnimation: React.FC<LoaderProps> = ({ size = "md", className = "" }) => {
   const sizeClasses = {
     sm: "size-6 border-2",
     md: "size-8 border-4",
@@ -23,4 +23,4 @@ const Loader: React.FC<LoaderProps> = ({ size = "md", className = "" }) => {
   );
 };
 
-export default Loader;
+export default LoaderAnimation;

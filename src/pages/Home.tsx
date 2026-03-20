@@ -1,4 +1,3 @@
-// @/pages/Home.tsx
 import React, { useState, useMemo, useEffect } from "react";
 import MobileLayout from "@/layouts/MobileLayout";
 import Header from "@/components/Header";
@@ -12,7 +11,8 @@ import TralloButton from "@/components/TralloButton";
 import { useCart } from "@/hooks/use-cart";
 import { useProducts } from "@/hooks/use-products";
 import { useAuth } from "@/context/AuthContext";
-import { Loader } from "lucide-react";
+import LoaderAnimation from "@/components/Loader";
+import EmptyState from "@/components/EmptyState";
 
 const carouselSlides = [
   {
@@ -51,22 +51,6 @@ const carouselSlides = [
   },
 ];
 
-const EmptyState = () => (
-  <div className="col-span-full flex flex-col items-center justify-center py-20 px-4 text-center animate-in fade-in zoom-in duration-500">
-    <div className="size-24 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-6">
-      <span className="material-symbols-outlined text-5xl text-muted-foreground">
-        search_off
-      </span>
-    </div>
-    <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
-      Nenhum produto encontrado
-    </h3>
-    <p className="text-muted-foreground max-w-xs mx-auto">
-      Não conseguimos encontrar o que procuras. Tenta escrever de outra forma ou
-      ver os filtros que aplicaste.
-    </p>
-  </div>
-);
 
 const Home: React.FC = () => {
   const { user } = useAuth();
@@ -172,7 +156,7 @@ const Home: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4 md:px-6 lg:px-8 py-4">
           {loading ? (
-            <Loader />
+            <LoaderAnimation />
           ) : currentProducts.length > 0 ? (
             currentProducts.map((product) => (
               <ProductCard
