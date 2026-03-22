@@ -106,6 +106,13 @@ const SecurityVerificationModal: React.FC<SecurityVerificationModalProps> = ({
           buttonText: "Atualizar Banco",
           icon: "account_balance",
         };
+      case VerificationType.DISABLE_SECURE:
+        return {
+          title: "Desativar Segurança",
+          desc: `Confirme o código enviado${deliveryMethod} para desativar as camadas de proteção da sua conta`,
+          buttonText: "Confirmar Desativação",
+          icon: "lock_open_right",
+        };
       case VerificationType.LOGIN:
       default:
         return {

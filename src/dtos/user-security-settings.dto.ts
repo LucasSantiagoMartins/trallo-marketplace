@@ -12,6 +12,7 @@ export interface UpdateSecuritySettingsDTO {
     twoFactorMethod?: TwoFactorMethod;
     secureLogin?: boolean;
     secureOperations?: boolean;
+    code?: string;
 }
 
 export interface ApiResponse<T> {

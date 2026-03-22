@@ -62,6 +62,8 @@ const SettingsScreen: React.FC = () => {
   const [tempTwoFAMethod, setTempTwoFAMethod] =
     useState<TwoFactorMethod>("EMAIL");
 
+  const [pendingPayload, setPendingPayload] = useState<any>(null);
+
   useEffect(() => {
     loadSecuritySettings();
   }, []);
@@ -81,12 +83,39 @@ const SettingsScreen: React.FC = () => {
   };
 
   const handleConfirmSecurityUpdate = async (payload: any) => {
+    const isDisablingLogin = user?.secureLogin === true && payload.secureLogin === false;
+    const isDisablingOps = user?.secureOperations === true && payload.secureOperations === false;
+
+    if (isDisablingLogin || isDisablingOps) {
+      setIsUpdatingSecurity(true);
+      try {
+        const res = await requestCode(VerificationType.DISABLE_SECURE);
+        if (res.success) {
+          setPendingPayload(payload);
+          setIs2FASheetOpen(false);
+          setIsMfaOpen(true);
+        } else {
+          toast.error(res.message || "Erro ao solicitar código.");
+        }
+      } catch (err) {
+        toast.error("Falha ao enviar código de verificação.");
+      } finally {
+        setIsUpdatingSecurity(false);
+      }
+      return;
+    }
+
+    await submitSecurityUpdate(payload);
+  };
+
+  const submitSecurityUpdate = async (payload: any, code?: string) => {
     setIsUpdatingSecurity(true);
     try {
       const response = await updateUserSecuritySettings({
         twoFactorMethod: payload.twoFactorMethod,
         secureLogin: payload.secureLogin,
         secureOperations: payload.secureOperations,
+        code,
       });
 
       if (response.success) {
@@ -100,12 +129,15 @@ const SettingsScreen: React.FC = () => {
             ...user,
             secureLogin: response.data.secureLogin,
             secureOperations: response.data.secureOperations,
+            twoFactorMethod: response.data.twoFactorMethod,
           };
           setUser(updatedUser as any);
           localStorage.setItem("user_session", JSON.stringify(updatedUser));
         }
 
         setIs2FASheetOpen(false);
+        setIsMfaOpen(false);
+        setPendingPayload(null);
         toast.success(
           response.message ?? "Configurações de segurança atualizadas",
         );
@@ -152,6 +184,14 @@ const SettingsScreen: React.FC = () => {
       toast.error(err.message || "Erro ao eliminar conta");
     } finally {
       setIsDeleting(false);
+    }
+  };
+
+  const handleMfaSubmit = async (code: string) => {
+    if (pendingPayload) {
+      await submitSecurityUpdate(pendingPayload, code);
+    } else {
+      await handleFinalDelete(code);
     }
   };
 
@@ -336,10 +376,17 @@ const SettingsScreen: React.FC = () => {
 
       <SecurityVerificationModal
         isOpen={isMfaOpen}
-        onClose={() => setIsMfaOpen(false)}
-        onSubmit={handleFinalDelete}
-        isLoading={isDeleting}
-        type={VerificationType.DELETE_ACCOUNT}
+        onClose={() => {
+          setIsMfaOpen(false);
+          setPendingPayload(null);
+        }}
+        onSubmit={handleMfaSubmit}
+        isLoading={isDeleting || isUpdatingSecurity}
+        type={
+          pendingPayload
+            ? VerificationType.DISABLE_SECURE
+            : VerificationType.DELETE_ACCOUNT
+        }
       />
     </div>
   );
