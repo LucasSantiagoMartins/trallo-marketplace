@@ -1,5 +1,5 @@
 import React from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import PageHeader from "../components/PageHeader";
 import BottomNavigation from "../components/BottomNavigation";
 import { OrderDTO } from "@/dtos/order";
@@ -12,16 +12,23 @@ import { OrderStatus } from "@/enums/order-status";
 import { BASE_UPLOAD_URL } from "@/api/endpoints";
 import { getPaymentMethodLabel } from "@/utils/mappers/payment.mappers";
 import { formatDateFriendly } from "@/utils/date";
+import MobileLayout from "@/layouts/MobileLayout";
+import EmptyState from "@/components/EmptyState";
 
 const OrderDetail: React.FC = () => {
   const location = useLocation();
   const order = location.state?.order as OrderDTO;
+  const navigate = useNavigate();
 
   if (!order) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f6f5f8] dark:bg-[#141022]">
-        <p className="text-gray-500 font-medium">Pedido não encontrado.</p>
-      </div>
+      <MobileLayout>
+        <EmptyState
+          icon="receipt_long"
+          title="Pedido não localizado"
+          description="Não encontramos informações sobre este pedido no momento."
+        />
+      </MobileLayout>
     );
   }
 

@@ -15,6 +15,7 @@ import ProductMainInfo from "@/components/ProductMainInfo";
 import ProductDescription from "@/components/ProductDescription";
 import { useProductGallery } from "@/hooks/useProductGallery";
 import ProductDetailModals from "@/components/ProductDetailModals";
+import EmptyState from "@/components/EmptyState";
 
 const ProductDetails: React.FC = () => {
   const { slug } = useParams<{ slug?: string }>();
@@ -77,20 +78,7 @@ const ProductDetails: React.FC = () => {
   if (!product)
     return (
       <MobileLayout>
-        <div className="flex flex-col items-center justify-center h-screen text-muted-foreground p-4 text-center">
-          <span className="material-symbols-outlined text-6xl mb-4 opacity-20">
-            inventory_2
-          </span>
-          <p className="font-medium">
-            Produto não encontrado ou link expirado.
-          </p>
-          <button
-            onClick={() => navigate("/")}
-            className="mt-4 text-primary font-bold bg-primary/10 px-6 py-2 rounded-full"
-          >
-            Voltar para a Home
-          </button>
-        </div>
+        <EmptyState />
       </MobileLayout>
     );
 

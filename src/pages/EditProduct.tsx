@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import MobileLayout from "@/layouts/MobileLayout";
 import PageHeader from "@/components/PageHeader";
@@ -12,6 +12,7 @@ import QuantitySelector from "@/components/QuantitySelector";
 import ConditionModal from "@/components/ConditionModal";
 import CategoryDrawer from "@/components/CategoryDrawer";
 import BottomNavigation from "@/components/BottomNavigation";
+import EmptyState from "@/components/EmptyState";
 
 import { BASE_UPLOAD_URL } from "@/api/endpoints";
 import { PRODUCT_CONDITIONS } from "@/constants/product-options";
@@ -25,6 +26,7 @@ import { useProductUiStates } from "@/hooks/use-product-ui-states";
 
 const EditProduct: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const productFromState = location.state?.product as ProductDTO;
 
@@ -108,6 +110,19 @@ const EditProduct: React.FC = () => {
   const selectedConditionLabel =
     PRODUCT_CONDITIONS.find((c) => c.value === formData.condition)?.label ||
     "Selecionar";
+
+  if (!productFromState) {
+    return (
+      <MobileLayout>
+        <EmptyState
+          icon="edit_off"
+          title="Erro ao carregar edição"
+          description="Ocorreu um problema ao carregar os dados para edição. Certifique-se de que o produto ainda existe."
+        />
+        <BottomNavigation />
+      </MobileLayout>
+    );
+  }
 
   return (
     <MobileLayout className="pb-0 bg-white dark:bg-slate-950">
