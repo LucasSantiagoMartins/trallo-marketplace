@@ -172,8 +172,8 @@ const ProductDetails: React.FC = () => {
             <ProductDescription
               description={product.description}
               details={product.details}
-            />
-            {user?.role !== UserRole.SELLER && (
+              />
+            {user?.role === UserRole.BUYER && (
               <div className="pt-4">
                 <button
                   disabled={(product.stock?.availableQuantity || 0) <= 0}
