@@ -38,7 +38,7 @@ export interface ProductDTO {
   coverImage: string;
   images: string[];
   stock: ProductStockDTO;
-  productDetails: Record<string, any>;
+  details: Record<string, any>;
 }
 
 export interface PendingVerificationDTO {

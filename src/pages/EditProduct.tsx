@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import React, { useState, useEffect, useRef, useMemo } from "react";
+import { useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
 import MobileLayout from "@/layouts/MobileLayout";
 import PageHeader from "@/components/PageHeader";
@@ -11,21 +11,26 @@ import PriceInput from "@/components/PriceInput";
 import QuantitySelector from "@/components/QuantitySelector";
 import ConditionModal from "@/components/ConditionModal";
 import CategoryDrawer from "@/components/CategoryDrawer";
+import BottomNavigation from "@/components/BottomNavigation";
+
 import { BASE_UPLOAD_URL } from "@/api/endpoints";
 import { PRODUCT_CONDITIONS } from "@/constants/product-options";
 import { getFieldsByCategory } from "@/utils/product-utils";
-import BottomNavigation from "@/components/BottomNavigation";
 import { ProductDTO } from "@/types/product";
-import { updateProduct } from "@/services/product.service";
 import { ProductCategory } from "@/enums/product-category.enum";
 import { productCategoryLabel } from "@/utils/mappers/product-category.mapper";
 
+import { useProductUpdate } from "@/hooks/use-product-update";
+import { useProductUiStates } from "@/hooks/use-product-ui-states";
+
 const EditProduct: React.FC = () => {
-  const navigate = useNavigate();
   const location = useLocation();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const productFromState = location.state?.product as ProductDTO;
 
-  const [loading, setLoading] = useState(false);
+  const { handleUpdate, loading } = useProductUpdate();
+  const { states, actions } = useProductUiStates();
+
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -39,15 +44,7 @@ const EditProduct: React.FC = () => {
   const [images, setImages] = useState<string[]>([]);
   const [fileObjects, setFileObjects] = useState<(File | string)[]>([]);
 
-  const [showConditionModal, setShowConditionModal] = useState(false);
-  const [showCategoryDrawer, setShowCategoryDrawer] = useState(false);
-  const [isClosingCategory, setIsClosingCategory] = useState(false);
-  const [isClosingCondition, setIsClosingCondition] = useState(false);
-  const [isOpeningCategory, setIsOpeningCategory] = useState(false);
-  const [isOpeningCondition, setIsOpeningCondition] = useState(false);
-
   useEffect(() => {
-    const productFromState = location.state?.product as ProductDTO;
     if (productFromState) {
       setFormData({
         name: productFromState.name,
@@ -56,11 +53,10 @@ const EditProduct: React.FC = () => {
         category: productFromState.category as ProductCategory,
         condition: productFromState.condition,
         stockQuantity: productFromState.stock.availableQuantity,
-        specifications: productFromState.productDetails || {},
+        specifications: productFromState.details || {},
       });
 
       let productImages = [...(productFromState.images || [])];
-
       if (
         productFromState.coverImage &&
         !productImages.includes(productFromState.coverImage)
@@ -69,50 +65,14 @@ const EditProduct: React.FC = () => {
       }
 
       if (productImages.length > 0) {
-        const fullImageUrls = productImages.map((img) =>
+        const fullUrls = productImages.map((img) =>
           img.startsWith("http") ? img : BASE_UPLOAD_URL + img,
         );
-        setImages(fullImageUrls);
+        setImages(fullUrls);
         setFileObjects(productImages);
       }
     }
-  }, [location.state]);
-
-  useEffect(() => {
-    document.body.style.overflow =
-      showConditionModal || showCategoryDrawer ? "hidden" : "unset";
-    return () => {
-      document.body.style.overflow = "unset";
-    };
-  }, [showConditionModal, showCategoryDrawer]);
-
-  const openCategoryDrawer = () => {
-    setShowCategoryDrawer(true);
-    setIsOpeningCategory(true);
-    setTimeout(() => setIsOpeningCategory(false), 10);
-  };
-
-  const openConditionModal = () => {
-    setShowConditionModal(true);
-    setIsOpeningCondition(true);
-    setTimeout(() => setIsOpeningCondition(false), 10);
-  };
-
-  const closeCategoryDrawer = () => {
-    setIsClosingCategory(true);
-    setTimeout(() => {
-      setShowCategoryDrawer(false);
-      setIsClosingCategory(false);
-    }, 500);
-  };
-
-  const closeConditionModal = () => {
-    setIsClosingCondition(true);
-    setTimeout(() => {
-      setShowConditionModal(false);
-      setIsClosingCondition(false);
-    }, 500);
-  };
+  }, [productFromState]);
 
   const updateField = (field: string, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -128,126 +88,26 @@ const EditProduct: React.FC = () => {
     }));
   };
 
-  const handleSubmit = async () => {
-    const productFromState = location.state?.product as ProductDTO;
+  const handleSubmit = () => {
+    if (!productFromState)
+      return toast.error("Erro ao recuperar dados do produto.");
+    if (!formData.name.trim())
+      return toast.error("Por favor, informe o nome do produto.");
+    if (!formData.price || formData.price === "0")
+      return toast.error("Defina o preço de venda.");
 
-    if (!productFromState) {
-      toast.error("Erro ao recuperar dados do produto.");
-      return;
-    }
-
-    if (!formData.name.trim()) {
-      toast.error("Por favor, informe o nome do produto.");
-      return;
-    }
-
-    if (!formData.price || formData.price === "0") {
-      toast.error("Faltou definir o preço de venda do produto.");
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const form = new FormData();
-      let hasChanges = false;
-
-      if (formData.name !== productFromState.name) {
-        form.append("name", formData.name);
-        hasChanges = true;
-      }
-
-      if (formData.description !== (productFromState.description || "")) {
-        form.append("description", formData.description);
-        hasChanges = true;
-      }
-
-      const numericPrice = Number(formData.price.replace(/\D/g, ""));
-      if (numericPrice !== productFromState.price) {
-        form.append("price", String(numericPrice));
-        hasChanges = true;
-      }
-
-      if (formData.category !== productFromState.category) {
-        form.append("category", formData.category);
-        hasChanges = true;
-      }
-
-      if (formData.condition !== productFromState.condition) {
-        form.append("condition", formData.condition);
-        hasChanges = true;
-      }
-
-      if (formData.stockQuantity !== productFromState.stock.availableQuantity) {
-        form.append("stockQuantity", String(formData.stockQuantity));
-        hasChanges = true;
-      }
-
-      if (
-        JSON.stringify(formData.specifications) !==
-        JSON.stringify(productFromState.productDetails)
-      ) {
-        form.append("productDetails", JSON.stringify(formData.specifications));
-        hasChanges = true;
-      }
-
-      const newFiles = fileObjects.filter(
-        (file) => file instanceof File,
-      ) as File[];
-
-      const existingImagesRemaining = fileObjects.filter(
-        (file) => typeof file === "string",
-      ) as string[];
-
-      let originalImages = [...(productFromState.images || [])];
-      if (
-        productFromState.coverImage &&
-        !originalImages.includes(productFromState.coverImage)
-      ) {
-        originalImages = [productFromState.coverImage, ...originalImages];
-      }
-
-      if (newFiles.length > 0) {
-        newFiles.forEach((file) => {
-          form.append("images", file);
-        });
-        hasChanges = true;
-      }
-
-      const removedImages = originalImages.filter(
-        (img) => !existingImagesRemaining.includes(img),
-      );
-
-      if (removedImages.length > 0) {
-        form.append("removedImages", JSON.stringify(removedImages));
-        hasChanges = true;
-      }
-
-      if (!hasChanges) {
-        toast("Nenhuma alteração detectada.", { icon: "ℹ️" });
-        setLoading(false);
-        return;
-      }
-
-      const res = await updateProduct(productFromState.id, form as any);
-
-      if (res.success) {
-        toast.success(res.message ?? "Produto atualizado com sucesso.");
-        navigate("/meus-produtos");
-      }
-    } catch (err: any) {
-      toast.error(err.message ?? "Erro ao conectar ao servidor.");
-    } finally {
-      setLoading(false);
-    }
+    handleUpdate(productFromState.id, formData, fileObjects, productFromState);
   };
+
+  const dynamicFields = useMemo(() => {
+    return formData.category
+      ? getFieldsByCategory(formData.category as ProductCategory)
+      : [];
+  }, [formData.category]);
 
   const selectedConditionLabel =
     PRODUCT_CONDITIONS.find((c) => c.value === formData.condition)?.label ||
     "Selecionar";
-
-  const dynamicFields = formData.category
-    ? getFieldsByCategory(formData.category as ProductCategory)
-    : [];
 
   return (
     <MobileLayout className="pb-0 bg-white dark:bg-slate-950">
@@ -266,8 +126,10 @@ const EditProduct: React.FC = () => {
                 onUpload={(e) => {
                   const files = Array.from(e.target.files || []);
                   setFileObjects((prev) => [...prev, ...files]);
-                  const urls = files.map((f) => URL.createObjectURL(f));
-                  setImages((prev) => [...prev, ...urls]);
+                  setImages((prev) => [
+                    ...prev,
+                    ...files.map((f) => URL.createObjectURL(f)),
+                  ]);
                 }}
                 onRemove={(idx) => {
                   setImages((prev) => prev.filter((_, i) => i !== idx));
@@ -283,8 +145,8 @@ const EditProduct: React.FC = () => {
               <ClassificationDetails
                 category={formData.category}
                 condition={selectedConditionLabel}
-                onOpenCategory={openCategoryDrawer}
-                onOpenCondition={openConditionModal}
+                onOpenCategory={actions.openCategory}
+                onOpenCondition={actions.openCondition}
               />
             </div>
           </div>
@@ -309,14 +171,13 @@ const EditProduct: React.FC = () => {
               <div className="flex-1 w-full">
                 <PriceInput
                   value={formData.price}
-                  onChange={(value) => updateField("price", value)}
                   title="Preço de Venda"
+                  onChange={(val) => updateField("price", val)}
                 />
               </div>
-
               <div className="flex flex-col gap-2 shrink-0 w-fit">
                 <label className="text-[10px] font-black text-slate-400 uppercase ml-1 tracking-widest">
-                  Estoque Disponível
+                  Estoque
                 </label>
                 <QuantitySelector
                   value={formData.stockQuantity}
@@ -333,22 +194,29 @@ const EditProduct: React.FC = () => {
             {dynamicFields.length > 0 && (
               <div className="pt-4 space-y-4 border-t border-slate-100 dark:border-slate-800 animate-in fade-in slide-in-from-top-2">
                 <label className="text-[10px] font-black text-slate-400 uppercase ml-1 tracking-widest">
-                  Especificações  de{" "}
+                  Especificações de{" "}
                   {formData.category
                     ? productCategoryLabel[formData.category as ProductCategory]
                     : ""}
                 </label>
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {dynamicFields.map((field) => (
-                    <TralloInput
-                      key={field.name}
-                      label={`${field.label}${field.required === false ? " (opcional)" : ""}`}
-                      placeholder={field.placeholder}
-                      type={field.type}
-                      value={formData.specifications[field.name] || ""}
-                      onChange={(val) => updateSpecField(field.name, val)}
-                    />
-                  ))}
+                  {dynamicFields.map((field) => {
+                    const fieldValue =
+                      formData.specifications[field.name] ??
+                      formData.specifications[field.label] ??
+                      "";
+                    return (
+                      <TralloInput
+                        key={field.name}
+                        label={`${field.label}${field.required === false ? " (opcional)" : ""}`}
+                        placeholder={field.placeholder}
+                        type={field.type}
+                        value={String(fieldValue)}
+                        onChange={(val) => updateSpecField(field.name, val)}
+                      />
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -370,31 +238,28 @@ const EditProduct: React.FC = () => {
       <BottomNavigation />
 
       <ConditionModal
-        isOpen={showConditionModal}
-        isOpening={isOpeningCondition}
-        isClosing={isClosingCondition}
+        isOpen={states.showConditionModal}
+        isOpening={states.isOpeningCondition}
+        isClosing={states.isClosingCondition}
         selectedCondition={formData.condition}
-        onClose={closeConditionModal}
+        onClose={actions.closeCondition}
         onSelect={(val) => updateField("condition", val)}
       />
-      <CategoryDrawer
-        isOpen={showCategoryDrawer}
-        isOpening={isOpeningCategory}
-        isClosing={isClosingCategory}
-        selectedCategory={formData.category}
-        onClose={closeCategoryDrawer}
-        onSelect={(val) => {
-          const productFromState = location.state?.product as ProductDTO;
-          updateField("category", val);
 
-          if (productFromState && val === productFromState.category) {
-            updateField(
-              "specifications",
-              productFromState.productDetails || {},
-            );
-          } else {
-            updateField("specifications", {});
-          }
+      <CategoryDrawer
+        isOpen={states.showCategoryDrawer}
+        isOpening={states.isOpeningCategory}
+        isClosing={states.isClosingCategory}
+        selectedCategory={formData.category}
+        onClose={actions.closeCategory}
+        onSelect={(val) => {
+          updateField("category", val);
+          updateField(
+            "specifications",
+            val === productFromState?.category
+              ? productFromState.details || {}
+              : {},
+          );
         }}
       />
     </MobileLayout>
