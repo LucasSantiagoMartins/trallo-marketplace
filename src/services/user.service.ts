@@ -103,8 +103,8 @@ export async function deleteMyAccount(code: string): Promise<ApiResponse<void>> 
   });
 }
 
-export async function getUserProfile(slug: string): Promise<ApiResponse<UserProfileDTO>> {
-  return http.get<UserProfileDTO>(endpoints.users.profile(slug)
+export async function getSellerProfile(slug: string): Promise<ApiResponse<UserProfileDTO>> {
+  return http.get<UserProfileDTO>(endpoints.users.sellerProfile(slug)
   );
 }
 

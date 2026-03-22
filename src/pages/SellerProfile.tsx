@@ -6,7 +6,7 @@ import { BASE_UPLOAD_URL } from "@/api/endpoints";
 import { SearchedProductDTO } from "@/types/product";
 import ProductCard from "@/components/ProductCard";
 import ReviewItem from "@/components/reviewItem";
-import { getUserProfile, reviewUser } from "@/services/user.service";
+import { getSellerProfile, reviewUser } from "@/services/user.service";
 import { sellerProducts } from "@/services/product.service";
 import toast from "react-hot-toast";
 import Loader from "@/components/Loader";
@@ -29,7 +29,7 @@ const SellerProfileScreen: React.FC = () => {
       setLoading(true);
       try {
         const [profileRes, productsRes] = await Promise.all([
-          getUserProfile(sellerSlug),
+          getSellerProfile(sellerSlug),
           sellerProducts(sellerSlug),
         ]);
 

@@ -4,7 +4,7 @@ import { Star, CheckCircle2 } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import TralloInput from "@/components/TralloInput";
 import TralloButton from "@/components/TralloButton";
-import { getUserProfile, reviewUser } from "@/services/user.service";
+import { getSellerProfile, reviewUser } from "@/services/user.service";
 import { BASE_UPLOAD_URL } from "@/api/endpoints";
 import toast from "react-hot-toast";
 import Loader from "@/components/Loader";
@@ -25,7 +25,7 @@ const RateSeller: React.FC = () => {
     const fetchSeller = async () => {
       if (!sellerSlug) return;
       try {
-        const response = await getUserProfile(sellerSlug);
+        const response = await getSellerProfile(sellerSlug);
         if (response.data) {
           setSellerData(response.data.user);
         }
