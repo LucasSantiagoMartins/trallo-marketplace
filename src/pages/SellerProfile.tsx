@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import BottomNavigation from "../components/BottomNavigation";
 import PageHeader from "../components/PageHeader";
 import { BASE_UPLOAD_URL } from "@/api/endpoints";
@@ -10,12 +10,14 @@ import { getUserProfile, reviewUser } from "@/services/user.service";
 import { sellerProducts } from "@/services/product.service";
 import toast from "react-hot-toast";
 import Loader from "@/components/Loader";
+import MobileLayout from "@/layouts/MobileLayout";
+import EmptyState from "@/components/EmptyState";
 
 const SellerProfileScreen: React.FC = () => {
   const { sellerSlug } = useParams<{ sellerSlug: string }>();
   const [activeReviewIndex, setActiveReviewIndex] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
-
+  const navigate = useNavigate();
   const [profileData, setProfileData] = useState<any>(null);
   const [listings, setListings] = useState<SearchedProductDTO[]>([]);
   const [loading, setLoading] = useState(true);
@@ -33,8 +35,8 @@ const SellerProfileScreen: React.FC = () => {
 
         if (profileRes.data) setProfileData(profileRes.data);
         if (productsRes.data) setListings(productsRes.data);
-      } catch (err: any) {
-        toast.error(err.message ?? "Erro ao buscar dados do vendedor");
+      } catch (err) {
+        // toast.error(err.message ?? "Erro ao buscar dados do vendedor");
       } finally {
         setLoading(false);
       }
@@ -49,7 +51,7 @@ const SellerProfileScreen: React.FC = () => {
     setIsSubmittingReview(true);
     try {
       await reviewUser({
-        orderId: "fake-order-id-123", 
+        orderId: "fake-order-id-123",
         rating: 5,
         comment: "Excelente vendedor! (Avaliação de teste)",
       });
@@ -77,9 +79,15 @@ const SellerProfileScreen: React.FC = () => {
 
   if (!profileData || !profileData.user) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        Vendedor não encontrado.
-      </div>
+      <MobileLayout>
+        <EmptyState
+          icon="storefront"
+          title="Vendedor não encontrado"
+          description="O perfil que você está tentando acessar não existe ou foi removido da plataforma."
+          buttonText="Voltar ao Início"
+          onAction={() => navigate("/")}
+        />
+      </MobileLayout>
     );
   }
 
