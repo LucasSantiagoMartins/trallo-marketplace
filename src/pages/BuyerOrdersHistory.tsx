@@ -7,6 +7,7 @@ import SegmentedControl from "../components/SegmentedControl";
 import { OrderStatus } from "@/enums/order-status";
 import { OrderDTO } from "@/dtos/order";
 import { orderService } from "@/services/order.service";
+import LoaderAnimation from "@/components/Loader";
 
 const BuyerOrdersHistory: React.FC = () => {
   const [orders, setOrders] = useState<OrderDTO[]>([]);
@@ -79,10 +80,7 @@ const BuyerOrdersHistory: React.FC = () => {
 
             <div className="grid grid-cols-1 gap-4">
               {loading ? (
-                <div className="py-20 text-center">
-                  <div className="animate-spin size-8 border-4 border-[#6d3ff8] border-t-transparent rounded-full mx-auto mb-4" />
-                  <p className="opacity-50">Carregando pedidos...</p>
-                </div>
+                <LoaderAnimation />
               ) : filteredOrders.length > 0 ? (
                 <>
                   {filteredOrders.map((order) => (

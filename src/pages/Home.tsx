@@ -13,43 +13,7 @@ import { useProducts } from "@/hooks/use-products";
 import { useAuth } from "@/context/AuthContext";
 import LoaderAnimation from "@/components/Loader";
 import EmptyState from "@/components/EmptyState";
-
-const carouselSlides = [
-  {
-    id: "1",
-    tag: "Flash Sale",
-    title: "Upgrade na Tua Tech",
-    description: "Até 40% de desconto em marcas selecionadas.",
-    buttonText: "Comprar Agora",
-    backgroundImage:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuBqBKnC1iFzRCrpxblgAR9g7ApfnIcuxXVrJqPuUmiGkvCHHK4R0OfN3CeYPpladZr4dZ5MPx7dM9jrAdCMPP7xrsn97fEBVT-E64HHy7IVn2WfddoP0oQO2WQMXClIhkk-I_znqZYzXZsrqVPbe7wYpuOJYY-ybDsUUOFhA1dv4sYWMvLyy3S5gyJQTHQKkVQAb0CY3xrYTgvjQfbPBY3-vEThDYfpAMJ_rj9JRQ-n61NKrneUuWVayiH0YuZckjcLFpLx3eVD5-t0",
-    backgroundColor: "hsl(262 91% 61% / 0.9)",
-    tagColor: "bg-white/20",
-  },
-  {
-    id: "2",
-    tag: "Nova Coleção",
-    title: "Streetwear Urbano",
-    description: "As tendências que definem a nova geração.",
-    buttonText: "Descobrir",
-    backgroundImage:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuAwWNRSRV-vhDK_O-WwxrH4mER9ke5XEZdkhLjjGj7ZKpR4spPOICV9S2orOaCJEZ7vX4j639Y_5szAWdMUMv29XQ86s-83v_K5K35JGhSPv16yqJHjLT1FqWI499MkcY49u9PrEAf47-HEH-c6vel5-XZNB_yC8iMVQv8Ajcz7uyF7K02AA6DDN3QuuRejeEsOsQycQhip9eWEVNFTI7jbSVkxBTerZ1QBiYMYMX3kKB72p0NW7VV8SLXCioZq2zeXz6PHiI-wbO1w",
-    backgroundColor: "#0f172a",
-    tagColor: "bg-primary",
-  },
-  {
-    id: "3",
-    tag: "Exclusivo",
-    title: "Kicks de Elite",
-    description: "Stock limitado dos modelos mais desejados.",
-    buttonText: "Ver Modelos",
-    backgroundImage:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuDbLs-oQQ8uPfpiFlz5Vb7UiOi9wcT0EAXXGlEtLF5ph5vi3N_Dszys--bS4mLVO9DZl_GiEbIxKh3FnQTVn35xkXJ-m1ovS5_ftpH1svw0f6AdXIYFzbLi-u-uwSl5DvddJ6AS4VDwMHuSZi8QOBOrob8wnNf2yfAR1NWe4Zq1NY_BSmwbYdnfV66w8CXRlQrY8T5Xc2h4NQq46r0gJRSg7EEuxGmmN-2eVHn4XBtKY1Qkse5u6WwdGwI-NaX_-ilma79qBnKWcCjq",
-    backgroundColor: "#ea580c",
-    tagColor: "bg-black/20",
-    buttonColor: "bg-white text-orange-600",
-  },
-];
+import { carouselSlides } from "@/constants/carousel-slides";
 
 
 const Home: React.FC = () => {
@@ -166,7 +130,11 @@ const Home: React.FC = () => {
               />
             ))
           ) : (
-            <EmptyState />
+            <EmptyState
+              icon="inventory_2"
+              title="Sem produtos"
+              description="Não foi possível carregar produtos no momento."
+            />
           )}
         </div>
 

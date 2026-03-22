@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { SearchedProductDTO } from "@/types/product";
 import { BASE_UPLOAD_URL } from "@/api/endpoints";
@@ -20,9 +20,9 @@ interface ProductCardProps {
 const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   const isBuyer = user?.role === UserRole.BUYER;
-
   const displayImage = `${BASE_UPLOAD_URL}${product.coverImage}`;
 
   const handleAddToCart = (e: React.MouseEvent) => {
@@ -40,7 +40,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
       onClick={handleNavigate}
       className="group relative bg-white rounded-3xl overflow-hidden transition-all duration-500 hover:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.1)] border border-slate-100 flex flex-col w-full cursor-pointer"
     >
-      <div className="relative aspect-square max-h-[220px] overflow-hidden bg-slate-50">
+      <div className="relative aspect-square max-h-[220px] overflow-hidden bg-slate-100">
+        {!imageLoaded && (
+          <div className="absolute inset-0 z-10 animate-pulse bg-gradient-to-r from-slate-100 via-slate-200 to-slate-100 bg-[length:200%_100%] animate-[shimmer_1.5s_infinite]" />
+        )}
+
         <img
           src={displayImage}
           alt={product.name}
@@ -48,13 +52,17 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
           decoding="async"
           width={400}
           height={400}
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+          onLoad={() => setImageLoaded(true)}
+          className={`w-full h-full object-cover transition-all duration-700 group-hover:scale-110 ${
+            imageLoaded ? "opacity-100" : "opacity-0"
+          }`}
           onError={(e) => {
             e.currentTarget.src = "/placeholder-product.png";
+            setImageLoaded(true);
           }}
         />
 
-        <div className="absolute top-4 left-4 flex flex-col gap-2 z-10">
+        <div className="absolute top-4 left-4 flex flex-col gap-2 z-20">
           <div
             className={`text-[11px] font-bold px-3 py-1.5 rounded-full shadow-sm backdrop-blur-md bg-white/90 border border-white/20 ${getProductConditionColor(
               product.condition,
@@ -112,6 +120,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
           )}
         </div>
       </div>
+
+      <style>{`
+        @keyframes shimmer {
+          0% { background-position: -200% 0; }
+          100% { background-position: 200% 0; }
+        }
+      `}</style>
     </div>
   );
 };

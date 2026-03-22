@@ -5,7 +5,10 @@ interface LoaderProps {
   className?: string;
 }
 
-const LoaderAnimation: React.FC<LoaderProps> = ({ size = "md", className = "" }) => {
+const LoaderAnimation: React.FC<LoaderProps> = ({
+  size = "md",
+  className = "",
+}) => {
   const sizeClasses = {
     sm: "size-6 border-2",
     md: "size-8 border-4",
@@ -13,11 +16,9 @@ const LoaderAnimation: React.FC<LoaderProps> = ({ size = "md", className = "" })
   };
 
   return (
-    <div
-      className={`flex h-screen flex-col items-center justify-center ${className}`}
-    >
+    <div className={`flex items-center justify-center ${className}`}>
       <div
-        className={`animate-spin ${sizeClasses[size]} border-primary border-t-transparent rounded-full mx-auto mb-4`}
+        className={`animate-spin ${sizeClasses[size]} border-[#6d3ff8] border-t-transparent rounded-full`}
       />
     </div>
   );

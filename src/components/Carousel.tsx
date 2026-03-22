@@ -39,7 +39,7 @@ const Carousel: React.FC<CarouselProps> = ({ slides, activeIndex = 0 }) => {
       if (!isPaused.current) {
         setCurrent((prev) => (prev + 1) % slides.length);
       }
-    }, 5000);
+    }, 20000);
     return () => clearInterval(interval);
   }, [slides.length]);
 
@@ -108,7 +108,7 @@ const Carousel: React.FC<CarouselProps> = ({ slides, activeIndex = 0 }) => {
                 <h3 className="text-white text-2xl md:text-4xl lg:text-5xl font-black leading-[1.1] mb-3 leading-tight">
                   {slide.title}
                 </h3>
-                <p className="text-white/90 text-xs md:text-base mb-6 line-clamp-2 max-w-md font-medium">
+                <p className="text-white/90 text-xs md:text-base mb-6  max-w-md font-medium">
                   {slide.description}
                 </p>
                 <button

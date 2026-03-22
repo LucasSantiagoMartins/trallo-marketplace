@@ -1,4 +1,3 @@
-// @/hooks/use-products.ts
 import { useDispatch, useSelector } from "react-redux";
 import { searchProducts } from "@/services/product.service";
 import { RootState } from "@/store/main";
@@ -18,6 +17,14 @@ export const useProducts = () => {
       maxPrice?: number;
       condition?: ProductCondition;
     }) => {
+      const hasFilters =
+        filters &&
+        Object.values(filters).some((v) => v !== undefined && v !== "");
+
+      if (!hasFilters && products.length > 0) {
+        return;
+      }
+
       try {
         dispatch(setProductLoading(true));
         const response = await searchProducts(filters);
@@ -30,7 +37,7 @@ export const useProducts = () => {
         dispatch(setProductLoading(false));
       }
     },
-    [dispatch],
+    [dispatch, products.length],
   );
 
   return {

@@ -8,7 +8,6 @@ import CheckoutModal from "@/components/CheckoutModal";
 import EmptyState from "@/components/EmptyState";
 import CartTotalPanel from "../components/CartTotalPanel";
 import {
-  getMyCart,
   updateCartItemQuantity,
   removeFromCart,
   clearCart,
@@ -18,13 +17,13 @@ import { checkoutFromCart } from "@/services/checkout.service";
 import { PaymentMethod, PaymentMode } from "@/enums/payment";
 import ConfirmAction from "@/components/ConfirmAction";
 import { useCart } from "@/hooks/use-cart";
+import LoaderAnimation from "@/components/Loader";
 import { CartItemDto } from "@/dtos/cart";
 
 const CartPage: React.FC = () => {
   const navigate = useNavigate();
-  const { syncCartWithServer } = useCart();
-  const [items, setItems] = useState<CartItemDto[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { items: rawItems, loading, fetchCart, syncCartWithServer } = useCart();
+
   const [modalType, setModalType] = useState<
     "single" | "all" | "payment_choice" | "checkout" | null
   >(null);
@@ -34,41 +33,28 @@ const CartPage: React.FC = () => {
   );
   const [paymentMethod, setPaymentMethod] = useState<"mcx" | "transfer">("mcx");
 
-  const fetchCart = async () => {
-    try {
-      const res = await getMyCart();
-      if (res.success && res.data) {
-        const formattedItems: CartItemDto[] = res.data.items.map((item) => ({
-          id: item.id,
-          name: item.product.name,
-          attr: item.product.description,
-          price: item.priceSnapshot,
-          qty: item.quantity,
-          image: `${BASE_UPLOAD_URL}/${item.product.coverImage}`,
-          availableQuantity: item.product.availableQuantity,
-        }));
-        setItems(formattedItems);
-      }
-    } catch (err) {
-      toast.error("Erro ao carregar o carrinho.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // Formata os itens do Redux para o DTO esperado pela UI
+  const formattedItems: CartItemDto[] = rawItems.map((item: any) => ({
+    id: item.id,
+    name: item.product.name,
+    attr: item.product.description,
+    price: item.priceSnapshot,
+    qty: item.quantity,
+    image: `${BASE_UPLOAD_URL}/${item.product.coverImage}`,
+    availableQuantity: item.product.availableQuantity,
+  }));
 
   useEffect(() => {
     fetchCart();
-  }, []);
+  }, [fetchCart]);
 
   const updateQty = async (id: string, delta: number) => {
-    const item = items.find((i) => i.id === id);
+    const item = formattedItems.find((i) => i.id === id);
     if (!item) return;
     const newQty = Math.max(1, item.qty + delta);
     const res = await updateCartItemQuantity(id, newQty);
     if (res.success) {
-      setItems((prev) =>
-        prev.map((i) => (i.id === id ? { ...i, qty: newQty } : i)),
-      );
+      syncCartWithServer(); // Atualiza o Redux para refletir a nova quantidade
     } else {
       toast.error(res.message || "Erro ao atualizar quantidade.");
     }
@@ -84,7 +70,6 @@ const CartPage: React.FC = () => {
       try {
         const res = await removeFromCart(idToRemove);
         if (res.success) {
-          setItems((prev) => prev.filter((item) => item.id !== idToRemove));
           syncCartWithServer();
           toast.success("Item removido.");
         }
@@ -95,7 +80,6 @@ const CartPage: React.FC = () => {
       try {
         const res = await clearCart();
         if (res.success) {
-          setItems([]);
           syncCartWithServer();
           toast.success("Carrinho limpo com sucesso.");
         }
@@ -143,7 +127,10 @@ const CartPage: React.FC = () => {
     setIdToRemove(null);
   };
 
-  const subtotal = items.reduce((acc, item) => acc + item.price * item.qty, 0);
+  const subtotal = formattedItems.reduce(
+    (acc, item) => acc + item.price * item.qty,
+    0,
+  );
   const deliveryFee = paymentType === "presencial" ? 0 : 2500;
   const total = subtotal + deliveryFee;
   const isClearingAll = modalType === "all";
@@ -153,7 +140,7 @@ const CartPage: React.FC = () => {
       <PageHeader
         title="Carrinho"
         rightElement={
-          items.length > 0 && (
+          formattedItems.length > 0 && (
             <button
               onClick={() => setModalType("all")}
               className="text-[#6d3ff8] font-bold text-sm px-2"
@@ -166,12 +153,10 @@ const CartPage: React.FC = () => {
       />
 
       <main className="px-4 pt-24 space-y-4 max-w-3xl mx-auto">
-        {isLoading ? (
-          <div className="flex justify-center pt-10">
-            <div className="w-8 h-8 border-4 border-[#6d3ff8] border-t-transparent rounded-full animate-spin" />
-          </div>
-        ) : items.length > 0 ? (
-          items.map((item) => (
+        {loading && formattedItems.length === 0 ? (
+          <LoaderAnimation />
+        ) : formattedItems.length > 0 ? (
+          formattedItems.map((item) => (
             <div
               key={item.id}
               className="animate-in fade-in zoom-in-95 duration-300"
@@ -194,7 +179,7 @@ const CartPage: React.FC = () => {
         )}
       </main>
 
-      {items.length > 0 && !modalType && !isLoading && (
+      {formattedItems.length > 0 && !modalType && !loading && (
         <CartTotalPanel
           total={total}
           onCheckout={() => setModalType("payment_choice")}

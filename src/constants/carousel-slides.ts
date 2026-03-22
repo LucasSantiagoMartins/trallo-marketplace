@@ -1,0 +1,24 @@
+export const carouselSlides = [
+    {
+        id: "1",
+        tag: "Suporte de Compra",
+        title: "Sabe o quer, o TRALLO cuida do resto!",
+        description: "Diz o que precisas e receberás uma lista completa com os produtos certos pronta para comprar.",
+        buttonText: "Usar Agora",
+        backgroundImage: "https://images.unsplash.com/photo-1531403009284-440f080d1e12?q=80&w=2070",
+        backgroundColor: "#0f172a",
+        tagColor: "bg-black/20",
+        buttonColor: "bg-white text-[#0f172a]",
+    },
+    {
+        id: "2",
+        tag: "Despacho Rápido",
+        title: "O Preço Cai, a Pressão Sobe!",
+        description: "Produtos exclusivos com preços que baixam em intervalo de tempo. Seja o primeiro a dar o lance e garanta o seu antes que alguém leve!",
+        buttonText: "Aproveitar Agora",
+        backgroundImage: "https://lh3.googleusercontent.com/aida-public/AB6AXuDbLs-oQQ8uPfpiFlz5Vb7UiOi9wcT0EAXXGlEtLF5ph5vi3N_Dszys--bS4mLVO9DZl_GiEbIxKh3FnQTVn35xkXJ-m1ovS5_ftpH1svw0f6AdXIYFzbLi-u-uwSl5DvddJ6AS4VDwMHuSZi8QOBOrob8wnNf2yfAR1NWe4Zq1NY_BSmwbYdnfV66w8CXRlQrY8T5Xc2h4NQq46r0gJRSg7EEuxGmmN-2eVHn4XBtKY1Qkse5u6WwdGwI-NaX_-ilma79qBnKWcCjq",
+        backgroundColor: "#ea580c",
+        tagColor: "bg-black/20",
+        buttonColor: "bg-white text-orange-600",
+    },
+];
