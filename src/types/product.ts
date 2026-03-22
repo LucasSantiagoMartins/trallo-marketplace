@@ -30,7 +30,7 @@ export interface ProductDTO {
   id: string;
   name: string;
   description: string;
-  category?: string;
+  category?: ProductCategory;
   price: number;
   condition: ProductCondition;
   status: ProductStatus;

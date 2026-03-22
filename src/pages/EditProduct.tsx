@@ -12,15 +12,13 @@ import QuantitySelector from "@/components/QuantitySelector";
 import ConditionModal from "@/components/ConditionModal";
 import CategoryDrawer from "@/components/CategoryDrawer";
 import { BASE_UPLOAD_URL } from "@/api/endpoints";
-import {
-  PRODUCT_CATEGORIES,
-  PRODUCT_CONDITIONS,
-} from "@/constants/product-options";
+import { PRODUCT_CONDITIONS } from "@/constants/product-options";
 import { getFieldsByCategory } from "@/utils/product-utils";
 import BottomNavigation from "@/components/BottomNavigation";
 import { ProductDTO } from "@/types/product";
 import { updateProduct } from "@/services/product.service";
 import { ProductCategory } from "@/enums/product-category.enum";
+import { productCategoryLabel } from "@/utils/mappers/product-category.mapper";
 
 const EditProduct: React.FC = () => {
   const navigate = useNavigate();
@@ -28,7 +26,6 @@ const EditProduct: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [loading, setLoading] = useState(false);
-
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -124,7 +121,10 @@ const EditProduct: React.FC = () => {
   const updateSpecField = (name: string, value: any) => {
     setFormData((prev) => ({
       ...prev,
-      specifications: { ...prev.specifications, [name]: value },
+      specifications: {
+        ...prev.specifications,
+        [name]: value,
+      },
     }));
   };
 
@@ -136,12 +136,12 @@ const EditProduct: React.FC = () => {
       return;
     }
 
-    if (!formData.name) {
+    if (!formData.name.trim()) {
       toast.error("Por favor, informe o nome do produto.");
       return;
     }
 
-    if (!formData.price) {
+    if (!formData.price || formData.price === "0") {
       toast.error("Faltou definir o preço de venda do produto.");
       return;
     }
@@ -297,7 +297,7 @@ const EditProduct: React.FC = () => {
             />
 
             <TralloInput
-              label="Descrição Detalhada"
+              label="Descrição Detalhada (opcional)"
               value={formData.description}
               onChange={(val) => updateField("description", val)}
               multiline
@@ -310,6 +310,7 @@ const EditProduct: React.FC = () => {
                 <PriceInput
                   value={formData.price}
                   onChange={(value) => updateField("price", value)}
+                  title="Preço de Venda"
                 />
               </div>
 
@@ -330,15 +331,18 @@ const EditProduct: React.FC = () => {
             </div>
 
             {dynamicFields.length > 0 && (
-              <div className="pt-4 space-y-4 border-t border-slate-100 dark:border-slate-800">
+              <div className="pt-4 space-y-4 border-t border-slate-100 dark:border-slate-800 animate-in fade-in slide-in-from-top-2">
                 <label className="text-[10px] font-black text-slate-400 uppercase ml-1 tracking-widest">
-                  Especificações Técnicas
+                  Especificações  de{" "}
+                  {formData.category
+                    ? productCategoryLabel[formData.category as ProductCategory]
+                    : ""}
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {dynamicFields.map((field) => (
                     <TralloInput
                       key={field.name}
-                      label={field.label}
+                      label={`${field.label}${field.required === false ? " (opcional)" : ""}`}
                       placeholder={field.placeholder}
                       type={field.type}
                       value={formData.specifications[field.name] || ""}
@@ -373,7 +377,6 @@ const EditProduct: React.FC = () => {
         onClose={closeConditionModal}
         onSelect={(val) => updateField("condition", val)}
       />
-
       <CategoryDrawer
         isOpen={showCategoryDrawer}
         isOpening={isOpeningCategory}
@@ -383,7 +386,13 @@ const EditProduct: React.FC = () => {
         onSelect={(val) => {
           const productFromState = location.state?.product as ProductDTO;
           updateField("category", val);
-          if (productFromState && val !== productFromState.category) {
+
+          if (productFromState && val === productFromState.category) {
+            updateField(
+              "specifications",
+              productFromState.productDetails || {},
+            );
+          } else {
             updateField("specifications", {});
           }
         }}

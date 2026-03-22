@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
 import MobileLayout from "@/layouts/MobileLayout";
 import PageHeader from "@/components/PageHeader";
 import TralloInput from "@/components/TralloInput";
@@ -11,18 +9,20 @@ import PriceInput from "@/components/PriceInput";
 import QuantitySelector from "@/components/QuantitySelector";
 import ConditionModal from "@/components/ConditionModal";
 import CategoryDrawer from "@/components/CategoryDrawer";
-import { createProduct } from "@/services/product.service";
+import BottomNavigation from "@/components/BottomNavigation";
 import { PRODUCT_CONDITIONS } from "@/constants/product-options";
 import { getFieldsByCategory } from "@/utils/product-utils";
-import BottomNavigation from "@/components/BottomNavigation";
 import { ProductCategory } from "@/enums/product-category.enum";
 import { productCategoryLabel } from "@/utils/mappers/product-category.mapper";
 
-const CreateProduct: React.FC = () => {
-  const navigate = useNavigate();
-  const fileInputRef = useRef<HTMLInputElement>(null);
+import { useProductValidation } from "@/hooks/use-product-validation";
+import { useProductSubmit } from "@/hooks/use-product-submit";
 
-  const [loading, setLoading] = useState(false);
+const CreateProduct: React.FC = () => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { validate } = useProductValidation();
+  const { submitProduct, loading } = useProductSubmit();
+
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -89,65 +89,20 @@ const CreateProduct: React.FC = () => {
     }));
   };
 
+  const dynamicFields = formData.category
+    ? getFieldsByCategory(formData.category as ProductCategory)
+    : [];
+
   const handleSubmit = async () => {
-    if (!formData.name) {
-      toast.error("Por favor, informe o nome do produto");
-      return;
-    }
-
-    if (!formData.category) {
-      toast.error("Selecione uma categoria para o produto");
-      return;
-    }
-
-    if (!formData.price) {
-      toast.error("Faltou definir o preço de venda do produto");
-      return;
-    }
-
-    if (fileObjects.length === 0) {
-      toast.error("Adicione pelo menos uma foto do produto");
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const data = new FormData();
-      data.append("name", formData.name);
-      data.append("description", formData.description);
-      data.append("price", formData.price.replace(/\D/g, ""));
-      data.append("condition", formData.condition);
-      data.append("category", formData.category);
-      data.append("stockQuantity", String(formData.stockQuantity));
-
-      const productDetails = {
-        ...formData.specifications,
-      };
-      data.append("productDetails", JSON.stringify(productDetails));
-
-      fileObjects.forEach((file) => {
-        data.append("images", file);
-      });
-
-      const res = await createProduct(data);
-      if (res.success) {
-        toast.success(res.message ?? "Produto criado");
-        navigate("/meus-produtos");
-      }
-    } catch (err: any) {
-      toast.error(err.message ?? "Erro ao conectar ao servidor");
-    } finally {
-      setLoading(false);
+    const isValid = validate(formData, fileObjects, dynamicFields);
+    if (isValid) {
+      await submitProduct(formData, fileObjects);
     }
   };
 
   const selectedConditionLabel =
     PRODUCT_CONDITIONS.find((c) => c.value === formData.condition)?.label ||
     "Selecionar";
-
-  const dynamicFields = formData.category
-    ? getFieldsByCategory(formData.category as ProductCategory)
-    : [];
 
   return (
     <MobileLayout className="pb-0 bg-white dark:bg-slate-950">
@@ -192,14 +147,14 @@ const CreateProduct: React.FC = () => {
           <div className="space-y-6 w-full">
             <TralloInput
               label="Nome do Produto"
-              placeholder="Ex: iPhone 13 Pro Max - 256GB"
+              placeholder="Ex: iPhone 13 Pro Max"
               value={formData.name}
               onChange={(val) => updateField("name", val)}
             />
 
             <TralloInput
-              label="Descrição Detalhada"
-              placeholder="Fale sobre o uso, acessórios inclusos e estado do item..."
+              label="Descrição Detalhada (opcional)"
+              placeholder="Fale sobre o item..."
               value={formData.description}
               onChange={(val) => updateField("description", val)}
               multiline
@@ -219,7 +174,7 @@ const CreateProduct: React.FC = () => {
 
               <div className="flex flex-col gap-2 shrink-0 w-fit">
                 <label className="text-[10px] font-black text-slate-400 uppercase ml-1 tracking-widest">
-                  Estoque Disponível
+                  Estoque
                 </label>
                 <QuantitySelector
                   value={formData.stockQuantity}
@@ -237,13 +192,15 @@ const CreateProduct: React.FC = () => {
               <div className="pt-4 space-y-4 border-t border-slate-100 dark:border-slate-800 animate-in fade-in slide-in-from-top-2 duration-300">
                 <label className="text-[10px] font-black text-slate-400 uppercase ml-1 tracking-widest">
                   Especificações de{" "}
-                  {productCategoryLabel[formData.category as ProductCategory]}
+                  {formData.category
+                    ? productCategoryLabel[formData.category as ProductCategory]
+                    : ""}
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {dynamicFields.map((field) => (
                     <TralloInput
                       key={field.name}
-                      label={field.label}
+                      label={`${field.label}${field.required === false ? " (opcional)" : ""}`}
                       placeholder={field.placeholder}
                       type={field.type}
                       value={formData.specifications[field.name] || ""}
