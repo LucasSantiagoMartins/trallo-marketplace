@@ -44,7 +44,6 @@ const SellerProfileScreen: React.FC = () => {
     fetchData();
   }, [sellerSlug]);
 
-  // Função para testar o service de review com dados fictícios
   const handleQuickReview = async () => {
     if (!profileData?.user?.id) return;
 
@@ -118,59 +117,53 @@ const SellerProfileScreen: React.FC = () => {
         <section className="flex justify-center">
           <div className="w-full max-w-2xl bg-white dark:bg-slate-900 rounded-[2.5rem] p-6 shadow-sm border border-slate-100 dark:border-slate-800">
             <div className="flex flex-col items-center text-center">
-              <div className="relative mb-3">
-                <div className="w-24 h-24 rounded-full overflow-hidden bg-slate-100 dark:bg-slate-800 border-4 border-white dark:border-slate-800 shadow-md">
-                  {user.profilePicture ? (
-                    <img
-                      className="w-full h-full object-cover"
-                      src={BASE_UPLOAD_URL + user.profilePicture}
-                      alt={user.fullName}
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <span className="material-symbols-outlined text-5xl text-slate-300">
-                        person
-                      </span>
-                    </div>
-                  )}
+              <div className="flex flex-col items-center">
+                <div className="relative">
+                  <div className="size-32 rounded-full border-[3px] border-accent p-1 flex items-center justify-center overflow-hidden">
+                    {user.profilePicture ? (
+                      <div
+                        className="w-full h-full rounded-full bg-cover bg-center"
+                        style={{
+                          backgroundImage: `url(${BASE_UPLOAD_URL + user.profilePicture})`,
+                        }}
+                      />
+                    ) : (
+                      <div className="w-full h-full rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
+                        <span className="material-symbols-outlined text-slate-400 text-6xl">
+                          account_circle
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="absolute bottom-1 right-1 size-8 bg-primary rounded-full border-4 border-white dark:border-gray-800 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-white text-[18px]">
+                      verified
+                    </span>
+                  </div>
                 </div>
-                <div className="absolute bottom-1 right-1 bg-blue-500 text-white p-1 rounded-full border-4 border-white dark:border-slate-900 shadow-sm flex items-center justify-center">
-                  <span className="material-symbols-outlined text-[12px] font-bold">
-                    check
+
+                <div className="mt-5 text-center">
+                  <h2 className="clash-font text-2xl lg:text-3xl font-extrabold">
+                    {user?.fullName || "Usuário"}
+                  </h2>
+                </div>
+
+                <div className="flex items-center gap-4 text-slate-400 text-xs font-medium mb-4">
+                  <span className="flex items-center gap-1.5">
+                    <span className="material-symbols-outlined text-sm text-primary">
+                      location_on
+                    </span>
+                    {user.location}
+                  </span>
+                  <span className="w-1 h-1 bg-slate-300 rounded-full" />
+                  <span className="flex items-center gap-1.5">
+                    <span className="material-symbols-outlined text-sm text-primary">
+                      calendar_today
+                    </span>
+                    Desde {user.memberSince}
                   </span>
                 </div>
               </div>
-
-              <h2 className="text-2xl font-bold tracking-tight mb-1">
-                {user.fullName}
-              </h2>
-
-              <div className="flex items-center gap-4 text-slate-400 text-xs font-medium mb-4">
-                <span className="flex items-center gap-1.5">
-                  <span className="material-symbols-outlined text-sm text-primary">
-                    location_on
-                  </span>
-                  {user.location}
-                </span>
-                <span className="w-1 h-1 bg-slate-300 rounded-full" />
-                <span className="flex items-center gap-1.5">
-                  <span className="material-symbols-outlined text-sm text-primary">
-                    calendar_today
-                  </span>
-                  Desde {user.memberSince}
-                </span>
-              </div>
-
-              {/* Botão de Avaliação Rápida (Teste) */}
-              <button
-                onClick={handleQuickReview}
-                disabled={isSubmittingReview}
-                className="mb-6 px-6 py-2 bg-primary text-white text-xs font-bold rounded-full hover:opacity-90 transition-opacity disabled:opacity-50"
-              >
-                {isSubmittingReview
-                  ? "Enviando..."
-                  : "Avaliar Vendedor (Teste)"}
-              </button>
 
               <div className="grid grid-cols-3 w-full gap-4 pt-5 border-t border-slate-50 dark:border-slate-800">
                 <div className="flex flex-col items-center">
