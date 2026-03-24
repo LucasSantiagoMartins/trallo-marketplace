@@ -38,7 +38,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
   return (
     <div
       onClick={handleNavigate}
-      className="group relative bg-white rounded-3xl overflow-hidden transition-all duration-500 hover:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.1)] border border-slate-100 flex flex-col w-full cursor-pointer"
+      className="group relative bg-white rounded-3xl overflow-hidden transition-all duration-500 lg:hover:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.1)] border border-slate-100 flex flex-col w-full cursor-pointer touch-manipulation"
     >
       <div className="relative aspect-square max-h-[220px] overflow-hidden bg-slate-100">
         {!imageLoaded && (
@@ -53,7 +53,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
           width={400}
           height={400}
           onLoad={() => setImageLoaded(true)}
-          className={`w-full h-full object-cover transition-all duration-700 group-hover:scale-110 ${
+          className={`w-full h-full object-cover transition-all duration-700 lg:group-hover:scale-110 ${
             imageLoaded ? "opacity-100" : "opacity-0"
           }`}
           onError={(e) => {
@@ -72,7 +72,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
           </div>
         </div>
 
-        <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        <div className="absolute inset-0 bg-black/5 opacity-0 lg:group-hover:opacity-100 transition-opacity duration-500" />
       </div>
 
       <div className="p-3.5 flex flex-col flex-1 gap-2">
@@ -88,7 +88,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
             {getProductStatusLabel(product.status)}
           </div>
 
-          <h4 className="text-slate-800 font-bold text-lg line-clamp-1 group-hover:text-primary transition-colors">
+          <h4 className="text-slate-800 font-bold text-lg line-clamp-1 lg:group-hover:text-primary transition-colors">
             {product.name}
           </h4>
 

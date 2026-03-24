@@ -33,7 +33,6 @@ const CartPage: React.FC = () => {
   );
   const [paymentMethod, setPaymentMethod] = useState<"mcx" | "transfer">("mcx");
 
-  // Formata os itens do Redux para o DTO esperado pela UI
   const formattedItems: CartItemDto[] = rawItems.map((item: any) => ({
     id: item.id,
     name: item.product.name,
@@ -54,7 +53,7 @@ const CartPage: React.FC = () => {
     const newQty = Math.max(1, item.qty + delta);
     const res = await updateCartItemQuantity(id, newQty);
     if (res.success) {
-      syncCartWithServer(); // Atualiza o Redux para refletir a nova quantidade
+      syncCartWithServer();
     } else {
       toast.error(res.message || "Erro ao atualizar quantidade.");
     }
@@ -127,12 +126,15 @@ const CartPage: React.FC = () => {
     setIdToRemove(null);
   };
 
+  // Cálculos
   const subtotal = formattedItems.reduce(
     (acc, item) => acc + item.price * item.qty,
     0,
   );
   const deliveryFee = paymentType === "presencial" ? 0 : 2500;
-  const total = subtotal + deliveryFee;
+  const serviceFee = subtotal * 0.035;
+  const total = subtotal + deliveryFee + serviceFee;
+
   const isClearingAll = modalType === "all";
 
   return (
@@ -173,7 +175,7 @@ const CartPage: React.FC = () => {
             <EmptyState
               icon="shopping_cart"
               title="Teu carrinho está vazio"
-              description="Parece que ainda não adicionaste nenhum produto ao teu carrinho. Explora os nossos produtos e encontra o que precisas."
+              description="Parece que ainda não adicionaste nenhum produto ao teu carrinho."
             />
           </div>
         )}
@@ -181,6 +183,9 @@ const CartPage: React.FC = () => {
 
       {formattedItems.length > 0 && !modalType && !loading && (
         <CartTotalPanel
+          subtotal={subtotal}
+          deliveryFee={deliveryFee}
+          serviceFee={serviceFee}
           total={total}
           onCheckout={() => setModalType("payment_choice")}
         />
@@ -199,32 +204,23 @@ const CartPage: React.FC = () => {
       )}
 
       {modalType === "checkout" && (
-        <div className="fixed inset-0 z-[80] animate-in slide-in-from-right duration-300">
-          <CheckoutModal
-            paymentType={paymentType}
-            paymentMethod={paymentMethod}
-            setPaymentMethod={setPaymentMethod}
-            deliveryFee={deliveryFee}
-            total={total}
-            onClose={closeModal}
-            onConfirm={handleConfirmCheckout}
-          />
-        </div>
+        <CheckoutModal
+          paymentType={paymentType}
+          paymentMethod={paymentMethod}
+          setPaymentMethod={setPaymentMethod}
+          total={total}
+          onClose={closeModal}
+          onConfirm={handleConfirmCheckout}
+        />
       )}
 
       <ConfirmAction
         isLoading={false}
         description={
-          isClearingAll
-            ? "irá limpar todos os itens do seu carrinho"
-            : "este item será removido do seu carrinho"
+          isClearingAll ? "irá limpar todos os itens" : "item será removido"
         }
-        title={
-          isClearingAll
-            ? "Tem a certeza que quer limpar o carrinho?"
-            : "Remover este item?"
-        }
-        confirmText={isClearingAll ? "limpar carrinho" : "remover"}
+        title={isClearingAll ? "Limpar carrinho?" : "Remover item?"}
+        confirmText={isClearingAll ? "limpar" : "remover"}
         isOpen={modalType === "single" || modalType === "all"}
         onConfirm={handleConfirmAction}
         onClose={closeModal}

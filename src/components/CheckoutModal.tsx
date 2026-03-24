@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import mcxImg from "@/assets/images/banks/mcx_express.png";
 import { formatPrice } from "@/utils/currency";
+import TralloButton from "@/components/TralloButton";
 
 interface Props {
   paymentType: "online" | "presencial";
   paymentMethod: "mcx" | "transfer";
   setPaymentMethod: (method: "mcx" | "transfer") => void;
-  deliveryFee: number;
   total: number;
   onClose: () => void;
   onConfirm: () => Promise<any>;
@@ -16,7 +16,6 @@ const CheckoutModal: React.FC<Props> = ({
   paymentType,
   paymentMethod,
   setPaymentMethod,
-  deliveryFee,
   total,
   onClose,
   onConfirm,
@@ -189,32 +188,24 @@ const CheckoutModal: React.FC<Props> = ({
             </section>
           )}
 
-          <section className="bg-gray-50 dark:bg-gray-800/50 rounded-2xl p-5 space-y-3">
-            <div className="flex justify-between text-xs text-gray-600 dark:text-gray-300">
-              <span>Taxa de Entrega</span>
-              <span className="font-medium">
-                {deliveryFee.toLocaleString("pt-AO")} Kz
-              </span>
-            </div>
-            <div className="pt-3 border-t border-gray-200 dark:border-gray-700 flex flex-col items-center">
-              <span className="font-bold text-gray-400 text-[10px] uppercase">
-                Total Final
-              </span>
-              <span className="text-[#6d3ff8] font-black text-2xl">
-                {formatPrice(total, true)}
-              </span>
-            </div>
-          </section>
+          <div className="pt-3 flex flex-col items-center">
+            <span className="font-bold text-gray-400 text-[10px] uppercase">
+              Total Final a Pagar
+            </span>
+            <span className="text-[#6d3ff8] font-black text-3xl">
+              {formatPrice(total, true)}
+            </span>
+          </div>
         </div>
 
-        <div className="p-6 bg-gray-50 dark:bg-white/5 border-t border-gray-100 dark:border-gray-800 pb-10 md:pb-6">
-          <button
+        <div className="p-6">
+          <TralloButton
             onClick={handleFinalize}
             disabled={loading}
             className="w-full h-14 bg-[#6d3ff8] text-white rounded-2xl font-bold flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-all disabled:opacity-70 disabled:active:scale-100"
           >
             {loading ? "PROCESSANDO..." : "FINALIZAR COMPRA"}
-          </button>
+          </TralloButton>
         </div>
       </div>
     </div>
