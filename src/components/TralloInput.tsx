@@ -72,7 +72,7 @@ const TralloInput: React.FC<TralloInputProps> = ({
     ${borderStyles[validation]}
     transition-all outline-none 
     text-muted-foreground/100 placeholder:text-muted-foreground/60
-    ${icon ? "pl-11 pr-4" : "px-4"}
+    ${icon ? "pl-11 pr-4" : "px-8"}
     ${showPasswordToggle ? "pr-12" : ""}
     ${multiline ? "resize-none" : ""}
   `;

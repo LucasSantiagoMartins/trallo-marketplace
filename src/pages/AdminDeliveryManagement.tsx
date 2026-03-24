@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { motion, Variants } from "framer-motion";
 import Sidebar from "@/components/Sidebar";
 import BottomNavigation from "../components/BottomNavigation";
 import Pagination from "../components/Pagination";
 import SegmentedControl from "../components/SegmentedControl";
-import { orderService } from "@/services/order.service";
 import { DeliveryResponseDto } from "@/dtos/delivery-response";
 import DeliveryOrderCard from "@/components/DeliveryOrderCard";
 import TralloInput from "@/components/TralloInput";
 import { adminItems } from "@/constants/sidebar-items";
 import LoaderAnimation from "@/components/Loader";
+import { deliveryService } from "@/services/delivery.service";
+import DeliveryDetailsModal from "@/pages/DeliveryDetailsModal";
 
 const AdminDeliveryManagement: React.FC = () => {
   const [deliveries, setDeliveries] = useState<DeliveryResponseDto[]>([]);
@@ -21,29 +21,15 @@ const AdminDeliveryManagement: React.FC = () => {
     "ativos",
   );
 
+  const [selectedDelivery, setSelectedDelivery] =
+    useState<DeliveryResponseDto | null>(null);
+
   const ITEMS_PER_PAGE = 10;
-
-  const containerVariants: Variants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.08 },
-    },
-  };
-
-  const itemVariants: Variants = {
-    hidden: { opacity: 0, y: 15 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.4, ease: "easeOut" },
-    },
-  };
 
   const fetchAllDeliveries = useCallback(async (page: number) => {
     try {
       setLoading(true);
-      const response = await orderService.getAdminDeliveries(
+      const response = await deliveryService.getAdminDeliveries(
         page,
         ITEMS_PER_PAGE,
       );
@@ -92,22 +78,17 @@ const AdminDeliveryManagement: React.FC = () => {
       />
 
       <div className="flex-1 flex flex-col min-w-0">
-        <motion.main
-          className="flex-1 px-4 lg:px-12 pt-12 pb-44 max-w-7xl mx-auto w-full"
-          initial="hidden"
-          animate="visible"
-          variants={containerVariants}
-        >
-          <motion.header variants={itemVariants} className="mb-8">
+        <main className="flex-1 px-4 lg:px-12 pt-12 pb-44 max-w-7xl mx-auto w-full">
+          <header className="mb-8">
             <p className="text-[#6C3EF8] font-bold text-[10px] tracking-[0.2em] mb-1 uppercase">
               Logística
             </p>
             <h1 className="text-3xl font-semibold text-[#0F172A]">
               Gestão de Entregas
             </h1>
-          </motion.header>
+          </header>
 
-          <motion.div variants={itemVariants} className="space-y-6 mb-8">
+          <div className="space-y-6 mb-8">
             <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
               <div className="flex-1 w-full lg:max-w-md">
                 <label className="block text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 ml-1">
@@ -142,21 +123,22 @@ const AdminDeliveryManagement: React.FC = () => {
                 />
               </div>
             </div>
-          </motion.div>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
             {loading ? (
               <LoaderAnimation />
             ) : filteredDeliveries.length > 0 ? (
               filteredDeliveries.map((delivery) => (
-                <motion.div key={delivery.id} variants={itemVariants}>
+                <div key={delivery.id}>
                   <DeliveryOrderCard
                     delivery={delivery}
                     active={activeTab === "ativos"}
                     onRefresh={() => fetchAllDeliveries(currentPage)}
                     isAdminView={true}
+                    onShowDetails={() => setSelectedDelivery(delivery)}
                   />
-                </motion.div>
+                </div>
               ))
             ) : (
               <div className="col-span-full py-20 text-center opacity-50 bg-white rounded-3xl border-2 border-dashed border-slate-200">
@@ -169,7 +151,7 @@ const AdminDeliveryManagement: React.FC = () => {
               </div>
             )}
           </div>
-        </motion.main>
+        </main>
 
         <div className="mt-auto">
           <Pagination
@@ -181,6 +163,14 @@ const AdminDeliveryManagement: React.FC = () => {
             }}
           />
         </div>
+
+        {selectedDelivery && (
+          <DeliveryDetailsModal
+            delivery={selectedDelivery}
+            onClose={() => setSelectedDelivery(null)}
+            isAdminView={true}
+          />
+        )}
 
         <BottomNavigation />
       </div>

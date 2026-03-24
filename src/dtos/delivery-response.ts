@@ -1,3 +1,5 @@
+import { PaginationDTO } from "./pagination";
+
 export interface DeliveryResponseDto {
     id: string;
     status: string;
@@ -6,8 +8,6 @@ export interface DeliveryResponseDto {
     deliveredAt: Date;
     order: {
         orderNumber: string;
-        totalAmount: number;
-        status: string;
         buyerName: string;
         address: string;
     };
@@ -20,11 +20,5 @@ export interface DeliveryResponseDto {
 
 export interface PaginatedDeliveriesDTO {
     deliveries: DeliveryResponseDto[];
-    pagination: {
-        totalItems: number;
-        itemCount: number;
-        itemsPerPage: number;
-        totalPages: number;
-        currentPage: number;
-    };
+    pagination: PaginationDTO;
 }

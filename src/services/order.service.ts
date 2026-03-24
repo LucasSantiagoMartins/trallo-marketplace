@@ -40,23 +40,4 @@ export const orderService = {
       decision
     );
   },
-
-  async getDeliveryOrders(page: number, limit: number): Promise<ApiResponse<PaginatedDeliveriesDTO>> {
-    return await http.get<PaginatedDeliveriesDTO>(endpoints.deliverers.deliveries, {
-      params: { page, limit }
-    });
-  },
-
-  async getAdminDeliveries(page: number, limit: number): Promise<ApiResponse<PaginatedDeliveriesDTO>> {
-    return await http.get<PaginatedDeliveriesDTO>("/deliveries", {
-      params: { page, limit }
-    });
-  },
-
-  async confirmDelivery(orderNumber: string): Promise<ApiResponse<void>> {
-    return await http.post<void>(
-      endpoints.deliverers.confirmDelivery(orderNumber),
-      {}
-    );
-  }
 };

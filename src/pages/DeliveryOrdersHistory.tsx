@@ -3,11 +3,12 @@ import BottomNavigation from "../components/BottomNavigation";
 import PageHeader from "../components/PageHeader";
 import Pagination from "../components/Pagination";
 import SegmentedControl from "../components/SegmentedControl";
-import { orderService } from "@/services/order.service";
 import Loader from "@/components/Loader";
 import { DeliveryResponseDto } from "@/dtos/delivery-response";
 import DeliveryOrderCard from "@/components/DeliveryOrderCard";
 import TralloInput from "@/components/TralloInput";
+import { deliveryService } from "@/services/delivery.service";
+import DeliveryDetailsModal from "@/pages/DeliveryDetailsModal";
 
 const DeliveryOrdersHistory: React.FC = () => {
   const [deliveries, setDeliveries] = useState<DeliveryResponseDto[]>([]);
@@ -19,21 +20,23 @@ const DeliveryOrdersHistory: React.FC = () => {
     "ativos",
   );
 
+  const [selectedDelivery, setSelectedDelivery] =
+    useState<DeliveryResponseDto | null>(null);
+
   const ITEMS_PER_PAGE = 10;
 
   const fetchDeliveries = useCallback(async (page: number) => {
     try {
       setLoading(true);
-      const response = await orderService.getDeliveryOrders(
+      const response = await deliveryService.getDeliveryOrders(
         page,
         ITEMS_PER_PAGE,
       );
-      if (response.success && response.data) {
-        const resData = response.data as any;
-        setDeliveries(
-          Array.isArray(resData.deliveries) ? resData.deliveries : [],
-        );
-        setTotalPages(resData.pagination?.totalPages || 1);
+
+      if (response.success && response.data.deliveries) {
+        const { deliveries, pagination } = response.data as any;
+        setDeliveries(Array.isArray(deliveries) ? deliveries : []);
+        setTotalPages(pagination?.totalPages || 1);
       }
     } catch (error) {
       console.error("Erro ao carregar entregas", error);
@@ -89,7 +92,7 @@ const DeliveryOrdersHistory: React.FC = () => {
 
               <div className="flex-1">
                 <TralloInput
-                  placeholder="Pesquisar por número do pedido"
+                  placeholder="Pesquisar por pedido ou cliente..."
                   value={searchQuery}
                   onChange={(val) => setSearchQuery(val)}
                   icon="search"
@@ -108,6 +111,7 @@ const DeliveryOrdersHistory: React.FC = () => {
                       delivery={delivery}
                       active={activeTab === "ativos"}
                       onRefresh={() => fetchDeliveries(currentPage)}
+                      onShowDetails={() => setSelectedDelivery(delivery)}
                     />
                   ))}
 
@@ -138,16 +142,24 @@ const DeliveryOrdersHistory: React.FC = () => {
                 </span>
               </div>
               <h4 className="font-black text-xl mb-4 tracking-tight">
-                Entregador
+                Painel do Entregador
               </h4>
               <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
-                Gerencie suas entregas delegadas. Clique em "Mapa" para iniciar
-                a rota ou em "Detalhes" para atualizar o status do pedido.
+                Gerencie suas rotas. Use o botão "Ver Rota" para abrir o GPS e,
+                ao chegar ao destino, clique em "Confirmar Entrega" para
+                finalizar o processo.
               </p>
             </div>
           </div>
         </div>
       </main>
+
+      {selectedDelivery && (
+        <DeliveryDetailsModal
+          delivery={selectedDelivery}
+          onClose={() => setSelectedDelivery(null)}
+        />
+      )}
 
       <BottomNavigation />
     </div>

@@ -70,8 +70,7 @@ const Header: React.FC<HeaderProps> = ({
       { name: "Estoque", path: "/area-operacional/gestao-estoque" },
     ],
     DELIVERER: [
-      { name: "Minhas Entregas", path: "/minhas-entregas" },
-      { name: "Mapa de Rotas", path: "/rotas" },
+      { name: "Minhas Entregas", path: "/area-entregas/minhas-entregas" },
     ],
   };
 
