@@ -83,8 +83,10 @@ const SettingsScreen: React.FC = () => {
   };
 
   const handleConfirmSecurityUpdate = async (payload: any) => {
-    const isDisablingLogin = user?.secureLogin === true && payload.secureLogin === false;
-    const isDisablingOps = user?.secureOperations === true && payload.secureOperations === false;
+    const isDisablingLogin =
+      user?.secureLogin === true && payload.secureLogin === false;
+    const isDisablingOps =
+      user?.secureOperations === true && payload.secureOperations === false;
 
     if (isDisablingLogin || isDisablingOps) {
       setIsUpdatingSecurity(true);
@@ -215,12 +217,12 @@ const SettingsScreen: React.FC = () => {
         </div>
         <div className="flex-1 text-left min-w-0">
           <p
-            className={`text-[14px] sm:text-base font-bold tracking-tight truncate ${danger ? "text-red-500" : ""}`}
+            className={`text-[14px] sm:text-base font-bold tracking-tight truncate ${danger ? "text-red-500" : "text-gray-900 dark:text-gray-100"}`}
           >
             {title}
           </p>
           {subtitle && (
-            <p className="text-[#866565] dark:text-gray-400 text-[11px] sm:text-xs mt-0.5 truncate">
+            <p className="text-gray-500 dark:text-gray-400 text-[11px] sm:text-xs mt-0.5 truncate">
               {subtitle}
             </p>
           )}
@@ -255,7 +257,7 @@ const SettingsScreen: React.FC = () => {
         <main className="flex flex-col gap-8 sm:gap-12">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 items-start">
             <section className="flex flex-col gap-4">
-              <h3 className="text-primary font-black text-[10px] sm:text-[11px] uppercase tracking-[0.2em] ml-2 opacity-80">
+              <h3 className="text-gray-500 dark:text-gray-400 font-black text-[10px] sm:text-[11px] uppercase tracking-[0.2em] ml-2 opacity-80">
                 Preferências
               </h3>
               <div className="bg-white dark:bg-[#1E1A1A] rounded-[24px] sm:rounded-[32px] overflow-hidden shadow-sm border border-black/[0.03] dark:border-white/[0.03]">
@@ -282,7 +284,7 @@ const SettingsScreen: React.FC = () => {
             </section>
 
             <section className="flex flex-col gap-4">
-              <h3 className="text-primary font-black text-[10px] sm:text-[11px] uppercase tracking-[0.2em] ml-2 opacity-80">
+              <h3 className="text-gray-500 dark:text-gray-400 font-black text-[10px] sm:text-[11px] uppercase tracking-[0.2em] ml-2 opacity-80">
                 Segurança
               </h3>
               <div className="bg-white dark:bg-[#1E1A1A] rounded-[24px] sm:rounded-[32px] overflow-hidden shadow-sm border border-black/[0.03] dark:border-white/[0.03]">
@@ -305,7 +307,7 @@ const SettingsScreen: React.FC = () => {
             </section>
 
             <section className="flex flex-col gap-4">
-              <h3 className="text-[#866565] dark:text-gray-400 font-black text-[10px] sm:text-[11px] uppercase tracking-[0.2em] ml-2 opacity-80">
+              <h3 className="text-gray-500 dark:text-gray-400 font-black text-[10px] sm:text-[11px] uppercase tracking-[0.2em] ml-2 opacity-80">
                 Conta & Informações
               </h3>
               <div className="bg-white dark:bg-[#1E1A1A] rounded-[24px] sm:rounded-[32px] overflow-hidden shadow-sm border border-black/[0.03] dark:border-white/[0.03]">
