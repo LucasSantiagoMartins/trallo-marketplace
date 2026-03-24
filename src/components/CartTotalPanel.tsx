@@ -92,7 +92,7 @@ const CartTotalPanel: React.FC<CartTotalPanelProps> = ({
           </div>
           <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
             <span>Taxa de Entrega</span>
-            <span className="font-semibold text-green-500">
+            <span className="font-semibold text-gray-700 dark:text-gray-200">
               {deliveryFee === 0
                 ? "Grátis"
                 : `${deliveryFee.toLocaleString("pt-AO")} Kz`}

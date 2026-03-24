@@ -33,15 +33,17 @@ const CartPage: React.FC = () => {
   );
   const [paymentMethod, setPaymentMethod] = useState<"mcx" | "transfer">("mcx");
 
-  const formattedItems: CartItemDto[] = rawItems.map((item: any) => ({
-    id: item.id,
-    name: item.product.name,
-    attr: item.product.description,
-    price: item.priceSnapshot,
-    qty: item.quantity,
-    image: `${BASE_UPLOAD_URL}/${item.product.coverImage}`,
-    availableQuantity: item.product.availableQuantity,
-  }));
+  const formattedItems: CartItemDto[] = rawItems
+    .map((item: any) => ({
+      id: item.id,
+      name: item.product.name,
+      attr: item.product.description,
+      price: item.priceSnapshot,
+      qty: item.quantity,
+      image: `${BASE_UPLOAD_URL}/${item.product.coverImage}`,
+      availableQuantity: item.product.availableQuantity,
+    }))
+    .sort((a, b) => a.id.localeCompare(b.id));
 
   useEffect(() => {
     fetchCart();
@@ -126,7 +128,6 @@ const CartPage: React.FC = () => {
     setIdToRemove(null);
   };
 
-  // Cálculos
   const subtotal = formattedItems.reduce(
     (acc, item) => acc + item.price * item.qty,
     0,

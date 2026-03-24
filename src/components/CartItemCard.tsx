@@ -46,7 +46,7 @@ const CartItemDtoCard: React.FC<CartItemDtoCardProps> = ({
             <span className="font-black text-sm sm:text-base text-[#6d3ff8] whitespace-nowrap">
               {formatPrice(item.price)}
             </span>
-            
+
             <div className="flex items-center gap-1 text-gray-400 dark:text-gray-500">
               <span className="material-symbols-outlined text-[12px] sm:text-[14px]">
                 inventory_2
