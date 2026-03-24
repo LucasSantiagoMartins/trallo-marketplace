@@ -122,7 +122,7 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
           relative w-full lg:max-w-2xl bg-white dark:bg-[#1c182d] 
           rounded-t-[2.5rem] lg:rounded-[2rem] shadow-2xl flex flex-col 
           pointer-events-auto overflow-hidden touch-auto
-          h-[85vh] lg:h-auto lg:max-h-[85vh]
+          max-h-[90dvh] lg:h-auto lg:max-h-[85vh]
           ${desktopClasses}
         `}
       >
@@ -202,7 +202,7 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
           </div>
         </div>
 
-        <div className="p-6 bg-white dark:bg-[#1c182d] border-t border-slate-100 dark:border-white/5 shrink-0">
+        <div className="p-6 pb-10 lg:pb-6 bg-white dark:bg-[#1c182d] border-t border-slate-100 dark:border-white/5 shrink-0">
           <div className="flex justify-between items-center p-4 rounded-xl bg-slate-50 dark:bg-white/5">
             <span className="text-sm font-medium text-slate-500 dark:text-slate-400">
               Total

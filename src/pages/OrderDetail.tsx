@@ -32,8 +32,14 @@ const OrderDetail: React.FC = () => {
     );
   }
 
+  // Cálculos de taxas
+  const subtotal = order.totalAmount;
+  const deliveryFee = 2500;
+  const serviceFee = subtotal * 0.035; // 3.5%
+  const totalFinal = subtotal + deliveryFee + serviceFee;
+
   return (
-    <div className="min-h-screen bg-[#f6f5f8] dark:bg-[#141022] text-[#121118] dark:text-white pb-10">
+    <div className="min-h-screen bg-[#f6f5f8] dark:bg-[#141022] text-[#121118] dark:text-white pb-32">
       <PageHeader title="Detalhe do Pedido" />
 
       <main className="max-w-3xl mx-auto px-4 pt-24 space-y-6">
@@ -185,25 +191,36 @@ const OrderDetail: React.FC = () => {
           </div>
         </section>
 
-        <section className="bg-white dark:bg-white/5 p-5 rounded-3xl shadow-sm border border-gray-100 dark:border-white/10">
+        <section className="bg-white dark:bg-white/5 p-5 rounded-3xl shadow-sm border border-gray-100 dark:border-white/10 mb-8">
           <div className="space-y-3">
             <div className="flex justify-between text-[11px] sm:text-sm">
               <span className="text-gray-500 font-medium">Subtotal</span>
               <span className="font-bold">
-                {formatPrice(order.totalAmount)}
+                {subtotal.toLocaleString("pt-AO")} Kz
               </span>
             </div>
+
             <div className="flex justify-between text-[11px] sm:text-sm">
               <span className="text-gray-500 font-medium">Taxa de Entrega</span>
-              <span className="font-bold text-green-500 italic">Grátis</span>
+              <span className="font-bold">{formatPrice(deliveryFee)}</span>
             </div>
+
+            <div className="flex justify-between text-[11px] sm:text-sm">
+              <span className="text-gray-500 font-medium">
+                Taxa de Serviço (3.5%)
+              </span>
+              <span className="font-bold">
+                {serviceFee.toLocaleString("pt-AO")} Kz
+              </span>
+            </div>
+
             <div className="border-t border-gray-100 dark:border-white/5 pt-4 flex justify-between items-center">
               <div>
                 <span className="block text-[10px] font-black uppercase text-gray-400 tracking-wider">
-                  Total do Pedido
+                  Total Final Pago
                 </span>
                 <span className="font-black text-xl sm:text-2xl text-[#6d3ff8]">
-                  {formatPrice(order.totalAmount)}
+                  {formatPrice(totalFinal)}
                 </span>
               </div>
             </div>
