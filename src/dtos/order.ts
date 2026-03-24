@@ -39,3 +39,8 @@ export interface OrderStockResponseDto {
   items: OrderStockItem[];
 }
 
+
+export interface ProcessOrderDecisionDto {
+  isAccepted: boolean,
+  cancellationReason?: string,
+}

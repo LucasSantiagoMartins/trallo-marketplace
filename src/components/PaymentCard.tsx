@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useState, useEffect, useRef } from "react";
 import { AdminPayment } from "@/dtos/admin-management";
 import {
   getPaymentStatusLabel,
@@ -14,9 +13,11 @@ interface PaymentCardProps {
 
 const PaymentCard: React.FC<PaymentCardProps> = ({ payment }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isRendered, setIsRendered] = useState(false);
+  const [dragY, setDragY] = useState(0);
+  const startY = useRef(0);
 
   const formattedAmount = formatPrice(payment.amount, false);
-
   const formattedDate = new Date(payment.createdAt).toLocaleDateString(
     "pt-AO",
     {
@@ -27,6 +28,34 @@ const PaymentCard: React.FC<PaymentCardProps> = ({ payment }) => {
       minute: "2-digit",
     },
   );
+
+  useEffect(() => {
+    if (isModalOpen) {
+      setIsRendered(true);
+      document.body.style.overflow = "hidden";
+    } else {
+      const timer = setTimeout(() => setIsRendered(false), 400);
+      document.body.style.overflow = "unset";
+      return () => clearTimeout(timer);
+    }
+  }, [isModalOpen]);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    startY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    const currentY = e.touches[0].clientY;
+    const diff = currentY - startY.current;
+    if (diff > 0) setDragY(diff);
+  };
+
+  const handleTouchEnd = () => {
+    if (dragY > 150) {
+      setIsModalOpen(false);
+    }
+    setDragY(0);
+  };
 
   return (
     <>
@@ -66,7 +95,7 @@ const PaymentCard: React.FC<PaymentCardProps> = ({ payment }) => {
           <div className="flex gap-2">
             <button
               onClick={() => setIsModalOpen(true)}
-              className="size-8 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 group-hover:bg-[#6C3EF8] group-hover:text-white transition-all"
+              className="size-8 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 group-hover:bg-[#6C3EF8] group-hover:text-white transition-all active:scale-90"
             >
               <span className="material-symbols-outlined text-sm">
                 visibility
@@ -76,117 +105,111 @@ const PaymentCard: React.FC<PaymentCardProps> = ({ payment }) => {
         </div>
       </div>
 
-      <AnimatePresence>
-        {isModalOpen && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsModalOpen(false)}
-              className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
-            />
+      {isRendered && (
+        <div
+          className={`fixed inset-0 z-[100] flex items-end lg:items-center justify-center transition-all duration-500 ease-out ${isModalOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+        >
+          <div
+            className="absolute inset-0 bg-slate-900/40 backdrop-blur-md transition-opacity duration-500"
+            onClick={() => setIsModalOpen(false)}
+          />
 
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="bg-white w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl relative z-10"
-            >
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="absolute right-6 top-6 size-10 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition-colors"
-              >
-                <span className="material-symbols-outlined text-xl">close</span>
-              </button>
+          <div
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            style={{
+              transform: isModalOpen
+                ? `translateY(${dragY}px)`
+                : "translateY(100%)",
+              transition:
+                dragY === 0
+                  ? "transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)"
+                  : "none",
+            }}
+            className="bg-white w-full lg:max-w-md rounded-t-[2.5rem] lg:rounded-[2.5rem] p-8 shadow-2xl relative z-10 touch-none"
+          >
+            <div className="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-6 lg:mb-4" />
 
-              <div className="text-center mb-8">
-                <p className="text-[#6C3EF8] font-black text-[10px] tracking-[0.2em] uppercase mb-2">
-                  Detalhes do Pagamento
-                </p>
-                <h3 className="text-2xl font-black text-[#0F172A]">
-                  {formattedAmount}{" "}
-                  <span className="text-sm font-medium">AOA</span>
-                </h3>
+            <div className="text-center mb-8">
+              <p className="text-[#6C3EF8] font-black text-[10px] tracking-[0.2em] uppercase mb-2">
+                Detalhes do Pagamento
+              </p>
+              <h3 className="text-2xl font-black text-[#0F172A]">
+                {formattedAmount}{" "}
+                <span className="text-sm font-medium uppercase">AOA</span>
+              </h3>
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex justify-between py-3 border-b border-slate-50">
+                <span className="text-xs font-bold text-slate-400 uppercase">
+                  Estado
+                </span>
+                <span
+                  className={`text-xs font-black uppercase ${getPaymentStatusColor(payment.status)} bg-transparent p-0`}
+                >
+                  {getPaymentStatusLabel(payment.status)}
+                </span>
               </div>
 
-              <div className="space-y-4">
-                <div className="flex justify-between py-3 border-b border-slate-50">
-                  <span className="text-xs font-bold text-slate-400 uppercase">
-                    Estado
-                  </span>
-                  <span
-                    className={`text-xs font-black uppercase ${getPaymentStatusColor(payment.status)} bg-transparent p-0`}
-                  >
-                    {getPaymentStatusLabel(payment.status)}
-                  </span>
-                </div>
-
-                <div className="flex justify-between py-3 border-b border-slate-50">
-                  <span className="text-xs font-bold text-slate-400 uppercase">
-                    Vendedor
-                  </span>
-                  <span className="text-xs font-bold text-slate-900">
-                    {payment.seller.fullName}
-                  </span>
-                </div>
-
-                <div className="flex justify-between py-3 border-b border-slate-50">
-                  <span className="text-xs font-bold text-slate-400 uppercase">
-                    Comprador
-                  </span>
-                  <span className="text-xs font-bold text-slate-900">
-                    {payment.order.buyerName}
-                  </span>
-                </div>
-
-                <div className="flex justify-between py-3 border-b border-slate-50">
-                  <span className="text-xs font-bold text-slate-400 uppercase">
-                    Método
-                  </span>
-                  <span className="text-xs font-bold text-slate-900">
-                    {getPaymentMethodLabel(payment.method)}
-                  </span>
-                </div>
-
-                <div className="flex justify-between py-3 border-b border-slate-50">
-                  <span className="text-xs font-bold text-slate-400 uppercase">
-                    ID Pedido
-                  </span>
-                  <span className="text-xs font-mono font-bold text-[#6C3EF8]">
-                    {payment.order.orderNumber}
-                  </span>
-                </div>
-
-                <div className="flex justify-between py-3 border-b border-slate-50">
-                  <span className="text-xs font-bold text-slate-400 uppercase">
-                    ID pagamento
-                  </span>
-                  <span className="text-xs font-bold text-[#6C3EF8]">
-                    {payment.id}
-                  </span>
-                </div>
-
-                <div className="flex justify-between py-3">
-                  <span className="text-xs font-bold text-slate-400 uppercase">
-                    Data/Hora
-                  </span>
-                  <span className="text-xs font-bold text-slate-900">
-                    {formattedDate}
-                  </span>
-                </div>
+              <div className="flex justify-between py-3 border-b border-slate-50">
+                <span className="text-xs font-bold text-slate-400 uppercase">
+                  Vendedor
+                </span>
+                <span className="text-xs font-bold text-slate-900">
+                  {payment.seller.fullName}
+                </span>
               </div>
 
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="w-full mt-8 py-4 bg-[#6C3EF8] text-white rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-[#5a32d1] shadow-lg shadow-[#6C3EF8]/20 transition-all active:scale-[0.98]"
-              >
-                Fechar Detalhes
-              </button>
-            </motion.div>
+              <div className="flex justify-between py-3 border-b border-slate-50">
+                <span className="text-xs font-bold text-slate-400 uppercase">
+                  Comprador
+                </span>
+                <span className="text-xs font-bold text-slate-900">
+                  {payment.order.buyerName}
+                </span>
+              </div>
+
+              <div className="flex justify-between py-3 border-b border-slate-50">
+                <span className="text-xs font-bold text-slate-400 uppercase">
+                  Método
+                </span>
+                <span className="text-xs font-bold text-slate-900">
+                  {getPaymentMethodLabel(payment.method)}
+                </span>
+              </div>
+
+              <div className="flex justify-between py-3 border-b border-slate-50">
+                <span className="text-xs font-bold text-slate-400 uppercase">
+                  ID Pedido
+                </span>
+                <span className="text-xs font-mono font-bold text-[#6C3EF8]">
+                  {payment.order.orderNumber}
+                </span>
+              </div>
+
+              <div className="flex justify-between py-3 border-b border-slate-50">
+                <span className="text-xs font-bold text-slate-400 uppercase">
+                  ID pagamento
+                </span>
+                <span className="text-xs font-bold text-[#6C3EF8]">
+                  {payment.id}
+                </span>
+              </div>
+
+              <div className="flex justify-between py-3">
+                <span className="text-xs font-bold text-slate-400 uppercase">
+                  Data/Hora
+                </span>
+                <span className="text-xs font-bold text-slate-900">
+                  {formattedDate}
+                </span>
+              </div>
+            </div>
           </div>
-        )}
-      </AnimatePresence>
+        </div>
+      )}
     </>
   );
 };

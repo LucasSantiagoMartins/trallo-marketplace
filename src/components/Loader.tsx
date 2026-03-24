@@ -16,7 +16,9 @@ const LoaderAnimation: React.FC<LoaderProps> = ({
   };
 
   return (
-    <div className={`flex items-center justify-center ${className}`}>
+    <div
+      className={`flex flex-1 items-center justify-center min-h-[400px] w-full ${className}`}
+    >
       <div
         className={`animate-spin ${sizeClasses[size]} border-[#6d3ff8] border-t-transparent rounded-full`}
       />

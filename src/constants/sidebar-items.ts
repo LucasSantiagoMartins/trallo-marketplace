@@ -12,6 +12,12 @@ export const adminItems = [
     path: "/area-administrativa/usuarios",
   },
   {
+    id: "entregas",
+    icon: "local_shipping",
+    label: "Gestão de Entregas",
+    path: "/area-administrativa/entregas",
+  },
+  {
     id: "pagamentos",
     icon: "payments",
     label: "Pagamentos",
@@ -23,7 +29,6 @@ export const adminItems = [
     label: "Transações",
     path: "/area-administrativa/transacoes",
   },
-
   {
     id: "carteiras",
     icon: "wallet",
@@ -57,6 +62,7 @@ export const operatorItems = [
     label: "Pedidos",
     path: "/area-operacional/pedidos",
   },
+
   {
     id: "gestao-estoque",
     icon: "inventory_2",

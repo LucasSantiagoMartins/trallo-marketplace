@@ -54,6 +54,19 @@ const BottomNavigation: React.FC = () => {
           ];
           break;
 
+        case "DELIVERER":
+          items = [
+            { icon: "home", label: "Início", path: "/" },
+            {
+              icon: "local_shipping",
+              label: "Entregas",
+              path: "/area-entregas/minhas-entregas",
+              isCenter: true,
+            },
+            { icon: "person", label: "Perfil", path: "/perfil" },
+          ];
+          break;
+
         case "SELLER":
           items = [
             { icon: "home", label: "Início", path: "/" },
@@ -100,7 +113,6 @@ const BottomNavigation: React.FC = () => {
   };
 
   const currentNavItems = getNavItems();
-  // Lógica de simetria: Só destaca o centro se o total de itens for ímpar
   const canShowCenter = currentNavItems.length % 2 !== 0;
 
   return (

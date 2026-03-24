@@ -1,5 +1,5 @@
-export const BASE_URL = "http://10.157.121.79:9090";
-export const BASE_UPLOAD_URL = "http://10.157.121.79:9090/uploads/";
+export const BASE_URL = "http://10.165.162.79:9090";
+export const BASE_UPLOAD_URL = "http://10.165.162.79:9090/uploads/";
 
 export const endpoints = {
   auth: {
@@ -51,11 +51,16 @@ export const endpoints = {
     removeItem: (cartItemId: string) => `/carts/item/${cartItemId}`,
     clear: "/carts/clear",
   },
+  deliverers: {
+    confirmDelivery: (orderNumber: string) => `/deliveries/${orderNumber}/confirm`,
+    deliveries: "/deliveries/my",
+  },
   orders: {
     buyerOrders: "/orders/my/buyer",
     sellerOrders: "/orders/my/seller",
     adminOrders: "/orders",
     getByOrderNumber: (orderNumber: string) => `/orders/${orderNumber}`,
+    processDecision: (orderNumber: string) => `/orders/process-decision/${orderNumber}`,
 
   },
   wallets: {

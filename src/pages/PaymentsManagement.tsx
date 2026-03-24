@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { motion, Variants } from "framer-motion";
 import Pagination from "../components/Pagination";
 import BottomNavigation from "../components/BottomNavigation";
 import PaymentCard from "@/components/PaymentCard";
@@ -54,23 +53,6 @@ const PaymentsManagement: React.FC = () => {
     });
   }, [payments, activeFilter, searchQuery]);
 
-  const containerVariants: Variants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.1 },
-    },
-  };
-
-  const itemVariants: Variants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.5, ease: "easeOut" },
-    },
-  };
-
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex font-['Inter']">
       <Sidebar
@@ -81,25 +63,17 @@ const PaymentsManagement: React.FC = () => {
       />
 
       <div className="flex-1 flex flex-col min-w-0">
-        <motion.main
-          className="flex-1 px-4 lg:px-12 pt-12 pb-44 max-w-7xl mx-auto w-full"
-          initial="hidden"
-          animate="visible"
-          variants={containerVariants}
-        >
-          <motion.header variants={itemVariants} className="mb-8">
+        <main className="flex-1 px-4 lg:px-12 pt-12 pb-44 max-w-7xl mx-auto w-full animate-in fade-in duration-500">
+          <header className="mb-8">
             <p className="text-[#6C3EF8] font-bold text-[10px] tracking-[0.2em] mb-1 uppercase">
               Operações
             </p>
             <h1 className="text-3xl font-semibold text-[#0F172A]">
               Gestão de Pagamentos
             </h1>
-          </motion.header>
+          </header>
 
-          <motion.div
-            variants={itemVariants}
-            className="flex flex-col lg:flex-row lg:items-end gap-6 mb-8"
-          >
+          <div className="flex flex-col lg:flex-row lg:items-end gap-6 mb-8">
             <div className="relative flex-1">
               <label className="block text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 ml-1">
                 Pesquisar Beneficiário
@@ -118,20 +92,20 @@ const PaymentsManagement: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex flex-col">
+            <div className="flex flex-col w-full lg:w-auto overflow-hidden">
               <label className="block text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1 ml-1 lg:text-right">
                 Estado
               </label>
-              <div className="flex gap-3 overflow-visible py-4 px-2 -my-2 no-scrollbar">
+              <div className="flex gap-3 overflow-x-auto py-4 px-2 -my-2 no-scrollbar touch-pan-x">
                 {["Tudo", "PAID", "PROCESSING", "PENDING", "FAILED"].map(
                   (filter) => (
                     <button
                       key={filter}
                       onClick={() => setActiveFilter(filter)}
-                      className={`px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-[0.15em] whitespace-nowrap transition-all duration-300 ${
+                      className={`px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-[0.15em] whitespace-nowrap transition-all duration-300 flex-shrink-0 ${
                         activeFilter === filter
                           ? "bg-[#6C3EF8] text-white shadow-[0_10px_20px_-5px_rgba(108,62,248,0.4)] -translate-y-1"
-                          : "bg-white text-slate-400 border border-slate-100 hover:shadow-md hover:text-slate-600 active:scale-95"
+                          : "bg-white text-slate-400 border border-slate-100  hover:text-slate-600 active:scale-95"
                       }`}
                     >
                       {filter === "PAID"
@@ -148,7 +122,7 @@ const PaymentsManagement: React.FC = () => {
                 )}
               </div>
             </div>
-          </motion.div>
+          </div>
 
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -158,9 +132,12 @@ const PaymentsManagement: React.FC = () => {
                 </div>
               ) : filteredPayments.length > 0 ? (
                 filteredPayments.map((pay) => (
-                  <motion.div key={pay.id} variants={itemVariants}>
+                  <div
+                    key={pay.id}
+                    className="animate-in fade-in slide-in-from-bottom-4 duration-500"
+                  >
                     <PaymentCard payment={pay} />
-                  </motion.div>
+                  </div>
                 ))
               ) : (
                 <div className="col-span-full py-20 text-center text-slate-400 font-medium">
@@ -178,7 +155,7 @@ const PaymentsManagement: React.FC = () => {
               window.scrollTo({ top: 0, behavior: "smooth" });
             }}
           />
-        </motion.main>
+        </main>
 
         <BottomNavigation />
       </div>

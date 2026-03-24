@@ -1,54 +1,64 @@
 import React, { useState, useEffect, useCallback } from "react";
 import BottomNavigation from "../components/BottomNavigation";
-import OrderCard from "../components/OrderCard";
 import PageHeader from "../components/PageHeader";
 import Pagination from "../components/Pagination";
 import SegmentedControl from "../components/SegmentedControl";
-import { OrderStatus } from "@/enums/order-status";
-import { OrderDTO } from "@/dtos/order";
 import { orderService } from "@/services/order.service";
 import Loader from "@/components/Loader";
+import { DeliveryResponseDto } from "@/dtos/delivery-response";
+import DeliveryOrderCard from "@/components/DeliveryOrderCard";
+import TralloInput from "@/components/TralloInput";
 
-const SellerOrdersHistory: React.FC = () => {
-  const [orders, setOrders] = useState<OrderDTO[]>([]);
+const DeliveryOrdersHistory: React.FC = () => {
+  const [deliveries, setDeliveries] = useState<DeliveryResponseDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState<"ativos" | "finalizados">(
     "ativos",
   );
 
   const ITEMS_PER_PAGE = 10;
 
-  const fetchOrders = useCallback(async (page: number) => {
+  const fetchDeliveries = useCallback(async (page: number) => {
     try {
       setLoading(true);
-      const response = await orderService.getSellerOrders(page, ITEMS_PER_PAGE);
+      const response = await orderService.getDeliveryOrders(
+        page,
+        ITEMS_PER_PAGE,
+      );
       if (response.success && response.data) {
         const resData = response.data as any;
-        setOrders(Array.isArray(resData.orders) ? resData.orders : []);
+        setDeliveries(
+          Array.isArray(resData.deliveries) ? resData.deliveries : [],
+        );
         setTotalPages(resData.pagination?.totalPages || 1);
       }
     } catch (error) {
-      console.error("Erro ao carregar vendas", error);
-      setOrders([]);
+      console.error("Erro ao carregar entregas", error);
+      setDeliveries([]);
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchOrders(currentPage);
-  }, [currentPage, fetchOrders]);
+    fetchDeliveries(currentPage);
+  }, [currentPage, fetchDeliveries]);
 
-  const filteredOrders = orders.filter((order) => {
-    const isFinalized = [
-      OrderStatus.DELIVERED,
-      OrderStatus.PAID,
-      OrderStatus.CANCELLED,
-    ].includes(order.status);
+  const filteredDeliveries = deliveries.filter((delivery) => {
+    const searchLower = searchQuery.toLowerCase();
+    const matchesSearch =
+      delivery.order.orderNumber.toLowerCase().includes(searchLower) ||
+      delivery.order.buyerName.toLowerCase().includes(searchLower);
 
-    return activeTab === "finalizados" ? isFinalized : !isFinalized;
+    const isFinalized = ["DELIVERED", "DELIVERY_FAILED", "CANCELLED"].includes(
+      delivery.status,
+    );
+    const matchesTab = activeTab === "finalizados" ? isFinalized : !isFinalized;
+
+    return matchesSearch && matchesTab;
   });
 
   const handlePageChange = (page: number) => {
@@ -56,40 +66,48 @@ const SellerOrdersHistory: React.FC = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handleTabChange = (tab: "ativos" | "finalizados") => {
-    setActiveTab(tab);
-    setCurrentPage(1);
-  };
-
   return (
     <div className="min-h-screen bg-[#f6f5f8] dark:bg-[#141022] text-[#121118] dark:text-white pb-24 font-['Inter'] relative z-0">
-      <PageHeader title="Minhas Vendas" />
+      <PageHeader title="Minhas Entregas" />
 
       <main className="max-w-7xl mx-auto px-4 pt-24 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
-            <SegmentedControl
-              className="w-full md:w-80 mb-6"
-              activeId={activeTab}
-              onChange={handleTabChange}
-              options={[
-                { id: "ativos", label: "Em Andamento" },
-                { id: "finalizados", label: "Concluídas" },
-              ]}
-            />
+            <div className="flex flex-col md:flex-row md:items-center gap-4 mb-6">
+              <SegmentedControl
+                className="w-full md:w-80"
+                activeId={activeTab}
+                onChange={(tab: any) => {
+                  setActiveTab(tab);
+                  setCurrentPage(1);
+                }}
+                options={[
+                  { id: "ativos", label: "Pendentes" },
+                  { id: "finalizados", label: "Concluídas" },
+                ]}
+              />
+
+              <div className="flex-1">
+                <TralloInput
+                  placeholder="Pesquisar por número do pedido"
+                  value={searchQuery}
+                  onChange={(val) => setSearchQuery(val)}
+                  icon="search"
+                />
+              </div>
+            </div>
 
             <div className="grid grid-cols-1 gap-4">
               {loading ? (
                 <Loader />
-              ) : filteredOrders.length > 0 ? (
+              ) : filteredDeliveries.length > 0 ? (
                 <>
-                  {filteredOrders.map((order) => (
-                    <OrderCard
-                      key={order.orderNumber}
-                      order={order}
+                  {filteredDeliveries.map((delivery) => (
+                    <DeliveryOrderCard
+                      key={delivery.id}
+                      delivery={delivery}
                       active={activeTab === "ativos"}
-                      isSeller={true}
-                      onRefresh={() => fetchOrders(currentPage)}
+                      onRefresh={() => fetchDeliveries(currentPage)}
                     />
                   ))}
 
@@ -104,9 +122,9 @@ const SellerOrdersHistory: React.FC = () => {
               ) : (
                 <div className="py-20 text-center opacity-50 bg-white dark:bg-white/5 rounded-[2rem] border-2 border-dashed border-gray-200 dark:border-white/5">
                   <span className="material-symbols-outlined text-6xl mb-2">
-                    sell
+                    local_shipping
                   </span>
-                  <p>Nenhuma venda encontrada</p>
+                  <p>Nenhuma entrega encontrada</p>
                 </div>
               )}
             </div>
@@ -116,32 +134,16 @@ const SellerOrdersHistory: React.FC = () => {
             <div className="sticky top-28 p-8 bg-gradient-to-b from-white to-gray-50 dark:from-gray-800/50 dark:to-gray-900/50 rounded-[2.5rem] border border-gray-100 dark:border-white/5 shadow-xl">
               <div className="size-14 rounded-2xl bg-[#6d3ff8] flex items-center justify-center text-white mb-6 shadow-lg shadow-purple-500/20">
                 <span className="material-symbols-outlined text-3xl">
-                  payments
+                  directions_run
                 </span>
               </div>
               <h4 className="font-black text-xl mb-4 tracking-tight">
-                Pedidos Recebidos
+                Entregador
               </h4>
-
-              <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-6">
-                Acompanhe os detalhes de cada venda. Após a entrega ao
-                comprador, ele terá até{" "}
-                <span className="text-[#6d3ff8] font-bold">24 horas</span> para
-                abrir uma reclamação. Caso não haja nenhuma reclamação dentro
-                desse prazo, o pedido será considerado concluído e o valor da
-                venda, já com a comissão padrão da plataforma, será liberado
-                para levantamento.
+              <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
+                Gerencie suas entregas delegadas. Clique em "Mapa" para iniciar
+                a rota ou em "Detalhes" para atualizar o status do pedido.
               </p>
-              <div className="border-t border-gray-100 dark:border-white/5 pt-4">
-                <div className="flex items-center gap-1 mt-2 text-[#6d3ff8]">
-                  <span className="material-symbols-outlined">
-                    verified_user
-                  </span>
-                  <span className="text-xs font-black uppercase tracking-widest">
-                    Venda Garantida
-                  </span>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -152,4 +154,4 @@ const SellerOrdersHistory: React.FC = () => {
   );
 };
 
-export default SellerOrdersHistory;
+export default DeliveryOrdersHistory;

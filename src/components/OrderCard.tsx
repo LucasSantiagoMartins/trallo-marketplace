@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   getOrderStatusColor,
@@ -10,12 +10,16 @@ import OrderDetailsModal from "./OrderDetailsModal";
 import { formatPrice } from "@/utils/currency";
 import { formatDateFriendly } from "@/utils/date";
 import TralloButton from "@/components/TralloButton";
+import { orderService } from "@/services/order.service";
+import CustomReasonModal from "./CustomReasonModal";
+import toast from "react-hot-toast";
 
 interface OrderItemProps {
   order: OrderDTO;
   active?: boolean;
   isSeller?: boolean;
   isAdmin?: boolean;
+  onRefresh?: () => void;
 }
 
 const TRACKING_STATUSES = [
@@ -36,8 +40,13 @@ const OrderCard: React.FC<OrderItemProps> = ({
   active,
   isSeller,
   isAdmin,
+  onRefresh,
 }) => {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isReasonModalOpen, setIsReasonModalOpen] = useState(false);
+  const [isAccepting, setIsAccepting] = useState(false);
+  const [isRejecting, setIsRejecting] = useState(false);
+
   const navigate = useNavigate();
 
   const firstItemName =
@@ -54,6 +63,38 @@ const OrderCard: React.FC<OrderItemProps> = ({
       `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`,
       "_blank",
     );
+  };
+
+  const executeDecision = async (isAccepted: boolean, reason?: string) => {
+    if (isAccepted) setIsAccepting(true);
+    else setIsRejecting(true);
+
+    try {
+      const response = await orderService.processOrderDecision(
+        order.orderNumber,
+        {
+          isAccepted,
+          cancellationReason: reason,
+        },
+      );
+
+      if (response.success) {
+        toast.success(
+          isAccepted
+            ? "Pedido aceito com sucesso"
+            : "Pedido rejeitado com sucesso",
+        );
+        setIsReasonModalOpen(false);
+        if (onRefresh) onRefresh();
+      } else {
+        toast.error(response.message ?? "Erro ao processar a decisão.");
+      }
+    } catch (err: any) {
+      toast.error(err.message ?? "Erro ao processar a decisão.");
+    } finally {
+      setIsAccepting(false);
+      setIsRejecting(false);
+    }
   };
 
   return (
@@ -103,6 +144,31 @@ const OrderCard: React.FC<OrderItemProps> = ({
         </div>
 
         <div className="flex gap-2">
+          {isSeller &&
+            order.status ===
+              (OrderStatus as any).AWAITING_SELLER_CONFIRMATION && (
+              <>
+                <TralloButton
+                  variant="primary"
+                  onClick={() => executeDecision(true)}
+                  isLoading={isAccepting}
+                  disabled={isRejecting}
+                  className="flex-1 !h-12 !text-sm"
+                >
+                  Confirmar
+                </TralloButton>
+                <TralloButton
+                  variant="gray"
+                  onClick={() => setIsReasonModalOpen(true)}
+                  isLoading={isRejecting}
+                  disabled={isAccepting}
+                  className="flex-1 !h-12 !text-sm !text-red-500"
+                >
+                  Cancelar
+                </TralloButton>
+              </>
+            )}
+
           {active && canTrackOrder(order.status) && !isSeller && (
             <TralloButton
               variant="primary"
@@ -126,13 +192,16 @@ const OrderCard: React.FC<OrderItemProps> = ({
             </TralloButton>
           )}
 
-          <TralloButton
-            variant="gray"
-            onClick={() => setIsOpen(true)}
-            className="flex-1 !h-12 !text-sm"
-          >
-            Detalhes
-          </TralloButton>
+          {order.status !==
+            (OrderStatus as any).AWAITING_SELLER_CONFIRMATION && (
+            <TralloButton
+              variant="gray"
+              onClick={() => setIsOpen(true)}
+              className="flex-1 !h-12 !text-sm"
+            >
+              Detalhes
+            </TralloButton>
+          )}
         </div>
       </div>
 
@@ -141,6 +210,13 @@ const OrderCard: React.FC<OrderItemProps> = ({
         onClose={() => setIsOpen(false)}
         order={order}
         isAdmin={isAdmin}
+      />
+
+      <CustomReasonModal
+        isOpen={isReasonModalOpen}
+        onClose={() => setIsReasonModalOpen(false)}
+        onConfirm={(reason) => executeDecision(false, reason)}
+        isLoading={isRejecting}
       />
     </>
   );

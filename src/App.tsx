@@ -47,6 +47,9 @@ import SellerProfileScreen from "./pages/SellerProfile";
 import RateSeller from "./pages/RateSeller";
 import NotificationsScreen from "./pages/NotificationsScreen";
 import { NotificationProvider } from "./context/NotificationContext";
+import { UserRole } from "./enums/user";
+import DeliveryOrdersHistory from "./pages/DeliveryOrdersHistory";
+import AdminDeliveryManagement from "./pages/AdminDeliveryManagement";
 
 const queryClient = new QueryClient();
 
@@ -80,6 +83,7 @@ const App = () => (
                 <Route path="/alterar-senha" element={<ChangePassword />} />
                 <Route path="/carrinho" element={<CartPage />} />
                 <Route path="/meus-pedidos" element={<BuyerOrdersHistory />} />
+
                 <Route
                   path="/minhas-vendas"
                   element={<SellerOrdersHistory />}
@@ -96,7 +100,7 @@ const App = () => (
 
               {/* --- 3. ÁREA DO VENDEDOR (SELLER) --- */}
               <Route
-                element={<ProtectedRoute allowedRoles={["SELLER", "ADMIN"]} />}
+                element={<ProtectedRoute allowedRoles={[UserRole.SELLER]} />}
               >
                 <Route path="/centro-vendas" element={<SalesCenter />} />
                 <Route path="/meus-produtos" element={<MyProductsScreen />} />
@@ -113,10 +117,23 @@ const App = () => (
                 />
               </Route>
 
+              {/* --- 4. ÁREA ENTREGAS (DELIVERER) --- */}
+              <Route
+                element={<ProtectedRoute allowedRoles={[UserRole.DELIVERER]} />}
+              >
+                <Route path="/area-entregas" element={<OperatorDashboard />} />
+                <Route
+                  path="/area-entregas/minhas-entregas"
+                  element={<DeliveryOrdersHistory />}
+                />
+              </Route>
+
               {/* --- 4. ÁREA OPERACIONAL (OPERATOR) --- */}
               <Route
                 element={
-                  <ProtectedRoute allowedRoles={["OPERATOR", "ADMIN"]} />
+                  <ProtectedRoute
+                    allowedRoles={[UserRole.OPERATOR, UserRole.ADMIN]}
+                  />
                 }
               >
                 <Route
@@ -155,7 +172,9 @@ const App = () => (
               </Route>
 
               {/* --- 5. ÁREA ADMINISTRATIVA (ADMIN) --- */}
-              <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
+              <Route
+                element={<ProtectedRoute allowedRoles={[UserRole.ADMIN]} />}
+              >
                 <Route
                   path="/area-administrativa"
                   element={<AdminDashboard />}
@@ -163,6 +182,10 @@ const App = () => (
                 <Route
                   path="/area-administrativa/usuarios"
                   element={<UsersManagement />}
+                />
+                <Route
+                  path="/area-administrativa/entregas"
+                  element={<AdminDeliveryManagement />}
                 />
                 <Route
                   path="/area-administrativa/transacoes"
