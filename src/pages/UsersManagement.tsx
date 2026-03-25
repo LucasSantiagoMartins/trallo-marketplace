@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { motion, Variants } from "framer-motion";
 import Sidebar from "@/components/Sidebar";
 import BottomNavigation from "../components/BottomNavigation";
 import UserListItem from "../components/UserListItem";
@@ -18,28 +17,18 @@ const UsersManagement: React.FC = () => {
   const [dateAfter, setDateAfter] = useState("");
   const [dateBefore, setDateBefore] = useState("");
   const [loading, setLoading] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
 
-  const [selectedUser, setSelectedUser] = useState<UserResponseDTO | null>(null);
+  const [selectedUser, setSelectedUser] = useState<UserResponseDTO | null>(
+    null,
+  );
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const totalPages = 3;
 
-  const containerVariants: Variants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.08 },
-    },
-  };
-
-  const itemVariants: Variants = {
-    hidden: { opacity: 0, y: 15 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.4, ease: "easeOut" },
-    },
-  };
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -53,12 +42,11 @@ const UsersManagement: React.FC = () => {
 
       const response = await getUsers({
         role: roleMap[filter],
-        query: searchTerm, // Enviando como query para o DTO
+        query: searchTerm,
         createdAfter: dateAfter ? new Date(dateAfter) : undefined,
         createdBefore: dateBefore ? new Date(dateBefore) : undefined,
         page: currentPage,
       });
-
       if (response.success) {
         setUsers(response.data);
       }
@@ -106,24 +94,22 @@ const UsersManagement: React.FC = () => {
       />
 
       <div className="flex-1 flex flex-col min-w-0">
-        <motion.main
-          className="flex-1 px-4 lg:px-12 pt-12 pb-44 max-w-7xl mx-auto w-full"
-          initial="hidden"
-          animate="visible"
-          variants={containerVariants}
+        <main
+          className={`flex-1 px-4 lg:px-12 pt-12 pb-44 max-w-7xl mx-auto w-full transition-all duration-700 ease-out ${
+            isMounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+          }`}
         >
-          <motion.header variants={itemVariants} className="mb-8">
+          <header className="mb-8">
             <p className="text-[#6C3EF8] font-bold text-[10px] tracking-[0.2em] mb-1 uppercase">
               Gerenciamento
             </p>
             <h1 className="text-3xl font-semibold text-[#0F172A]">
               Usuários da Plataforma
             </h1>
-          </motion.header>
+          </header>
 
-          <motion.div variants={itemVariants} className="space-y-6 mb-8">
+          <div className="space-y-6 mb-8">
             <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
-              {/* Busca Principal */}
               <div className="flex-1 w-full lg:max-w-md">
                 <label className="block text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 ml-1">
                   Nome, E-mail ou Telefone
@@ -145,33 +131,33 @@ const UsersManagement: React.FC = () => {
                 </div>
               </div>
 
-              {/* Filtro de Tipo (Tabs) */}
               <div className="flex flex-col">
                 <label className="block text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1 ml-1 lg:text-right">
                   Filtrar por tipo
                 </label>
                 <div className="flex gap-3 overflow-x-auto py-4 px-2 -my-2 no-scrollbar lg:justify-end">
-                  {["Todos", "Vendedores", "Compradores", "ADMIN"].map((tab) => (
-                    <button
-                      key={tab}
-                      onClick={() => {
-                        setFilter(tab);
-                        setCurrentPage(1);
-                      }}
-                      className={`px-6 py-3 rounded-full text-[11px] font-black uppercase tracking-wider whitespace-nowrap transition-all duration-300 ${
-                        filter === tab
-                          ? "bg-[#6C3EF8] text-white shadow-[0_10px_25px_-5px_rgba(108,62,248,0.4)] -translate-y-1"
-                          : "bg-white text-slate-500 shadow-sm border border-slate-100 hover:border-slate-200"
-                      }`}
-                    >
-                      {tab}
-                    </button>
-                  ))}
+                  {["Todos", "Vendedores", "Compradores", "ADMIN"].map(
+                    (tab) => (
+                      <button
+                        key={tab}
+                        onClick={() => {
+                          setFilter(tab);
+                          setCurrentPage(1);
+                        }}
+                        className={`px-6 py-3 rounded-full text-[11px] font-black uppercase tracking-wider whitespace-nowrap transition-all duration-300 active:scale-95 ${
+                          filter === tab
+                            ? "bg-[#6C3EF8] text-white shadow-[0_10px_25px_-5px_rgba(108,62,248,0.4)] -translate-y-1"
+                            : "bg-white text-slate-500 shadow-sm border border-slate-100 hover:border-slate-200"
+                        }`}
+                      >
+                        {tab}
+                      </button>
+                    ),
+                  )}
                 </div>
               </div>
             </div>
 
-            {/* Filtros de Data */}
             <div className="flex flex-wrap gap-4 items-end bg-slate-50/50 p-4 rounded-2xl border border-slate-100">
               <div className="flex-1 min-w-[200px]">
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">
@@ -181,7 +167,7 @@ const UsersManagement: React.FC = () => {
                   type="date"
                   value={dateAfter}
                   onChange={(e) => setDateAfter(e.target.value)}
-                  className="w-full bg-white border-none rounded-xl py-2.5 px-4 shadow-sm text-xs font-semibold text-slate-600 outline-none focus:ring-2 focus:ring-[#6C3EF8]/10"
+                  className="w-full bg-white border-none rounded-xl py-2.5 px-4 shadow-sm text-xs font-semibold text-slate-600 outline-none focus:ring-2 focus:ring-[#6C3EF8]/10 transition-all"
                 />
               </div>
               <div className="flex-1 min-w-[200px]">
@@ -192,17 +178,20 @@ const UsersManagement: React.FC = () => {
                   type="date"
                   value={dateBefore}
                   onChange={(e) => setDateBefore(e.target.value)}
-                  className="w-full bg-white border-none rounded-xl py-2.5 px-4 shadow-sm text-xs font-semibold text-slate-600 outline-none focus:ring-2 focus:ring-[#6C3EF8]/10"
+                  className="w-full bg-white border-none rounded-xl py-2.5 px-4 shadow-sm text-xs font-semibold text-slate-600 outline-none focus:ring-2 focus:ring-[#6C3EF8]/10 transition-all"
                 />
               </div>
-              <button 
-                onClick={() => { setDateAfter(""); setDateBefore(""); }}
+              <button
+                onClick={() => {
+                  setDateAfter("");
+                  setDateBefore("");
+                }}
                 className="px-4 py-2.5 text-[10px] font-bold text-slate-400 hover:text-red-500 transition-colors uppercase"
               >
                 Limpar Datas
               </button>
             </div>
-          </motion.div>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {loading ? (
@@ -210,23 +199,31 @@ const UsersManagement: React.FC = () => {
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#6C3EF8]"></div>
               </div>
             ) : (
-              users.map((user) => (
-                <motion.div key={user.id} variants={itemVariants}>
+              users.map((user, index) => (
+                <div
+                  key={user.id}
+                  className={`transition-all duration-500 ease-out`}
+                  style={{
+                    transitionDelay: `${index * 50}ms`,
+                    opacity: isMounted ? 1 : 0,
+                    transform: isMounted ? "translateY(0)" : "translateY(10px)",
+                  }}
+                >
                   <UserListItem
                     user={user}
                     onActionClick={() => handleActionClick(user)}
                   />
-                </motion.div>
+                </div>
               ))
             )}
 
             {!loading && users.length === 0 && (
-              <div className="col-span-full text-center py-20 text-slate-400 bg-white rounded-3xl border border-dashed border-slate-200">
+              <div className="col-span-full text-center py-20 text-slate-400 bg-white rounded-3xl border border-dashed border-slate-200 animate-pulse">
                 Nenhum usuário encontrado com os filtros aplicados.
               </div>
             )}
           </div>
-        </motion.main>
+        </main>
 
         <div className="mt-auto">
           <Pagination

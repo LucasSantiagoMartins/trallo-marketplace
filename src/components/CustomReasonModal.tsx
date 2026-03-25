@@ -175,7 +175,7 @@ const CustomReasonModal: React.FC<CustomReasonModalProps> = ({
                   Processando...
                 </>
               ) : (
-                "Confirmar Detalhes"
+                "Confirmar"
               )}
             </button>
 

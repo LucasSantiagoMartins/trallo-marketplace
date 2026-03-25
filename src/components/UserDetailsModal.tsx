@@ -1,74 +1,170 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { createPortal } from "react-dom"; 
 import { UserResponseDTO } from "@/types/user";
-import { getUserRoleColor, getUserRoleLabel } from "@/utils/mappers/user.mapper";
+import {
+  getUserRoleColor,
+  getUserRoleLabel,
+} from "@/utils/mappers/user.mapper";
+import { formatDateFriendly } from "@/utils/date";
 
 interface UserDetailsModalProps {
-  user: UserResponseDTO | null;
   isOpen: boolean;
   onClose: () => void;
+  user: UserResponseDTO;
 }
 
-const UserDetailsModal: React.FC<UserDetailsModalProps> = ({ user, isOpen, onClose }) => {
-  if (!isOpen || !user) return null;
+const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
+  isOpen,
+  onClose,
+  user,
+}) => {
+  const [isRendered, setIsRendered] = useState(false);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchTranslation, setTouchTranslation] = useState(0);
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
-      <div className="bg-white w-full max-w-md rounded-[24px] overflow-hidden shadow-2xl">
-        <div className="relative h-24 bg-gradient-to-r from-slate-800 to-slate-600">
-          <button 
-            onClick={onClose}
-            className="absolute top-4 right-4 p-2 bg-white/20 hover:bg-white/40 rounded-full text-white transition-colors"
-          >
-            <span className="material-symbols-outlined text-[20px]">close</span>
-          </button>
+  useEffect(() => {
+    if (isOpen) {
+      setIsRendered(true);
+      document.body.style.overflow = "hidden";
+    } else {
+      const timer = setTimeout(() => setIsRendered(false), 300);
+      document.body.style.overflow = "unset";
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.targetTouches[0].clientY);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (touchStart === null) return;
+    const currentTouch = e.targetTouches[0].clientY;
+    const diff = currentTouch - touchStart;
+    if (diff > 0) setTouchTranslation(diff);
+  };
+
+  const handleTouchEnd = () => {
+    if (touchTranslation > 100) onClose();
+    setTouchTranslation(0);
+    setTouchStart(null);
+  };
+
+  if (!isRendered) return null;
+
+  const modalContent = (
+    <div
+      className={`fixed inset-0 z-[9999] flex items-end md:items-center justify-center transition-opacity duration-300 ${
+        isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+      }`}
+    >
+      <div
+        className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+        onClick={onClose}
+      />
+
+      <div
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        style={{ transform: `translateY(${touchTranslation}px)` }}
+        className={`bg-white w-full md:max-w-md rounded-t-[2.5rem] md:rounded-[2.5rem] p-8 shadow-2xl relative z-[10000] transition-all duration-300 ease-out ${
+          isOpen 
+            ? "translate-y-0 scale-100" 
+            : "translate-y-full md:scale-95 md:translate-y-10"
+        }`}
+      >
+        <div className="md:hidden flex justify-center mb-6 -mt-2">
+          <div className="w-12 h-1.5 bg-slate-200 rounded-full" />
         </div>
 
-        <div className="px-6 pb-8">
-          <div className="relative -mt-12 mb-4">
-            <img
-              src={`https://ui-avatars.com/api/?name=${user.fullName}&background=random&size=128`}
-              alt={user.fullName}
-              className="w-24 h-24 rounded-[20px] border-4 border-white shadow-lg object-cover"
-            />
-          </div>
+        <button
+          onClick={onClose}
+          className="hidden md:flex absolute right-6 top-6 size-10 items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition-colors"
+        >
+          <span className="material-symbols-outlined text-xl">close</span>
+        </button>
 
-          <div className="space-y-4">
-            <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-xl font-bold text-slate-900">{user.fullName}</h2>
-                <span className={`px-2 py-0.5 text-[10px] font-black uppercase rounded-md ${getUserRoleColor(user.role)}`}>
-                  {getUserRoleLabel(user.role)}
-                </span>
-              </div>
-              <p className="text-slate-500 font-medium">{user.email}</p>
+        <div className="text-center mb-8">
+          <p className="text-[#6C3EF8] font-black text-[10px] tracking-[0.2em] uppercase mb-4">
+            Perfil do Usuário
+          </p>
+
+          <div className="flex flex-col items-center">
+            <div className="relative mb-3">
             </div>
-
-            <hr className="border-slate-100" />
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="p-3 bg-slate-50 rounded-xl">
-                <span className="text-[10px] font-bold text-slate-400 uppercase block mb-1">Status</span>
-                <span className={`text-xs font-bold ${user.isSuspended ? "text-red-500" : "text-emerald-500"}`}>
-                  {user.isSuspended ? "CONTA SUSPENSA" : "CONTA ATIVA"}
-                </span>
-              </div>
-              <div className="p-3 bg-slate-50 rounded-xl">
-                <span className="text-[10px] font-bold text-slate-400 uppercase block mb-1">ID Usuário</span>
-                <span className="text-xs font-bold text-slate-700 truncate block">#{user.id}</span>
-              </div>
-            </div>
+            <h3 className="text-2xl font-black text-[#0F172A] leading-tight">
+              {user.fullName}
+            </h3>
           </div>
-
-          <button
-            onClick={onClose}
-            className="w-full mt-8 py-3 bg-slate-900 text-white rounded-xl font-bold text-sm hover:bg-slate-800 transition-colors"
-          >
-            Fechar Detalhes
-          </button>
         </div>
+
+        <div className="space-y-3">
+          <div className="flex justify-between py-3 border-b border-slate-50">
+            <span className="text-xs font-bold text-slate-400 uppercase">
+              Cargo
+            </span>
+            <span
+              className={`text-[10px] font-black uppercase px-3 py-1 rounded-full ${getUserRoleColor(user.role)}`}
+            >
+              {getUserRoleLabel(user.role)}
+            </span>
+          </div>
+
+          <div className="flex justify-between py-3 border-b border-slate-50">
+            <span className="text-xs font-bold text-slate-400 uppercase">
+              E-mail
+            </span>
+            <span className="text-xs font-bold text-slate-900 truncate ml-4">
+              {user.email}
+            </span>
+          </div>
+
+          <div className="flex justify-between py-3 border-b border-slate-50">
+            <span className="text-xs font-bold text-slate-400 uppercase">
+              Telefone
+            </span>
+            <span className="text-xs font-bold text-slate-900">
+              {user.phoneNumber}
+            </span>
+          </div>
+
+          <div className="flex justify-between py-3 border-b border-slate-50">
+            <span className="text-xs font-bold text-slate-400 uppercase">
+              Endereço
+            </span>
+            <span className="text-xs font-bold text-slate-900 text-right">
+              {user.address || "---"}
+            </span>
+          </div>
+
+          <div className="flex justify-between py-3">
+            <span className="text-xs font-bold text-slate-400 uppercase">
+              Membro desde
+            </span>
+            <span className="text-xs font-bold text-slate-900">
+              {formatDateFriendly(user.createdAt, true)}
+            </span>
+          </div>
+
+          {user.isSuspended && (
+            <div className="mt-4 p-4 bg-red-50 rounded-2xl border border-red-100">
+              <p className="text-[10px] font-black text-red-400 uppercase mb-1">
+                Motivo da Suspensão
+              </p>
+              <p className="text-xs font-medium text-red-700 leading-relaxed">
+                {user.suspensionReason || "Nenhum motivo especificado."}
+              </p>
+            </div>
+          )}
+        </div>
+        
+       
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 };
 
 export default UserDetailsModal;
