@@ -107,8 +107,8 @@ const CheckoutModal: React.FC<Props> = ({
       >
         <div className="flex justify-center md:justify-end pt-4 pb-2 px-6">
           <div className="md:hidden w-12 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full" />
-          
-          <button 
+
+          <button
             onClick={handleClose}
             className="hidden md:flex items-center justify-center size-10 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 rounded-full transition-colors"
           >
@@ -196,7 +196,7 @@ const CheckoutModal: React.FC<Props> = ({
               <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
                 <span>Subtotal</span>
                 <span className="font-semibold text-gray-700 dark:text-gray-200">
-                  {subtotal.toLocaleString("pt-AO")} Kz
+                  {formatPrice(subtotal)}
                 </span>
               </div>
 
@@ -206,7 +206,7 @@ const CheckoutModal: React.FC<Props> = ({
                   <span className="font-semibold">
                     {deliveryFee === 0
                       ? "Grátis"
-                      : `${deliveryFee.toLocaleString("pt-AO")} Kz`}
+                      : `${formatPrice(deliveryFee)} `}
                   </span>
                 </div>
               )}
@@ -215,7 +215,7 @@ const CheckoutModal: React.FC<Props> = ({
                 <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
                   <span>Taxa de Serviço (3.5%)</span>
                   <span className="font-semibold text-gray-700 dark:text-gray-200">
-                    {serviceFee.toLocaleString("pt-AO")} Kz
+                    {formatPrice(serviceFee)}
                   </span>
                 </div>
               )}

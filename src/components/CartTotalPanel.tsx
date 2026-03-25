@@ -87,7 +87,7 @@ const CartTotalPanel: React.FC<CartTotalPanelProps> = ({
           <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
             <span>Subtotal</span>
             <span className="font-semibold text-gray-700 dark:text-gray-200">
-              {subtotal.toLocaleString("pt-AO")} Kz
+              {formatPrice(subtotal)}
             </span>
           </div>
           <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
@@ -95,13 +95,13 @@ const CartTotalPanel: React.FC<CartTotalPanelProps> = ({
             <span className="font-semibold ">
               {deliveryFee === 0
                 ? "Grátis"
-                : `${deliveryFee.toLocaleString("pt-AO")} Kz`}
+                : `${formatPrice(deliveryFee)}`}
             </span>
           </div>
           <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
             <span>Taxa de Serviço (3.5%)</span>
             <span className="font-semibold text-gray-700 dark:text-gray-200">
-              {serviceFee.toLocaleString("pt-AO")} Kz
+              {formatPrice(serviceFee)}
             </span>
           </div>
         </div>
