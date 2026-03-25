@@ -2,6 +2,7 @@ import { WalletType } from "@/enums/wallet";
 import { PaginationDTO } from "./pagination";
 import { PaymentMethod, PaymentStatus } from "@/enums/payment";
 import { TransactionStatus, TransactionType } from "@/enums/transaction";
+import { UserRole } from "@/enums/user";
 
 export interface AdminWallet {
   id: string;
@@ -25,7 +26,7 @@ export interface AdminTransaction {
   wallet: {
     id: string;
     ownerName: string;
-    ownerRole: string;
+    ownerRole: UserRole;
   };
   order?: {
     id: string;

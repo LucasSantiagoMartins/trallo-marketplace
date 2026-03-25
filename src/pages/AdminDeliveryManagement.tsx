@@ -107,7 +107,7 @@ const AdminDeliveryManagement: React.FC = () => {
 
               <div className="flex flex-col">
                 <label className="block text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1 ml-1 lg:text-right">
-                  Status da Entrega
+                  Estado da Entrega
                 </label>
                 <SegmentedControl
                   className="w-full md:w-80"
