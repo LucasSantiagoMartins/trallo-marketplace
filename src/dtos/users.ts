@@ -1,3 +1,5 @@
+import { UserRole } from "@/enums/user";
+
 export interface ChangePasswordDto {
     currentPassword: string;
     newPassword: string;
@@ -30,4 +32,13 @@ export interface ReviewUserDto {
     orderId: string;
     rating: number;
     comment?: string;
+}
+export interface RegisterUserDto {
+    fullName: string,
+    phoneNumber: string,
+    email: string,
+    password: string,
+    role: UserRole
+    address?: string,
+
 }

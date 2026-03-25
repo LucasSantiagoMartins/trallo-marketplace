@@ -1,19 +1,21 @@
 import { http } from "../api/http";
 import { endpoints } from "../api/endpoints";
 import type { ApiResponse, User, AuthUser } from "@/types/api";
-import { UserResponseDTO, UserFiltersDto } from "@/types/user";
-import { ChangePasswordDto, ReviewUserDto, UserProfileDTO } from "@/dtos/users";
+import { UserResponseDTO, UserFiltersDto, GetUsersResponseDTO } from "@/types/user";
+import { ChangePasswordDto, RegisterUserDto, ReviewUserDto, UserProfileDTO } from "@/dtos/users";
 import { ResetPasswordDto } from "@/dtos/reset-password";
 
 export async function getUsers(
-  filters: UserFiltersDto & { page?: number },
-): Promise<ApiResponse<UserResponseDTO[]>> {
-  return await http.get<UserResponseDTO[]>(endpoints.users.list, {
+  filters: UserFiltersDto & { page?: number, limit?: number },
+): Promise<ApiResponse<GetUsersResponseDTO>> {
+  return await http.get<GetUsersResponseDTO>(endpoints.users.list, {
     params: {
       ...filters,
+
     },
   });
 }
+
 const updateSessionCache = (updatedData: AuthUser | User): any => {
   const session = localStorage.getItem("user_session");
   if (session) {
@@ -110,4 +112,20 @@ export async function getSellerProfile(slug: string): Promise<ApiResponse<UserPr
 
 export async function reviewUser(data: ReviewUserDto): Promise<ApiResponse<void>> {
   return http.post<void>(endpoints.users.reviewSeller, data);
+}
+
+export async function createStaff(data: RegisterUserDto): Promise<ApiResponse<any>> {
+  return await http.post<void>(endpoints.users.createStaff, data);
+}
+
+export async function suspendUser(userId: string, data: { reason: string }): Promise<ApiResponse<void>> {
+  return await http.patch<void>(endpoints.users.suspend(userId), data);
+}
+
+export async function reactivateUser(userId: string): Promise<ApiResponse<void>> {
+  return await http.patch<void>(endpoints.users.reactivate(userId));
+}
+
+export async function deleteUser(userId: string): Promise<ApiResponse<void>> {
+  return await http.delete<void>(endpoints.users.delete(userId));
 }

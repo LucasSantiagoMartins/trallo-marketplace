@@ -127,7 +127,7 @@ export const http = {
 
   patch<T, B = unknown>(
     path: string,
-    body: B,
+    body?: B | null, 
     options?: RequestOptions,
   ): Promise<ApiResponse<T>> {
     return request<T>("PATCH", path, body, options);

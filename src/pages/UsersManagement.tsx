@@ -4,85 +4,75 @@ import BottomNavigation from "../components/BottomNavigation";
 import UserListItem from "../components/UserListItem";
 import Pagination from "../components/Pagination";
 import CustomReasonModal from "@/components/CustomReasonModal";
+import ConfirmAction from "@/components/ConfirmAction";
 import { adminItems } from "@/constants/sidebar-items";
-import { getUsers } from "@/services/user.service";
 import { UserResponseDTO } from "@/types/user";
-import { UserRole } from "@/enums/user";
+import { useUserManagement } from "@/hooks/useUserManagement";
 
 const UsersManagement: React.FC = () => {
-  const [users, setUsers] = useState<UserResponseDTO[]>([]);
   const [filter, setFilter] = useState("Todos");
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [dateAfter, setDateAfter] = useState("");
   const [dateBefore, setDateBefore] = useState("");
-  const [loading, setLoading] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
 
   const [selectedUser, setSelectedUser] = useState<UserResponseDTO | null>(
     null,
   );
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSuspensionModalOpen, setIsSuspensionModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isReactivateModalOpen, setIsReactivateModalOpen] = useState(false);
+  const [actionLoading, setActionLoading] = useState(false);
 
-  const totalPages = 3;
+  const {
+    users,
+    loading,
+    totalPages,
+    handleSuspend,
+    handleReactivate,
+    handleDelete,
+  } = useUserManagement(filter, searchTerm, currentPage, dateAfter, dateBefore);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  const fetchUsers = async () => {
-    setLoading(true);
-    try {
-      const roleMap: Record<string, UserRole | undefined> = {
-        Vendedores: UserRole.SELLER,
-        Compradores: UserRole.BUYER,
-        ADMIN: UserRole.ADMIN,
-        Todos: undefined,
-      };
-
-      const response = await getUsers({
-        role: roleMap[filter],
-        query: searchTerm,
-        createdAfter: dateAfter ? new Date(dateAfter) : undefined,
-        createdBefore: dateBefore ? new Date(dateBefore) : undefined,
-        page: currentPage,
-      });
-      if (response.success) {
-        setUsers(response.data);
+  const onConfirmSuspension = async (reason: string) => {
+    if (selectedUser) {
+      setActionLoading(true);
+      const res = await handleSuspend(String(selectedUser.id), reason);
+      if (res.success) {
+        setIsSuspensionModalOpen(false);
+        setSelectedUser(null);
       }
-    } catch (error) {
-      console.error("Erro ao buscar usuários:", error);
-    } finally {
-      setLoading(false);
+      setActionLoading(false);
     }
   };
 
-  const handleActionClick = (user: UserResponseDTO) => {
-    if (user.isSuspended) {
-      console.log("Lógica para reativar usuário:", user.id);
-    } else {
-      setSelectedUser(user);
-      setIsModalOpen(true);
+  const onConfirmDelete = async () => {
+    if (selectedUser) {
+      setActionLoading(true);
+      const res = await handleDelete(String(selectedUser.id));
+      if (res.success) {
+        setIsDeleteModalOpen(false);
+        setSelectedUser(null);
+      }
+      setActionLoading(false);
     }
   };
 
-  const handleConfirmSuspension = async (reason: string) => {
-    if (!selectedUser) return;
-    try {
-      setIsModalOpen(false);
-      setSelectedUser(null);
-      await fetchUsers();
-    } catch (error) {
-      console.error("Erro ao suspender:", error);
+  const onConfirmReactivate = async () => {
+    if (selectedUser) {
+      setActionLoading(true);
+      const res = await handleReactivate(String(selectedUser.id));
+      if (res.success) {
+        setIsReactivateModalOpen(false);
+        setSelectedUser(null);
+      }
+      setActionLoading(false);
     }
   };
-
-  useEffect(() => {
-    const delayDebounce = setTimeout(() => {
-      fetchUsers();
-    }, 400);
-    return () => clearTimeout(delayDebounce);
-  }, [filter, searchTerm, currentPage, dateAfter, dateBefore]);
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex font-['Inter'] relative">
@@ -166,7 +156,10 @@ const UsersManagement: React.FC = () => {
                 <input
                   type="date"
                   value={dateAfter}
-                  onChange={(e) => setDateAfter(e.target.value)}
+                  onChange={(e) => {
+                    setDateAfter(e.target.value);
+                    setCurrentPage(1);
+                  }}
                   className="w-full bg-white border-none rounded-xl py-2.5 px-4 shadow-sm text-xs font-semibold text-slate-600 outline-none focus:ring-2 focus:ring-[#6C3EF8]/10 transition-all"
                 />
               </div>
@@ -177,7 +170,10 @@ const UsersManagement: React.FC = () => {
                 <input
                   type="date"
                   value={dateBefore}
-                  onChange={(e) => setDateBefore(e.target.value)}
+                  onChange={(e) => {
+                    setDateBefore(e.target.value);
+                    setCurrentPage(1);
+                  }}
                   className="w-full bg-white border-none rounded-xl py-2.5 px-4 shadow-sm text-xs font-semibold text-slate-600 outline-none focus:ring-2 focus:ring-[#6C3EF8]/10 transition-all"
                 />
               </div>
@@ -185,6 +181,7 @@ const UsersManagement: React.FC = () => {
                 onClick={() => {
                   setDateAfter("");
                   setDateBefore("");
+                  setCurrentPage(1);
                 }}
                 className="px-4 py-2.5 text-[10px] font-bold text-slate-400 hover:text-red-500 transition-colors uppercase"
               >
@@ -200,27 +197,25 @@ const UsersManagement: React.FC = () => {
               </div>
             ) : (
               users.map((user, index) => (
-                <div
+                <UserListItem
                   key={user.id}
-                  className={`transition-all duration-500 ease-out`}
-                  style={{
-                    transitionDelay: `${index * 50}ms`,
-                    opacity: isMounted ? 1 : 0,
-                    transform: isMounted ? "translateY(0)" : "translateY(10px)",
+                  user={user}
+                  onSuspendClick={() => {
+                    setSelectedUser(user);
+                    setIsSuspensionModalOpen(true);
                   }}
-                >
-                  <UserListItem
-                    user={user}
-                    onActionClick={() => handleActionClick(user)}
-                  />
-                </div>
+                  onReactivateClick={() => {
+                    setSelectedUser(user);
+                    setIsReactivateModalOpen(true);
+                  }}
+                  onDeleteClick={() => {
+                    setSelectedUser(user);
+                    setIsDeleteModalOpen(true);
+                  }}
+                  styleDelay={index * 50}
+                  isMounted={isMounted}
+                />
               ))
-            )}
-
-            {!loading && users.length === 0 && (
-              <div className="col-span-full text-center py-20 text-slate-400 bg-white rounded-3xl border border-dashed border-slate-200 animate-pulse">
-                Nenhum usuário encontrado com os filtros aplicados.
-              </div>
             )}
           </div>
         </main>
@@ -237,12 +232,42 @@ const UsersManagement: React.FC = () => {
       </div>
 
       <CustomReasonModal
-        isOpen={isModalOpen}
+        isOpen={isSuspensionModalOpen}
         onClose={() => {
-          setIsModalOpen(false);
+          setIsSuspensionModalOpen(false);
           setSelectedUser(null);
         }}
-        onConfirm={handleConfirmSuspension}
+        onConfirm={onConfirmSuspension}
+      />
+
+      <ConfirmAction
+        isOpen={isDeleteModalOpen}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setSelectedUser(null);
+        }}
+        onConfirm={onConfirmDelete}
+        isLoading={actionLoading}
+        title="Excluir Usuário"
+        description={`Tem certeza que deseja excluir permanentemente ${selectedUser?.fullName}? Esta ação removerá todos os dados vinculados e não pode ser desfeita.`}
+        confirmText="Sim, excluir"
+        variant="danger"
+        icon="delete_forever"
+      />
+
+      <ConfirmAction
+        isOpen={isReactivateModalOpen}
+        onClose={() => {
+          setIsReactivateModalOpen(false);
+          setSelectedUser(null);
+        }}
+        onConfirm={onConfirmReactivate}
+        isLoading={actionLoading}
+        title="Reativar Usuário"
+        description={`Deseja restaurar o acesso de ${selectedUser?.fullName}? O usuário poderá realizar login novamente na plataforma.`}
+        confirmText="Confirmar"
+        variant="primary"
+        icon="person_check"
       />
     </div>
   );

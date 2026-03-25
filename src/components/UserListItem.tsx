@@ -8,25 +8,42 @@ import UserDetailsModal from "./UserDetailsModal";
 
 interface UserListItemProps {
   user: UserResponseDTO;
-  onActionClick?: () => void;
+  onSuspendClick: () => void;
+  onReactivateClick: () => void;
+  onDeleteClick: () => void;
+  styleDelay: number;
+  isMounted: boolean;
 }
 
-const UserListItem: React.FC<UserListItemProps> = ({ user, onActionClick }) => {
+const UserListItem: React.FC<UserListItemProps> = ({
+  user,
+  onSuspendClick,
+  onReactivateClick,
+  onDeleteClick,
+  styleDelay,
+  isMounted,
+}) => {
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const isSuspended = user.isSuspended;
 
   return (
     <>
       <div
-        className={`bg-white ${
-          isSuspended ? "opacity-75" : ""
-        } p-4 rounded-[16px] shadow-sm border border-slate-50 flex items-center gap-4 transition-all hover:shadow-md`}
+        style={{
+          transitionDelay: `${styleDelay}ms`,
+          opacity: isMounted ? 1 : 0,
+          transform: isMounted ? "translateY(0)" : "translateY(10px)",
+        }}
+        className={`bg-white ${isSuspended ? "bg-slate-50/50" : ""} p-4 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4 relative transition-all hover:shadow-md ${
+          isMenuOpen ? "z-[100] ring-2 ring-slate-200" : "z-10"
+        }`}
       >
         <div className="relative shrink-0">
           <img
             src={`https://ui-avatars.com/api/?name=${user.fullName}&background=random`}
             alt={user.fullName}
-            className={`w-12 h-12 rounded-full object-cover ${isSuspended ? "grayscale" : ""}`}
+            className={`w-12 h-12 rounded-full object-cover ${isSuspended ? "grayscale opacity-50" : ""}`}
           />
           <span
             className={`absolute bottom-0 right-0 w-3 h-3 border-2 border-white rounded-full ${isSuspended ? "bg-red-500" : "bg-emerald-500"}`}
@@ -49,39 +66,84 @@ const UserListItem: React.FC<UserListItemProps> = ({ user, onActionClick }) => {
           <p className="text-[11px] text-slate-400 truncate font-medium">
             {user.email}
           </p>
-          <div className="flex items-center gap-1 mt-1">
-            <span
-              className={`text-[9px] font-black px-2 py-0.5 rounded-full ${isSuspended ? "bg-red-50 text-red-600" : "bg-emerald-50 text-emerald-600"}`}
-            >
-              {isSuspended ? "SUSPENSO" : "ATIVO"}
-            </span>
-          </div>
         </div>
 
-        <div className="flex shrink-0 gap-2">
-          {/* Botão Visualizar Detalhes */}
+        <div className="relative flex items-center gap-1">
           <button
             onClick={() => setIsDetailsOpen(true)}
-            className="size-9 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:bg-[#6C3EF8] hover:text-white transition-all active:scale-90"
+            className="p-2 text-slate-400 hover:text-[#6C3EF8] transition-colors rounded-full"
           >
-            <span className="material-symbols-outlined text-[18px]">
+            <span className="material-symbols-outlined text-[20px]">
               visibility
             </span>
           </button>
 
-          {/* Botão Bloquear/Desbloquear */}
-          <button
-            onClick={onActionClick}
-            className={`size-9 flex items-center justify-center rounded-full transition-all active:scale-90 ${
-              isSuspended
-                ? "bg-purple-50 text-[#6C3EF8] hover:bg-purple-100"
-                : "bg-slate-50 text-slate-300 hover:text-red-500 hover:bg-red-50"
-            }`}
-          >
-            <span className="material-symbols-outlined text-[18px]">
-              {isSuspended ? "lock_open" : "block"}
-            </span>
-          </button>
+          <div className="relative" onMouseLeave={() => setIsMenuOpen(false)}>
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className={`p-2 rounded-full transition-all text-slate-400 ${
+                isMenuOpen ? "bg-slate-100" : ""
+              }`}
+            >
+              <span className="material-symbols-outlined text-[20px]">
+                more_vert
+              </span>
+            </button>
+
+            {isMenuOpen && (
+              <>
+                <div
+                  className="fixed inset-0 z-[40]"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsMenuOpen(false);
+                  }}
+                />
+                <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-2xl border border-slate-100 py-2 z-[50] animate-in fade-in zoom-in duration-200 origin-top-right">
+                  {isSuspended ? (
+                    <button
+                      onClick={() => {
+                        onReactivateClick();
+                        setIsMenuOpen(false);
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-semibold text-emerald-600 hover:bg-emerald-50 transition-colors"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">
+                        lock_open
+                      </span>
+                      Reativar Conta
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        onSuspendClick();
+                        setIsMenuOpen(false);
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-semibold text-amber-600 hover:bg-amber-50 transition-colors"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">
+                        block
+                      </span>
+                      Suspender
+                    </button>
+                  )}
+                  <div className="h-[1px] bg-slate-100 my-1" />
+                  <button
+                    onClick={() => {
+                      onDeleteClick();
+                      setIsMenuOpen(false);
+                    }}
+                    className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">
+                      delete
+                    </span>
+                    Excluir Usuário
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
 

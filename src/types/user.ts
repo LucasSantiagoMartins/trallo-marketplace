@@ -1,3 +1,4 @@
+import { PaginationDTO } from "@/dtos/pagination";
 import { UserRole } from "@/enums/user";
 
 export interface UserResponseDTO {
@@ -19,4 +20,10 @@ export class UserFiltersDto {
   role?: UserRole;
   createdBefore?: Date;
   createdAfter?: Date;
+}
+
+
+export interface GetUsersResponseDTO {
+  users: UserResponseDTO[];
+  pagination: PaginationDTO
 }

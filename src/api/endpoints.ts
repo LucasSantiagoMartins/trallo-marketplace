@@ -18,6 +18,10 @@ export const endpoints = {
     requestResetPassword: "/users/request-reset-password",
     deleteMyAccount: "/users/my-account",
     sellerProfile: (slug: string) => `/users/seller-profile/${slug}`,
+    createStaff: "/users/staff",
+    suspend: (userId: string) => `/users/${userId}/suspend`,
+    reactivate: (userId: string) => `/users/${userId}/reactivate`,
+    delete: (userId: string) => `/users/${userId}`,
   },
   notifications: {
     list: "/notifications",
