@@ -3,9 +3,24 @@ import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "@/hooks/use-cart";
 import { adminItems, operatorItems } from "@/constants/sidebar-items";
+import {
+  Home,
+  User,
+  ShoppingCart,
+  Truck,
+  PlusCircle,
+  Wallet,
+  Store,
+  LayoutDashboard,
+  ClipboardList,
+  ShieldCheck,
+  Boxes,
+  LucideIcon,
+  ShoppingBag,
+} from "lucide-react";
 
 interface NavItem {
-  icon: string;
+  icon: LucideIcon;
   label: string;
   path: string;
   isCenter?: boolean;
@@ -22,93 +37,97 @@ const BottomNavigation: React.FC = () => {
 
     if (!isAuthenticated || !user) {
       items = [
-        { icon: "home", label: "Início", path: "/" },
-        { icon: "person", label: "Entrar", path: "/perfil" },
+        { icon: Home, label: "Início", path: "/" },
+        { icon: User, label: "Entrar", path: "/perfil" },
       ];
     } else {
       switch (user.role) {
         case "ADMIN":
+          // Assumindo que adminItems no seu arquivo de constantes precise de um map para ícones Lucide
+          // Se não puder mexer no arquivo de constantes, mapeamos manualmente os 4 primeiros:
           items = [
-            ...adminItems.slice(0, 4).map((item, index) => ({
-              ...item,
-              isCenter: index === 2,
-            })),
-            { icon: "person", label: "Perfil", path: "/perfil" },
+            { icon: LayoutDashboard, label: "Dashboard", path: "/admin" },
+            { icon: Boxes, label: "Produtos", path: "/admin/produtos" },
+            {
+              icon: ClipboardList,
+              label: "Pedidos",
+              path: "/admin/pedidos",
+              isCenter: true,
+            },
+            { icon: User, label: "Usuários", path: "/admin/usuarios" },
+            { icon: User, label: "Perfil", path: "/perfil" },
           ];
           break;
 
         case "OPERATOR":
-          const baseOperatorItems = [
-            operatorItems.find((i) => i.id === "dashboard"),
-            operatorItems.find((i) => i.id === "pedidos"),
-            operatorItems.find((i) => i.id === "verificacoes-pendentes"),
-            operatorItems.find((i) => i.id === "gestao-estoque"),
-          ].filter(Boolean) as NavItem[];
-
           items = [
-            ...baseOperatorItems.map((item, index) => ({
-              ...item,
-              isCenter: index === 2,
-            })),
-            { icon: "person", label: "Perfil", path: "/perfil" },
+            { icon: LayoutDashboard, label: "Início", path: "/operador" },
+            {
+              icon: ClipboardList,
+              label: "Pedidos",
+              path: "/operador/pedidos",
+            },
+            {
+              icon: ShieldCheck,
+              label: "Verificar",
+              path: "/operador/verificacoes",
+              isCenter: true,
+            },
+            { icon: Boxes, label: "Estoque", path: "/operador/estoque" },
+            { icon: User, label: "Perfil", path: "/perfil" },
           ];
           break;
 
         case "DELIVERER":
           items = [
-            { icon: "home", label: "Início", path: "/" },
+            { icon: Home, label: "Início", path: "/" },
             {
-              icon: "local_shipping",
+              icon: Truck,
               label: "Entregas",
               path: "/area-entregas/minhas-entregas",
               isCenter: true,
             },
-            { icon: "person", label: "Perfil", path: "/perfil" },
+            { icon: User, label: "Perfil", path: "/perfil" },
           ];
           break;
 
         case "SELLER":
           items = [
-            { icon: "home", label: "Início", path: "/" },
-            { icon: "inventory_2", label: "Produtos", path: "/meus-produtos" },
+            { icon: Home, label: "Início", path: "/" },
+            { icon: Boxes, label: "Produtos", path: "/meus-produtos" },
             {
-              icon: "add_circle",
+              icon: PlusCircle,
               label: "Publicar",
               path: "/adicionar-produto",
               isCenter: true,
             },
-            {
-              icon: "account_balance_wallet",
-              label: "Carteira",
-              path: "/carteira",
-            },
-            { icon: "storefront", label: "Vendas", path: "/centro-vendas" },
+            { icon: Wallet, label: "Carteira", path: "/carteira" },
+            { icon: Store, label: "Vendas", path: "/centro-vendas" },
           ];
           break;
 
         case "BUYER":
           items = [
-            { icon: "home", label: "Início", path: "/" },
+            { icon: Home, label: "Início", path: "/" },
             {
-              icon: "shopping_cart",
+              icon: ShoppingCart,
               label: "Carrinho",
               path: "/carrinho",
               isCenter: true,
               isCart: true,
             },
-            { icon: "local_mall", label: "Pedidos", path: "/meus-pedidos" },
-            { icon: "person", label: "Perfil", path: "/perfil" },
+            { icon: ShoppingBag, label: "Pedidos", path: "/meus-pedidos" },
+            { icon: User, label: "Perfil", path: "/perfil" },
           ];
           break;
 
         default:
           items = [
-            { icon: "home", label: "Início", path: "/" },
-            { icon: "person", label: "Perfil", path: "/perfil" },
+            { icon: Home, label: "Início", path: "/" },
+            { icon: User, label: "Perfil", path: "/perfil" },
           ];
       }
     }
-
     return items;
   };
 
@@ -118,9 +137,10 @@ const BottomNavigation: React.FC = () => {
   return (
     <nav className="fixed bottom-0 left-0 right-0 glass-nav border-t border-border px-6 py-2 flex justify-between items-center z-50 rounded-t-xl lg:hidden">
       <div className="w-full max-w-md mx-auto flex justify-between items-center">
-        {currentNavItems.map((item) => {
+        {currentNavItems.map((item, index) => {
           const isActive = location.pathname === item.path;
           const shouldHighlight = item.isCenter && canShowCenter;
+          const Icon = item.icon;
 
           if (shouldHighlight) {
             return (
@@ -130,7 +150,7 @@ const BottomNavigation: React.FC = () => {
                 className="flex flex-col items-center relative"
               >
                 <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-primary-foreground -mt-10 shadow-lg shadow-primary/40 border-4 border-background">
-                  <span className="material-symbols-outlined">{item.icon}</span>
+                  <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
                 </div>
                 <span className="text-[10px] font-medium mt-1 text-muted-foreground">
                   {item.label}
@@ -148,18 +168,18 @@ const BottomNavigation: React.FC = () => {
             <Link
               key={item.path}
               to={item.path}
-              className={`flex flex-col items-center ${
+              className={`flex flex-col items-center transition-colors ${
                 isActive ? "text-primary" : "text-muted-foreground"
               }`}
             >
               <div className="relative">
-                <span
-                  className={`material-symbols-outlined ${
-                    isActive ? "fill-1" : ""
-                  }`}
-                >
-                  {item.icon}
-                </span>
+                <Icon
+                  size={24}
+                  strokeWidth={isActive ? 2.5 : 2}
+                  className={
+                    isActive ? "drop-shadow-[0_0_8px_rgba(108,62,248,0.3)]" : ""
+                  }
+                />
                 {item.isCart && cartCount > 0 && (
                   <span className="absolute -top-1 -right-2 bg-destructive text-destructive-foreground text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-background">
                     {cartCount}

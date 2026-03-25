@@ -11,6 +11,8 @@ import {
 import { formatPrice } from "@/utils/currency";
 import { useAuth } from "@/context/AuthContext";
 import { UserRole } from "@/enums/user";
+// Importação dos ícones do Lucide
+import { CheckCircle2, ShoppingCart } from "lucide-react";
 
 interface ProductCardProps {
   product: SearchedProductDTO;
@@ -82,9 +84,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
               product.status,
             )}`}
           >
-            <span className="material-symbols-outlined text-[12px]">
-              check_circle
-            </span>
+            {/* Ícone Lucide para Status */}
+            <CheckCircle2 size={12} strokeWidth={3} />
             {getProductStatusLabel(product.status)}
           </div>
 
@@ -113,9 +114,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
               onClick={handleAddToCart}
               className="w-12 h-12 rounded-2xl flex items-center justify-center bg-primary text-white shadow-lg shadow-primary/30 transition-all duration-500 ease-out hover:bg-primary/90 active:scale-90 lg:translate-y-4 lg:opacity-0 lg:group-hover:translate-y-0 lg:group-hover:opacity-100 opacity-100 translate-y-0"
             >
-              <span className="material-symbols-outlined text-2xl">
-                shopping_cart
-              </span>
+              {/* Ícone Lucide para Carrinho */}
+              <ShoppingCart size={22} />
             </button>
           )}
         </div>

@@ -3,7 +3,8 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "@/hooks/use-cart";
 import { BASE_UPLOAD_URL } from "@/api/endpoints";
-import { useNotifications } from "@/context/NotificationContext"; // Importação do contexto
+import { useNotifications } from "@/context/NotificationContext";
+import { ArrowLeft, ShoppingBag, ShoppingCart, Bell, User } from "lucide-react";
 
 interface HeaderProps {
   showBack?: boolean;
@@ -21,8 +22,6 @@ const Header: React.FC<HeaderProps> = ({
   const [isScrolled, setIsScrolled] = useState(false);
   const { user, isAuthenticated } = useAuth();
   const { cartCount, syncCartWithServer } = useCart();
-
-  // Consumindo a contagem global do contexto
   const { unreadCount } = useNotifications();
 
   const location = useLocation();
@@ -100,9 +99,7 @@ const Header: React.FC<HeaderProps> = ({
             onClick={onBack}
             className="size-10 flex items-center justify-center bg-card rounded-full shadow-soft active:scale-90 transition-transform"
           >
-            <span className="material-symbols-outlined text-foreground text-[22px]">
-              arrow_back
-            </span>
+            <ArrowLeft className="text-foreground" size={22} />
           </button>
           {title && (
             <h2 className="text-foreground text-[11px] sm:text-sm font-bold uppercase tracking-widest truncate max-w-[60%] text-center">
@@ -123,9 +120,7 @@ const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2 group">
             <div className="bg-primary p-1.5 rounded-lg text-primary-foreground group-active:scale-90 transition-transform">
-              <span className="material-symbols-outlined text-2xl">
-                shopping_bag
-              </span>
+              <ShoppingBag size={24} />
             </div>
             <h1 className="text-xl font-bold tracking-tight clash-style">
               TRALLO
@@ -159,15 +154,14 @@ const Header: React.FC<HeaderProps> = ({
           </nav>
 
           <div className="flex items-center gap-2">
+            {/* Carrinho: Só aparece para quem não é vendedor */}
             {!isSeller && (
               <Link
                 to="/carrinho"
                 onClick={(e) => handleProtectedNavigation(e, "/carrinho")}
                 className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-card hover:bg-muted border border-border/5 transition-colors active:scale-95"
               >
-                <span className="material-symbols-outlined text-[22px]">
-                  shopping_cart
-                </span>
+                <ShoppingCart size={20} />
                 {cartCount > 0 && (
                   <span className="bg-primary text-primary-foreground text-[10px] font-bold px-1.5 py-0.5 rounded-full">
                     {cartCount}
@@ -176,21 +170,22 @@ const Header: React.FC<HeaderProps> = ({
               </Link>
             )}
 
-            <Link
-              to="/notificacoes"
-              onClick={(e) => handleProtectedNavigation(e, "/notificacoes")}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-card hover:bg-muted border border-border/5 transition-colors active:scale-95"
-            >
-              <span className="material-symbols-outlined text-[22px]">
-                notifications
-              </span>
-              {unreadCount > 0 && (
-                <span className="bg-primary text-primary-foreground text-[10px] font-bold px-1.5 py-0.5 rounded-full">
-                  {unreadCount}
-                </span>
-              )}
-            </Link>
+            {/* Notificações: Só renderiza se o usuário estiver autenticado */}
+            {isAuthenticated && (
+              <Link
+                to="/notificacoes"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-card hover:bg-muted border border-border/5 transition-colors active:scale-95"
+              >
+                <Bell size={20} />
+                {unreadCount > 0 && (
+                  <span className="bg-primary text-primary-foreground text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                    {unreadCount}
+                  </span>
+                )}
+              </Link>
+            )}
 
+            {/* Perfil */}
             <Link
               to="/perfil"
               onClick={(e) => handleProtectedNavigation(e, "/perfil")}
@@ -204,9 +199,7 @@ const Header: React.FC<HeaderProps> = ({
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <span className="material-symbols-outlined text-foreground text-2xl">
-                    person
-                  </span>
+                  <User className="text-foreground" size={24} />
                 )}
               </div>
             </Link>

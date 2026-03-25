@@ -50,6 +50,7 @@ import { NotificationProvider } from "./context/NotificationContext";
 import { UserRole } from "./enums/user";
 import DeliveryOrdersHistory from "./pages/DeliveryOrdersHistory";
 import AdminDeliveryManagement from "./pages/AdminDeliveryManagement";
+import CreateDispute from "./pages/CreateDispute";
 
 const queryClient = new QueryClient();
 
@@ -83,11 +84,12 @@ const App = () => (
                 <Route path="/alterar-senha" element={<ChangePassword />} />
                 <Route path="/carrinho" element={<CartPage />} />
                 <Route path="/meus-pedidos" element={<BuyerOrdersHistory />} />
-
+                <Route path="/reclamacoes" element={<CreateDispute />} />
                 <Route
                   path="/minhas-vendas"
                   element={<SellerOrdersHistory />}
                 />
+
                 <Route path="/acompanhar-pedido" element={<OrderTracking />} />
                 <Route path="/carteira" element={<WalletScreen />} />
                 <Route path="/suporte" element={<SupportPage />} />

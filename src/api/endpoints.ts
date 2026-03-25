@@ -29,6 +29,13 @@ export const endpoints = {
     delete: (id: string) => `/notifications/${id}`,
     deleteAll: "/notifications/all",
   },
+
+  disputes: {
+    create: "/disputes",
+    get: "/disputes/pending",
+    respondDisputes: (id: string) => `/disputes/${id}/respond`,
+  },
+    
   warehouseInventories: {
     dashboard: "/warehouse-inventories/dashboard",
     exits: "/warehouse-inventories/exits",
@@ -107,7 +114,7 @@ export const endpoints = {
     payments: {
       list: "/payments/admin/list",
     },
-
+    
 
   },
   bankAccounts: {

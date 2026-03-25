@@ -12,7 +12,13 @@ import { useCart } from "@/hooks/use-cart";
 import { useProducts } from "@/hooks/use-products";
 import { useAuth } from "@/context/AuthContext";
 import LoaderAnimation from "@/components/Loader";
-import EmptyState from "@/components/EmptyState";
+import { 
+  SlidersHorizontal, 
+  Search, 
+  SearchX, 
+  ShoppingBag, 
+  Sparkles 
+} from "lucide-react";
 import { carouselSlides } from "@/constants/carousel-slides";
 
 const Home: React.FC = () => {
@@ -95,19 +101,17 @@ const Home: React.FC = () => {
                   type="button"
                   className="absolute right-2 top-[50%] -translate-y-1/2 size-10 flex items-center justify-center rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all duration-300"
                 >
-                  <span className="material-symbols-outlined text-xl">
-                    tune
-                  </span>
+                  <SlidersHorizontal size={20} />
                 </button>
               </div>
               <TralloButton
                 className="h-[52px] w-[52px] md:w-auto px-0 md:px-6 flex items-center justify-center"
                 onClick={handleSearchClick}
               >
-                <span className="material-symbols-outlined md:hidden">
-                  search
+                <span className="md:hidden">
+                  <Search size={20} />
                 </span>
-                <span className="hidden md:inline">Pesquisar</span>
+                <span className="hidden md:inline font-bold">Pesquisar</span>
               </TralloButton>
             </div>
           </div>
@@ -133,9 +137,7 @@ const Home: React.FC = () => {
           ) : (
             <div className="col-span-full flex flex-col items-center justify-center py-20 text-center">
               <div className="bg-slate-100 dark:bg-slate-800/50 p-6 rounded-full mb-4">
-                <span className="material-symbols-outlined text-6xl text-slate-400">
-                  search_off
-                </span>
+                <SearchX size={48} className="text-slate-400" />
               </div>
               <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
                 Nenhum produto encontrado
@@ -167,15 +169,11 @@ const Home: React.FC = () => {
               </p>
               <button className="bg-[#6C3EF8] text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 group hover:shadow-lg hover:shadow-[#6C3EF8]/30 transition-all active:scale-95">
                 Ver Novidades
-                <span className="material-symbols-outlined text-sm group-hover:rotate-12 transition-transform">
-                  local_mall
-                </span>
+                <ShoppingBag size={16} className="group-hover:rotate-12 transition-transform" />
               </button>
             </div>
             <div className="relative z-10 w-24 h-24 md:w-32 md:h-32 bg-gradient-to-br from-white/40 to-[#6C3EF8]/10 rounded-[2rem] flex items-center justify-center border border-white/50 backdrop-blur-2xl rotate-6 shadow-xl">
-              <span className="material-symbols-outlined text-5xl md:text-6xl text-[#6C3EF8] animate-pulse">
-                auto_awesome
-              </span>
+              <Sparkles size={48} className="text-[#6C3EF8] animate-pulse" />
             </div>
           </div>
         </div>
