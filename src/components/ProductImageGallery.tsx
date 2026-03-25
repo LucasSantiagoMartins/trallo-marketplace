@@ -1,11 +1,13 @@
 import React from "react";
 import { BASE_UPLOAD_URL } from "@/api/endpoints";
+import { ProductCategory } from "@/enums/product-category.enum";
+import { getProductCategoryLabel } from "@/utils/mappers/product-category.mapper";
 
 interface ProductImageGalleryProps {
   images: string[];
   currentIndex: number;
   productName: string;
-  category?: string;
+  category?: ProductCategory;
   onIndexChange: (index: number) => void;
   onTouchStart: (e: React.TouchEvent) => void;
   onTouchMove: (e: React.TouchEvent) => void;
@@ -92,7 +94,7 @@ const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
 
       <div className="absolute top-6 left-4 z-20">
         <span className="bg-primary text-primary-foreground text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-md">
-          {category || "Produto"}
+          {getProductCategoryLabel(category) || "Produto"}
         </span>
       </div>
     </div>
