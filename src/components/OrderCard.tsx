@@ -54,7 +54,7 @@ const OrderCard: React.FC<OrderItemProps> = ({
   const extraItemsCount = order.items.length - 1;
 
   const handleTrackOrder = () => {
-    navigate("/detalhe-pedido", { state: { order } });
+    navigate("/acompanhar-pedido", { state: { order } });
   };
 
   const openTralloMap = () => {

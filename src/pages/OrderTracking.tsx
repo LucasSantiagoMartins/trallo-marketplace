@@ -7,6 +7,7 @@ import { formatPrice } from "@/utils/currency";
 import {
   getOrderStatusColor,
   getOrderStatusLabel,
+  getOrderStatusDetails,
 } from "@/utils/mappers/order.mapper";
 import { OrderStatus } from "@/enums/order-status";
 import { BASE_UPLOAD_URL } from "@/api/endpoints";
@@ -15,7 +16,7 @@ import { formatDateFriendly } from "@/utils/date";
 import MobileLayout from "@/layouts/MobileLayout";
 import EmptyState from "@/components/EmptyState";
 
-const OrderDetail: React.FC = () => {
+const OrderTracking: React.FC = () => {
   const location = useLocation();
   const order = location.state?.order as OrderDTO;
   const navigate = useNavigate();
@@ -38,9 +39,14 @@ const OrderDetail: React.FC = () => {
   const serviceFee = subtotal * 0.035; // 3.5%
   const totalFinal = subtotal + deliveryFee + serviceFee;
 
+  // Lógica para controle da linha de progresso
+  const isPaid = ![OrderStatus.AWAITING_PAYMENT, OrderStatus.PAYMENT_PROCESSING, OrderStatus.PAYMENT_FAILED].includes(order.status);
+  const isPreparing = [OrderStatus.PREPARING_ORDER, OrderStatus.READY_FOR_SHIPMENT, OrderStatus.SHIPPED, OrderStatus.OUT_FOR_DELIVERY, OrderStatus.DELIVERED].includes(order.status);
+  const isShipped = [OrderStatus.SHIPPED, OrderStatus.OUT_FOR_DELIVERY, OrderStatus.DELIVERED].includes(order.status);
+
   return (
     <div className="min-h-screen bg-[#f6f5f8] dark:bg-[#141022] text-[#121118] dark:text-white pb-32">
-      <PageHeader title="Detalhe do Pedido" />
+      <PageHeader title="Acompanhar Pedido" />
 
       <main className="max-w-3xl mx-auto px-4 pt-24 space-y-6">
         <section className="bg-white dark:bg-white/5 p-4 sm:p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-white/5">
@@ -85,9 +91,10 @@ const OrderDetail: React.FC = () => {
           </h3>
           <div className="bg-white dark:bg-white/5 p-5 sm:p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-white/10">
             <div className="relative space-y-0">
+              {/* ETAPA 1: Confirmação */}
               <div className="flex gap-4 pb-7 relative">
                 <div
-                  className={`absolute left-[11px] top-6 bottom-0 w-[2px] ${order.status !== OrderStatus.AWAITING_PAYMENT ? "bg-[#6d3ff8]" : "bg-gray-200 dark:bg-white/10"}`}
+                  className={`absolute left-[11px] top-6 bottom-0 w-[2px] ${isPaid ? "bg-[#6d3ff8]" : "bg-gray-200 dark:bg-white/10"}`}
                 ></div>
                 <div className="relative z-10 flex size-6 items-center justify-center rounded-full bg-[#6d3ff8] ring-4 ring-[#6d3ff8]/10">
                   <span className="material-symbols-outlined text-white text-[14px]">
@@ -97,27 +104,30 @@ const OrderDetail: React.FC = () => {
                 <div>
                   <p className="font-bold text-sm">Pedido Confirmado</p>
                   <p className="text-[11px] text-gray-500">
-                    O seu pagamento foi processado.
+                    {isPaid ? "O seu pagamento foi processado." : "Aguardando confirmação de pagamento."}
                   </p>
                 </div>
               </div>
 
+              {/* ETAPA 2: Preparação */}
               <div className="flex gap-4 pb-7 relative">
-                <div className="absolute left-[11px] top-6 bottom-0 w-[2px] bg-gray-200 dark:bg-white/10"></div>
+                <div 
+                  className={`absolute left-[11px] top-6 bottom-0 w-[2px] ${isShipped ? "bg-[#6d3ff8]" : "bg-gray-200 dark:bg-white/10"}`}
+                ></div>
                 <div
-                  className={`relative z-10 flex size-6 items-center justify-center rounded-full ${order.status === OrderStatus.PREPARING_ORDER ? "bg-white dark:bg-[#1c182d] ring-2 ring-[#6d3ff8]" : "bg-gray-100 dark:bg-white/10"}`}
+                  className={`relative z-10 flex size-6 items-center justify-center rounded-full ${isPreparing ? "bg-white dark:bg-[#1c182d] ring-2 ring-[#6d3ff8]" : "bg-gray-100 dark:bg-white/10"}`}
                 >
                   {order.status === OrderStatus.PREPARING_ORDER ? (
                     <div className="size-2 bg-[#6d3ff8] rounded-full animate-pulse"></div>
                   ) : (
-                    <span className="material-symbols-outlined text-gray-400 text-[14px]">
+                    <span className={`material-symbols-outlined ${isPreparing ? "text-[#6d3ff8]" : "text-gray-400"} text-[14px]`}>
                       inventory_2
                     </span>
                   )}
                 </div>
                 <div>
                   <p
-                    className={`font-bold text-sm ${order.status === OrderStatus.PREPARING_ORDER ? "text-[#6d3ff8]" : "text-gray-400"}`}
+                    className={`font-bold text-sm ${isPreparing ? "text-[#6d3ff8]" : "text-gray-400"}`}
                   >
                     Em Preparação
                   </p>
@@ -127,16 +137,17 @@ const OrderDetail: React.FC = () => {
                 </div>
               </div>
 
+              {/* ETAPA 3: Entrega */}
               <div className="flex gap-4">
                 <div
-                  className={`relative z-10 flex size-6 items-center justify-center rounded-full ${order.status === OrderStatus.SHIPPED ? "bg-white dark:bg-[#1c182d] ring-2 ring-[#6d3ff8]" : "bg-gray-100 dark:bg-white/10"}`}
+                  className={`relative z-10 flex size-6 items-center justify-center rounded-full ${isShipped ? "bg-white dark:bg-[#1c182d] ring-2 ring-[#6d3ff8]" : "bg-gray-100 dark:bg-white/10"}`}
                 >
-                  <span className="material-symbols-outlined text-gray-400 text-[14px]">
+                  <span className={`material-symbols-outlined ${isShipped ? "text-[#6d3ff8]" : "text-gray-400"} text-[14px]`}>
                     local_shipping
                   </span>
                 </div>
                 <div>
-                  <p className="font-bold text-sm text-gray-400">
+                  <p className={`font-bold text-sm ${isShipped ? "text-[#6d3ff8]" : "text-gray-400"}`}>
                     Saiu para Entrega
                   </p>
                   <p className="text-[11px] text-gray-500">
@@ -233,4 +244,4 @@ const OrderDetail: React.FC = () => {
   );
 };
 
-export default OrderDetail;
+export default OrderTracking;

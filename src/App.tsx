@@ -13,7 +13,7 @@ import UserProfileScreen from "./pages/UserProfile";
 import WalletScreen from "./pages/Wallet";
 import TransactionHistoryScreen from "./components/TransactionHistory";
 import BuyerOrdersHistory from "./pages/BuyerOrdersHistory";
-import OrderDetail from "./pages/OrderDetail";
+import OrderTracking from "./pages/OrderTracking";
 import CartPage from "./pages/CartPage";
 import SettingsScreen from "./pages/Settings";
 import MyProductsScreen from "./pages/MyProducts";
@@ -88,7 +88,7 @@ const App = () => (
                   path="/minhas-vendas"
                   element={<SellerOrdersHistory />}
                 />
-                <Route path="/detalhe-pedido" element={<OrderDetail />} />
+                <Route path="/acompanhar-pedido" element={<OrderTracking />} />
                 <Route path="/carteira" element={<WalletScreen />} />
                 <Route path="/suporte" element={<SupportPage />} />
                 <Route
