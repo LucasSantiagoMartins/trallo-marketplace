@@ -33,12 +33,11 @@ export interface ReviewUserDto {
     rating: number;
     comment?: string;
 }
+
 export interface RegisterUserDto {
     fullName: string,
     phoneNumber: string,
     email: string,
     password: string,
     role: UserRole
-    address?: string,
-
 }

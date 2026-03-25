@@ -201,7 +201,7 @@ const App = () => (
                   element={<WalletManagement />}
                 />
                 <Route
-                  path="/area-administrativa/adicionar-operador"
+                  path="/area-administrativa/adicionar-colaborador"
                   element={<CreateStaffForm />}
                 />
               </Route>

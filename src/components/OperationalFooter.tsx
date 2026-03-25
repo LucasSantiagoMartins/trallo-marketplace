@@ -15,7 +15,7 @@ const OperationalFooter: React.FC<OperationalFooterProps> = ({
   const navigate = useNavigate();
 
   const handleAddClick = () => {
-    navigate("/area-administrativa/adicionar-operador");
+    navigate("/area-administrativa/adicionar-colaborador");
   };
 
   return (
