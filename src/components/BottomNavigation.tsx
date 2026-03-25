@@ -96,7 +96,7 @@ const BottomNavigation: React.FC = () => {
               isCenter: true,
               isCart: true,
             },
-            { icon: "shopping_bag", label: "Pedidos", path: "/meus-pedidos" },
+            { icon: "local_mall", label: "Pedidos", path: "/meus-pedidos" },
             { icon: "person", label: "Perfil", path: "/perfil" },
           ];
           break;

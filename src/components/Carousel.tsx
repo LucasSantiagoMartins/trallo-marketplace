@@ -89,7 +89,7 @@ const Carousel: React.FC<CarouselProps> = ({ slides, activeIndex = 0 }) => {
         {slides.map((slide) => (
           <div key={slide.id} className="min-w-full snap-start px-1 md:p-2">
             <div
-              className="relative w-full h-60 md:h-64 lg:h-80 rounded-2xl md:rounded-[3rem] overflow-hidden flex items-center shadow-md border border-white/5"
+              className="relative w-full h-50 md:h-64 lg:h-80 rounded-2xl md:rounded-[3rem] overflow-hidden flex items-center shadow-md border border-white/5"
               style={{ backgroundColor: slide.backgroundColor }}
             >
               <div
@@ -97,22 +97,22 @@ const Carousel: React.FC<CarouselProps> = ({ slides, activeIndex = 0 }) => {
                 style={{ backgroundImage: `url('${slide.backgroundImage}')` }}
               />
 
-              <div className="relative z-10 p-6 md:p-14 lg:p-16 w-full md:w-3/4 flex flex-col items-start">
+              <div className="relative z-10 p-6 pb-10 md:p-14 lg:p-16 w-full md:w-3/4 flex flex-col items-start">
                 <span
-                  className={`text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-[0.2em] mb-4 shadow-sm backdrop-blur-md ${
+                  className={`text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-[0.2em] mb-2 md:mb-4 shadow-sm backdrop-blur-md ${
                     slide.tagColor || "bg-white/20 border border-white/10"
                   }`}
                 >
                   {slide.tag}
                 </span>
-                <h3 className="text-white text-2xl md:text-4xl lg:text-5xl font-black leading-[1.1] mb-3 leading-tight">
+                <h3 className="text-white text-2xl md:text-4xl lg:text-5xl font-black leading-[1.1] mb-1 md:mb-3">
                   {slide.title}
                 </h3>
-                <p className="text-white/90 text-xs md:text-base mb-6  max-w-md font-medium">
+                <p className="text-white/90 text-xs md:text-base mb-3 md:mb-6 max-w-md font-medium line-clamp-2 md:line-clamp-none">
                   {slide.description}
                 </p>
                 <button
-                  className={`px-5 py-2.5 md:px-6 md:py-3 rounded-xl md:rounded-2xl text-xs md:text-sm font-black shadow-sm transition-all active:scale-95 ${
+                  className={`px-5 py-2.5 md:px-6 md:py-3 rounded-full text-xs md:text-sm font-black shadow-sm transition-all active:scale-95 ${
                     slide.buttonColor || "bg-white text-slate-900"
                   }`}
                 >
@@ -143,7 +143,7 @@ const Carousel: React.FC<CarouselProps> = ({ slides, activeIndex = 0 }) => {
         </button>
       </div>
 
-      <div className="absolute bottom-4 md:bottom-8 right-0 left-0 flex items-center justify-center gap-2 z-20 pointer-events-none">
+      <div className="absolute bottom-3 md:bottom-8 right-0 left-0 flex items-center justify-center gap-2 z-20 pointer-events-none">
         {slides.map((_, index) => (
           <div
             key={index}
@@ -155,6 +155,11 @@ const Carousel: React.FC<CarouselProps> = ({ slides, activeIndex = 0 }) => {
           />
         ))}
       </div>
+
+      <style>{`
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      `}</style>
     </div>
   );
 };

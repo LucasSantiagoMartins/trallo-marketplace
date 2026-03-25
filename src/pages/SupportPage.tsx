@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useEffect, useRef, useState, useMemo } from "react";
 import {
   Search,
   ShoppingBag,
@@ -8,6 +8,7 @@ import {
   ChevronDown,
   Phone,
   Mail,
+  AlertCircle,
 } from "lucide-react";
 import PageHeader from "../components/PageHeader";
 import BottomNavigation from "../components/BottomNavigation";
@@ -74,7 +75,6 @@ const SupportPage = () => {
       <PageHeader title="Ajuda e Suporte" backTo="/perfil" />
 
       <main className="relative mx-auto flex flex-col pb-32 pt-24 px-6 lg:max-w-4xl lg:px-8">
-
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
           <section className="space-y-6">
             <div className="space-y-1">
@@ -96,14 +96,14 @@ const SupportPage = () => {
                 <button
                   key={i}
                   onClick={() => handleCategoryClick(cat.label)}
-                  className={`flex flex-col gap-3 rounded-2xl border p-5 shadow-sm hover:shadow-md transition-all group text-left ${
+                  className={`flex flex-col gap-3 rounded-2xl border p-5 text-left transition-all ${
                     activeCategory === cat.label
                       ? "border-primary bg-primary/5 dark:bg-primary/10"
                       : "border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800"
                   }`}
                 >
                   <div
-                    className={`w-10 h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 ${
+                    className={`w-10 h-10 rounded-xl flex items-center justify-center ${
                       activeCategory === cat.label
                         ? "bg-primary text-white"
                         : "bg-primary/10 text-primary"
@@ -144,7 +144,7 @@ const SupportPage = () => {
                     >
                       <button
                         onClick={() => toggleFaq(i)}
-                        className="w-full px-5 py-4 flex items-center justify-between text-left hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors"
+                        className="w-full px-5 py-4 flex items-center justify-between text-left transition-colors"
                       >
                         <span className="text-sm font-bold pr-4">
                           {faq.question}
@@ -196,6 +196,14 @@ const SupportPage = () => {
                 title="E-mail"
                 subText="Para dúvidas e sugestões"
               />
+              <ContactLink
+                icon={<AlertCircle />}
+                color="text-red-500"
+                bg="bg-red-500/10"
+                title="Centro de Reclamações"
+                subText="Abra uma disputa ou reclamação"
+                link="/reclamacoes"
+              />
             </div>
 
             <div className="p-6 rounded-3xl bg-primary/5 border border-primary/10 mt-6">
@@ -219,10 +227,10 @@ const SupportPage = () => {
   );
 };
 
-const ContactLink = ({ icon, color, bg, title, subText }) => (
-  <button className="w-full flex items-center gap-4 p-5 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md hover:translate-x-1 transition-all group">
+const ContactLink = ({ icon, color, bg, title, subText, link = "#" }) => (
+  <button className="w-full flex items-center gap-4 p-5 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm transition-all group">
     <div
-      className={`size-12 rounded-xl ${bg} flex items-center justify-center ${color} transition-transform group-hover:scale-110`}
+      className={`size-12 rounded-xl ${bg} flex items-center justify-center ${color}`}
     >
       {React.cloneElement(icon, { size: 22 })}
     </div>
@@ -232,7 +240,7 @@ const ContactLink = ({ icon, color, bg, title, subText }) => (
       </h4>
       <p className="text-xs text-gray-500 font-medium">{subText}</p>
     </div>
-    <span className="material-symbols-outlined text-gray-300 group-hover:text-primary transition-colors">
+    <span className="material-symbols-outlined text-gray-300">
       chevron_right
     </span>
   </button>
