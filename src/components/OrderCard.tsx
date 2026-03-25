@@ -18,7 +18,6 @@ interface OrderItemProps {
   order: OrderDTO;
   active?: boolean;
   isSeller?: boolean;
-  isAdmin?: boolean;
   onRefresh?: () => void;
 }
 
@@ -39,7 +38,6 @@ const OrderCard: React.FC<OrderItemProps> = ({
   order,
   active,
   isSeller,
-  isAdmin,
   onRefresh,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -209,7 +207,6 @@ const OrderCard: React.FC<OrderItemProps> = ({
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
         order={order}
-        isAdmin={isAdmin}
       />
 
       <CustomReasonModal

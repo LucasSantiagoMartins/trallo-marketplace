@@ -24,7 +24,6 @@ const BuyerOrdersHistory: React.FC = () => {
     try {
       setLoading(true);
       const response = await orderService.getBuyerOrders(page, ITEMS_PER_PAGE);
-      console.log(response)
       if (response.success && response.data) {
         const data = response.data as any;
         setOrders(Array.isArray(data.orders) ? data.orders : []);
@@ -89,7 +88,6 @@ const BuyerOrdersHistory: React.FC = () => {
                       key={order.orderNumber}
                       order={order}
                       active={activeTab === "ativos"}
-                      isAdmin={false}
                       isSeller={false}
                     />
                   ))}

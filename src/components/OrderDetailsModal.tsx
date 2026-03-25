@@ -9,19 +9,18 @@ interface OrderDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
   order: OrderDTO;
-  isAdmin?: boolean;
 }
 
 const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
   isOpen,
   onClose,
   order,
-  isAdmin,
 }) => {
   const [mounted, setMounted] = useState(false);
   const [animate, setAnimate] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [dragY, setDragY] = useState(0);
+  const [copiedSku, setCopiedSku] = useState<string | null>(null);
   const touchStart = useRef<number | null>(null);
 
   useEffect(() => {
@@ -55,9 +54,28 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
     setTimeout(onClose, 300);
   };
 
-  const handleCopySku = (sku: string) => {
-    navigator.clipboard.writeText(sku);
-    toast.success("Código copiado com sucesso");
+  const handleCopySku = (e: React.MouseEvent | React.TouchEvent, sku: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(sku).then(() => {
+        setCopiedSku(sku);
+        toast.success("Código SKU copiado", { id: 'copy-sku' });
+        setTimeout(() => setCopiedSku(null), 2000);
+      });
+    } else {
+      // Fallback para navegadores que não suportam clipboard API em contextos não seguros
+      const textArea = document.createElement("textarea");
+      textArea.value = sku;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textArea);
+      setCopiedSku(sku);
+      toast.success("Código SKU copiado", { id: 'copy-sku' });
+      setTimeout(() => setCopiedSku(null), 2000);
+    }
   };
 
   const onTouchStart = (e: React.TouchEvent) => {
@@ -99,7 +117,7 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
     : "";
 
   const modalContent = (
-    <div className="fixed inset-0 w-screen h-screen z-[9999] flex items-end lg:items-center justify-center overflow-hidden touch-none">
+    <div className="fixed inset-0 w-screen h-screen z-[9999] flex items-end lg:items-center justify-center overflow-hidden touch-pan-y">
       <div
         className={`absolute inset-0 w-full h-full bg-black/60 backdrop-blur-sm transition-opacity duration-300 ease-in-out cursor-pointer ${
           animate ? "opacity-100" : "opacity-0"
@@ -121,7 +139,7 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
         className={`
           relative w-full lg:max-w-2xl bg-white dark:bg-[#1c182d] 
           rounded-t-[2.5rem] lg:rounded-[2rem] shadow-2xl flex flex-col 
-          pointer-events-auto overflow-hidden touch-auto
+          pointer-events-auto overflow-hidden
           max-h-[90dvh] lg:h-auto lg:max-h-[85vh]
           ${desktopClasses}
         `}
@@ -150,7 +168,7 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
           </h2>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4 no-scrollbar">
+        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4 no-scrollbar touch-auto">
           <div className="bg-slate-50 dark:bg-white/5 rounded-2xl p-4 space-y-4">
             <p className="text-[10px] uppercase tracking-widest font-bold text-slate-400">
               Itens ({order.totalQuantity})
@@ -182,19 +200,19 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
                       {formatPrice(item.price)}
                     </p>
 
-                    {isAdmin && (
-                      <button
-                        onClick={() => handleCopySku(item.productSku)}
-                        className="flex items-center gap-1 text-[10px] font-medium text-slate-400 hover:text-[#6d3ff8] transition-colors cursor-pointer"
-                      >
-                        <span className="truncate max-w-[80px]">
-                          {item.productSku}
-                        </span>
-                        <span className="material-symbols-outlined text-sm">
-                          content_copy
-                        </span>
-                      </button>
-                    )}
+                    <button
+                      type="button"
+                      onMouseDown={(e) => e.stopPropagation()} 
+                      onClick={(e) => handleCopySku(e, item.productSku)}
+                      className="relative z-[100] flex items-center gap-1 text-[10px] font-medium text-slate-400 hover:text-[#6d3ff8] transition-colors cursor-pointer pointer-events-auto p-2 -m-2"
+                    >
+                      <span className="truncate max-w-[80px]">
+                        {item.productSku}
+                      </span>
+                      <span className={`material-symbols-outlined text-sm transition-all ${copiedSku === item.productSku ? "text-green-500 scale-110" : ""}`}>
+                        {copiedSku === item.productSku ? "check" : "content_copy"}
+                      </span>
+                    </button>
                   </div>
                 </div>
               </div>
