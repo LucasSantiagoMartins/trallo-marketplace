@@ -203,12 +203,12 @@ const CartPage: React.FC = () => {
           />
         </div>
       )}
-
       {modalType === "checkout" && (
         <CheckoutModal
           paymentType={paymentType}
           paymentMethod={paymentMethod}
           setPaymentMethod={setPaymentMethod}
+          subtotal={subtotal}
           total={total}
           onClose={closeModal}
           onConfirm={handleConfirmCheckout}

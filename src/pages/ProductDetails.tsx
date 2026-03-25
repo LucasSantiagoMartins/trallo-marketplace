@@ -117,8 +117,10 @@ const ProductDetails: React.FC = () => {
     }
   };
 
+  const subtotal = Number(product.price || 0);
   const deliveryFee = paymentType === "presencial" ? 0 : 2500;
-  const total = (product.price || 0) + deliveryFee;
+  const serviceFee = subtotal * 0.035;
+  const total = subtotal + deliveryFee + serviceFee;
 
   return (
     <MobileLayout>
@@ -172,7 +174,7 @@ const ProductDetails: React.FC = () => {
             <ProductDescription
               description={product.description}
               details={product.details}
-              />
+            />
             {user?.role === UserRole.BUYER && (
               <div className="pt-4">
                 <button
@@ -182,7 +184,11 @@ const ProductDetails: React.FC = () => {
                       ? setModalType("payment_choice")
                       : navigate("/entrar")
                   }
-                  className={`w-full ${(product.stock?.availableQuantity || 0) <= 0 ? "bg-slate-300" : "buy-gradient"} text-primary-foreground font-semibold text-lg rounded-full py-4 shadow-lg active:scale-[0.98] transition-transform`}
+                  className={`w-full ${
+                    (product.stock?.availableQuantity || 0) <= 0
+                      ? "bg-slate-300"
+                      : "buy-gradient"
+                  } text-primary-foreground font-semibold text-lg rounded-full py-4 shadow-lg active:scale-[0.98] transition-transform`}
                 >
                   {(product.stock?.availableQuantity || 0) <= 0
                     ? "Esgotado"
@@ -200,6 +206,7 @@ const ProductDetails: React.FC = () => {
         paymentType={paymentType}
         paymentMethod={paymentMethod}
         deliveryFee={deliveryFee}
+        serviceFee={serviceFee}
         total={total}
         closeModal={() => setModalType(null)}
         setPaymentType={setPaymentType}
