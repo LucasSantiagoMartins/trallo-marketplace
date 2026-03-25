@@ -117,7 +117,7 @@ const Home: React.FC = () => {
           <Carousel slides={carouselSlides} />
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 px-4 md:px-6 lg:px-8 py-4 min-h-[400px]">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 px-4 md:px-6 lg:px-8 py-4 min-h-[400px]">
           {loading ? (
             <div className="col-span-full flex items-center justify-center py-20">
               <LoaderAnimation />
