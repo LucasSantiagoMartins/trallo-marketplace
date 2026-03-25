@@ -15,7 +15,6 @@ import LoaderAnimation from "@/components/Loader";
 import EmptyState from "@/components/EmptyState";
 import { carouselSlides } from "@/constants/carousel-slides";
 
-
 const Home: React.FC = () => {
   const { user } = useAuth();
   const { addProduct } = useCart();
@@ -118,9 +117,11 @@ const Home: React.FC = () => {
           <Carousel slides={carouselSlides} />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4 md:px-6 lg:px-8 py-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 px-4 md:px-6 lg:px-8 py-4 min-h-[400px]">
           {loading ? (
-            <LoaderAnimation />
+            <div className="col-span-full flex items-center justify-center py-20">
+              <LoaderAnimation />
+            </div>
           ) : currentProducts.length > 0 ? (
             currentProducts.map((product) => (
               <ProductCard
@@ -130,11 +131,20 @@ const Home: React.FC = () => {
               />
             ))
           ) : (
-            <EmptyState
-              icon="inventory_2"
-              title="Sem produtos"
-              description="Não foi possível carregar produtos no momento."
-            />
+            <div className="col-span-full flex flex-col items-center justify-center py-20 text-center">
+              <div className="bg-slate-100 dark:bg-slate-800/50 p-6 rounded-full mb-4">
+                <span className="material-symbols-outlined text-6xl text-slate-400">
+                  search_off
+                </span>
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
+                Nenhum produto encontrado
+              </h3>
+              <p className="text-slate-500 dark:text-slate-400 max-w-xs mx-auto">
+                Não encontramos resultados para a sua busca. Tente usar termos
+                mais genéricos ou remover filtros.
+              </p>
+            </div>
           )}
         </div>
 
