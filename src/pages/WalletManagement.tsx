@@ -1,13 +1,21 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { User, Clock, ShieldCheck, Store, Loader2 } from "lucide-react";
+import { Clock, ShieldCheck, Store, Eye, X } from "lucide-react";
 import Pagination from "../components/Pagination";
 import BottomNavigation from "../components/BottomNavigation";
 import Sidebar from "@/components/Sidebar";
 import { adminItems } from "@/constants/sidebar-items";
 import { getAdminWallets } from "@/services/admin.service";
-import { AdminWalletListResponse } from "@/dtos/admin-management";
+import { AdminWalletListResponse, AdminWallet } from "@/dtos/admin-management";
 import { formatDateFriendly } from "@/utils/date";
 import TralloInput from "@/components/TralloInput";
+import TralloButton from "@/components/TralloButton";
+import LoaderAnimation from "@/components/Loader";
+import { WalletDetailsModal } from "@/components/walletDetailsModal";
+
+interface LoaderProps {
+  size?: "sm" | "md" | "lg";
+  className?: string;
+}
 
 const WalletManagement: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -16,6 +24,9 @@ const WalletManagement: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [activeFilter, setActiveFilter] = useState("Tudo");
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedWallet, setSelectedWallet] = useState<AdminWallet | null>(
+    null,
+  );
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
@@ -110,7 +121,6 @@ const WalletManagement: React.FC = () => {
           </header>
 
           <div className="space-y-8 mb-10">
-            {/* Seção de Pesquisa */}
             <div className="w-full">
               <TralloInput
                 label="Pesquisar Beneficiário"
@@ -122,7 +132,6 @@ const WalletManagement: React.FC = () => {
               />
             </div>
 
-            {/* Seção de Filtros */}
             <div className="flex flex-col w-full overflow-hidden">
               <label className="block text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 ml-1">
                 Filtrar por Tipo
@@ -155,90 +164,51 @@ const WalletManagement: React.FC = () => {
           </div>
 
           {loading ? (
-            <div className="flex flex-col items-center justify-center py-20 text-slate-400">
-              <Loader2 className="w-10 h-10 animate-spin mb-4 text-[#6C3EF8]" />
-              <p className="text-sm font-medium">Carregando carteiras...</p>
-            </div>
+            <LoaderAnimation />
           ) : (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {filteredWallets.map((wallet) => (
                   <div
                     key={wallet.id}
-                    className="bg-white rounded-[2rem] p-6 border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-[#7090B0]/10 transition-all group relative overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500"
+                    className="bg-white rounded-[1.5rem] p-4 border border-slate-100 shadow-sm hover:shadow-md transition-all group animate-in fade-in slide-in-from-bottom-2"
                   >
-                    <div className="flex justify-between items-start mb-6">
+                    <div className="flex items-center gap-3 mb-4">
                       <div
-                        className={`p-2.5 rounded-xl ${
-                          wallet.walletType === "PLATFORM"
-                            ? "bg-amber-50 text-amber-600"
-                            : "bg-indigo-50 text-indigo-600"
-                        }`}
+                        className={`p-2 rounded-xl ${wallet.walletType === "PLATFORM" ? "bg-amber-50 text-amber-600" : "bg-indigo-50 text-indigo-600"}`}
                       >
                         {wallet.walletType === "PLATFORM" ? (
-                          <ShieldCheck size={20} />
+                          <ShieldCheck size={18} />
                         ) : (
-                          <Store size={20} />
+                          <Store size={18} />
                         )}
                       </div>
-                      <span
-                        className={`text-[10px] px-3 py-1 rounded-full font-black tracking-widest uppercase ${
-                          wallet.walletType === "PLATFORM"
-                            ? "bg-amber-100 text-amber-700"
-                            : "bg-indigo-100 text-indigo-700"
-                        }`}
-                      >
-                        {wallet.walletType === "SELLER"
-                          ? "Vendedor"
-                          : "Sistema"}
-                      </span>
-                    </div>
-
-                    <div className="mb-6">
-                      <h3 className="text-lg font-bold text-[#1B2559] truncate">
-                        {wallet.owner.fullName}
-                      </h3>
-                      <div className="flex items-center gap-1.5 text-slate-400">
-                        <User size={12} />
-                        <span className="text-xs font-medium truncate">
+                      <div className="min-w-0 flex-1">
+                        <h3 className="text-sm font-bold text-[#1B2559] truncate uppercase tracking-tight">
+                          {wallet.owner.fullName}
+                        </h3>
+                        <p className="text-[10px] text-slate-400 truncate tracking-wide">
                           {wallet.owner.email}
-                        </span>
+                        </p>
                       </div>
                     </div>
 
-                    <div className="space-y-4 bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                      <div className="flex justify-between items-center">
-                        <span className="text-[11px] font-black text-slate-400 uppercase tracking-wider">
-                          Disponível
-                        </span>
-                        <span className="text-base font-black text-[#1B2559]">
-                          {formatCurrency(wallet.availableBalance)}
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center border-t border-slate-200 pt-3">
-                        <span className="text-[11px] font-black text-slate-400 uppercase tracking-wider">
-                          Retido
-                        </span>
-                        <span
-                          className={`text-sm font-bold ${
-                            wallet.heldBalance > 0
-                              ? "text-orange-500"
-                              : "text-slate-400"
-                          }`}
-                        >
-                          {formatCurrency(wallet.heldBalance)}
-                        </span>
-                      </div>
+                    <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100 mb-4">
+                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">
+                        Disponível
+                      </p>
+                      <p className="text-lg font-black text-[#1B2559]">
+                        {formatCurrency(wallet.availableBalance)}
+                      </p>
                     </div>
 
-                    <div className="mt-6 flex justify-between items-center">
-                      <div className="flex items-center gap-1.5 text-slate-400">
-                        <Clock size={12} />
-                        <span className="text-[8px] font-bold uppercase tracking-tight">
-                          atualizado em . {formatDateFriendly(wallet.updatedAt)}
-                        </span>
-                      </div>
-                    </div>
+                    <TralloButton
+                      onClick={() => setSelectedWallet(wallet)}
+                      variant="secondary"
+                      className="w-full !h-12 !text-[10px] !uppercase !tracking-widest"
+                    >
+                      <Eye size={14} className="mr-2" /> Detalhes
+                    </TralloButton>
                   </div>
                 ))}
               </div>
@@ -258,6 +228,11 @@ const WalletManagement: React.FC = () => {
 
         <BottomNavigation />
       </div>
+
+      <WalletDetailsModal
+        wallet={selectedWallet}
+        onClose={() => setSelectedWallet(null)}
+      />
     </div>
   );
 };

@@ -6,7 +6,7 @@ interface ConfirmActionProps {
   onConfirm: () => void;
   isLoading?: boolean;
   title: string;
-  description: string;
+  description: React.ReactNode; // Alterado de string para React.ReactNode
   confirmText: string;
   cancelText?: string;
   icon?: string;
@@ -35,7 +35,7 @@ const ConfirmAction: React.FC<ConfirmActionProps> = ({
     }
     return () => {
       document.body.style.overflow = "unset";
-    };
+    }
   }, [isOpen]);
 
   if (!isOpen) return null;
@@ -52,7 +52,7 @@ const ConfirmAction: React.FC<ConfirmActionProps> = ({
           className={`size-14 sm:size-16 rounded-3xl flex items-center justify-center mx-auto mb-6 ${
             variant === "danger"
               ? "bg-red-50 dark:bg-red-500/10 text-red-500"
-              : "bg-primary/10 text-primary"
+              : "bg-indigo-50 dark:bg-indigo-500/10 text-[#6C3EF8]"
           }`}
         >
           <span className="material-symbols-outlined text-2xl sm:text-3xl">
@@ -64,9 +64,9 @@ const ConfirmAction: React.FC<ConfirmActionProps> = ({
           <h3 className="text-lg sm:text-xl font-black mb-2 leading-tight">
             {title}
           </h3>
-          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+          <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
             {description}
-          </p>
+          </div>
           {details && (
             <div className="mt-4 p-3 bg-gray-50 dark:bg-white/5 rounded-2xl text-[10px] font-mono break-all opacity-60">
               {details}
@@ -88,7 +88,7 @@ const ConfirmAction: React.FC<ConfirmActionProps> = ({
             className={`h-12 sm:h-14 rounded-full font-bold text-white text-xs sm:text-sm shadow-lg active:scale-95 transition-all disabled:opacity-50 px-2 truncate ${
               variant === "danger"
                 ? "bg-red-500 shadow-red-500/20"
-                : "bg-primary shadow-primary/20"
+                : "bg-[#6C3EF8] shadow-[#6C3EF8]/20"
             }`}
           >
             {isLoading ? (
