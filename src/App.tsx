@@ -84,7 +84,7 @@ const App = () => (
                 <Route path="/alterar-senha" element={<ChangePassword />} />
                 <Route path="/carrinho" element={<CartPage />} />
                 <Route path="/meus-pedidos" element={<BuyerOrdersHistory />} />
-                <Route path="/reclamacoes" element={<CreateDispute />} />
+                <Route path="/central-reclamacoes" element={<CreateDispute />} />
                 <Route
                   path="/minhas-vendas"
                   element={<SellerOrdersHistory />}

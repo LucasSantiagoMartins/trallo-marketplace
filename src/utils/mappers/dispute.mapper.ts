@@ -1,4 +1,4 @@
-import { DisputeReason } from "@/enums/dispute.enum";
+import { DisputeReason } from "@/enums/dispute.enums";
 
 export const disputeReasonLabel: Record<DisputeReason, string> = {
     [DisputeReason.PRODUCT_DAMAGED]: "Produto Danificado",

@@ -7,12 +7,17 @@ import {
   ProcessOrderDecisionDto
 } from "@/dtos/order";
 import { PaginatedDeliveriesDTO } from "@/dtos/delivery-response";
+import { OrderProductsForDisputeResponseDto } from "@/dtos/order-products-for-dispute-response.dto";
 
 export const orderService = {
   async getBuyerOrders(page: number, limit: number): Promise<ApiResponse<PaginatedOrdersDTO[]>> {
     return await http.get<PaginatedOrdersDTO[]>(endpoints.orders.buyerOrders, {
       params: { page, limit }
     });
+  },
+
+  async getBuyerOrderProducts(orderNumber: string): Promise<ApiResponse<OrderProductsForDisputeResponseDto>> {
+    return await http.get<OrderProductsForDisputeResponseDto>(endpoints.orders.getBuyerOrderProducts(orderNumber));
   },
 
   async getSellerOrders(page: number, limit: number): Promise<ApiResponse<PaginatedOrdersDTO[]>> {

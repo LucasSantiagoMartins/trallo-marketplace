@@ -193,7 +193,7 @@ const SupportPage = () => {
                 bg="bg-red-500/10"
                 title="Centro de Disputas"
                 subText="Abrir uma reclamação de pedido"
-                to="/reclamacoes" // Rota para a tela que criamos
+                to="/central-reclamacoes" 
               />
             </div>
 

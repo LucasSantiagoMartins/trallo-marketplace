@@ -71,6 +71,7 @@ export const endpoints = {
     sellerOrders: "/orders/my/seller",
     adminOrders: "/orders",
     getByOrderNumber: (orderNumber: string) => `/orders/${orderNumber}`,
+    getBuyerOrderProducts: (orderNumber: string) => `/orders/buyer/details/${orderNumber}`,
     processDecision: (orderNumber: string) => `/orders/process-decision/${orderNumber}`,
 
   },

@@ -1,3 +1,5 @@
+import { DisputeReason } from "@/enums/dispute.enums";
+
 export enum DisputeStatus {
     OPEN = 'OPEN',
     UNDER_ANALYSIS = 'UNDER_ANALYSIS',
@@ -7,9 +9,10 @@ export enum DisputeStatus {
 }
 
 export interface CreateDisputeDto {
-    productSku: string;
-    reason: string;
-    description: string;
+    orderNumber: string;
+    productId: string;
+    reason: DisputeReason;
+    description?: string;
 }
 
 export interface RespondDisputeDto {
