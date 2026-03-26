@@ -66,7 +66,7 @@ const DisputeResponseModal: React.FC<DisputeResponseModalProps> = ({
             </div>
             <button
               onClick={onClose}
-              className="size-10 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:bg-red-50 hover:text-red-500 transition-colors"
+              className="size-10 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 transition-colors"
             >
               <span className="material-symbols-outlined">close</span>
             </button>
@@ -91,13 +91,6 @@ const DisputeResponseModal: React.FC<DisputeResponseModalProps> = ({
             />
 
             <div className="flex gap-3 pt-2">
-              <TralloButton
-                variant="secondary"
-                className="flex-1"
-                onClick={onClose}
-              >
-                Cancelar
-              </TralloButton>
               <TralloButton
                 type="submit"
                 className="flex-[1.5]"

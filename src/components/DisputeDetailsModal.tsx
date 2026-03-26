@@ -36,7 +36,7 @@ const DisputeDetailsModal: React.FC<DisputeDetailsModalProps> = ({
             </div>
             <button
               onClick={onClose}
-              className="size-10 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:bg-red-50 hover:text-red-500 transition-colors"
+              className="size-10 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 transition-colors"
             >
               <span className="material-symbols-outlined">close</span>
             </button>

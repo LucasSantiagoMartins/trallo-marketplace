@@ -1,16 +1,20 @@
-import React, { useState, useEffect } from "react";
-import Sidebar from "@/components/Sidebar";
+import React, { useState, useEffect, useRef, useMemo } from "react";
+import Pagination from "../components/Pagination";
 import BottomNavigation from "../components/BottomNavigation";
 import UserListItem from "../components/UserListItem";
-import Pagination from "../components/Pagination";
+import Sidebar from "@/components/Sidebar";
 import CustomReasonModal from "@/components/CustomReasonModal";
 import ConfirmAction from "@/components/ConfirmAction";
 import { adminItems } from "@/constants/sidebar-items";
 import { UserResponseDTO } from "@/types/user";
 import { useUserManagement } from "@/hooks/useUserManagement";
+import TralloInput from "@/components/TralloInput";
+import TralloButton from "@/components/TralloButton";
+import { UserRole } from "@/enums/user";
+import { getUserRoleLabel } from "@/utils/mappers/user.mapper";
 
 const UsersManagement: React.FC = () => {
-  const [filter, setFilter] = useState("Todos");
+  const [filter, setFilter] = useState<string>("");
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [dateAfter, setDateAfter] = useState("");
@@ -25,18 +29,92 @@ const UsersManagement: React.FC = () => {
   const [isReactivateModalOpen, setIsReactivateModalOpen] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
 
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const isDragging = useRef(false);
+  const startX = useRef(0);
+  const scrollLeft = useRef(0);
+
   const {
-    users,
+    users, // Assumindo que o hook retorna a lista base
     loading,
-    totalPages,
     handleSuspend,
     handleReactivate,
     handleDelete,
-  } = useUserManagement(filter, searchTerm, currentPage, dateAfter, dateBefore);
+  } = useUserManagement(undefined, "", 1, "", "");
+
+  const filterOptions = useMemo(
+    () => [
+      { label: "Todos", value: "" },
+      { label: getUserRoleLabel(UserRole.SELLER), value: UserRole.SELLER },
+      { label: getUserRoleLabel(UserRole.BUYER), value: UserRole.BUYER },
+      { label: getUserRoleLabel(UserRole.ADMIN), value: UserRole.ADMIN },
+      { label: getUserRoleLabel(UserRole.OPERATOR), value: UserRole.OPERATOR },
+      {
+        label: getUserRoleLabel(UserRole.DELIVERER),
+        value: UserRole.DELIVERER,
+      },
+    ],
+    [],
+  );
+
+  const filteredUsers = useMemo(() => {
+    return users.filter((user) => {
+      const matchesRole = filter === "" || user.role === filter;
+
+      const search = searchTerm.toLowerCase();
+      const matchesSearch =
+        user.fullName?.toLowerCase().includes(search) ||
+        user.email?.toLowerCase().includes(search) ||
+        user.phoneNumber?.includes(search);
+
+      const createdAt = new Date(user.createdAt).getTime();
+      const matchesAfter =
+        !dateAfter || createdAt >= new Date(dateAfter).getTime();
+      const matchesBefore =
+        !dateBefore || createdAt <= new Date(dateBefore).getTime();
+
+      return matchesRole && matchesSearch && matchesAfter && matchesBefore;
+    });
+  }, [users, filter, searchTerm, dateAfter, dateBefore]);
+
+  const itemsPerPage = 10;
+  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+  const paginatedUsers = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return filteredUsers.slice(start, start + itemsPerPage);
+  }, [filteredUsers, currentPage]);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filter, searchTerm, dateAfter, dateBefore]);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    isDragging.current = true;
+    if (scrollContainerRef.current) {
+      startX.current = e.pageX - scrollContainerRef.current.offsetLeft;
+      scrollLeft.current = scrollContainerRef.current.scrollLeft;
+    }
+  };
+
+  const handleMouseLeave = () => {
+    isDragging.current = false;
+  };
+
+  const handleMouseUp = () => {
+    setTimeout(() => (isDragging.current = false), 50);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging.current || !scrollContainerRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - scrollContainerRef.current.offsetLeft;
+    const walk = (x - startX.current) * 2;
+    scrollContainerRef.current.scrollLeft = scrollLeft.current - walk;
+  };
 
   const onConfirmSuspension = async (reason: string) => {
     if (selectedUser) {
@@ -89,7 +167,7 @@ const UsersManagement: React.FC = () => {
             isMounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
           }`}
         >
-          <header className="mb-8">
+          <header className="mb-10">
             <p className="text-[#6C3EF8] font-bold text-[10px] tracking-[0.2em] mb-1 uppercase">
               Gerenciamento
             </p>
@@ -98,95 +176,75 @@ const UsersManagement: React.FC = () => {
             </h1>
           </header>
 
-          <div className="space-y-6 mb-8">
-            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
-              <div className="flex-1 w-full lg:max-w-md">
-                <label className="block text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 ml-1">
-                  Nome, E-mail ou Telefone
-                </label>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400">
-                    search
-                  </span>
-                  <input
-                    type="text"
-                    placeholder="Pesquisar registros..."
-                    value={searchTerm}
-                    onChange={(e) => {
-                      setSearchTerm(e.target.value);
-                      setCurrentPage(1);
-                    }}
-                    className="w-full bg-white border-none rounded-2xl py-4 pl-12 pr-4 shadow-sm focus:ring-2 focus:ring-[#6C3EF8]/20 transition-all text-sm font-medium outline-none"
-                  />
-                </div>
-              </div>
+          <div className="space-y-8 mb-10">
+            <div className="w-full">
+              <TralloInput
+                label="Nome, E-mail ou Telefone"
+                icon="search"
+                placeholder="Pesquisar registros..."
+                value={searchTerm}
+                onChange={setSearchTerm}
+                className="shadow-none border-slate-200 w-full"
+              />
+            </div>
 
-              <div className="flex flex-col">
-                <label className="block text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1 ml-1 lg:text-right">
-                  Filtrar por tipo
-                </label>
-                <div className="flex gap-3 overflow-x-auto py-4 px-2 -my-2 no-scrollbar lg:justify-end">
-                  {["Todos", "Vendedores", "Compradores", "ADMIN"].map(
-                    (tab) => (
-                      <button
-                        key={tab}
-                        onClick={() => {
-                          setFilter(tab);
-                          setCurrentPage(1);
-                        }}
-                        className={`px-6 py-3 rounded-full text-[11px] font-black uppercase tracking-wider whitespace-nowrap transition-all duration-300 active:scale-95 ${
-                          filter === tab
-                            ? "bg-[#6C3EF8] text-white shadow-[0_10px_25px_-5px_rgba(108,62,248,0.4)] -translate-y-1"
-                            : "bg-white text-slate-500 shadow-sm border border-slate-100 hover:border-slate-200"
-                        }`}
-                      >
-                        {tab}
-                      </button>
-                    ),
-                  )}
-                </div>
+            <div className="flex flex-col w-full overflow-hidden">
+              <label className="block text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 ml-1">
+                Filtrar por tipo
+              </label>
+              <div
+                ref={scrollContainerRef}
+                onMouseDown={handleMouseDown}
+                onMouseLeave={handleMouseLeave}
+                onMouseUp={handleMouseUp}
+                onMouseMove={handleMouseMove}
+                className="flex gap-3 overflow-x-auto py-2 px-1 no-scrollbar touch-pan-x select-none scroll-smooth cursor-grab active:cursor-grabbing"
+              >
+                {filterOptions.map((tab) => (
+                  <button
+                    key={tab.label}
+                    onClick={() => setFilter(tab.value)}
+                    className={`px-6 py-3 rounded-full text-[11px] font-black uppercase tracking-wider whitespace-nowrap transition-all duration-300 border ${
+                      filter === tab.value
+                        ? "bg-[#6C3EF8] text-white border-[#6C3EF8] -translate-y-0.5"
+                        : "bg-white text-slate-500 border-slate-100 shadow-none hover:border-slate-200"
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
               </div>
             </div>
 
             <div className="flex flex-wrap gap-4 items-end bg-slate-50/50 p-4 rounded-2xl border border-slate-100">
               <div className="flex-1 min-w-[200px]">
-                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">
-                  Criado após
-                </label>
-                <input
+                <TralloInput
+                  label="Criado após"
                   type="date"
                   value={dateAfter}
-                  onChange={(e) => {
-                    setDateAfter(e.target.value);
-                    setCurrentPage(1);
-                  }}
-                  className="w-full bg-white border-none rounded-xl py-2.5 px-4 shadow-sm text-xs font-semibold text-slate-600 outline-none focus:ring-2 focus:ring-[#6C3EF8]/10 transition-all"
+                  onChange={setDateAfter}
+                  className="shadow-none border-slate-200"
                 />
               </div>
               <div className="flex-1 min-w-[200px]">
-                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">
-                  Criado antes de
-                </label>
-                <input
+                <TralloInput
+                  label="Criado antes de"
                   type="date"
                   value={dateBefore}
-                  onChange={(e) => {
-                    setDateBefore(e.target.value);
-                    setCurrentPage(1);
-                  }}
-                  className="w-full bg-white border-none rounded-xl py-2.5 px-4 shadow-sm text-xs font-semibold text-slate-600 outline-none focus:ring-2 focus:ring-[#6C3EF8]/10 transition-all"
+                  onChange={setDateBefore}
+                  className="shadow-none border-slate-200"
                 />
               </div>
-              <button
+              <TralloButton
+                variant="primary"
+                className="shadow-none"
                 onClick={() => {
                   setDateAfter("");
                   setDateBefore("");
-                  setCurrentPage(1);
                 }}
-                className="px-4 py-2.5 text-[10px] font-bold text-slate-400 hover:text-red-500 transition-colors uppercase"
               >
                 Limpar Datas
-              </button>
+              </TralloButton>
             </div>
           </div>
 
@@ -196,7 +254,7 @@ const UsersManagement: React.FC = () => {
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#6C3EF8]"></div>
               </div>
             ) : (
-              users.map((user, index) => (
+              paginatedUsers.map((user, index) => (
                 <UserListItem
                   key={user.id}
                   user={user}
@@ -224,7 +282,7 @@ const UsersManagement: React.FC = () => {
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
-            onPageChange={(page) => setCurrentPage(page)}
+            onPageChange={setCurrentPage}
           />
         </div>
 
@@ -249,7 +307,7 @@ const UsersManagement: React.FC = () => {
         onConfirm={onConfirmDelete}
         isLoading={actionLoading}
         title="Excluir Usuário"
-        description={`Tem certeza que deseja excluir permanentemente ${selectedUser?.fullName}? Esta ação removerá todos os dados vinculados e não pode ser desfeita.`}
+        description={`Tem certeza que deseja excluir permanentemente ${selectedUser?.fullName}?`}
         confirmText="Sim, excluir"
         variant="danger"
         icon="delete_forever"
@@ -264,7 +322,7 @@ const UsersManagement: React.FC = () => {
         onConfirm={onConfirmReactivate}
         isLoading={actionLoading}
         title="Reativar Usuário"
-        description={`Deseja restaurar o acesso de ${selectedUser?.fullName}? O usuário poderá realizar login novamente na plataforma.`}
+        description={`Deseja restaurar o acesso de ${selectedUser?.fullName}?`}
         confirmText="Confirmar"
         variant="primary"
         icon="person_check"
