@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { DisputeDto, DisputeStatus } from "@/dtos/disputes";
 import { getDisputeStatusLabel } from "@/utils/mappers/dispute.mapper";
 import { disputeService } from "@/services/dispute.service";
+import TralloInput from "@/components/TralloInput";
+import TralloButton from "@/components/TralloButton";
 
 interface DisputeResponseModalProps {
   isOpen: boolean;
@@ -17,7 +19,7 @@ const DisputeResponseModal: React.FC<DisputeResponseModalProps> = ({
   onSuccess,
 }) => {
   const [status, setStatus] = useState<DisputeStatus>(dispute.status);
-  const [response, setResponse] = useState(dispute.adminResponse || "");
+  const [response, setResponse] = useState(dispute.response || "");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!isOpen) return null;
@@ -27,7 +29,7 @@ const DisputeResponseModal: React.FC<DisputeResponseModalProps> = ({
     setIsSubmitting(true);
     try {
       const result = await disputeService.respondDispute(dispute.id, {
-        response: response,
+        message: response,
         action: status,
       });
       if (result.success) {
@@ -40,6 +42,11 @@ const DisputeResponseModal: React.FC<DisputeResponseModalProps> = ({
       setIsSubmitting(false);
     }
   };
+
+  const statusOptions = Object.values(DisputeStatus).map((s) => ({
+    label: getDisputeStatusLabel(s),
+    value: s,
+  }));
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-300">
@@ -66,57 +73,38 @@ const DisputeResponseModal: React.FC<DisputeResponseModalProps> = ({
           </header>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label className="block text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 ml-1">
-                Alterar Estado
-              </label>
-              <div className="relative">
-                <select
-                  value={status}
-                  onChange={(e) => setStatus(e.target.value as DisputeStatus)}
-                  className="w-full bg-slate-50 border-none rounded-2xl py-4 px-4 text-sm font-semibold text-slate-700 appearance-none focus:ring-2 focus:ring-[#6C3EF8]/20 transition-all outline-none"
-                >
-                  {Object.values(DisputeStatus).map((s) => (
-                    <option key={s} value={s}>
-                      {getDisputeStatusLabel(s)}
-                    </option>
-                  ))}
-                </select>
-                <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
-                  unfold_more
-                </span>
-              </div>
-            </div>
+            <TralloInput
+              label="Alterar Estado"
+              isSelect
+              options={statusOptions}
+              value={status}
+              onChange={(val) => setStatus(val as DisputeStatus)}
+            />
 
-            <div>
-              <label className="block text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 ml-1">
-                Sua Resposta
-              </label>
-              <textarea
-                value={response}
-                onChange={(e) => setResponse(e.target.value)}
-                placeholder="Descreva a resolução ou o motivo da análise..."
-                rows={4}
-                className="w-full bg-slate-50 border-none rounded-2xl py-4 px-4 text-sm font-medium text-slate-700 focus:ring-2 focus:ring-[#6C3EF8]/20 transition-all outline-none resize-none"
-                required
-              />
-            </div>
+            <TralloInput
+              label="Sua Resposta"
+              multiline
+              rows={4}
+              placeholder="Descreva a resolução ou o motivo da análise..."
+              value={response}
+              onChange={setResponse}
+            />
 
             <div className="flex gap-3 pt-2">
-              <button
-                type="button"
+              <TralloButton
+                variant="secondary"
+                className="flex-1"
                 onClick={onClose}
-                className="flex-1 py-4 px-6 rounded-2xl text-sm font-bold text-slate-400 hover:bg-slate-50 transition-all"
               >
                 Cancelar
-              </button>
-              <button
+              </TralloButton>
+              <TralloButton
                 type="submit"
-                disabled={isSubmitting}
-                className="flex-[1.5] py-4 px-6 rounded-2xl bg-[#6C3EF8] text-white text-sm font-bold shadow-[0_10px_20px_-5px_rgba(108,62,248,0.4)] hover:shadow-[0_15px_25px_-5px_rgba(108,62,248,0.5)] active:scale-[0.98] transition-all disabled:opacity-50 disabled:pointer-events-none"
+                className="flex-[1.5]"
+                isLoading={isSubmitting}
               >
-                {isSubmitting ? "Enviando..." : "Salvar Alterações"}
-              </button>
+                Salvar Alterações
+              </TralloButton>
             </div>
           </form>
         </div>

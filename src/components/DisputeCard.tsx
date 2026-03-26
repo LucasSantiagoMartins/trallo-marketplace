@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import {
   getDisputeStatusLabel,
   getDisputeStatusColor,
+  getDisputeReasonLabel,
 } from "@/utils/mappers/dispute.mapper";
 import { formatDateFriendly } from "@/utils/date";
 import { DisputeDto } from "@/dtos/disputes";
 import DisputeResponseModal from "./DisputeResponseModal";
+import DisputeDetailsModal from "./DisputeDetailsModal";
 
 interface DisputeCardProps {
   dispute: DisputeDto;
@@ -14,6 +16,7 @@ interface DisputeCardProps {
 
 const DisputeCard: React.FC<DisputeCardProps> = ({ dispute, onSuccess }) => {
   const [isResponseModalOpen, setIsResponseModalOpen] = useState(false);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
   return (
     <>
@@ -44,7 +47,7 @@ const DisputeCard: React.FC<DisputeCardProps> = ({ dispute, onSuccess }) => {
             Motivo
           </p>
           <p className="text-sm text-slate-700 font-medium line-clamp-1">
-            {dispute.reason}
+            {getDisputeReasonLabel(dispute.reason)}
           </p>
         </div>
 
@@ -53,7 +56,10 @@ const DisputeCard: React.FC<DisputeCardProps> = ({ dispute, onSuccess }) => {
             {formatDateFriendly(dispute.createdAt)}
           </span>
           <div className="flex gap-2">
-            <button className="size-8 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:bg-slate-100 transition-all">
+            <button
+              onClick={() => setIsDetailsModalOpen(true)}
+              className="size-8 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:bg-slate-100 transition-all"
+            >
               <span className="material-symbols-outlined text-sm">
                 visibility
               </span>
@@ -67,6 +73,12 @@ const DisputeCard: React.FC<DisputeCardProps> = ({ dispute, onSuccess }) => {
           </div>
         </div>
       </div>
+
+      <DisputeDetailsModal
+        isOpen={isDetailsModalOpen}
+        onClose={() => setIsDetailsModalOpen(false)}
+        dispute={dispute}
+      />
 
       <DisputeResponseModal
         isOpen={isResponseModalOpen}

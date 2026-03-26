@@ -24,10 +24,10 @@ export interface RespondDisputeDto {
 export interface DisputeDto {
     id: string;
     orderId: string;
-    reason: string;
+    reason: DisputeReason;
     description?: string;
     status: DisputeStatus;
-    adminResponse?: string;
+    response?: string;
     createdAt: Date;
     user: {
         id: number;

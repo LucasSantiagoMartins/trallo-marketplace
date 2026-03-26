@@ -32,7 +32,7 @@ export const endpoints = {
 
   disputes: {
     create: "/disputes",
-    get: "/disputes/pending",
+    get: "/disputes",
     respondDisputes: (id: string) => `/disputes/${id}/respond`,
   },
     
