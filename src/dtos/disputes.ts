@@ -1,4 +1,5 @@
 import { DisputeReason } from "@/enums/dispute.enums";
+import { PaginationDTO } from "./pagination";
 
 export enum DisputeStatus {
     OPEN = 'OPEN',
@@ -18,4 +19,24 @@ export interface CreateDisputeDto {
 export interface RespondDisputeDto {
     message: string;
     action: DisputeStatus;
+}
+
+export interface DisputeDto {
+    id: string;
+    orderId: string;
+    reason: string;
+    description?: string;
+    status: DisputeStatus;
+    adminResponse?: string;
+    createdAt: Date;
+    user: {
+        id: number;
+        fullName: string;
+        phoneNumber: string;
+    };
+}
+
+export interface DisputesResponseDto {
+    disputes: DisputeDto[];
+    pagination: PaginationDTO
 }

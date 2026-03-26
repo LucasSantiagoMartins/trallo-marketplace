@@ -51,6 +51,7 @@ import { UserRole } from "./enums/user";
 import DeliveryOrdersHistory from "./pages/DeliveryOrdersHistory";
 import AdminDeliveryManagement from "./pages/AdminDeliveryManagement";
 import CreateDispute from "./pages/CreateDispute";
+import DisputesManagement from "./pages/DisputesManagement";
 
 const queryClient = new QueryClient();
 
@@ -184,6 +185,10 @@ const App = () => (
                 <Route
                   path="/area-administrativa/usuarios"
                   element={<UsersManagement />}
+                />
+                 <Route
+                  path="/area-administrativa/reclamacoes"
+                  element={<DisputesManagement />}
                 />
                 <Route
                   path="/area-administrativa/entregas"

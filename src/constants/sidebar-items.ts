@@ -12,6 +12,13 @@ export const adminItems = [
     path: "/area-administrativa/usuarios",
   },
   {
+    id: "disputas",
+    icon: "gavel", 
+    // Ou "forum" / "report_problem" se preferir
+    label: "Reclamações",
+    path: "/area-administrativa/reclamacoes",
+  },
+  {
     id: "entregas",
     icon: "local_shipping",
     label: "Gestão de Entregas",
