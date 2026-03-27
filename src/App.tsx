@@ -52,6 +52,8 @@ import DeliveryOrdersHistory from "./pages/DeliveryOrdersHistory";
 import AdminDeliveryManagement from "./pages/AdminDeliveryManagement";
 import CreateDispute from "./pages/CreateDispute";
 import DisputesManagement from "./pages/DisputesManagement";
+import IdentityVerification from "./pages/IdentityVerification";
+import IdentityVerificationManagement from "./pages/IdentityVerificationManagement";
 
 const queryClient = new QueryClient();
 
@@ -80,12 +82,19 @@ const App = () => (
               />
               {/* --- 2. ROTAS PRIVADAS (CLIENTES / GERAL) --- */}
               <Route element={<ProtectedRoute />}>
+                <Route
+                  path="/verificacao-identidade"
+                  element={<IdentityVerification />}
+                />
                 <Route path="/perfil" element={<UserProfileScreen />} />
                 <Route path="/editar-perfil" element={<EditProfile />} />
                 <Route path="/alterar-senha" element={<ChangePassword />} />
                 <Route path="/carrinho" element={<CartPage />} />
                 <Route path="/meus-pedidos" element={<BuyerOrdersHistory />} />
-                <Route path="/central-reclamacoes" element={<CreateDispute />} />
+                <Route
+                  path="/central-reclamacoes"
+                  element={<CreateDispute />}
+                />
                 <Route
                   path="/minhas-vendas"
                   element={<SellerOrdersHistory />}
@@ -186,9 +195,13 @@ const App = () => (
                   path="/area-administrativa/usuarios"
                   element={<UsersManagement />}
                 />
-                 <Route
+                <Route
                   path="/area-administrativa/reclamacoes"
                   element={<DisputesManagement />}
+                />
+                  <Route
+                  path="/area-administrativa/verificacoes-identidade"
+                  element={<IdentityVerificationManagement />}
                 />
                 <Route
                   path="/area-administrativa/entregas"

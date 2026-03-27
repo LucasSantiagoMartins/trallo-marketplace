@@ -35,7 +35,7 @@ export const endpoints = {
     get: "/disputes",
     respondDisputes: (id: string) => `/disputes/${id}/respond`,
   },
-    
+
   warehouseInventories: {
     dashboard: "/warehouse-inventories/dashboard",
     exits: "/warehouse-inventories/exits",
@@ -115,7 +115,7 @@ export const endpoints = {
     payments: {
       list: "/payments/admin/list",
     },
-    
+
 
   },
   bankAccounts: {
@@ -133,5 +133,9 @@ export const endpoints = {
     get: "/user-security-settings",
     update: "/user-security-settings",
     requestCode: "/user-security-settings/request-code"
+  },
+  identityVerifications: {
+    base: "/identity-verifications",
+    review: (id: string) => `/identity-verifications/${id}/review`,
   }
 };

@@ -16,11 +16,11 @@ export const disputeReasonColor: Record<DisputeReason, string> = {
 };
 
 export const disputeStatusLabel: Record<DisputeStatus, string> = {
-    [DisputeStatus.OPEN]: "Aberto",
+    [DisputeStatus.OPEN]: "Aberta",
     [DisputeStatus.UNDER_ANALYSIS]: "Em Análise",
-    [DisputeStatus.REFUNDED]: "Reembolsado",
+    [DisputeStatus.REFUNDED]: "Reembolsada",
     [DisputeStatus.PAYMENT_RELEASED]: "Pagamento Liberado",
-    [DisputeStatus.CLOSED]: "Fechado",
+    [DisputeStatus.CLOSED]: "Fechada",
 };
 
 export const disputeStatusColor: Record<DisputeStatus, string> = {

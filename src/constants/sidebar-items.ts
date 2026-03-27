@@ -6,25 +6,6 @@ export const adminItems = [
     path: "/area-administrativa",
   },
   {
-    id: "usuarios",
-    icon: "group",
-    label: "Usuários",
-    path: "/area-administrativa/usuarios",
-  },
-  {
-    id: "disputas",
-    icon: "gavel", 
-    // Ou "forum" / "report_problem" se preferir
-    label: "Reclamações",
-    path: "/area-administrativa/reclamacoes",
-  },
-  {
-    id: "entregas",
-    icon: "local_shipping",
-    label: "Gestão de Entregas",
-    path: "/area-administrativa/entregas",
-  },
-  {
     id: "pagamentos",
     icon: "payments",
     label: "Pagamentos",
@@ -41,6 +22,31 @@ export const adminItems = [
     icon: "wallet",
     label: "Carteiras",
     path: "/area-administrativa/carteiras",
+  },
+  {
+    id: "usuarios",
+    icon: "group",
+    label: "Usuários",
+    path: "/area-administrativa/usuarios",
+  },
+
+  {
+    id: "entregas",
+    icon: "local_shipping",
+    label: "Gestão de Entregas",
+    path: "/area-administrativa/entregas",
+  },
+  {
+    id: "verificacoes",
+    icon: "verified_user",
+    label: "Verificações de Identidade",
+    path: "/area-administrativa/verificacoes-identidade",
+  },
+  {
+    id: "disputas",
+    icon: "gavel",
+    label: "Reclamações",
+    path: "/area-administrativa/reclamacoes",
   },
   {
     id: "area-operacional",
