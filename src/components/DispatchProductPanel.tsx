@@ -9,7 +9,6 @@ interface Props {
 
 const DispatchProductPanel: React.FC<Props> = ({ dispatchStatus }) => {
   const [timeLeft, setTimeLeft] = useState<string>("");
-  const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
     if (!dispatchStatus?.nextReductionAt || dispatchStatus.isFinished) return;
@@ -45,47 +44,35 @@ const DispatchProductPanel: React.FC<Props> = ({ dispatchStatus }) => {
   );
 
   return (
-    <div className="mt-3 overflow-hidden border border-primary/20 rounded-xl bg-white dark:bg-zinc-900 transition-all duration-300 shadow-sm">
-      <div
-        className="p-4 cursor-pointer transition-colors"
-        onClick={() => setIsExpanded(!isExpanded)}
-      >
-        <div className="flex items-center justify-between mb-2">
+    <div className="mt-3 overflow-hidden border border-border rounded-xl bg-white dark:bg-zinc-900 shadow-sm">
+      <div className="p-3 sm:p-4 select-none">
+        <div className="flex items-center justify-between mb-1.5">
           <div className="flex items-center gap-2">
-            
-            <span className="text-[10px] font-bold uppercase text-primary tracking-widest">
+            <span className="text-[9px] sm:text-[10px] font-bold uppercase text-primary tracking-widest text-nowrap">
               Preço em Despacho
             </span>
           </div>
-          <span
-            className="material-symbols-outlined text-muted-foreground transition-transform duration-300"
-            style={{
-              transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
-            }}
-          >
-            expand_more
-          </span>
         </div>
 
-        <div className="flex items-end justify-between">
-          <div className="flex items-baseline gap-1">
-            <span className="text-4xl font-black text-primary">
-              {formatPrice(dispatchStatus.currentPrice, false)}
+        <div className="flex items-end justify-between gap-2">
+          <div className="flex items-baseline gap-1 min-w-0">
+            <span className="text-2xl sm:text-4xl font-black text-primary truncate">
+              {formatPrice(dispatchStatus.currentPrice, true)}
             </span>
 
             {discountPercent > 0 && (
-              <span className="ml-2 text-xs font-bold text-red-500 bg-red-50 px-2 py-0.5 rounded-full">
+              <span className="text-[10px] sm:text-xs font-bold text-red-500 bg-red-50 px-1.5 sm:px-2 py-0.5 rounded-full text-nowrap">
                 {discountPercent}%
               </span>
             )}
           </div>
 
           {!dispatchStatus.isFinished && (
-            <div className="flex flex-col items-end">
-              <span className="text-[9px] uppercase font-bold text-muted-foreground tracking-tighter">
-                Cai {" "}em
+            <div className="flex flex-col items-end flex-shrink-0">
+              <span className="text-[8px] sm:text-[10px] text-muted-foreground uppercase font-bold leading-none mb-0.5">
+                Cai em
               </span>
-              <span className="text-sm  font-bold text-primary">
+              <span className="text-xs sm:text-sm font-bold text-primary tabular-nums">
                 {timeLeft}
               </span>
             </div>
@@ -93,49 +80,48 @@ const DispatchProductPanel: React.FC<Props> = ({ dispatchStatus }) => {
         </div>
       </div>
 
-      <div
-        className={`bg-slate-50 dark:bg-zinc-800/30 border-t border-primary/5 transition-all duration-300 ease-in-out overflow-hidden ${isExpanded ? "max-h-40 opacity-100" : "max-h-0 opacity-0"}`}
-      >
-        <div className="p-4 grid grid-cols-2 gap-4">
-          <div className="space-y-1">
-            <span className="text-[10px] text-muted-foreground uppercase font-bold">
+      {/* Área de Detalhes - Otimizada para Mobile */}
+      <div className="border-t border-border">
+        <div className="p-3 sm:p-4 grid grid-cols-2 gap-x-2 gap-y-3 bg-slate-50/50 dark:bg-zinc-800/30">
+          <div className="space-y-0.5">
+            <span className="text-[8px] sm:text-[10px] text-muted-foreground uppercase font-bold block">
               Preço Inicial
             </span>
-            <p className="text-sm font-bold line-through decoration-red-500 text-slate-400">
+            <p className="text-xs sm:text-sm font-bold line-through decoration-red-500 text-slate-400">
               {formatPrice(dispatchStatus.initialPrice)}
             </p>
           </div>
-          <div className="space-y-1 border-l pl-4">
-            <span className="text-[10px] text-muted-foreground uppercase font-bold">
-              Queda por Hora
+          <div className="space-y-0.5 border-l pl-3 border-border">
+            <span className="text-[8px] sm:text-[10px] text-muted-foreground uppercase font-bold block">
+              Queda / Hora
             </span>
-            <p className="text-sm font-bold text-red-500">
+            <p className="text-xs sm:text-sm font-bold text-red-500">
               {formatPrice(dispatchStatus.reductionAmount)}
             </p>
           </div>
-          <div className="space-y-1">
-            <span className="text-[10px] text-muted-foreground uppercase font-bold">
+          <div className="space-y-0.5">
+            <span className="text-[8px] sm:text-[10px] text-muted-foreground uppercase font-bold block">
               Próximo Preço
             </span>
-            <p className="text-sm font-bold">
+            <p className="text-xs sm:text-sm font-bold truncate">
               {dispatchStatus.nextPrice
                 ? formatPrice(dispatchStatus.nextPrice)
                 : "Mínimo atingido"}
             </p>
           </div>
-          <div className="space-y-1 border-l pl-4">
-            <span className="text-[10px] text-muted-foreground uppercase font-bold">
+          <div className="space-y-0.5 border-l pl-3 border-border">
+            <span className="text-[8px] sm:text-[10px] text-muted-foreground uppercase font-bold block">
               Término
             </span>
-            <p className="text-xs font-bold text-slate-600">
-              {formatDateFriendly(dispatchStatus.endsAt)}
+            <p className="text-[10px] sm:text-xs font-bold text-slate-600 leading-tight">
+              {formatDateFriendly(dispatchStatus.endsAt, true)}
             </p>
           </div>
         </div>
       </div>
 
       {dispatchStatus.isFinished && (
-        <div className="bg-slate-100 text-slate-500 text-center py-1 text-[10px] font-bold uppercase">
+        <div className="bg-slate-100 text-slate-500 text-center py-1 text-[9px] sm:text-[10px] font-bold uppercase border-t border-border">
           Despacho Encerrado
         </div>
       )}

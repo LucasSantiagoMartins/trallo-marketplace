@@ -1,99 +1,35 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
- 
 import FilterButton from "@/components/FilterButton";
-import Loader from "@/components/Loader";
-import { ProductDTO, ProductStatus } from "@/types/product";
-import { getMyProducts } from "@/services/product.service";
-import { useAuth } from "@/context/AuthContext";
+import { ProductDTO } from "@/types/product";
 import PageHeader from "@/components/PageHeader";
 import OwnProductFilterDrawer from "@/components/OwnProductFilterDrawer";
 import ConfirmAction from "@/components/ConfirmAction";
 import BottomNavigation from "@/components/BottomNavigation";
 import OwnProductCard from "@/components/OwnProductCard";
+import LoaderAnimation from "@/components/Loader";
+import ActivateDispatchDrawer from "@/components/ActivateDispatchDrawer";
+import { useMyProducts } from "@/hooks/useMyProducts";
 
 const MyProductsPage: React.FC = () => {
   const navigate = useNavigate();
+  const {
+    filteredProducts,
+    isLoading,
+    activeFilters,
+    setActiveFilters,
+    stats,
+    deleteProduct,
+    activateDispatch,
+  } = useMyProducts();
+
   const [showFilters, setShowFilters] = useState(false);
   const [productToDelete, setProductToDelete] = useState<ProductDTO | null>(
     null,
   );
-
-  const [products, setProducts] = useState<ProductDTO[]>([]);
-  const [filteredProducts, setFilteredProducts] = useState<ProductDTO[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  const [activeFilters, setActiveFilters] = useState({
-    category: "Todas",
-    status: "Todos",
-    sortBy: "Preço",
-  });
-
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  useEffect(() => {
-    applyFilters();
-  }, [products, activeFilters]);
-
-  const fetchProducts = async () => {
-    setIsLoading(true);
-    try {
-      const response = await getMyProducts();
-      if (response.data) {
-        setProducts(response.data);
-      }
-    } catch (error) {
-      console.error("Erro ao carregar produtos:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const applyFilters = () => {
-    let result = [...products];
-
-    if (activeFilters.status !== "Todos") {
-      result = result.filter((p) => p.status === activeFilters.status);
-    }
-
-    if (activeFilters.category !== "Todas") {
-      result = result.filter((p) => p.category === activeFilters.category);
-    }
-
-    if (activeFilters.sortBy === "Preço") {
-      result.sort((a, b) => Number(a.price) - Number(b.price));
-    } else if (activeFilters.sortBy === "Novos") {
-      result.sort(
-        (a, b) =>
-          new Date(b.createdAt || 0).getTime() -
-          new Date(a.createdAt || 0).getTime(),
-      );
-    }
-
-    setFilteredProducts(result);
-  };
-
-  const handleConfirmDelete = () => {
-    if (productToDelete) {
-      setProducts((prev) => prev.filter((p) => p.id !== productToDelete.id));
-      setProductToDelete(null);
-    }
-  };
-
-  const stats = {
-    active: products.filter((p) => p.status === ProductStatus.ONLINE_VERIFIED)
-      .length,
-    pending: products.filter(
-      (p) => p.status === ProductStatus.AWAITING_SUBMISSION,
-    ).length,
-    verifying: products.filter(
-      (p) =>
-        p.status === ProductStatus.SUBMITTED ||
-        p.status === ProductStatus.TRALLO_VERIFIED,
-    ).length,
-  };
+  const [selectedProduct, setSelectedProduct] = useState<ProductDTO | null>(
+    null,
+  );
 
   return (
     <div className="bg-background-light dark:bg-background-dark min-h-screen flex flex-col">
@@ -162,7 +98,7 @@ const MyProductsPage: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 relative">
             {isLoading ? (
               <div className="col-span-full flex justify-center py-20">
-                <Loader size="md" />
+                <LoaderAnimation />
               </div>
             ) : (
               <div className="col-span-full grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -175,6 +111,7 @@ const MyProductsPage: React.FC = () => {
                       <OwnProductCard
                         product={product}
                         onDelete={(p) => setProductToDelete(p)}
+                        onActivateDispatch={() => setSelectedProduct(product)}
                       />
                     </div>
                   ))
@@ -197,10 +134,22 @@ const MyProductsPage: React.FC = () => {
         onApply={(filters) => setActiveFilters(filters)}
       />
 
+      <ActivateDispatchDrawer
+        isOpen={!!selectedProduct}
+        onClose={() => setSelectedProduct(null)}
+        productId={selectedProduct?.id || ""}
+        productName={selectedProduct?.name || ""}
+        currentPrice={selectedProduct?.price || 0}
+        onConfirm={activateDispatch}
+      />
+
       <ConfirmAction
         isOpen={!!productToDelete}
         onClose={() => setProductToDelete(null)}
-        onConfirm={handleConfirmDelete}
+        onConfirm={() => {
+          if (productToDelete) deleteProduct(productToDelete.id);
+          setProductToDelete(null);
+        }}
         title="Eliminar Produto?"
         description={`Tem certeza que deseja remover "${productToDelete?.name}"? Esta ação não pode ser desfeita.`}
         confirmText="Sim, Eliminar"

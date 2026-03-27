@@ -1,6 +1,5 @@
 export interface ActivateDispatchDto {
     productId: string;
-    initialPrice: number;
     minPrice: number;
     durationInMinutes: number;
 }

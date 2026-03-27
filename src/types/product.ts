@@ -39,6 +39,7 @@ export interface ProductDTO {
   images: string[];
   stock: ProductStockDTO;
   details: Record<string, any>;
+  isDispatch: boolean;
 }
 
 export interface PendingVerificationDTO {
