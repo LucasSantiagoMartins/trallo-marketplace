@@ -79,6 +79,8 @@ export interface SearchedProductDTO {
   stock: ProductStockDTO;
   verificationVideo?: string;
   createdAt: string;
+  isDispatch: boolean,
+  dispatchConfig: any,
 }
 
 export interface ProductImageDTO {
