@@ -82,10 +82,6 @@ const App = () => (
               />
               {/* --- 2. ROTAS PRIVADAS (CLIENTES / GERAL) --- */}
               <Route element={<ProtectedRoute />}>
-                <Route
-                  path="/verificacao-identidade"
-                  element={<IdentityVerification />}
-                />
                 <Route path="/perfil" element={<UserProfileScreen />} />
                 <Route path="/editar-perfil" element={<EditProfile />} />
                 <Route path="/alterar-senha" element={<ChangePassword />} />
@@ -118,7 +114,10 @@ const App = () => (
                 <Route path="/meus-produtos" element={<MyProductsScreen />} />
                 <Route path="/adicionar-produto" element={<CreateProduct />} />
                 <Route path="/editar-produto" element={<EditProduct />} />
-
+                <Route
+                  path="/verificacao-identidade"
+                  element={<IdentityVerification />}
+                />
                 <Route
                   path="/submeter-produto"
                   element={<ProductValidationSubmission />}
@@ -199,7 +198,7 @@ const App = () => (
                   path="/area-administrativa/reclamacoes"
                   element={<DisputesManagement />}
                 />
-                  <Route
+                <Route
                   path="/area-administrativa/verificacoes-identidade"
                   element={<IdentityVerificationManagement />}
                 />

@@ -17,6 +17,7 @@ export class AuthUser {
   address?: string;
   secureLogin: boolean;
   secureOperations: boolean;
+  isVerified: boolean
 }
 
 export class MfaRequiredDto {

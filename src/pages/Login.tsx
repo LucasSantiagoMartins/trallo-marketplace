@@ -32,6 +32,7 @@ const Login: React.FC = () => {
       address: data.address,
       secureLogin: data.secureLogin,
       secureOperations: data.secureOperations,
+      isVerified: data.isVerified
     };
 
     localStorage.setItem("user_session", JSON.stringify(sessionData));

@@ -20,6 +20,7 @@ interface MenuLinkProps {
   label: string;
   sublabel?: string;
   isWallet?: boolean;
+  isWarning?: boolean;
   to?: string;
 }
 
@@ -66,7 +67,6 @@ const UserProfileScreen: React.FC = () => {
         <PageHeader title="Perfil" backTo="/" />
 
         <main className="px-6 lg:px-0 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start pt-20 lg:pt-24">
-          {/* Coluna Esquerda: FIXA no scroll Desktop */}
           <div className="lg:col-span-5 lg:sticky lg:top-24 space-y-6">
             <div className="bg-white dark:bg-gray-800 rounded-3xl p-4 shadow-sm border border-gray-100 dark:border-gray-700/50">
               <div className="flex flex-col items-center">
@@ -87,17 +87,21 @@ const UserProfileScreen: React.FC = () => {
                       </div>
                     )}
                   </div>
-                  <div className="absolute bottom-1 right-1 size-8 bg-primary rounded-full border-4 border-white dark:border-gray-800 flex items-center justify-center">
-                    <span className="material-symbols-outlined text-white text-[18px]">
-                      verified
-                    </span>
-                  </div>
+                  {user.isVerified && (
+                    <div className="absolute bottom-1 right-1 size-8 bg-primary rounded-full border-4 border-white dark:border-gray-800 flex items-center justify-center">
+                      <span className="material-symbols-outlined text-white text-[18px]">
+                        verified
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="mt-5 text-center">
-                  <h2 className="clash-font text-2xl lg:text-3xl font-extrabold">
-                    {user?.fullName || "Usuário"}
-                  </h2>
+                  <div className="flex items-center justify-center gap-2">
+                    <h2 className="clash-font text-2xl lg:text-3xl font-extrabold">
+                      {user?.fullName || "Usuário"}
+                    </h2>
+                  </div>
                   <div className="flex items-center justify-center gap-1 text-gray-500 dark:text-gray-400 mt-1">
                     <span className="material-symbols-outlined text-sm">
                       location_on
@@ -107,15 +111,10 @@ const UserProfileScreen: React.FC = () => {
                     </span>
                   </div>
                 </div>
-{/* 
-                <div className="flex justify-center w-full mt-8 pt-6 border-t border-gray-50 dark:border-gray-700">
-                  <StatItem label="Avaliação" value="4.9" hasStar />
-                </div> */}
               </div>
             </div>
           </div>
 
-          {/* Coluna Direita: Conteúdo com Scroll */}
           <div className="lg:col-span-7 space-y-6">
             <section className="space-y-4">
               <div className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700">
@@ -125,6 +124,18 @@ const UserProfileScreen: React.FC = () => {
                   to="/editar-perfil"
                 />
                 <div className="mx-4 border-t border-gray-50 dark:border-gray-700" />
+
+                {!user.isVerified && (
+                  <>
+                    <MenuLink
+                      icon="badge"
+                      label="Verificar Identidade"
+                      isWarning
+                      to="/verificacao-identidade"
+                    />
+                    <div className="mx-4 border-t border-gray-50 dark:border-gray-700" />
+                  </>
+                )}
 
                 {user.role === "SELLER" && (
                   <>
@@ -190,36 +201,12 @@ const UserProfileScreen: React.FC = () => {
   );
 };
 
-const StatItem: React.FC<StatItemProps> = ({
-  label,
-  value,
-  showBorder,
-  hasStar,
-}) => (
-  <div
-    className={`flex flex-col items-center ${
-      showBorder ? "border-x border-gray-50 dark:border-gray-700" : ""
-    }`}
-  >
-    <div className="flex items-center gap-0.5">
-      <span className="clash-font text-lg lg:text-xl font-bold">{value}</span>
-      {hasStar && (
-        <span className="material-symbols-outlined text-yellow-400 text-xs fill-1">
-          star
-        </span>
-      )}
-    </div>
-    <span className="text-[10px] lg:text-[11px] uppercase tracking-wider text-gray-400 font-bold">
-      {label}
-    </span>
-  </div>
-);
-
 const MenuLink: React.FC<MenuLinkProps> = ({
   icon,
   label,
   sublabel,
   isWallet,
+  isWarning,
   to,
 }) => {
   const navigate = useNavigate();
@@ -228,24 +215,30 @@ const MenuLink: React.FC<MenuLinkProps> = ({
     if (to) navigate(to);
   }, [navigate, to]);
 
+  const getIconContainerClass = () => {
+    if (isWallet) return "bg-green-100 text-green-600 dark:bg-green-900/30";
+    if (isWarning) return "bg-amber-100 text-amber-600 dark:bg-amber-900/30";
+    return "bg-primary/10 text-primary";
+  };
+
   return (
     <button
       onClick={handleNavigate}
       className="w-full flex items-center gap-4 p-5 hover:bg-gray-50 dark:hover:bg-gray-700/30 active:bg-gray-100 transition-colors group text-left"
     >
       <div
-        className={`size-11 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 ${
-          isWallet
-            ? "bg-green-100 text-green-600 dark:bg-green-900/30"
-            : "bg-primary/10 text-primary"
-        }`}
+        className={`size-11 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 ${getIconContainerClass()}`}
       >
         <span className="material-symbols-outlined">{icon}</span>
       </div>
       <div className="flex-1">
         <p className="font-bold text-sm lg:text-base">{label}</p>
         {sublabel && (
-          <p className="text-xs text-green-600 font-bold">{sublabel}</p>
+          <p
+            className={`text-xs font-bold ${isWarning ? "text-amber-600" : "text-green-600"}`}
+          >
+            {sublabel}
+          </p>
         )}
       </div>
       <span className="material-symbols-outlined text-gray-300 group-hover:text-primary transition-colors">
