@@ -5,15 +5,15 @@ import React, {
   useMemo,
   useRef,
 } from "react";
-import Pagination from "../components/Pagination";
-import TransactionCard from "../components/TransactionCard";
-import BottomNavigation from "../components/BottomNavigation";
 import Sidebar from "@/components/Sidebar";
 import { adminItems } from "@/constants/sidebar-items";
 import { getAdminTransactions } from "@/services/admin.service";
 import { AdminTransaction } from "@/dtos/admin-management";
 import { TransactionType } from "@/enums/transaction";
 import TralloInput from "@/components/TralloInput";
+import TransactionCard from "@/components/TransactionCard";
+import BottomNavigation from "@/components/BottomNavigation";
+import Pagination from "@/components/Pagination";
 
 const TransactionsManagement: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);

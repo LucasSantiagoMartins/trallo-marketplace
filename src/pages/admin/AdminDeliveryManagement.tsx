@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Sidebar from "@/components/Sidebar";
-import BottomNavigation from "../components/BottomNavigation";
-import Pagination from "../components/Pagination";
-import SegmentedControl from "../components/SegmentedControl";
 import { DeliveryResponseDto } from "@/dtos/delivery-response";
 import DeliveryOrderCard from "@/components/DeliveryOrderCard";
 import TralloInput from "@/components/TralloInput";
 import { adminItems } from "@/constants/sidebar-items";
 import LoaderAnimation from "@/components/Loader";
 import { deliveryService } from "@/services/delivery.service";
-import DeliveryDetailsModal from "@/pages/DeliveryDetailsModal";
+import DeliveryDetailsModal from "@/components/DeliveryDetailsModal";
+import SegmentedControl from "@/components/SegmentedControl";
+import Pagination from "@/components/Pagination";
+import BottomNavigation from "@/components/BottomNavigation";
 
 const AdminDeliveryManagement: React.FC = () => {
   const [deliveries, setDeliveries] = useState<DeliveryResponseDto[]>([]);

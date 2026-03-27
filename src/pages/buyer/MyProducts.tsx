@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import PageHeader from "../components/PageHeader";
-import BottomNavigation from "@/components/BottomNavigation";
-import OwnProductCard from "../components/OwnProductCard";
-import OwnProductFilterDrawer from "../components/OwnProductFilterDrawer";
-import ConfirmAction from "../components/ConfirmAction";
+ 
 import FilterButton from "@/components/FilterButton";
 import Loader from "@/components/Loader";
 import { ProductDTO, ProductStatus } from "@/types/product";
 import { getMyProducts } from "@/services/product.service";
 import { useAuth } from "@/context/AuthContext";
+import PageHeader from "@/components/PageHeader";
+import OwnProductFilterDrawer from "@/components/OwnProductFilterDrawer";
+import ConfirmAction from "@/components/ConfirmAction";
+import BottomNavigation from "@/components/BottomNavigation";
+import OwnProductCard from "@/components/OwnProductCard";
 
 const MyProductsPage: React.FC = () => {
   const navigate = useNavigate();

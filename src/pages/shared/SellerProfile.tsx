@@ -1,7 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import BottomNavigation from "../components/BottomNavigation";
-import PageHeader from "../components/PageHeader";
 import { BASE_UPLOAD_URL } from "@/api/endpoints";
 import { SearchedProductDTO } from "@/types/product";
 import ProductCard from "@/components/ProductCard";
@@ -12,6 +10,8 @@ import toast from "react-hot-toast";
 import Loader from "@/components/Loader";
 import MobileLayout from "@/layouts/MobileLayout";
 import EmptyState from "@/components/EmptyState";
+import PageHeader from "@/components/PageHeader";
+import BottomNavigation from "@/components/BottomNavigation";
 
 const SellerProfileScreen: React.FC = () => {
   const { sellerSlug } = useParams<{ sellerSlug: string }>();

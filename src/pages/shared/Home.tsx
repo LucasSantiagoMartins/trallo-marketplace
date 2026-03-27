@@ -99,7 +99,7 @@ const Home: React.FC = () => {
                 <button
                   onClick={() => setIsFilterOpen(true)}
                   type="button"
-                  className="absolute right-2 top-[50%] -translate-y-1/2 size-10 flex items-center justify-center rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all duration-300"
+                  className="absolute right-2 top-[50%] -translate-y-1/2 size-10 flex items-center justify-center rounded-lg text-muted-foreground hover:text-primary transition-all duration-300"
                 >
                   <SlidersHorizontal size={20} />
                 </button>
@@ -167,7 +167,7 @@ const Home: React.FC = () => {
                 A melhor curadoria de produtos com a segurança que só o Trallo
                 oferece.
               </p>
-              <button className="bg-[#6C3EF8] text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 group hover:shadow-lg hover:shadow-[#6C3EF8]/30 transition-all active:scale-95">
+              <button className="bg-[#6C3EF8] text-white px-5 py-2.5 rounded-full text-sm font-bold flex items-center gap-2 group hover:shadow-lg hover:shadow-[#6C3EF8]/30 transition-all active:scale-95">
                 Ver Novidades
                 <ShoppingBag size={16} className="group-hover:rotate-12 transition-transform" />
               </button>

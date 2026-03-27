@@ -9,11 +9,11 @@ import { store } from "./store/main.ts";
 createRoot(document.getElementById("root")!).render(
   <Provider store={store}>
     <Toaster
-      position="top-right"
+      position="top-center"
       reverseOrder={false}
       toastOptions={{
         style: {
-          borderRadius: "20px",
+          borderRadius: "30px",
           padding: "14px 24px",
           background: "#fff",
           fontSize: "12px",

@@ -1,7 +1,4 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
-import Pagination from "../components/Pagination";
-import BottomNavigation from "../components/BottomNavigation";
-import UserListItem from "../components/UserListItem";
 import Sidebar from "@/components/Sidebar";
 import CustomReasonModal from "@/components/CustomReasonModal";
 import ConfirmAction from "@/components/ConfirmAction";
@@ -12,6 +9,9 @@ import TralloInput from "@/components/TralloInput";
 import TralloButton from "@/components/TralloButton";
 import { UserRole } from "@/enums/user";
 import { getUserRoleLabel } from "@/utils/mappers/user.mapper";
+import UserListItem from "@/components/UserListItem";
+import Pagination from "@/components/Pagination";
+import BottomNavigation from "@/components/BottomNavigation";
 
 const UsersManagement: React.FC = () => {
   const [filter, setFilter] = useState<string>("");

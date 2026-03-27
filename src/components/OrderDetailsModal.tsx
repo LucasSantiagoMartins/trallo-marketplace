@@ -63,7 +63,6 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(sku).then(() => {
         setCopiedSku(sku);
-        toast.success("Código SKU copiado", { id: "copy-sku" });
         setTimeout(() => setCopiedSku(null), 2000);
       });
     } else {

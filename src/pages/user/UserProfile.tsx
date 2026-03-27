@@ -1,12 +1,12 @@
 import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import BottomNavigation from "../components/BottomNavigation";
-import PageHeader from "../components/PageHeader";
-import ConfirmAction from "../components/ConfirmAction";
-import { logout } from "../services/auth.service";
-import { useAuth } from "../context/AuthContext";
-import { BASE_UPLOAD_URL } from "@/api/endpoints";
 import toast from "react-hot-toast";
+import { useAuth } from "@/context/AuthContext";
+import { logout } from "@/services/auth.service";
+import ConfirmAction from "@/components/ConfirmAction";
+import PageHeader from "@/components/PageHeader";
+import BottomNavigation from "@/components/BottomNavigation";
+import { BASE_UPLOAD_URL } from "@/api/endpoints";
 
 interface StatItemProps {
   label: string;

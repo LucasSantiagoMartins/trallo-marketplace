@@ -5,8 +5,6 @@ import React, {
   useMemo,
   useRef,
 } from "react";
-import Pagination from "../components/Pagination";
-import BottomNavigation from "../components/BottomNavigation";
 import PaymentCard from "@/components/PaymentCard";
 import Sidebar from "@/components/Sidebar";
 import { adminItems } from "@/constants/sidebar-items";
@@ -14,6 +12,8 @@ import { getAdminPayments } from "@/services/admin.service";
 import { AdminPayment } from "@/dtos/admin-management";
 import { PaymentStatus } from "@/enums/payment";
 import TralloInput from "@/components/TralloInput";
+import Pagination from "@/components/Pagination";
+import BottomNavigation from "@/components/BottomNavigation";
 
 const PaymentsManagement: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);

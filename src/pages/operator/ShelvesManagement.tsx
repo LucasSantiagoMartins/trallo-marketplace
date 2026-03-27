@@ -1,9 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import Sidebar from "@/components/Sidebar";
-import BottomNavigation from "../components/BottomNavigation";
-import ConfirmAction from "../components/ConfirmAction";
-import TralloInput from "../components/TralloInput";
-import TralloButton from "../components/TralloButton";
 import { operatorItems } from "@/constants/sidebar-items";
 import { ShelfDTO } from "@/dtos/wharehouse-invetory.dto";
 import {
@@ -12,6 +8,10 @@ import {
   createShelf,
 } from "@/services/warehouse-inventory.service";
 import { toast } from "react-hot-toast";
+import TralloButton from "@/components/TralloButton";
+import TralloInput from "@/components/TralloInput";
+import BottomNavigation from "@/components/BottomNavigation";
+import ConfirmAction from "@/components/ConfirmAction";
 
 const ShelvesManagement: React.FC = () => {
   const [shelves, setShelves] = useState<ShelfDTO[]>([]);

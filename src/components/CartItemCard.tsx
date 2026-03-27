@@ -9,7 +9,7 @@ interface CartItemDtoCardProps {
   onRemove: (id: string) => void;
 }
 
-const CartItemDtoCard: React.FC<CartItemDtoCardProps> = ({
+const CartItemCard: React.FC<CartItemDtoCardProps> = ({
   item,
   onUpdateQty,
   onRemove,
@@ -18,7 +18,7 @@ const CartItemDtoCard: React.FC<CartItemDtoCardProps> = ({
     <div className="relative bg-white dark:bg-white/5 rounded-2xl p-3 sm:p-4 shadow-sm border border-gray-100 dark:border-white/10 flex items-center gap-3 sm:gap-4 transition-all duration-200">
       <button
         onClick={() => onRemove(item.id)}
-        className="absolute -top-2 -right-2 size-7 bg-white dark:bg-gray-800 shadow-md border border-gray-100 dark:border-white/10 rounded-full flex items-center justify-center text-gray-500 hover:text-red-500 transition-colors z-10"
+        className="absolute -top-2 -right-2 size-7 bg-white dark:bg-gray-800 shadow-md border border-gray-100 dark:border-white/10 rounded-full flex items-center justify-center text-gray-500  transition-colors z-10"
       >
         <span className="material-symbols-outlined text-lg">close</span>
       </button>
@@ -68,4 +68,4 @@ const CartItemDtoCard: React.FC<CartItemDtoCardProps> = ({
   );
 };
 
-export default CartItemDtoCard;
+export default CartItemCard;

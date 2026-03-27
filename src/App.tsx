@@ -4,56 +4,56 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/context/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 
-import Home from "./pages/Home";
+import Home from "./pages/shared/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import ProductDetails from "./pages/ProductDetails";
-import NotFound from "./pages/NotFound";
-import UserProfileScreen from "./pages/UserProfile";
-import WalletScreen from "./pages/Wallet";
+import ProductDetails from "./pages/shared/ProductDetails";
+import NotFound from "./pages/shared/NotFound";
+import WalletScreen from "./pages/seller/Wallet";
 import TransactionHistoryScreen from "./components/TransactionHistory";
-import BuyerOrdersHistory from "./pages/BuyerOrdersHistory";
-import OrderTracking from "./pages/OrderTracking";
-import CartPage from "./pages/CartPage";
-import SettingsScreen from "./pages/Settings";
-import MyProductsScreen from "./pages/MyProducts";
-import ProductValidationSubmission from "./pages/ProductValidationSubmission";
-import PendingVerificationsPage from "./pages/PendingVerifications";
-import ReviewProductPage from "./pages/ProductVerification";
+import ProductValidationSubmission from "./pages/operator/ProductValidationSubmission";
+import PendingVerificationsPage from "./pages/operator/PendingVerifications";
+import ReviewProductPage from "./pages/operator/ProductVerification";
 import ChangePassword from "./components/ChangePassword";
-import ResetPassword from "./pages/ResetPassword";
-import EditProfile from "./pages/EditProfile";
-import CreateProduct from "./pages/CreateProduct";
-import EditProduct from "./pages/EditProduct";
-import WithdrawScreen from "./pages/WithdrawScreen";
-import AdminDashboard from "./pages/AdminDashboard";
-import UsersManagement from "./pages/UsersManagement";
-import TransactionsManagement from "./pages/TransactionsManagement";
-import PaymentsManagement from "./pages/PaymentsManagement";
+import ResetPassword from "./pages/shared/ResetPassword";
+import EditProfile from "./pages/shared/EditProfile";
+import CreateProduct from "./pages/seller/CreateProduct";
+import EditProduct from "./pages/seller/EditProduct";
+import WithdrawScreen from "./pages/seller/WithdrawScreen";
 import CreateStaffForm from "./components/CreateStaffForm";
-import InventoryManagement from "./pages/InventoryManagement";
-import OperatorDashboard from "./pages/OperatorDashboard";
-import WalletManagement from "./pages/WalletManagement";
-import SalesCenter from "./pages/SalesCenter";
-import BankAccountsScreen from "./pages/BankAccountsScreen";
-import AddBankAccountScreen from "./pages/AddBankAccountScreen";
-import SupportPage from "./pages/SupportPage";
-import SellerOrdersHistory from "./pages/SellerOrdersHistory";
-import OrdersManagement from "./pages/OrdersManagement";
-import RegisterEntry from "./pages/RegisterEntry";
-import RegisterExit from "./pages/RegisterExit";
-import ShelvesManagement from "./pages/ShelvesManagement";
-import SellerProfileScreen from "./pages/SellerProfile";
-import RateSeller from "./pages/RateSeller";
-import NotificationsScreen from "./pages/NotificationsScreen";
+import InventoryManagement from "./pages/operator/InventoryManagement";
+import BankAccountsScreen from "./pages/seller/BankAccountsScreen";
+import AddBankAccountScreen from "./pages/seller/AddBankAccountScreen";
+import OrdersManagement from "./pages/admin/AdminOrdersManagement";
+import RegisterEntry from "./pages/operator/RegisterEntry";
+import RegisterExit from "./pages/operator/RegisterExit";
+import RateSeller from "./pages/buyer/RateSeller";
+import NotificationsScreen from "./pages/shared/NotificationsScreen";
 import { NotificationProvider } from "./context/NotificationContext";
 import { UserRole } from "./enums/user";
-import DeliveryOrdersHistory from "./pages/DeliveryOrdersHistory";
-import AdminDeliveryManagement from "./pages/AdminDeliveryManagement";
-import CreateDispute from "./pages/CreateDispute";
-import DisputesManagement from "./pages/DisputesManagement";
-import IdentityVerification from "./pages/IdentityVerification";
-import IdentityVerificationManagement from "./pages/IdentityVerificationManagement";
+import CreateDispute from "./pages/buyer/CreateDispute";
+import IdentityVerification from "./pages/seller/IdentityVerification";
+import SellerProfileScreen from "./pages/shared/SellerProfile";
+import SellerOrdersHistory from "./pages/seller/SellerOrdersHistory";
+import SettingsScreen from "./pages/shared/Settings";
+import BuyerOrdersHistory from "./pages/buyer/BuyerOrdersHistory";
+import CartPage from "./pages/buyer/CartPage";
+import OrderTracking from "./pages/buyer/OrderTracking";
+import SalesCenter from "./pages/seller/SalesCenter";
+import MyProductsPage from "./pages/buyer/MyProducts";
+import DeliveryOrdersHistory from "./pages/deliverer/DeliveryOrdersHistory";
+import WalletManagement from "./pages/seller/WalletManagement";
+import UserProfileScreen from "./pages/shared/UserProfile";
+import OperatorDashboard from "./pages/operator/OperatorDashboard";
+import SupportPage from "./pages/buyer/SupportPage";
+import IdentityVerificationManagement from "./pages/admin/IdentityVerificationManagement";
+import AdminDeliveryManagement from "./pages/admin/AdminDeliveryManagement";
+import TransactionsManagement from "./pages/admin/AdminTransactionsManagement";
+import PaymentsManagement from "./pages/admin/AdminPaymentsManagement";
+import DisputesManagement from "./pages/admin/AdminDisputesManagement";
+import UsersManagement from "./pages/admin/AdminUsersManagement";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import ShelvesManagement from "./pages/operator/ShelvesManagement";
 
 const queryClient = new QueryClient();
 
@@ -61,10 +61,8 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <NotificationProvider>
-        <TooltipProvider>
           <BrowserRouter>
             <Routes>
-              {/* --- 1. ROTAS PÚBLICAS --- */}
               <Route path="/" element={<Home />} />
               <Route path="/entrar" element={<Login />} />
               <Route path="/criar-conta" element={<Register />} />
@@ -75,13 +73,15 @@ const App = () => (
                 path="/perfil-vendedor/:sellerSlug"
                 element={<SellerProfileScreen />}
               />
-              <Route path="/avaliar-vendedor" element={<RateSeller />} />
+              <Route path="/configuracoes" element={<SettingsScreen />} />
+
               <Route
                 path="/detalhes-produto/:slug"
                 element={<ProductDetails />}
               />
-              {/* --- 2. ROTAS PRIVADAS (CLIENTES / GERAL) --- */}
-              <Route element={<ProtectedRoute />}>
+              <Route
+                element={<ProtectedRoute allowedRoles={[UserRole.BUYER]} />}
+              >
                 <Route path="/perfil" element={<UserProfileScreen />} />
                 <Route path="/editar-perfil" element={<EditProfile />} />
                 <Route path="/alterar-senha" element={<ChangePassword />} />
@@ -91,27 +91,28 @@ const App = () => (
                   path="/central-reclamacoes"
                   element={<CreateDispute />}
                 />
-                <Route
-                  path="/minhas-vendas"
-                  element={<SellerOrdersHistory />}
-                />
+                <Route path="/avaliar-vendedor" element={<RateSeller />} />
 
                 <Route path="/acompanhar-pedido" element={<OrderTracking />} />
-                <Route path="/carteira" element={<WalletScreen />} />
                 <Route path="/suporte" element={<SupportPage />} />
-                <Route
-                  path="/transacoes"
-                  element={<TransactionHistoryScreen />}
-                />
-                <Route path="/configuracoes" element={<SettingsScreen />} />
               </Route>
 
               {/* --- 3. ÁREA DO VENDEDOR (SELLER) --- */}
               <Route
                 element={<ProtectedRoute allowedRoles={[UserRole.SELLER]} />}
               >
+                <Route
+                  path="/minhas-vendas"
+                  element={<SellerOrdersHistory />}
+                />
+                <Route
+                  path="/transacoes"
+                  element={<TransactionHistoryScreen />}
+                />
+                <Route path="/carteira" element={<WalletScreen />} />
+
                 <Route path="/centro-vendas" element={<SalesCenter />} />
-                <Route path="/meus-produtos" element={<MyProductsScreen />} />
+                <Route path="/meus-produtos" element={<MyProductsPage />} />
                 <Route path="/adicionar-produto" element={<CreateProduct />} />
                 <Route path="/editar-produto" element={<EditProduct />} />
                 <Route
@@ -239,7 +240,6 @@ const App = () => (
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
-        </TooltipProvider>
       </NotificationProvider>
     </AuthProvider>
   </QueryClientProvider>

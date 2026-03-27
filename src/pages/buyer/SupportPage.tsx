@@ -10,8 +10,8 @@ import {
   Mail,
   AlertCircle,
 } from "lucide-react";
-import PageHeader from "../components/PageHeader";
-import BottomNavigation from "../components/BottomNavigation";
+import PageHeader from "@/components/PageHeader";
+import BottomNavigation from "@/components/BottomNavigation";
 
 const SupportPage = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
@@ -193,7 +193,7 @@ const SupportPage = () => {
                 bg="bg-red-500/10"
                 title="Centro de Disputas"
                 subText="Abrir uma reclamação de pedido"
-                to="/central-reclamacoes" 
+                to="/central-reclamacoes"
               />
             </div>
 
@@ -228,7 +228,6 @@ const SupportPage = () => {
   );
 };
 
-// Componente Interno de Link de Contato
 const ContactLink = ({ icon, color, bg, title, subText, to }: any) => {
   const isExternal = to.startsWith("http") || to === "#";
   const Content = (

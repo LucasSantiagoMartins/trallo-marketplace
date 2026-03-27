@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useCallback } from "react";
-import BottomNavigation from "../components/BottomNavigation";
-import PageHeader from "../components/PageHeader";
-import Pagination from "../components/Pagination";
-import SegmentedControl from "../components/SegmentedControl";
+ 
 import Loader from "@/components/Loader";
 import { DeliveryResponseDto } from "@/dtos/delivery-response";
 import DeliveryOrderCard from "@/components/DeliveryOrderCard";
 import TralloInput from "@/components/TralloInput";
 import { deliveryService } from "@/services/delivery.service";
-import DeliveryDetailsModal from "@/pages/DeliveryDetailsModal";
+import DeliveryDetailsModal from "@/components/DeliveryDetailsModal";
+import PageHeader from "@/components/PageHeader";
+import SegmentedControl from "@/components/SegmentedControl";
+import BottomNavigation from "@/components/BottomNavigation";
+import Pagination from "@/components/Pagination";
 
 const DeliveryOrdersHistory: React.FC = () => {
   const [deliveries, setDeliveries] = useState<DeliveryResponseDto[]>([]);

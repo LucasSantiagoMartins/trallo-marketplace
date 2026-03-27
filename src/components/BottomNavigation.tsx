@@ -94,7 +94,7 @@ const BottomNavigation: React.FC = () => {
         case "SELLER":
           items = [
             { icon: Home, label: "Início", path: "/" },
-            { icon: Boxes, label: "Produtos", path: "/meus-produtos" },
+            { icon: ShoppingBag, label: "Produtos", path: "/meus-produtos" },
             {
               icon: PlusCircle,
               label: "Publicar",

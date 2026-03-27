@@ -25,7 +25,7 @@ interface TralloInputProps {
   type?: string;
   placeholder?: string;
   value?: string;
-  onChange?: (value: string) => void;
+  onChange?: (value: any) => void;
   onFocus?: () => void;
   onBlur?: () => void;
   onKeyDown?: (

@@ -97,7 +97,7 @@ const OrderCard: React.FC<OrderItemProps> = ({
 
   return (
     <>
-      <div className="bg-white dark:bg-white/5 rounded-2xl p-4 sm:p-5 shadow-sm border border-gray-100 dark:border-white/10 lg:hover:border-[#6d3ff8]/30 transition-all duration-300">
+      <div className="bg-white dark:bg-white/5 rounded-2xl p-4 sm:p-5 shadow-sm border border-gray-100 dark:border-white/10 transition-all duration-300">
         <div className="flex items-center justify-between gap-2 mb-4">
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <div className="size-10 sm:size-14 rounded-xl bg-gray-100 dark:bg-white/10 flex items-center justify-center overflow-hidden border border-gray-200 dark:border-white/5 flex-shrink-0">

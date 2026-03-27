@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Clock, ShieldCheck, Store, Eye, X } from "lucide-react";
-import Pagination from "../components/Pagination";
-import BottomNavigation from "../components/BottomNavigation";
 import Sidebar from "@/components/Sidebar";
 import { adminItems } from "@/constants/sidebar-items";
 import { getAdminWallets } from "@/services/admin.service";
@@ -11,6 +9,8 @@ import TralloInput from "@/components/TralloInput";
 import TralloButton from "@/components/TralloButton";
 import LoaderAnimation from "@/components/Loader";
 import { WalletDetailsModal } from "@/components/walletDetailsModal";
+import Pagination from "@/components/Pagination";
+import BottomNavigation from "@/components/BottomNavigation";
 
 interface LoaderProps {
   size?: "sm" | "md" | "lg";

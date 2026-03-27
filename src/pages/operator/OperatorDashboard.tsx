@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { motion, Variants } from "framer-motion";
-import PageHeader from "../components/PageHeader";
-import BottomNavigation from "../components/BottomNavigation";
-import StatCard from "../components/StatCard";
 import Sidebar from "@/components/Sidebar";
 import { operatorItems } from "@/constants/sidebar-items";
 import { useAuth } from "@/context/AuthContext";
 import { InventoryDashboardDTO } from "@/dtos/wharehouse-invetory.dto";
 import { getDashboard } from "@/services/warehouse-inventory.service";
 import { formatPrice } from "@/utils/currency";
+import PageHeader from "@/components/PageHeader";
+import StatCard from "@/components/StatCard";
+import BottomNavigation from "@/components/BottomNavigation";
 
 const OperatorDashboard: React.FC = () => {
   const { user } = useAuth();

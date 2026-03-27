@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { motion, Variants } from "framer-motion";
-import Pagination from "../components/Pagination";
-import BottomNavigation from "../components/BottomNavigation";
-import OrderCard from "../components/OrderCard";
+import Pagination from "../../components/Pagination";
+import BottomNavigation from "../../components/BottomNavigation";
+import OrderCard from "../../components/OrderCard";
 import Sidebar from "@/components/Sidebar";
 import { operatorItems } from "@/constants/sidebar-items";
 import { OrderStatus } from "@/enums/order-status";

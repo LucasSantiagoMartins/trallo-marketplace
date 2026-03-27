@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Sidebar from "../components/Sidebar";
-import BottomNavigation from "../components/BottomNavigation";
 import OperationalFooter from "@/components/OperationalFooter";
 
 import { adminItems } from "@/constants/sidebar-items";
@@ -13,6 +11,8 @@ import {
 } from "@/services/admin.service";
 import TabContainer from "@/components/TabContainer";
 import DashboardGrid from "@/components/DashboardGrid";
+import Sidebar from "@/components/Sidebar";
+import BottomNavigation from "@/components/BottomNavigation";
 
 type MetricContext = "overview" | "payments" | "transactions" | "wallets";
 

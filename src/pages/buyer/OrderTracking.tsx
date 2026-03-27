@@ -1,7 +1,5 @@
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import PageHeader from "../components/PageHeader";
-import BottomNavigation from "../components/BottomNavigation";
 import { OrderDTO } from "@/dtos/order";
 import { formatPrice } from "@/utils/currency";
 import {
@@ -15,6 +13,8 @@ import { getPaymentMethodLabel } from "@/utils/mappers/payment.mappers";
 import { formatDateFriendly } from "@/utils/date";
 import MobileLayout from "@/layouts/MobileLayout";
 import EmptyState from "@/components/EmptyState";
+import BottomNavigation from "@/components/BottomNavigation";
+import PageHeader from "@/components/PageHeader";
 
 const OrderTracking: React.FC = () => {
   const location = useLocation();
@@ -33,16 +33,28 @@ const OrderTracking: React.FC = () => {
     );
   }
 
-  // Cálculos de taxas
   const subtotal = order.totalAmount;
   const deliveryFee = 2500;
-  const serviceFee = subtotal * 0.035; // 3.5%
+  const serviceFee = subtotal * 0.035;
   const totalFinal = subtotal + deliveryFee + serviceFee;
 
-  // Lógica para controle da linha de progresso
-  const isPaid = ![OrderStatus.AWAITING_PAYMENT, OrderStatus.PAYMENT_PROCESSING, OrderStatus.PAYMENT_FAILED].includes(order.status);
-  const isPreparing = [OrderStatus.PREPARING_ORDER, OrderStatus.READY_FOR_SHIPMENT, OrderStatus.SHIPPED, OrderStatus.OUT_FOR_DELIVERY, OrderStatus.DELIVERED].includes(order.status);
-  const isShipped = [OrderStatus.SHIPPED, OrderStatus.OUT_FOR_DELIVERY, OrderStatus.DELIVERED].includes(order.status);
+  const isPaid = ![
+    OrderStatus.AWAITING_PAYMENT,
+    OrderStatus.PAYMENT_PROCESSING,
+    OrderStatus.PAYMENT_FAILED,
+  ].includes(order.status);
+  const isPreparing = [
+    OrderStatus.PREPARING_ORDER,
+    OrderStatus.READY_FOR_SHIPMENT,
+    OrderStatus.SHIPPED,
+    OrderStatus.OUT_FOR_DELIVERY,
+    OrderStatus.DELIVERED,
+  ].includes(order.status);
+  const isShipped = [
+    OrderStatus.SHIPPED,
+    OrderStatus.OUT_FOR_DELIVERY,
+    OrderStatus.DELIVERED,
+  ].includes(order.status);
 
   return (
     <div className="min-h-screen bg-[#f6f5f8] dark:bg-[#141022] text-[#121118] dark:text-white pb-32">
@@ -104,14 +116,16 @@ const OrderTracking: React.FC = () => {
                 <div>
                   <p className="font-bold text-sm">Pedido Confirmado</p>
                   <p className="text-[11px] text-gray-500">
-                    {isPaid ? "O seu pagamento foi processado." : "Aguardando confirmação de pagamento."}
+                    {isPaid
+                      ? "O seu pagamento foi processado."
+                      : "Aguardando confirmação de pagamento."}
                   </p>
                 </div>
               </div>
 
               {/* ETAPA 2: Preparação */}
               <div className="flex gap-4 pb-7 relative">
-                <div 
+                <div
                   className={`absolute left-[11px] top-6 bottom-0 w-[2px] ${isShipped ? "bg-[#6d3ff8]" : "bg-gray-200 dark:bg-white/10"}`}
                 ></div>
                 <div
@@ -120,7 +134,9 @@ const OrderTracking: React.FC = () => {
                   {order.status === OrderStatus.PREPARING_ORDER ? (
                     <div className="size-2 bg-[#6d3ff8] rounded-full animate-pulse"></div>
                   ) : (
-                    <span className={`material-symbols-outlined ${isPreparing ? "text-[#6d3ff8]" : "text-gray-400"} text-[14px]`}>
+                    <span
+                      className={`material-symbols-outlined ${isPreparing ? "text-[#6d3ff8]" : "text-gray-400"} text-[14px]`}
+                    >
                       inventory_2
                     </span>
                   )}
@@ -142,12 +158,16 @@ const OrderTracking: React.FC = () => {
                 <div
                   className={`relative z-10 flex size-6 items-center justify-center rounded-full ${isShipped ? "bg-white dark:bg-[#1c182d] ring-2 ring-[#6d3ff8]" : "bg-gray-100 dark:bg-white/10"}`}
                 >
-                  <span className={`material-symbols-outlined ${isShipped ? "text-[#6d3ff8]" : "text-gray-400"} text-[14px]`}>
+                  <span
+                    className={`material-symbols-outlined ${isShipped ? "text-[#6d3ff8]" : "text-gray-400"} text-[14px]`}
+                  >
                     local_shipping
                   </span>
                 </div>
                 <div>
-                  <p className={`font-bold text-sm ${isShipped ? "text-[#6d3ff8]" : "text-gray-400"}`}>
+                  <p
+                    className={`font-bold text-sm ${isShipped ? "text-[#6d3ff8]" : "text-gray-400"}`}
+                  >
                     Saiu para Entrega
                   </p>
                   <p className="text-[11px] text-gray-500">

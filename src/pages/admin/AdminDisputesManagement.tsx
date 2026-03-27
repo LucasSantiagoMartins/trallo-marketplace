@@ -1,13 +1,13 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
 import Sidebar from "@/components/Sidebar";
-import Pagination from "../components/Pagination";
-import BottomNavigation from "../components/BottomNavigation";
 import { useDisputes } from "@/hooks/useDisputes";
 import { DisputeStatus } from "@/dtos/disputes";
 import { adminItems } from "@/constants/sidebar-items";
 import DisputeCard from "@/components/DisputeCard";
 import { getDisputeStatusLabel } from "@/utils/mappers/dispute.mapper";
 import LoaderAnimation from "@/components/Loader";
+import Pagination from "@/components/Pagination";
+import BottomNavigation from "@/components/BottomNavigation";
 
 const DisputesManagement: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -24,7 +24,9 @@ const DisputesManagement: React.FC = () => {
   );
 
   useEffect(() => {
-    const activeElement = scrollContainerRef.current?.querySelector('[data-active="true"]');
+    const activeElement = scrollContainerRef.current?.querySelector(
+      '[data-active="true"]',
+    );
     if (activeElement) {
       activeElement.scrollIntoView({
         behavior: "smooth",
@@ -94,7 +96,7 @@ const DisputesManagement: React.FC = () => {
               <label className="block text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1 ml-1">
                 Filtrar Status
               </label>
-              <div 
+              <div
                 ref={scrollContainerRef}
                 onMouseDown={handleMouseDown}
                 onMouseLeave={handleMouseLeave}

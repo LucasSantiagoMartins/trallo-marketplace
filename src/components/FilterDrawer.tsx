@@ -1,6 +1,8 @@
 import { ProductCondition } from "@/types/product";
 import React, { useState } from "react";
 import { formatPrice } from "@/utils/currency";
+import TralloInput from "./TralloInput";
+import TralloButton from "./TralloButton";
 
 interface FilterDrawerProps {
   isOpen: boolean;
@@ -80,7 +82,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
                       <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
                         Kz
                       </span>
-                      <input
+                      <TralloInput
                         type="text"
                         value={
                           minPrice !== ""
@@ -91,7 +93,6 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
                           setMinPrice(parseCurrency(e.target.value))
                         }
                         placeholder="0"
-                        className="w-full p-3 pl-9 bg-muted/50 rounded-lg border border-border text-sm font-medium focus:outline-none focus:border-primary"
                       />
                     </div>
                   </div>
@@ -103,18 +104,15 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
                       <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
                         Kz
                       </span>
-                      <input
+                      <TralloInput
                         type="text"
                         value={
                           maxPrice !== ""
                             ? formatPrice(maxPrice).replace("Kz", "").trim()
                             : ""
                         }
-                        onChange={(e) =>
-                          setMaxPrice(parseCurrency(e.target.value))
-                        }
+                        onChange={setMaxPrice}
                         placeholder="Sem limite"
-                        className="w-full p-3 pl-9 bg-muted/50 rounded-lg border border-border text-sm font-medium focus:outline-none focus:border-primary"
                       />
                     </div>
                   </div>
@@ -170,25 +168,23 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
 
         <div className="p-6 border-t border-border/50 bg-card/50">
           <div className="flex flex-col gap-3">
-            <button
-              onClick={handleClear}
-              className="w-full py-3 text-xs font-bold border border-border rounded-xl hover:bg-muted transition-colors"
-            >
+            <TralloButton onClick={handleClear} variant="outline">
               Limpar Filtros
-            </button>
+            </TralloButton>
             <div className="flex gap-3">
-              <button
+              <TralloButton
                 onClick={() => onApply(currentFilters)}
-                className="flex-1 py-4 text-sm font-bold border border-primary text-primary rounded-2xl hover:bg-primary/5 transition-colors"
+                variant="outline"
               >
                 Aplicar
-              </button>
-              <button
+              </TralloButton>
+
+              <TralloButton
                 onClick={() => onSearch(currentFilters)}
-                className="flex-[2] bg-primary text-primary-foreground py-4 rounded-2xl font-bold shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity"
+                className="flex-[2]"
               >
                 Pesquisar
-              </button>
+              </TralloButton>
             </div>
           </div>
         </div>

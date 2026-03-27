@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useCallback } from "react";
-import BottomNavigation from "../components/BottomNavigation";
-import OrderCard from "../components/OrderCard";
-import PageHeader from "../components/PageHeader";
-import Pagination from "../components/Pagination";
-import SegmentedControl from "../components/SegmentedControl";
 import { OrderStatus } from "@/enums/order-status";
 import { OrderDTO } from "@/dtos/order";
 import { orderService } from "@/services/order.service";
 import Loader from "@/components/Loader";
+import PageHeader from "@/components/PageHeader";
+import SegmentedControl from "@/components/SegmentedControl";
+import Pagination from "@/components/Pagination";
+import OrderCard from "@/components/OrderCard";
+import BottomNavigation from "@/components/BottomNavigation";
 
 const SellerOrdersHistory: React.FC = () => {
   const [orders, setOrders] = useState<OrderDTO[]>([]);

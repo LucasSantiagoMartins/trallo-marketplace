@@ -83,7 +83,7 @@ const HistoryScreen: React.FC = () => {
       <main className="max-w-6xl mx-auto px-4 md:px-6 pt-24 pb-32">
         <section className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-6 mb-10">
           <SummaryCard
-            title="Vendas"
+            label="Vendas"
             value={
               data?.stats.totalSales
                 ? formatPrice(data.stats.totalSales, true)
@@ -94,7 +94,7 @@ const HistoryScreen: React.FC = () => {
             icon="payments"
           />
           <SummaryCard
-            title="Levantamentos"
+            label="Levantamentos"
             value={
               data?.stats.totalWithdrawals
                 ? formatPrice(data.stats.totalWithdrawals, true)

@@ -3,8 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import MobileLayout from "@/layouts/MobileLayout";
-import PerformanceCard from "../components/PerformanceCard";
-import PageHeader from "../components/PageHeader";
 import { useAuth } from "@/context/AuthContext";
 import { formatPrice } from "@/utils/currency";
 import { getSalesSummary } from "@/services/sales.service";
@@ -15,7 +13,9 @@ import {
   getOrderStatusColor,
   getOrderStatusLabel,
 } from "@/utils/mappers/order.mapper";
-import Loader from "@/components/Loader"; // Certifique-se de que o caminho está correto
+import Loader from "@/components/Loader";
+import PageHeader from "@/components/PageHeader";
+import PerformanceCard from "@/components/PerformanceCard";
 
 export interface MonthOverMonth {
   percentage: number;

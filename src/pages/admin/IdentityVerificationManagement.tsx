@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useMemo } from "react";
 import Sidebar from "@/components/Sidebar";
-import Pagination from "../components/Pagination";
 import { adminItems } from "@/constants/sidebar-items";
 import LoaderAnimation from "@/components/Loader";
 import { useIdentityVerification } from "@/hooks/useIdentityVerification";
 import IdentityCard from "@/components/IdentityCard";
+import Pagination from "@/components/Pagination";
 
 const IdentityVerificationManagement: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);

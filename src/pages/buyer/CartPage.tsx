@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import PageHeader from "../components/PageHeader";
-import CartItemCard from "../components/CartItemCard";
 import PaymentChoiceModal from "@/components/PaymentChoiceModal";
 import CheckoutModal from "@/components/CheckoutModal";
 import EmptyState from "@/components/EmptyState";
-import CartTotalPanel from "../components/CartTotalPanel";
 import {
   updateCartItemQuantity,
   removeFromCart,
@@ -19,6 +16,9 @@ import ConfirmAction from "@/components/ConfirmAction";
 import { useCart } from "@/hooks/use-cart";
 import LoaderAnimation from "@/components/Loader";
 import { CartItemDto } from "@/dtos/cart";
+import PageHeader from "@/components/PageHeader";
+import CartTotalPanel from "@/components/CartTotalPanel";
+import CartItemCard from "@/components/CartItemCard";
 
 const CartPage: React.FC = () => {
   const navigate = useNavigate();

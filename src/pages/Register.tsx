@@ -67,6 +67,7 @@ const Register: React.FC = () => {
           token: res.data.token,
           secureLogin: false,
           secureOperations: false,
+          isVerified: res.data.isVerified,
         });
         navigate("/");
       } else {
