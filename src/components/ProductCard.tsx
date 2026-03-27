@@ -11,11 +11,10 @@ import {
 import { formatPrice } from "@/utils/currency";
 import { useAuth } from "@/context/AuthContext";
 import { UserRole } from "@/enums/user";
-// Importação dos ícones do Lucide
 import { CheckCircle2, ShoppingCart } from "lucide-react";
 
 interface ProductCardProps {
-  product: SearchedProductDTO;
+  product: SearchedProductDTO & { isDispatch?: boolean };
   onAddToCart?: (id: string) => void;
 }
 
@@ -66,11 +65,15 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
 
         <div className="absolute top-4 left-4 flex flex-col gap-2 z-20">
           <div
-            className={`text-[11px] font-bold px-3 py-1.5 rounded-full shadow-sm backdrop-blur-md bg-white/90 border border-white/20 ${getProductConditionColor(
-              product.condition,
-            )}`}
+            className={`text-[11px] font-bold  uppercase px-3 py-1.5 rounded-full shadow-sm backdrop-blur-md bg-white/90 border border-white/20 ${
+              product.isDispatch
+                ? "text-amber-600"
+                : getProductConditionColor(product.condition)
+            }`}
           >
-            {getProductConditionLabel(product.condition)}
+            {product.isDispatch
+              ? "em despacho"
+              : getProductConditionLabel(product.condition)}
           </div>
         </div>
 
@@ -84,7 +87,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
               product.status,
             )}`}
           >
-            {/* Ícone Lucide para Status */}
             <CheckCircle2 size={12} strokeWidth={3} />
             {getProductStatusLabel(product.status)}
           </div>
@@ -114,7 +116,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
               onClick={handleAddToCart}
               className="w-12 h-12 rounded-2xl flex items-center justify-center bg-primary text-white shadow-lg shadow-primary/30 transition-all duration-500 ease-out hover:bg-primary/90 active:scale-90 lg:translate-y-4 lg:opacity-0 lg:group-hover:translate-y-0 lg:group-hover:opacity-100 opacity-100 translate-y-0"
             >
-              {/* Ícone Lucide para Carrinho */}
               <ShoppingCart size={22} />
             </button>
           )}
