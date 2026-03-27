@@ -145,7 +145,7 @@ const SalesCenter: React.FC = () => {
       <PageHeader title="Centro de Vendas" showUser={true} />
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 pt-24 flex flex-col space-y-6 sm:space-y-10 h-auto sm:h-[calc(100vh-theme(spacing.2))] overflow-visible sm:overflow-hidden">
-        <section className="flex overflow-x-auto pb-4 -mx-4 px-4 snap-x snap-mandatory sm:grid sm:grid-cols-3 sm:gap-6 sm:pb-0 sm:mx-0 sm:px-0 hide-scrollbar shrink-0">
+        <section className="flex overflow-x-auto pb-4 -mx-4 px-8 snap-x snap-mandatory sm:grid sm:grid-cols-3 sm:gap-6 sm:pb-0 sm:mx-0 sm:px-0 hide-scrollbar shrink-0">
           <style>{`.hide-scrollbar::-webkit-scrollbar { display: none; } .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }`}</style>
           {stats.map((stat, index) => (
             <motion.div

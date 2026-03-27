@@ -26,7 +26,7 @@ const TralloButton: React.FC<TralloButtonProps> = ({
   isLoading = false,
 }) => {
   const baseStyles =
-    "h-14 rounded-full font-bold text-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none";
+    "h-14 rounded-full font-bold text-md flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none";
 
   const variants = {
     primary: "btn-gradient text-primary-foreground shadow-lg shadow-primary/25",

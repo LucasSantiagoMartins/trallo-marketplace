@@ -3,6 +3,7 @@ import { ProductCategory } from "@/enums/product-category.enum";
 import { productCategoryLabel } from "@/utils/mappers/product-category.mapper";
 import { ProductStatus } from "@/types/product";
 import { productStatusLabel } from "@/utils/mappers/product.mapper";
+import TralloButton from "./TralloButton";
 
 interface ProductFilterProps {
   onClose: () => void;
@@ -188,10 +189,10 @@ const OwnProductFilterDrawer: React.FC<ProductFilterProps> = ({
             <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar -mx-2 px-2">
               <button
                 onClick={() => setActiveCategory("Todas")}
-                className={`px-4 py-2.5 rounded-xl text-[11px] font-bold whitespace-nowrap transition-all border-2 ${
+                className={`px-4 py-2.5 rounded-full text-[11px] font-bold whitespace-nowrap transition-all border-2 ${
                   activeCategory === "Todas"
                     ? "border-primary bg-primary/5 text-primary"
-                    : "border-transparent bg-gray-100 dark:bg-gray-800 text-slate-500"
+                    : "border-transparent  bg-gray-100 dark:bg-gray-800 text-slate-500"
                 }`}
               >
                 Todas
@@ -200,7 +201,7 @@ const OwnProductFilterDrawer: React.FC<ProductFilterProps> = ({
                 <button
                   key={cat}
                   onClick={() => setActiveCategory(cat)}
-                  className={`px-4 py-2.5 rounded-xl text-[11px] font-bold whitespace-nowrap transition-all border-2 ${
+                  className={`px-4 py-2.5 rounded-full text-[11px] font-bold whitespace-nowrap transition-all border-2 ${
                     activeCategory === cat
                       ? "border-primary bg-primary/5 text-primary"
                       : "border-transparent bg-gray-100 dark:bg-gray-800 text-slate-500"
@@ -219,7 +220,7 @@ const OwnProductFilterDrawer: React.FC<ProductFilterProps> = ({
             <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={() => setSortBy("Preço")}
-                className={`flex items-center justify-center gap-2 py-3.5 rounded-2xl border-2 transition-all ${
+                className={`flex items-center justify-center gap-2 py-3.5 rounded-2xl border-2 rounded-full transition-all ${
                   sortBy === "Preço"
                     ? "border-primary bg-primary/5 text-primary"
                     : "border-gray-100 dark:border-gray-800 text-slate-500"
@@ -247,12 +248,12 @@ const OwnProductFilterDrawer: React.FC<ProductFilterProps> = ({
           </section>
         </div>
 
-        <button
+        <TralloButton
           onClick={handleApply}
-          className="w-full bg-primary text-white py-4 rounded-2xl font-black uppercase tracking-[0.15em] text-[11px] shadow-lg shadow-primary/30"
+          className="w-full !h-14"
         >
           Aplicar Filtros
-        </button>
+        </TralloButton>
       </div>
     </div>
   );

@@ -243,7 +243,6 @@ const ProductValidationSubmission: React.FC = () => {
             <TralloButton
               variant="primary"
               fullWidth
-              icon="published_with_changes"
               isLoading={isSubmitting}
               onClick={handleSubmit}
             >

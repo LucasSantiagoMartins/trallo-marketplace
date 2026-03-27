@@ -11,7 +11,7 @@ export type ApiResponse<T> = {
 export class AuthUser {
   id: number;
   token: string;
-  role: string;
+  role: UserRole;
   fullName: string;
   profilePicture?: string;
   address?: string;

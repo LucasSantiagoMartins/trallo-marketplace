@@ -1,12 +1,13 @@
 import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { BASE_UPLOAD_URL } from "@/api/endpoints";
 import toast from "react-hot-toast";
 import { useAuth } from "@/context/AuthContext";
 import { logout } from "@/services/auth.service";
 import ConfirmAction from "@/components/ConfirmAction";
 import PageHeader from "@/components/PageHeader";
 import BottomNavigation from "@/components/BottomNavigation";
-import { BASE_UPLOAD_URL } from "@/api/endpoints";
+import { UserRole } from "@/enums/user";
 
 interface StatItemProps {
   label: string;
@@ -123,22 +124,22 @@ const UserProfileScreen: React.FC = () => {
                   label="Editar Perfil"
                   to="/editar-perfil"
                 />
-                <div className="mx-4 border-t border-gray-50 dark:border-gray-700" />
 
-                {!user.isVerified && (
+                {!user.isVerified && user.role === UserRole.SELLER && (
                   <>
+                    <div className="mx-4 border-t border-gray-50 dark:border-gray-700" />
                     <MenuLink
                       icon="badge"
                       label="Verificar Identidade"
                       isWarning
                       to="/verificacao-identidade"
                     />
-                    <div className="mx-4 border-t border-gray-50 dark:border-gray-700" />
                   </>
                 )}
 
-                {user.role === "SELLER" && (
+                {user.role === UserRole.SELLER && (
                   <>
+                    <div className="mx-4 border-t border-gray-50 dark:border-gray-700" />
                     <MenuLink
                       icon="storefront"
                       label="Centro de Vendas"
@@ -157,7 +158,6 @@ const UserProfileScreen: React.FC = () => {
                       label="Contas Bancárias"
                       to="/contas-bancarias"
                     />
-                    <div className="mx-4 border-t border-gray-50 dark:border-gray-700" />
                   </>
                 )}
               </div>

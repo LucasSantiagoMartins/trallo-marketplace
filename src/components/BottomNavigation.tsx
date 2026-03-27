@@ -17,6 +17,9 @@ import {
   Boxes,
   LucideIcon,
   ShoppingBag,
+  LucideLayoutDashboard,
+  ListOrderedIcon,
+  UserCircle,
 } from "lucide-react";
 
 interface NavItem {
@@ -43,19 +46,17 @@ const BottomNavigation: React.FC = () => {
     } else {
       switch (user.role) {
         case "ADMIN":
-          // Assumindo que adminItems no seu arquivo de constantes precise de um map para ícones Lucide
-          // Se não puder mexer no arquivo de constantes, mapeamos manualmente os 4 primeiros:
           items = [
-            { icon: LayoutDashboard, label: "Dashboard", path: "/admin" },
-            { icon: Boxes, label: "Produtos", path: "/admin/produtos" },
+            { icon: LucideLayoutDashboard, label: "Dashboard", path: "/admin" },
+            { icon: ShoppingBag, label: "Produtos", path: "/admin/produtos" },
             {
-              icon: ClipboardList,
+              icon: ListOrderedIcon,
               label: "Pedidos",
               path: "/admin/pedidos",
               isCenter: true,
             },
-            { icon: User, label: "Usuários", path: "/admin/usuarios" },
-            { icon: User, label: "Perfil", path: "/perfil" },
+            { icon: User, label: "Usuários", path: "/area-adminstrativa/usuarios" },
+            { icon: UserCircle, label: "Perfil", path: "/perfil" },
           ];
           break;
 

@@ -204,10 +204,10 @@ const WalletManagement: React.FC = () => {
 
                     <TralloButton
                       onClick={() => setSelectedWallet(wallet)}
-                      variant="secondary"
-                      className="w-full !h-12 !text-[10px] !uppercase !tracking-widest"
+                      variant="outline"
+                      className="w-full !h-12 !text-[12px] !uppercase !tracking-widest"
                     >
-                      <Eye size={14} className="mr-2" /> Detalhes
+                      Detalhes
                     </TralloButton>
                   </div>
                 ))}

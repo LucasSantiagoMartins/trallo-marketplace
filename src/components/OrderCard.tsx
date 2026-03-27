@@ -97,13 +97,29 @@ const OrderCard: React.FC<OrderItemProps> = ({
 
   return (
     <>
-      <div className="bg-white dark:bg-white/5 rounded-2xl p-4 sm:p-5 shadow-sm border border-gray-100 dark:border-white/10 transition-all duration-300">
+      <style>{`
+        @keyframes shimmer {
+          0% { background-position: -200% 0; }
+          100% { background-position: 200% 0; }
+        }
+        .shimmer-effect {
+          background: linear-gradient(90deg, 
+            rgba(255,255,255,0) 0%, 
+            rgba(255,255,255,0.2) 50%, 
+            rgba(255,255,255,0) 100%);
+          background-size: 200% 100%;
+          animation: shimmer 2s infinite linear;
+        }
+      `}</style>
+
+      <div className="group relative overflow-hidden bg-white dark:bg-white/5 rounded-2xl p-4 sm:p-5 shadow-sm border border-gray-100 dark:border-white/10 transition-all duration-300 hover:shadow-md hover:border-[#6d3ff8]/20">
         <div className="flex items-center justify-between gap-2 mb-4">
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-            <div className="size-10 sm:size-14 rounded-xl bg-gray-100 dark:bg-white/10 flex items-center justify-center overflow-hidden border border-gray-200 dark:border-white/5 flex-shrink-0">
+            <div className="relative size-10 sm:size-14 rounded-xl bg-gray-100 dark:bg-white/10 flex items-center justify-center overflow-hidden border border-gray-200 dark:border-white/5 flex-shrink-0">
               <span className="material-symbols-outlined text-gray-400 text-xl sm:text-2xl">
                 shopping_bag
               </span>
+              <div className="absolute inset-0 shimmer-effect opacity-0 group-hover:opacity-100 transition-opacity" />
             </div>
             <div className="min-w-0">
               <h3 className="font-bold text-xs sm:text-base leading-tight text-gray-900 dark:text-white truncate">
@@ -116,9 +132,10 @@ const OrderCard: React.FC<OrderItemProps> = ({
           </div>
 
           <div
-            className={`${getOrderStatusColor(order.status)} px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-full flex items-center justify-center flex-shrink-0`}
+            className={`${getOrderStatusColor(order.status)} px-2.5 sm:px-4 py-1.5 rounded-full flex items-center justify-center flex-shrink-0 relative overflow-hidden`}
           >
-            <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-tight sm:tracking-wider whitespace-nowrap">
+            <div className="absolute inset-0 shimmer-effect opacity-30" />
+            <span className="relative z-10 text-[8px] sm:text-[10px] font-black uppercase tracking-tight sm:tracking-wider whitespace-nowrap">
               {getOrderStatusLabel(order.status, isSeller)}
             </span>
           </div>
@@ -128,14 +145,14 @@ const OrderCard: React.FC<OrderItemProps> = ({
           <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-1">
             {firstItemName}
             {extraItemsCount > 0 && (
-              <span className="text-[#6d3ff8] font-medium">
+              <span className="text-[#6d3ff8] font-semibold">
                 {" "}
                 + {extraItemsCount} {extraItemsCount === 1 ? "item" : "itens"}
               </span>
             )}
           </p>
           <div className="flex items-center justify-between">
-            <p className="text-xl font-black text-[#6d3ff8]">
+            <p className="text-xl font-black text-[#6d3ff8] tracking-tight">
               {formatPrice(order.totalAmount)}
             </p>
           </div>
@@ -151,8 +168,9 @@ const OrderCard: React.FC<OrderItemProps> = ({
                   onClick={() => executeDecision(true)}
                   isLoading={isAccepting}
                   disabled={isRejecting}
-                  className="flex-1 !h-12 !text-sm"
+                  className="flex-1 relative overflow-hidden"
                 >
+                  <div className="absolute inset-0 shimmer-effect opacity-20 pointer-events-none" />
                   Confirmar
                 </TralloButton>
                 <TralloButton
@@ -160,7 +178,7 @@ const OrderCard: React.FC<OrderItemProps> = ({
                   onClick={() => setIsReasonModalOpen(true)}
                   isLoading={isRejecting}
                   disabled={isAccepting}
-                  className="flex-1 !h-12 !text-sm !text-red-500"
+                  className="flex-1"
                 >
                   Cancelar
                 </TralloButton>
@@ -173,8 +191,9 @@ const OrderCard: React.FC<OrderItemProps> = ({
               icon="local_shipping"
               iconPosition="left"
               onClick={handleTrackOrder}
-              className="flex-[2] !h-12 !text-sm"
+              className="flex-1 relative overflow-hidden"
             >
+              <div className="absolute inset-0 shimmer-effect opacity-20 pointer-events-none" />
               Rastrear
             </TralloButton>
           )}
@@ -184,7 +203,7 @@ const OrderCard: React.FC<OrderItemProps> = ({
               variant="primary"
               iconPosition="left"
               onClick={openTralloMap}
-              className="flex-[2] !h-12 !text-sm"
+              className="flex-1"
             >
               Onde Entregar?
             </TralloButton>
@@ -195,7 +214,7 @@ const OrderCard: React.FC<OrderItemProps> = ({
             <TralloButton
               variant="gray"
               onClick={() => setIsOpen(true)}
-              className="flex-1 !h-12 !text-sm"
+              className="flex-1"
             >
               Detalhes
             </TralloButton>

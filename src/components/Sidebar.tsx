@@ -55,8 +55,8 @@ const Sidebar: React.FC<SidebarProps> = ({
       </button>
 
       {isExpanded ? (
-        <div className="mb-8 px-6 flex items-center justify-start w-full shrink-0">
-          <h2 className="text-2xl font-black text-slate-900 whitespace-normal leading-tight tracking-tight">
+        <div className="mb-8 px-2 flex items-center justify-start w-full shrink-0">
+          <h2 className="text-xl font-black text-slate-900 whitespace-normal leading-tight tracking-tight">
             {title}
           </h2>
         </div>
@@ -87,7 +87,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       >
         <button
           onClick={handleLogout}
-          className={`group flex items-center text-red-600 transition-all hover:bg-red-50/50 ${
+          className={`group flex rounded-full items-center text-red-600 transition-all hover:bg-red-50/50 ${
             isExpanded
               ? "w-full px-4 py-3 rounded-xl justify-start"
               : "size-12 rounded-[20px] justify-center"

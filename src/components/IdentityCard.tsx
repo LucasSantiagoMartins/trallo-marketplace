@@ -6,6 +6,7 @@ import {
   getIdentityStatusColor,
 } from "@/utils/mappers/identity-verification.mappers";
 import { BASE_UPLOAD_URL } from "@/api/endpoints";
+import TralloButton from "./TralloButton";
 
 const IdentityCard = ({ data, onRefresh }: any) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -18,8 +19,8 @@ const IdentityCard = ({ data, onRefresh }: any) => {
           <div className="relative">
             <img
               src={
-                data.selfieUrl 
-                  ? BASE_UPLOAD_URL + data.selfieUrl 
+                data.selfieUrl
+                  ? BASE_UPLOAD_URL + data.selfieUrl
                   : `https://ui-avatars.com/api/?name=${encodeURIComponent(data.user.fullName)}&background=6C3EF8&color=fff`
               }
               className="size-14 rounded-2xl object-cover border-2 border-slate-50 shadow-sm"
@@ -38,7 +39,9 @@ const IdentityCard = ({ data, onRefresh }: any) => {
             <h4 className="font-bold text-slate-900 truncate text-sm">
               {data.user.fullName}
             </h4>
-            <span className={`text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider ${getIdentityStatusColor(data.status)}`}>
+            <span
+              className={`text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider ${getIdentityStatusColor(data.status)}`}
+            >
               {getIdentityStatusLabel(data.status)}
             </span>
           </div>
@@ -54,7 +57,9 @@ const IdentityCard = ({ data, onRefresh }: any) => {
 
           {data.rejectionReason && data.status === "REJECTED" && (
             <div className="mt-2 p-3 bg-rose-50/50 rounded-xl border border-rose-100">
-              <p className="text-[9px] font-bold text-rose-400 uppercase mb-1">Motivo da Rejeição</p>
+              <p className="text-[9px] font-bold text-rose-400 uppercase mb-1">
+                Motivo da Rejeição
+              </p>
               <p className="text-[11px] text-rose-700 italic line-clamp-2 leading-relaxed">
                 "{data.rejectionReason}"
               </p>
@@ -62,16 +67,9 @@ const IdentityCard = ({ data, onRefresh }: any) => {
           )}
         </div>
 
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className={`w-full py-3 rounded-xl font-bold text-[10px] transition-all uppercase tracking-[0.15em] active:scale-[0.98] ${
-            isPending 
-              ? "bg-[#6C3EF8] text-white shadow-md shadow-[#6C3EF8]/20 hover:bg-[#5a32d1]" 
-              : "bg-slate-50 text-slate-500 hover:bg-slate-100"
-          }`}
-        >
+        <TralloButton onClick={() => setIsModalOpen(true)} variant="outline" className="w-full !p-[2px]">
           {isPending ? "Analisar Documentos" : "Visualizar Detalhes"}
-        </button>
+        </TralloButton>
       </div>
 
       <IdentityReviewModal

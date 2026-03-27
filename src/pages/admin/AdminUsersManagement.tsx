@@ -236,8 +236,8 @@ const UsersManagement: React.FC = () => {
                 />
               </div>
               <TralloButton
-                variant="primary"
-                className="shadow-none"
+                variant="outline"
+                className="!h-12"
                 onClick={() => {
                   setDateAfter("");
                   setDateBefore("");
