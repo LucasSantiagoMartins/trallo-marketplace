@@ -1,7 +1,5 @@
-// export const BASE_URL = "http://10.165.162.79:9090";
-export const BASE_URL = "http://localhost:9090";
-export const BASE_UPLOAD_URL = "http://localhost:9090/uploads/";
-// export const BASE_UPLOAD_URL = "http://10.165.162.79:9090/uploads/";
+export const BASE_URL = "http://10.165.162.79:9090";
+export const BASE_UPLOAD_URL = "http://10.165.162.79:9090/uploads/";
 
 export const endpoints = {
   auth: {
@@ -126,7 +124,11 @@ export const endpoints = {
     update: (id: string) => `/bank-accounts/${id}`,
     delete: (id: string) => `/bank-accounts/${id}`,
   },
-
+  dispatches: {
+    activate: "/dispatches/activate",
+    status: (productId: string) => `/dispatches/status/${productId}`,
+    buy: "/dispatches/buy",
+  },
   salesCenter: {
     summary: "/orders/my/sales-summary"
   },

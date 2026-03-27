@@ -7,6 +7,8 @@ import ProductImageGallery from "@/components/ProductImageGallery";
 import ProductDetailSellerInfo from "@/components/ProductDetailSellerInfo";
 import { checkoutFromProduct } from "@/services/checkout.service";
 import { searchBySlug } from "@/services/product.service";
+import { dispatchService } from "@/services/dispatch.service"; 
+import { DispatchStatusResponseDto } from "@/dtos/dispatches";
 import { PaymentMethod, PaymentMode } from "@/enums/payment";
 import { useAuth } from "@/context/AuthContext";
 import toast from "react-hot-toast";
@@ -26,6 +28,9 @@ const ProductDetails: React.FC = () => {
   const [product, setProduct] = useState<SearchedProductDTO | null>(
     (location.state?.product as SearchedProductDTO) || null,
   );
+
+  const [dispatchStatus, setDispatchStatus] =
+    useState<DispatchStatusResponseDto | null>(null);
 
   const [loading, setLoading] = useState(!product && !!slug);
   const [modalType, setModalType] = useState<
@@ -65,6 +70,24 @@ const ProductDetails: React.FC = () => {
     }
     loadProduct();
   }, [slug]);
+
+  // Efeito para buscar status do despacho
+  useEffect(() => {
+    async function fetchDispatch() {
+      if (product?.id && product.isDispatch) {
+        try {
+          const response = await dispatchService.getStatus(product.id);
+          console.log(response.message)
+          if (response?.success) {
+            setDispatchStatus(response.data);
+          }
+        } catch (error) {
+          console.error("Erro ao carregar status do despacho:", error);
+        }
+      }
+    }
+    fetchDispatch();
+  }, [product]);
 
   if (loading)
     return (
@@ -117,7 +140,11 @@ const ProductDetails: React.FC = () => {
     }
   };
 
-  const subtotal = Number(product.price || 0);
+  // Ajuste do preço para o cálculo do total (Prioriza o preço do despacho)
+  const subtotal = dispatchStatus
+    ? Number(dispatchStatus.currentPrice)
+    : Number(product.price || 0);
+
   const deliveryFee = paymentType === "presencial" ? 0 : 2500;
   const serviceFee = subtotal * 0.035;
   const total = subtotal + deliveryFee + serviceFee;
@@ -169,7 +196,12 @@ const ProductDetails: React.FC = () => {
           </div>
 
           <div className="px-4 space-y-4 relative z-20 -mt-10 lg:mt-0">
-            <ProductMainInfo product={product} />
+            {/* Passando o status do despacho para o componente de info */}
+            <ProductMainInfo
+              product={product}
+              dispatchStatus={dispatchStatus}
+            />
+
             <ProductDetailSellerInfo seller={product.seller} />
             <ProductDescription
               description={product.description}

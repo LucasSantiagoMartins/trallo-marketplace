@@ -80,7 +80,6 @@ export interface SearchedProductDTO {
   verificationVideo?: string;
   createdAt: string;
   isDispatch: boolean,
-  dispatchConfig: any,
 }
 
 export interface ProductImageDTO {
