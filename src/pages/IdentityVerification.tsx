@@ -1,13 +1,16 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import TralloButton from "@/components/TralloButton";
 import PageHeader from "@/components/PageHeader";
 import { useIdentityVerification } from "@/hooks/useIdentityVerification";
+import toast from "react-hot-toast";
 
 const IdentityVerification: React.FC = () => {
   const [step, setStep] = useState(1);
   const [isMobile, setIsMobile] = useState(false);
   const [editingFromReview, setEditingFromReview] = useState(false);
   const { submitVerification, loading } = useIdentityVerification();
+  const navigate = useNavigate();
 
   const [images, setImages] = useState<{
     front: string | null;
@@ -117,17 +120,12 @@ const IdentityVerification: React.FC = () => {
   };
 
   const handleFinalSubmit = async () => {
-    try {
-      await submitVerification(images);
-      // Redirecionar ou mostrar tela de sucesso aqui
-    } catch (err) {
-      // Erro tratado no hook
-    }
+    await submitVerification(images);
   };
 
   return (
     <div className="min-h-screen bg-surface text-on-surface flex flex-col relative overflow-hidden">
-      <PageHeader title="Verificação" showUser />
+      <PageHeader title="Verificação de identidade" showUser />
 
       <div className="mt-20 px-6 w-full max-w-4xl mx-auto">
         <div className="flex justify-between mb-2">
@@ -195,8 +193,8 @@ const IdentityVerification: React.FC = () => {
                   </>
                 ) : (
                   <div className="flex flex-col items-center gap-3 p-6 text-center cursor-pointer">
-                    <span className="material-symbols-outlined text-primary text-4xl">
-                      {isMobile ? "add_a_photo" : "upload_file"}
+                    <span className="material-symbols-outlined text-primary text-6xl">
+                      photo_camera
                     </span>
                     <p className="font-bold text-lg text-on-surface">
                       {isMobile ? "Tirar" : "Carregar"} {currentData.title}

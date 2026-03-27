@@ -75,7 +75,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
           </span>
         </button>
 
-        <h2 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-foreground text-[10px] sm:text-sm font-bold uppercase tracking-widest truncate px-2 max-w-[55%] text-center">a
+        <h2 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-foreground text-[10px] sm:text-sm font-bold uppercase tracking-widest truncate px-2 max-w-[55%] text-center">
           {title}
         </h2>
 
