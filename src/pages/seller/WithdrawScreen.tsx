@@ -7,6 +7,7 @@ import PriceInput from "@/components/PriceInput";
 import TralloButton from "@/components/TralloButton";
 import BottomNavigation from "@/components/BottomNavigation";
 import SecurityVerificationModal from "@/components/SecurityVerificationModal";
+import SummaryCard from "@/components/SummaryCard";
 import { withdrawalService } from "@/services/withdrawal.service";
 import { walletService } from "@/services/wallet.service";
 import { bankService } from "@/services/bank.service";
@@ -153,21 +154,16 @@ const WithdrawScreen: React.FC = () => {
       <main className="px-6 max-w-6xl mx-auto pt-24 pb-40 lg:pb-20">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           <div className="lg:col-span-7 space-y-4 lg:space-y-6">
-            <div className="hidden lg:block bg-gradient-to-br from-[#6C3EF8] to-[#8B5CF6] p-6 lg:p-8 rounded-[2.1rem] text-white shadow-xl shadow-purple-500/20 relative overflow-hidden">
-              <div className="absolute -right-10 -top-10 size-40 bg-white/10 rounded-full blur-3xl" />
-              <div className="relative z-10">
-                <p className="text-white/60 text-[10px] lg:text-xs uppercase font-black tracking-[0.2em] mb-1">
-                  Saldo disponível para levantamento
-                </p>
-                <h2 className="text-3xl lg:text-4xl font-black">
-                  {fetchingBalance
+            <div className="hidden lg:block">
+              <SummaryCard
+                label="Saldo disponível para levantamento"
+                value={
+                  fetchingBalance
                     ? "---"
-                    : formatPrice(availableBalance, false)}{" "}
-                  <span className="text-lg lg:text-xl font-medium text-white/50">
-                    Kz
-                  </span>
-                </h2>
-              </div>
+                    : `${formatPrice(availableBalance, false)} Kz`
+                }
+                icon="account_balance_wallet"
+              />
             </div>
 
             <div className="lg:hidden space-y-4 bg-white dark:bg-slate-900/20 p-6 rounded-[2.1rem] border border-gray-100 dark:border-white/5">
@@ -211,7 +207,7 @@ const WithdrawScreen: React.FC = () => {
                     <button
                       key={acc.id}
                       onClick={() => setSelectedAccountId(acc.id)}
-                      className={`relative text-left bg-white dark:bg-slate-900/40 border-2 transition-all rounded-[1.8rem] p-4 flex items-center gap-4 ${
+                      className={`relative text-left bg-white dark:bg-slate-900/40 border-2 transition-all rounded-2xl p-6 flex items-center gap-4 ${
                         selectedAccountId === acc.id
                           ? "border-primary shadow-md shadow-primary/5"
                           : "border-gray-100 dark:border-white/5"
@@ -265,7 +261,7 @@ const WithdrawScreen: React.FC = () => {
             </div>
           </div>
 
-          <div className="hidden lg:block lg:col-span-5 bg-white dark:bg-slate-900/20 p-8 rounded-[2.5rem] border border-gray-100 dark:border-white/5 sticky top-32">
+          <div className="hidden lg:block lg:col-span-5 bg-white dark:bg-slate-900/20 p-8 rounded-[2.5rem] border border-gray-100 dark:border-white/5 sticky top-24">
             <div className="space-y-8">
               <div className="space-y-4">
                 <PriceInput

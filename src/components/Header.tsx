@@ -154,8 +154,8 @@ const Header: React.FC<HeaderProps> = ({
           </nav>
 
           <div className="flex items-center gap-2">
-            {/* Carrinho: Só aparece para quem não é vendedor */}
-            {!isSeller && (
+            {/* Carrinho: Só aparece se estiver logado E não for vendedor */}
+            {isAuthenticated && !isSeller && (
               <Link
                 to="/carrinho"
                 onClick={(e) => handleProtectedNavigation(e, "/carrinho")}

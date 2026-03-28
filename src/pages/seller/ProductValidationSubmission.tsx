@@ -7,7 +7,16 @@ import { ProductDTO } from "@/types/product";
 import { BASE_UPLOAD_URL } from "@/api/endpoints";
 import { formatPrice } from "@/utils/currency";
 import { submitProductForVerification } from "@/services/product.service";
+
 import toast from "react-hot-toast";
+import {
+  getProductCategoryColor,
+  getProductCategoryLabel,
+} from "@/utils/mappers/product-category.mapper";
+import {
+  getProductConditionColor,
+  getProductConditionLabel,
+} from "@/utils/mappers/product.mapper";
 
 const ProductValidationSubmission: React.FC = () => {
   const location = useLocation();
@@ -66,9 +75,7 @@ const ProductValidationSubmission: React.FC = () => {
         );
         navigate("/meus-produtos");
       } else {
-        toast.error(
-          res.message ?? "Não foi possível processar o envio.",
-        );
+        toast.error(res.message ?? "Não foi possível processar o envio.");
       }
     } catch (err: any) {
       toast.error(err.message ?? "Erro ao conectar ao servidor.");
@@ -79,12 +86,13 @@ const ProductValidationSubmission: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#f6f5f8] dark:bg-[#141022] text-slate-900 dark:text-white transition-colors duration-300">
-      <PageHeader title="Enviar para Análise"   />
+      <PageHeader title="Enviar para Análise" />
 
       <VideoChecklistModal
         isOpen={showVideoChecklist}
         onClose={() => setShowVideoChecklist(false)}
-        category={"Tech"}
+        category={product.category}
+        categoryLabel={getProductCategoryLabel(product.category)}
         onVideoSelected={(file) => {
           setSelectedVideo(file);
           setShowVideoChecklist(false);
@@ -111,8 +119,9 @@ const ProductValidationSubmission: React.FC = () => {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 pt-24 pb-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
+          {/* COLUNA ESQUERDA: Info e Fotos */}
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <section className="bg-white dark:bg-slate-900/50 p-6 rounded-3xl shadow-sm flex items-center gap-5 border border-white/5 backdrop-blur-sm">
+            <section className="bg-white dark:bg-slate-900/50 p-6 rounded-3xl shadow-sm flex items-center gap-5 border border-white/5 backdrop-blur-sm min-h-[160px]">
               <div className="w-24 h-24 rounded-2xl overflow-hidden flex-shrink-0 bg-slate-100 dark:bg-slate-800 ring-1 ring-slate-200 dark:ring-white/10">
                 <img
                   alt={product.name}
@@ -122,17 +131,25 @@ const ProductValidationSubmission: React.FC = () => {
               </div>
               <div className="flex-1">
                 <span
-                  className="text-[10px] font-bold text-primary uppercase"
-                  style={{ color: colors.primary }}
+                  className={`text-[10px] font-black uppercase tracking-wider ${getProductConditionColor(product.condition)}`}
                 >
-                  {product.condition}
+                  {getProductConditionLabel(product.condition)}
                 </span>
                 <h2 className="text-xl font-bold leading-tight mt-1">
                   {product.name}
                 </h2>
-                <p className="text-2xl font-black mt-1">
-                  {formatPrice(product.price)}
-                </p>
+                <div className="flex flex-col mt-1">
+                  <p className="text-2xl font-black">
+                    {formatPrice(product.price)}
+                  </p>
+                  <div className="flex mt-1">
+                    <span
+                      className={`text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest ${getProductCategoryColor(product.category)}`}
+                    >
+                      {getProductCategoryLabel(product.category)}
+                    </span>
+                  </div>
+                </div>
               </div>
             </section>
 
@@ -188,14 +205,13 @@ const ProductValidationSubmission: React.FC = () => {
             </div>
           </div>
 
-          <div className="space-y-8 lg:sticky lg:top-24">
+          {/* COLUNA DIREITA: Vídeo e Notas */}
+          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150">
             <section className="space-y-4">
-              <h3 className="text-sm font-bold uppercase tracking-widest text-slate-500">
-                Vídeo de Demonstração
-              </h3>
+             
               <div
                 onClick={() => setShowVideoChecklist(true)}
-                className={`relative group cursor-pointer overflow-hidden rounded-3xl border-2 border-dashed transition-all p-8 text-center ${
+                className={`relative group cursor-pointer overflow-hidden rounded-3xl border-2 border-dashed transition-all p-8 text-center flex flex-col items-center justify-center min-h-[160px] ${
                   selectedVideo
                     ? "border-green-500 bg-green-50/30"
                     : "border-slate-300 hover:border-primary"

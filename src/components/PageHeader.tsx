@@ -39,7 +39,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
         onClick={() => navigate("/perfil")}
       >
         <div className="text-right hidden sm:block">
-          <p className="text-[10px] text-[#8c5f67] dark:text-gray-400 font-bold uppercase tracking-wider">
+          <p className="text-[10px] text-slate-800 dark:text-gray-300 font-black uppercase tracking-wider">
             Olá, {user?.fullName || "Usuário"}
           </p>
         </div>

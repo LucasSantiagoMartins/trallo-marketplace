@@ -11,6 +11,7 @@ import { transactionService } from "@/services/transaction.service";
 import { MyTransactionsResponseDTO } from "@/dtos/transaction";
 import { formatPrice } from "@/utils/currency";
 import TransactionGroup from "./TransationGroup";
+import InfoCard from "./InfoCard";
 
 const HistoryScreen: React.FC = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -150,25 +151,12 @@ const HistoryScreen: React.FC = () => {
           </div>
 
           <aside className="hidden lg:block">
-            <div className="fixed top-24 right-[calc((100vw-1152px)/2+24px)] w-[350px] p-8 bg-gradient-to-b from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-[2.5rem] border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden z-20">
-              <div className="size-12 rounded-2xl bg-gradient-to-br from-[#8B5CF6] to-[#6D28D9] flex items-center justify-center text-white mb-6 shadow-lg shadow-purple-500/20">
-                <span className="material-symbols-outlined">lightbulb</span>
-              </div>
-
-              <h4 className="font-black text-lg mb-3 tracking-tight text-[#181112] dark:text-white">
-                Como encontrar o que precisa?
-              </h4>
-
-              <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
-                Use o botão <b>Aplicar</b> para organizar apenas o que você já
-                está vendo agora.
-                <br />
-                <br />
-                Se quiser buscar algo mais antigo, use o botão <b>
-                  Pesquisar
-                </b>{" "}
-                para carregar todo o seu histórico.
-              </p>
+            <div className="fixed top-24 right-[calc((100vw-1152px)/2+24px)] w-[350px] z-20">
+              <InfoCard 
+                title="Como encontrar o que precisa?"
+                description="Use o botão Aplicar para organizar apenas o que você já está vendo agora. Se quiser buscar algo mais antigo, use o botão Pesquisar para carregar todo o seu histórico."
+                icon="lightbulb"
+              />
             </div>
           </aside>
         </div>

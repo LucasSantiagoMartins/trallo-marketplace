@@ -4,6 +4,7 @@ import MobileLayout from "@/layouts/MobileLayout";
 import PageHeader from "@/components/PageHeader";
 import BottomNavigation from "@/components/BottomNavigation";
 import MyTransactionCard from "@/components/MyTransactionCard";
+import InfoCard from "@/components/InfoCard";
 import { useAuth } from "@/context/AuthContext";
 import { walletService } from "@/services/wallet.service";
 import { WalletSummaryDTO } from "@/dtos/wallet";
@@ -100,25 +101,17 @@ const WalletScreen: React.FC = () => {
 
               <TralloButton
                 onClick={() => navigate("/realizar-levantamento")}
-                className="w-full bg-primary text-white h-14 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-primary/30 active:scale-[0.98] transition-all"
+                variant="primary"
+                className="w-full"
               >
                 <span>Realizar levantamento</span>
               </TralloButton>
 
-              <div className="p-5 md:p-6 bg-gradient-to-b from-white to-gray-50 dark:from-slate-900/40 dark:to-slate-900/60 rounded-[2rem] border border-gray-100 dark:border-white/5 shadow-sm lg:mb-10">
-                <div className="size-10 rounded-xl bg-gradient-to-br from-[#8B5CF6] to-[#6D28D9] flex items-center justify-center text-white mb-3 shadow-lg shadow-purple-500/20">
-                  <span className="material-symbols-outlined text-xl">
-                    lock_clock
-                  </span>
-                </div>
-                <h4 className="font-black text-base mb-1.5 tracking-tight text-[#181112] dark:text-white">
-                  Por que o saldo está retido?
-                </h4>
-                <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
-                  Este montante corresponde a pedidos já pagos e aguardando
-                  apenas a entrega ao cliente para ser liberado na sua conta.
-                </p>
-              </div>
+              <InfoCard
+                title="Por que o saldo está retido?"
+                description="Este montante corresponde a pedidos já pagos e aguardando apenas a entrega ao cliente para ser liberado na sua conta."
+                icon="lock_clock"
+              />
             </div>
           </div>
 

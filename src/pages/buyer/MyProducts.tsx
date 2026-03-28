@@ -10,6 +10,7 @@ import OwnProductCard from "@/components/OwnProductCard";
 import LoaderAnimation from "@/components/Loader";
 import ActivateDispatchDrawer from "@/components/ActivateDispatchDrawer";
 import { useMyProducts } from "@/hooks/useMyProducts";
+import StatsOverviewCard from "@/components/StatviewCard";
 
 const MyProductsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -36,7 +37,7 @@ const MyProductsPage: React.FC = () => {
       <PageHeader title="Meus Produtos" showUser={true} />
 
       <main className="max-w-6xl mx-auto w-full px-6 pt-24 pb-32 lg:pb-20">
-        <header className="mb-8">
+        <header className="mb-6">
           <h2 className="font-black text-3xl tracking-tight">
             Centro de Produtos
           </h2>
@@ -45,21 +46,21 @@ const MyProductsPage: React.FC = () => {
           </p>
         </header>
 
-        <div className="flex flex-col lg:flex-row gap-6 mb-4">
+        <div className="flex flex-col lg:flex-row gap-6 mb-2 items-start">
           <div className="flex gap-4 lg:gap-6 overflow-x-auto pb-4 lg:pb-0 no-scrollbar flex-1 lg:justify-start">
-            <SummaryCard
+            <StatsOverviewCard
               icon="check_circle"
               value={stats.active.toString()}
               label="Ativos"
               color="emerald"
             />
-            <SummaryCard
+            <StatsOverviewCard
               icon="history"
               value={stats.pending.toString()}
               label="Pendentes"
               color="blue"
             />
-            <SummaryCard
+            <StatsOverviewCard
               icon="verified_user"
               value={stats.verifying.toString()}
               label="Verificando"
@@ -85,7 +86,7 @@ const MyProductsPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-4">
           <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <h3 className="text-xl font-bold tracking-tight">
@@ -158,32 +159,6 @@ const MyProductsPage: React.FC = () => {
       />
 
       <BottomNavigation />
-    </div>
-  );
-};
-
-const SummaryCard = ({ icon, value, label, color }: any) => {
-  const colorMap: any = {
-    emerald: "text-emerald-500 bg-emerald-500/10",
-    blue: "text-blue-500 bg-blue-500/10",
-    amber: "text-amber-500 bg-amber-500/10",
-  };
-
-  return (
-    <div className="flex-shrink-0 lg:flex-1 w-36 md:w-40 lg:w-full bg-white dark:bg-gray-800/60 p-4 lg:p-5 rounded-[1.8rem] border border-gray-100 dark:border-gray-700/50 shadow-sm transition-all">
-      <div
-        className={`${colorMap[color]} size-9 lg:size-12 rounded-xl flex items-center justify-center mb-2 lg:mb-3`}
-      >
-        <span className="material-symbols-outlined text-xl lg:text-2xl">
-          {icon}
-        </span>
-      </div>
-      <div className="text-xl lg:text-2xl font-black truncate leading-tight">
-        {value}
-      </div>
-      <div className="text-[9px] lg:text-[10px] text-slate-400 font-black uppercase tracking-wider mt-0.5">
-        {label}
-      </div>
     </div>
   );
 };

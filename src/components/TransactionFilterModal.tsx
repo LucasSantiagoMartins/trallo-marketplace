@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { TransactionStatus, TransactionType } from "@/enums/transaction";
+import TralloButton from "@/components/TralloButton";
+import TralloInput from "@/components/TralloInput";
 
 interface TransactionFilterModalProps {
   onClose: () => void;
@@ -112,8 +114,11 @@ const TransactionFilterModal: React.FC<TransactionFilterModalProps> = ({
           <h3 className="text-xl font-black tracking-tight text-[#121118] dark:text-white">
             Filtros
           </h3>
-          <button onClick={onClose} className="text-gray-400 font-bold text-sm">
-            Cancelar
+          <button
+            onClick={onClose}
+            className="hidden lg:flex items-center justify-center size-8 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500"
+          >
+            <span className="material-symbols-outlined text-xl">close</span>
           </button>
         </div>
 
@@ -130,7 +135,7 @@ const TransactionFilterModal: React.FC<TransactionFilterModalProps> = ({
                     onClick={() =>
                       setTempFilters({ ...tempFilters, [section.key]: opt.id })
                     }
-                    className={`py-2.5 px-1 rounded-xl text-[10px] font-bold transition-all border-2 ${
+                    className={`py-2.5 px-1 rounded-full text-[10px] font-bold transition-all border-2 active:scale-95 ${
                       tempFilters[section.key] === opt.id
                         ? "border-primary bg-primary text-white"
                         : "border-gray-50 dark:border-gray-800 text-gray-400"
@@ -145,19 +150,19 @@ const TransactionFilterModal: React.FC<TransactionFilterModalProps> = ({
         </div>
 
         <div className="flex gap-3 mt-8">
-          <button
+          <TralloButton
+            className="flex-1"
+            variant="secondary"
             onClick={() => onApplyLocal(tempFilters)}
-            className="flex-1 py-4 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white font-black rounded-2xl active:scale-95 transition-all"
           >
             Aplicar
-          </button>
-          <button
+          </TralloButton>
+          <TralloButton
+            className="flex-[2]"
             onClick={() => onSearchAPI(tempFilters)}
-            className="flex-[2] py-4 bg-primary text-white font-black rounded-2xl active:scale-95 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
           >
-            <span className="material-symbols-outlined text-lg">search</span>
             Pesquisar
-          </button>
+          </TralloButton>
         </div>
       </div>
     </div>

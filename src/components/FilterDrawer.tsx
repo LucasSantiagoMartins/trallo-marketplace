@@ -1,5 +1,5 @@
 import { ProductCondition } from "@/types/product";
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { formatPrice } from "@/utils/currency";
 import TralloInput from "./TralloInput";
 import TralloButton from "./TralloButton";
@@ -32,6 +32,17 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
   const [condition, setCondition] = useState<ProductCondition | undefined>();
   const [isDispatch, setIsDispatch] = useState<boolean>(false);
 
+  // Estados para o gesto de arrastar (Swipe)
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const [translateX, setTranslateX] = useState(0);
+  const isDragging = useRef(false);
+
+  // Resetar posição quando fechar/abrir
+  useEffect(() => {
+    if (!isOpen) setTranslateX(0);
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   const parseCurrency = (value: string): number | "" => {
@@ -51,15 +62,12 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
     setMaxPrice("");
     setCondition(undefined);
     setIsDispatch(false);
-
-    const clearedFilters = {
+    onApply({
       minPrice: undefined,
       maxPrice: undefined,
       condition: undefined,
       isDispatch: false,
-    };
-
-    onApply(clearedFilters);
+    });
   };
 
   const handleConditionChange = (value: ProductCondition | "DISPATCH") => {
@@ -72,19 +80,64 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
     }
   };
 
+  // --- Lógica de Swipe nativa ---
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+    isDragging.current = true;
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    if (!touchStart) return;
+    const currentTouch = e.targetTouches[0].clientX;
+    const distance = currentTouch - touchStart;
+    
+    // Só permite arrastar para a direita (para fechar)
+    if (distance > 0) {
+      setTranslateX(distance);
+    }
+  };
+
+  const onTouchEnd = () => {
+    isDragging.current = false;
+    if (!touchStart || !translateX) return;
+
+    // Se arrastou mais de 100px, fecha o drawer
+    if (translateX > 100) {
+      onClose();
+    } else {
+      // Caso contrário, volta para a posição inicial
+      setTranslateX(0);
+    }
+  };
+
   return (
-    <div className="fixed inset-0 z-[100] flex justify-end">
+    <div className="fixed inset-0 z-[100] flex justify-end overflow-hidden">
+      {/* Overlay com fade do Tailwind */}
       <div
         className="absolute inset-0 bg-black/20 backdrop-blur-sm animate-in fade-in duration-300"
         onClick={onClose}
       />
 
-      <aside className="relative w-[85%] md:w-[40%] h-full bg-background shadow-2xl animate-in slide-in-from-right duration-300 flex flex-col">
+      <aside
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+        style={{ 
+          transform: `translateX(${translateX}px)`,
+          transition: isDragging.current ? "none" : "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
+        }}
+        className={`relative w-[85%] md:w-[40%] h-full bg-background shadow-2xl flex flex-col animate-in slide-in-from-right duration-300`}
+      >
+        {/* Indicador de arrasto lateral no mobile */}
+        <div className="md:hidden w-1.5 h-12 bg-border/60 rounded-full absolute left-2 top-1/2 -translate-y-1/2 opacity-50" />
+
         <div className="p-6 border-b border-border/50 flex items-center justify-between">
           <h2 className="text-lg font-bold">Filtros</h2>
+          {/* O X some no telefone, visível apenas md para cima */}
           <button
             onClick={onClose}
-            className="size-10 flex items-center justify-center rounded-full hover:bg-muted transition-colors"
+            className="hidden md:flex size-10 items-center justify-center rounded-full hover:bg-muted transition-colors"
           >
             <span className="material-symbols-outlined">close</span>
           </button>
@@ -113,9 +166,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
                             ? formatPrice(minPrice).replace("Kz", "").trim()
                             : ""
                         }
-                        onChange={(e) =>
-                          setMinPrice(parseCurrency(e.target.value))
-                        }
+                        onChange={(e) => setMinPrice(parseCurrency(e.target.value))}
                         placeholder="0"
                       />
                     </div>
@@ -135,9 +186,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
                             ? formatPrice(maxPrice).replace("Kz", "").trim()
                             : ""
                         }
-                        onChange={(e) =>
-                          setMaxPrice(parseCurrency(e.target.value))
-                        }
+                        onChange={(e) => setMaxPrice(parseCurrency(e.target.value))}
                         placeholder="Sem limite"
                       />
                     </div>
@@ -185,11 +234,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
                           <div className="size-2.5 bg-primary rounded-sm" />
                         )}
                       </div>
-                      <span
-                        className={`text-sm font-medium ${
-                          isSelected ? "text-primary" : ""
-                        }`}
-                      >
+                      <span className={`text-sm font-medium ${isSelected ? "text-primary" : ""}`}>
                         {item.label}
                       </span>
                     </label>
@@ -206,17 +251,10 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
               Limpar Filtros
             </TralloButton>
             <div className="flex gap-3">
-              <TralloButton
-                onClick={() => onApply(getFilters())}
-                variant="outline"
-              >
+              <TralloButton onClick={() => onApply(getFilters())} variant="outline">
                 Aplicar
               </TralloButton>
-
-              <TralloButton
-                onClick={() => onSearch(getFilters())}
-                className="flex-[2]"
-              >
+              <TralloButton onClick={() => onSearch(getFilters())} className="flex-[2]">
                 Pesquisar
               </TralloButton>
             </div>

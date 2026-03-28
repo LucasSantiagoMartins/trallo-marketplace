@@ -32,6 +32,19 @@ const Pagination: React.FC<PaginationProps> = ({
 
   if (totalPages <= 1) return null;
 
+  const maxVisibleButtons = 4;
+  
+  let startPage = Math.max(1, currentPage - Math.floor(maxVisibleButtons / 2));
+  
+  if (startPage + maxVisibleButtons - 1 > totalPages) {
+    startPage = Math.max(1, totalPages - maxVisibleButtons + 1);
+  }
+
+  const visiblePages = Array.from(
+    { length: Math.min(maxVisibleButtons, totalPages) },
+    (_, i) => startPage + i
+  );
+
   return (
     <div
       className={`fixed bottom-[110px] md:bottom-6 left-0 right-0 px-6 flex justify-center items-center z-40 pointer-events-none transition-all duration-500 ${
@@ -50,17 +63,17 @@ const Pagination: React.FC<PaginationProps> = ({
         </button>
 
         <div className="flex gap-1.5 px-1">
-          {Array.from({ length: totalPages }, (_, i) => (
+          {visiblePages.map((page) => (
             <button
-              key={i + 1}
-              onClick={() => onPageChange(i + 1)}
+              key={page}
+              onClick={() => onPageChange(page)}
               className={`size-10 rounded-full font-black text-[10px] transition-all active:scale-95 ${
-                currentPage === i + 1
+                currentPage === page
                   ? "bg-[#6C3EF8] text-white shadow-md shadow-[#6C3EF8]/20"
                   : "text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700"
               }`}
             >
-              {i + 1}
+              {page}
             </button>
           ))}
         </div>

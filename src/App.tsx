@@ -11,7 +11,7 @@ import ProductDetails from "./pages/shared/ProductDetails";
 import NotFound from "./pages/shared/NotFound";
 import WalletScreen from "./pages/seller/Wallet";
 import TransactionHistoryScreen from "./components/TransactionHistory";
-import ProductValidationSubmission from "./pages/operator/ProductValidationSubmission";
+import ProductValidationSubmission from "./pages/seller/ProductValidationSubmission";
 import PendingVerificationsPage from "./pages/operator/PendingVerifications";
 import ReviewProductPage from "./pages/operator/ProductVerification";
 import ChangePassword from "./components/ChangePassword";

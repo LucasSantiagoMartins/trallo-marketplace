@@ -1,7 +1,7 @@
 import React from "react";
 
 interface SummaryCardProps {
-  label: string; // Alterado de title para label para resolver o erro
+  label: string; 
   value: string;
   color?: string;
   icon: string;
@@ -33,7 +33,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
       <div className="flex items-baseline gap-1">
         <h3
           className={`text-lg md:text-2xl font-black tracking-tight truncate transition-all ${
-            isEmpty ? "opacity-60 text-sm md:text-lg italic" : "md:text-3xl"
+            isEmpty ? "opacity-60 text-sm md:text-lg" : "md:text-3xl"
           }`}
         >
           {value}

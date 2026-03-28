@@ -115,7 +115,8 @@ const SellerProfileScreen: React.FC = () => {
 
       <main className="max-w-7xl mx-auto px-6 pt-28 pb-32 space-y-16">
         <section className="flex justify-center">
-          <div className="w-full max-w-2xl bg-white dark:bg-slate-900 rounded-[2.5rem] p-6 shadow-sm border border-slate-100 dark:border-slate-800">
+          {/* Alterado para w-full no mobile e mantido max-w-2xl no desktop */}
+          <div className="w-full md:max-w-2xl bg-white dark:bg-slate-900 rounded-[2.5rem] p-6 shadow-sm border border-slate-100 dark:border-slate-800">
             <div className="flex flex-col items-center text-center">
               <div className="flex flex-col items-center">
                 <div className="relative">

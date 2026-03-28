@@ -1,10 +1,13 @@
 import React, { useRef } from "react";
 import TralloButton from "@/components/TralloButton";
+import { getVideoRequirements } from "@/enums/video-requirements.enum";
+import { ProductCategory } from "@/enums/product-category.enum";
 
 interface VideoChecklistModalProps {
   isOpen: boolean;
   onClose: () => void;
-  category: string;
+  category: ProductCategory; // Usando o Enum aqui
+  categoryLabel: string;
   onVideoSelected: (file: File) => void;
 }
 
@@ -12,19 +15,14 @@ const VideoChecklistModal: React.FC<VideoChecklistModalProps> = ({
   isOpen,
   onClose,
   category,
+  categoryLabel,
   onVideoSelected,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   if (!isOpen) return null;
 
-  const requirements = [
-    "Demonstrar o produto em funcionamento real",
-    "Mostrar detalhes de integridade física e estética",
-    "Exibir etiquetas, números de série ou autenticidade",
-    "Testar entradas, conexões ou fechos principais",
-    "Visão clara de 360º (frente, verso e laterais)",
-  ];
+  const requirements = getVideoRequirements(category);
 
   const handleButtonClick = () => {
     fileInputRef.current?.click();
@@ -56,7 +54,7 @@ const VideoChecklistModal: React.FC<VideoChecklistModalProps> = ({
 
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 size-10 bg-slate-100 dark:bg-white/5 rounded-full flex items-center justify-center hover:scale-110 hover:bg-slate-200 dark:hover:bg-white/10 transition-all z-50"
+          className="absolute top-6 right-6 size-10 bg-slate-100 dark:bg-white/5 rounded-full flex items-center justify-center hover:scale-110 hover:bg-slate-200 dark:hover:bg-white/10 transition-all z-50"
         >
           <span className="material-symbols-outlined text-slate-600 dark:text-slate-300">
             close
@@ -80,7 +78,7 @@ const VideoChecklistModal: React.FC<VideoChecklistModalProps> = ({
               Para garantir a segurança da venda, precisamos que o seu vídeo de
               <span className="font-bold text-slate-900 dark:text-white">
                 {" "}
-                {category}{" "}
+                {categoryLabel}{" "}
               </span>
               siga estas diretrizes.
             </p>
@@ -92,9 +90,6 @@ const VideoChecklistModal: React.FC<VideoChecklistModalProps> = ({
                 <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
                   Itens Obrigatórios
                 </h3>
-                <span className="text-[9px] font-bold px-3 py-1.5 bg-purple-500/10 text-purple-500 rounded-full border border-purple-500/20">
-                  {requirements.length} REQUISITOS
-                </span>
               </div>
 
               <div className="space-y-3">
