@@ -55,6 +55,10 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import ShelvesManagement from "./pages/operator/ShelvesManagement";
 import UserProfileScreen from "./pages/user/UserProfile";
 import FeeManagement from "./pages/admin/FeeManagement";
+import Dispatch from "./pages/campaigns/dispatch";
+import SmartSupport from "./pages/campaigns/SmartSupport";
+import ContactSupport from "./pages/campaigns/ContactSupport";
+import DispatchInfoScreen from "./pages/campaigns/dispatch";
 
 const queryClient = new QueryClient();
 
@@ -68,6 +72,13 @@ const App = () => (
             <Route path="/entrar" element={<Login />} />
             <Route path="/criar-conta" element={<Register />} />
             <Route path="/esqueceu-senha" element={<ResetPassword />} />
+            <Route path="/campanhas/despachos" element={<DispatchInfoScreen />} />
+            <Route
+              path="/campanhas/suporte-inteligente"
+              element={<SmartSupport />}
+            />
+            <Route path="/campanhas/sobre" element={<ContactSupport />} />
+
             <Route path="/detalhes-produto" element={<ProductDetails />} />
             <Route path="/notificacoes" element={<NotificationsScreen />} />
             <Route

@@ -205,7 +205,6 @@ const ProductValidationSubmission: React.FC = () => {
             </div>
           </div>
 
-          {/* COLUNA DIREITA: Vídeo e Notas */}
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150">
             <section className="space-y-4">
              
