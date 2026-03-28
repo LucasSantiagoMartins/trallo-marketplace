@@ -54,6 +54,7 @@ import UsersManagement from "./pages/admin/AdminUsersManagement";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import ShelvesManagement from "./pages/operator/ShelvesManagement";
 import UserProfileScreen from "./pages/user/UserProfile";
+import FeeManagement from "./pages/admin/FeeManagement";
 
 const queryClient = new QueryClient();
 
@@ -178,6 +179,11 @@ const App = () => (
               <Route
                 path="/area-administrativa/usuarios"
                 element={<UsersManagement />}
+              />
+
+              <Route
+                path="/area-administrativa/taxas"
+                element={<FeeManagement />}
               />
               <Route
                 path="/area-administrativa/reclamacoes"

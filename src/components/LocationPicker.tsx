@@ -159,13 +159,6 @@ const LocationPicker: React.FC<LocationPickerProps> = ({
               }
             }}
           />
-
-          <div className="flex items-center gap-1 text-[10px] text-green-600 font-bold px-1 uppercase">
-            <span className="material-symbols-outlined !text-xs">
-              check_circle
-            </span>
-            Coordenadas capturadas {role === "seller" && " (Vendedor)"}
-          </div>
         </div>
       )}
 

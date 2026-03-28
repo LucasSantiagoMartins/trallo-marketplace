@@ -30,6 +30,7 @@ export const adminItems = [
     path: "/area-administrativa/usuarios",
   },
 
+
   {
     id: "entregas",
     icon: "local_shipping",
@@ -47,6 +48,12 @@ export const adminItems = [
     icon: "gavel",
     label: "Reclamações",
     path: "/area-administrativa/reclamacoes",
+  },
+  {
+    id: "taxas",
+    icon: "percent",
+    label: "Taxas da Plataforma",
+    path: "/area-administrativa/taxas",
   },
   {
     id: "area-operacional",

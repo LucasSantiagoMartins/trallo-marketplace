@@ -117,6 +117,11 @@ export const endpoints = {
       list: "/payments/admin/list",
     },
 
+    plataformfees: {
+      fee: "/fees",
+      toggle: (feeId: string) => `/fees/${feeId}/toggle`,
+    }
+
 
   },
   bankAccounts: {

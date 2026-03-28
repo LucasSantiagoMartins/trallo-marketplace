@@ -95,13 +95,27 @@ const TralloInput = forwardRef<
     }, []);
 
     const handleChange = (val: string) => {
-      setInputValue(val);
-      onChange?.(val);
+      if (type === "float") {
+        const sanitized = val.replace(",", ".");
+        if (sanitized !== "" && !/^\d*\.?\d*$/.test(sanitized)) {
+          return;
+        }
+        setInputValue(sanitized);
+        onChange?.(sanitized);
+      } else {
+        setInputValue(val);
+        onChange?.(val);
+      }
       setIsOpen(false);
     };
 
     const isPasswordField = type === "password";
-    const currentInputType = isPasswordField && showPassword ? "text" : type;
+    const currentInputType =
+      isPasswordField && showPassword
+        ? "text"
+        : type === "float"
+          ? "text"
+          : type;
 
     const borderStyles: Record<ValidationState, string> = {
       default:
@@ -144,6 +158,10 @@ const TralloInput = forwardRef<
           return <User className={iconClass} size={20} />;
         case "location_on":
           return <MapPin className={iconClass} size={20} />;
+        case "percent":
+          return <span className={`${iconClass} font-bold text-lg`}>%</span>;
+        case "category":
+          return <Package className={iconClass} size={20} />;
         default:
           return <Info className={iconClass} size={20} />;
       }
@@ -246,6 +264,7 @@ const TralloInput = forwardRef<
               onKeyDown={onKeyDown as any}
               placeholder={placeholder}
               className={commonClasses}
+              inputMode={type === "float" ? "decimal" : "text"}
             />
           )}
 
