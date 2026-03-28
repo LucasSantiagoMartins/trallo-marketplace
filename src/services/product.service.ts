@@ -2,6 +2,7 @@ import { http } from "../api/http";
 import { endpoints } from "../api/endpoints";
 import type { ApiResponse } from "@/types/api";
 import {
+  FilterProductDto,
   PendingVerificationDTO,
   ProductCondition,
   ProductDTO,
@@ -74,12 +75,7 @@ export async function updateProduct(
   return res;
 }
 
-export async function searchProducts(query: {
-  search?: string;
-  minPrice?: number;
-  maxPrice?: number;
-  condition?: ProductCondition;
-}): Promise<ApiResponse<SearchedProductDTO[]>> {
+export async function searchProducts(query: FilterProductDto): Promise<ApiResponse<SearchedProductDTO[]>> {
   return await http.get<SearchedProductDTO[]>(endpoints.products.search, {
     params: query,
   });

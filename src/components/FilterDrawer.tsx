@@ -11,11 +11,13 @@ interface FilterDrawerProps {
     minPrice?: number;
     maxPrice?: number;
     condition?: ProductCondition;
+    isDispatch?: boolean;
   }) => void;
   onSearch: (filters: {
     minPrice?: number;
     maxPrice?: number;
     condition?: ProductCondition;
+    isDispatch?: boolean;
   }) => void;
 }
 
@@ -28,6 +30,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
   const [minPrice, setMinPrice] = useState<number | "">("");
   const [maxPrice, setMaxPrice] = useState<number | "">("");
   const [condition, setCondition] = useState<ProductCondition | undefined>();
+  const [isDispatch, setIsDispatch] = useState<boolean>(false);
 
   if (!isOpen) return null;
 
@@ -36,16 +39,37 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
     return numericValue === "" ? "" : Number(numericValue);
   };
 
-  const currentFilters = {
+  const getFilters = () => ({
     minPrice: minPrice === "" ? undefined : minPrice,
     maxPrice: maxPrice === "" ? undefined : maxPrice,
     condition,
-  };
+    isDispatch,
+  });
 
   const handleClear = () => {
     setMinPrice("");
     setMaxPrice("");
     setCondition(undefined);
+    setIsDispatch(false);
+
+    const clearedFilters = {
+      minPrice: undefined,
+      maxPrice: undefined,
+      condition: undefined,
+      isDispatch: false,
+    };
+
+    onApply(clearedFilters);
+  };
+
+  const handleConditionChange = (value: ProductCondition | "DISPATCH") => {
+    if (value === "DISPATCH") {
+      setCondition(undefined);
+      setIsDispatch(true);
+    } else {
+      setCondition(value);
+      setIsDispatch(false);
+    }
   };
 
   return (
@@ -111,7 +135,9 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
                             ? formatPrice(maxPrice).replace("Kz", "").trim()
                             : ""
                         }
-                        onChange={setMaxPrice}
+                        onChange={(e) =>
+                          setMaxPrice(parseCurrency(e.target.value))
+                        }
                         placeholder="Sem limite"
                       />
                     </div>
@@ -129,38 +155,46 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
                   { label: "Novo", value: ProductCondition.NEW },
                   { label: "Quase novo", value: ProductCondition.SEMI_NEW },
                   { label: "Usado", value: ProductCondition.USED },
-                ].map((item) => (
-                  <label
-                    key={item.value}
-                    className="flex items-center gap-3 cursor-pointer group"
-                  >
-                    <input
-                      type="radio"
-                      name="condition"
-                      className="hidden"
-                      checked={condition === item.value}
-                      onChange={() => setCondition(item.value)}
-                    />
-                    <div
-                      className={`size-5 rounded border flex items-center justify-center transition-colors ${
-                        condition === item.value
-                          ? "border-primary bg-primary/10"
-                          : "border-border"
-                      }`}
+                  { label: "Em despacho", value: "DISPATCH" as const },
+                ].map((item) => {
+                  const isSelected =
+                    item.value === "DISPATCH"
+                      ? isDispatch
+                      : condition === item.value && !isDispatch;
+
+                  return (
+                    <label
+                      key={item.value}
+                      className="flex items-center gap-3 cursor-pointer group"
                     >
-                      {condition === item.value && (
-                        <div className="size-2.5 bg-primary rounded-sm" />
-                      )}
-                    </div>
-                    <span
-                      className={`text-sm font-medium ${
-                        condition === item.value ? "text-primary" : ""
-                      }`}
-                    >
-                      {item.label}
-                    </span>
-                  </label>
-                ))}
+                      <input
+                        type="radio"
+                        name="condition"
+                        className="hidden"
+                        checked={isSelected}
+                        onChange={() => handleConditionChange(item.value)}
+                      />
+                      <div
+                        className={`size-5 rounded border flex items-center justify-center transition-colors ${
+                          isSelected
+                            ? "border-primary bg-primary/10"
+                            : "border-border"
+                        }`}
+                      >
+                        {isSelected && (
+                          <div className="size-2.5 bg-primary rounded-sm" />
+                        )}
+                      </div>
+                      <span
+                        className={`text-sm font-medium ${
+                          isSelected ? "text-primary" : ""
+                        }`}
+                      >
+                        {item.label}
+                      </span>
+                    </label>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -173,14 +207,14 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
             </TralloButton>
             <div className="flex gap-3">
               <TralloButton
-                onClick={() => onApply(currentFilters)}
+                onClick={() => onApply(getFilters())}
                 variant="outline"
               >
                 Aplicar
               </TralloButton>
 
               <TralloButton
-                onClick={() => onSearch(currentFilters)}
+                onClick={() => onSearch(getFilters())}
                 className="flex-[2]"
               >
                 Pesquisar

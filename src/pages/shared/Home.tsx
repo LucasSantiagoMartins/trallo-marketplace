@@ -12,12 +12,12 @@ import { useCart } from "@/hooks/use-cart";
 import { useProducts } from "@/hooks/use-products";
 import { useAuth } from "@/context/AuthContext";
 import LoaderAnimation from "@/components/Loader";
-import { 
-  SlidersHorizontal, 
-  Search, 
-  SearchX, 
-  ShoppingBag, 
-  Sparkles 
+import {
+  SlidersHorizontal,
+  Search,
+  SearchX,
+  ShoppingBag,
+  Sparkles,
 } from "lucide-react";
 import { carouselSlides } from "@/constants/carousel-slides";
 
@@ -50,14 +50,22 @@ const Home: React.FC = () => {
     setCurrentPage(1);
   };
 
-  const handleSearchWithFilters = (filters: any) => {
-    fetchProducts({ search: searchQuery || undefined, ...filters });
+  const handleApplyFilters = (filters: any) => {
+    fetchProducts({
+      search: tempSearch || undefined,
+      ...filters,
+    });
     setIsFilterOpen(false);
     setCurrentPage(1);
   };
 
-  const handleApplyFilters = (filters: any) => {
-    handleSearchWithFilters(filters);
+  const handleSearchWithFilters = (filters: any) => {
+    fetchProducts({
+      search: tempSearch || undefined,
+      ...filters,
+    });
+    setIsFilterOpen(false);
+    setCurrentPage(1);
   };
 
   const totalPages = Math.ceil(products.length / itemsPerPage);
@@ -169,7 +177,10 @@ const Home: React.FC = () => {
               </p>
               <button className="bg-[#6C3EF8] text-white px-5 py-2.5 rounded-full text-sm font-bold flex items-center gap-2 group hover:shadow-lg hover:shadow-[#6C3EF8]/30 transition-all active:scale-95">
                 Ver Novidades
-                <ShoppingBag size={16} className="group-hover:rotate-12 transition-transform" />
+                <ShoppingBag
+                  size={16}
+                  className="group-hover:rotate-12 transition-transform"
+                />
               </button>
             </div>
             <div className="relative z-10 w-24 h-24 md:w-32 md:h-32 bg-gradient-to-br from-white/40 to-[#6C3EF8]/10 rounded-[2rem] flex items-center justify-center border border-white/50 backdrop-blur-2xl rotate-6 shadow-xl">

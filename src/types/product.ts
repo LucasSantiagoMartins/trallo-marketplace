@@ -94,3 +94,11 @@ export interface SellerDTO {
   slug: string;
   profilePicture: string;
 }
+
+export interface FilterProductDto {
+  search?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  condition?: ProductCondition;
+  isDispatch?: boolean;
+}

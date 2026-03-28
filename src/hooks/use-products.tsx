@@ -16,20 +16,29 @@ export const useProducts = () => {
       minPrice?: number;
       maxPrice?: number;
       condition?: ProductCondition;
+      isDispatch?: boolean;
     }) => {
-      const hasFilters =
+      const hasActiveFilters =
         filters &&
-        Object.values(filters).some((v) => v !== undefined && v !== "");
-
-      if (!hasFilters && products.length > 0) {
-        return;
-      }
+        Object.entries(filters).some(([key, v]) => {
+          if (key === "isDispatch") return v === true;
+          return v !== undefined && v !== "";
+        });
 
       try {
         dispatch(setProductLoading(true));
         const response = await searchProducts(filters);
+
         if (response.success && response.data) {
-          dispatch(setProducts(response.data));
+          let filteredData = response.data;
+
+          if (filters?.isDispatch) {
+            filteredData = filteredData.filter(
+              (p: any) => p.isDispatch === true,
+            );
+          }
+
+          dispatch(setProducts(filteredData));
         }
       } catch (error) {
         console.error("Erro ao buscar produtos:", error);
@@ -37,7 +46,7 @@ export const useProducts = () => {
         dispatch(setProductLoading(false));
       }
     },
-    [dispatch, products.length],
+    [dispatch],
   );
 
   return {
