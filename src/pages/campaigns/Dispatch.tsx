@@ -33,8 +33,9 @@ const DispatchInfoScreen: React.FC = () => {
               <span className="text-[#6C3EF8]">Despacho Rápido</span>
             </h2>
             <p className="text-[#64748B] text-base md:text-xl max-w-2xl mx-auto leading-relaxed px-4">
-              Aprenda a garantir os menores preços antes que o estoque acabe. A
-              pressão sobe, mas a economia é real.
+              Preços de despacho onde o primeiro lance garante a compra com
+              valor abaixo do mercado. Aproveite benefícios exclusivos e
+              economize antes que oportunidade termine
             </p>
           </div>
 
@@ -56,13 +57,16 @@ const DispatchInfoScreen: React.FC = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
               {[
-                { step: "01", text: "Escolha o produto na lista de Despacho." },
-                { step: "02", text: "Aguarde o preço cair em tempo real." },
+                { step: "01", text: "Escolha o produto na lista de Despacho" },
+                {
+                  step: "02",
+                  text: "Aguarde o preço chegar no valor que estás disposto a pagar",
+                },
                 {
                   step: "03",
-                  text: "Seja rápido antes que outra pessoa compre.",
+                  text: "Seja rápido antes que outra pessoa compre",
                 },
-                { step: "04", text: "Receba em casa com entrega prioritária." },
+                { step: "04", text: "Receba em casa com entrega prioritária" },
               ].map((item, index) => (
                 <div
                   key={index}
@@ -112,8 +116,8 @@ const DispatchInfoScreen: React.FC = () => {
                     Preços Decrescentes
                   </h4>
                   <p className="text-[#64748B] text-sm md:text-base leading-relaxed">
-                    Quanto mais você espera, menor o preço fica. Mas cuidado com
-                    o estoque!
+                    Quanto mais você espera, menor o preço fica. Mas cuidado
+                    quem der o lance primeiro garante a compra.
                   </p>
                 </div>
                 <div className="absolute -bottom-4 -right-4 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity">
@@ -145,7 +149,7 @@ const DispatchInfoScreen: React.FC = () => {
                     Prioridade de Envio
                   </h4>
                   <p className="text-[#64748B] text-sm md:text-base leading-relaxed">
-                    Produtos no Despacho Rápido saem do armazém em menos de 12
+                    Produtos no Despacho Rápido são entregues em menos de 24
                     horas.
                   </p>
                 </div>
@@ -207,7 +211,8 @@ const DispatchInfoScreen: React.FC = () => {
                 </p>
                 <p className="text-[#64748B] text-sm md:text-base leading-relaxed">
                   Sim, cada produto tem um preço mínimo limite definido pelo
-                  vendedor. Se atingir esse valor, ele estabiliza.
+                  vendedor. Se atingir esse valor sem nenhum lance de compra,
+                  ele volta ao preço inicial.
                 </p>
               </div>
               <div className="space-y-2 md:space-y-4">
@@ -216,16 +221,10 @@ const DispatchInfoScreen: React.FC = () => {
                 </p>
                 <p className="text-[#64748B] text-sm md:text-base leading-relaxed">
                   Não. No sistema de Despacho, a prioridade é de quem finalizar
-                  o checkout primeiro. A agilidade é essencial.
+                  a compra primeiro. A agilidade é essencial.
                 </p>
               </div>
             </div>
-          </div>
-
-          <div className="flex justify-center pb-6 md:pb-8">
-            <TralloButton variant="primary" className="w-full">
-              Entendi, Quero Começar
-            </TralloButton>
           </div>
         </div>
       </main>
