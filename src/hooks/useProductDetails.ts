@@ -1,9 +1,10 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { searchBySlug } from "@/services/product.service";
 import { dispatchService } from "@/services/dispatch.service";
 import { checkoutFromProduct } from "@/services/checkout.service";
+import { deliveryService } from "@/services/delivery.service";
 import { SearchedProductDTO } from "@/types/product";
 import { DispatchStatusResponseDto } from "@/dtos/dispatches";
 import { PaymentMethod, PaymentMode } from "@/enums/payment";
@@ -24,6 +25,22 @@ export const useProductDetails = () => {
     const [paymentType, setPaymentType] = useState<"online" | "presencial">("online");
     const [paymentMethod, setPaymentMethod] = useState<"mcx" | "transfer">("mcx");
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [deliveryFee, setDeliveryFee] = useState<number>(0);
+
+    const fetchFees = useCallback(async () => {
+        if (!isAuthenticated) return;
+        try {
+            const res = await deliveryService.getMyShippingFee();
+            if (res.success) {
+                setDeliveryFee(res.data.shippingFee);
+            } else {
+                toast.error(res.message ?? "Erro ao buscar a taxa de entrega");
+            }
+        } catch (err: any) {
+            toast.error(err.message ?? 'Erro ao buscar a taxa de entrega');
+            console.error(err);
+        }
+    }, [isAuthenticated]);
 
     useEffect(() => {
         async function loadProduct() {
@@ -48,6 +65,12 @@ export const useProductDetails = () => {
     }, [slug]);
 
     useEffect(() => {
+        if (isAuthenticated) {
+            fetchFees();
+        }
+    }, [isAuthenticated, fetchFees]);
+
+    useEffect(() => {
         async function fetchDispatch() {
             if (product?.id && product.isDispatch) {
                 try {
@@ -68,12 +91,17 @@ export const useProductDetails = () => {
             ? Number(dispatchStatus.currentPrice)
             : Number(product?.price || 0);
 
-        const deliveryFee = paymentType === "presencial" ? 0 : 2500;
+        const currentDeliveryFee = paymentType === "presencial" ? 0 : deliveryFee;
         const serviceFee = basePrice * 0.035;
-        const total = basePrice + deliveryFee + serviceFee;
+        const total = basePrice + currentDeliveryFee + serviceFee;
 
-        return { subtotal: basePrice, deliveryFee, serviceFee, total };
-    }, [product, dispatchStatus, paymentType]);
+        return {
+            subtotal: basePrice,
+            deliveryFee: currentDeliveryFee,
+            serviceFee,
+            total
+        };
+    }, [product, dispatchStatus, paymentType, deliveryFee]);
 
     const handleBuyClick = () => {
         if (!isAuthenticated) {

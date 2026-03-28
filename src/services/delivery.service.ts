@@ -11,6 +11,10 @@ export const deliveryService = {
         });
     },
 
+    async getMyShippingFee(): Promise<ApiResponse<{ shippingFee: number }>> {
+        return  await http.get<{ shippingFee: number }>(endpoints.deliverers.getMyShippingFee,);
+    },
+
     async getAdminDeliveries(page: number, limit: number): Promise<ApiResponse<PaginatedDeliveriesDTO>> {
         return await http.get<PaginatedDeliveriesDTO>("/deliveries", {
             params: { page, limit }

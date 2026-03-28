@@ -65,6 +65,7 @@ export const endpoints = {
   deliverers: {
     confirmDelivery: (orderNumber: string) => `/deliveries/${orderNumber}/confirm`,
     deliveries: "/deliveries/my",
+    getMyShippingFee: "/deliveries/my-shipping-fee"
   },
   orders: {
     buyerOrders: "/orders/my/buyer",

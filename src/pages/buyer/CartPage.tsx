@@ -1,142 +1,35 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
+import React from "react";
+import PageHeader from "@/components/PageHeader";
+import CartItemCard from "@/components/CartItemCard";
+import CartTotalPanel from "@/components/CartTotalPanel";
 import PaymentChoiceModal from "@/components/PaymentChoiceModal";
 import CheckoutModal from "@/components/CheckoutModal";
 import EmptyState from "@/components/EmptyState";
-import {
-  updateCartItemQuantity,
-  removeFromCart,
-  clearCart,
-} from "@/services/cart.service";
-import { BASE_UPLOAD_URL } from "@/api/endpoints";
-import { checkoutFromCart } from "@/services/checkout.service";
-import { PaymentMethod, PaymentMode } from "@/enums/payment";
 import ConfirmAction from "@/components/ConfirmAction";
-import { useCart } from "@/hooks/use-cart";
 import LoaderAnimation from "@/components/Loader";
-import { CartItemDto } from "@/dtos/cart";
-import PageHeader from "@/components/PageHeader";
-import CartTotalPanel from "@/components/CartTotalPanel";
-import CartItemCard from "@/components/CartItemCard";
+import { useCartPage } from "@/hooks/useCartPage";
 
 const CartPage: React.FC = () => {
-  const navigate = useNavigate();
-  const { items: rawItems, loading, fetchCart, syncCartWithServer } = useCart();
-
-  const [modalType, setModalType] = useState<
-    "single" | "all" | "payment_choice" | "checkout" | null
-  >(null);
-  const [idToRemove, setIdToRemove] = useState<string | null>(null);
-  const [paymentType, setPaymentType] = useState<"online" | "presencial">(
-    "online",
-  );
-  const [paymentMethod, setPaymentMethod] = useState<"mcx" | "transfer">("mcx");
-
-  const formattedItems: CartItemDto[] = rawItems
-    .map((item: any) => ({
-      id: item.id,
-      name: item.product.name,
-      attr: item.product.description,
-      price: item.priceSnapshot,
-      qty: item.quantity,
-      image: `${BASE_UPLOAD_URL}/${item.product.coverImage}`,
-      availableQuantity: item.product.availableQuantity,
-    }))
-    .sort((a, b) => a.id.localeCompare(b.id));
-
-  useEffect(() => {
-    fetchCart();
-  }, [fetchCart]);
-
-  const updateQty = async (id: string, delta: number) => {
-    const item = formattedItems.find((i) => i.id === id);
-    if (!item) return;
-    const newQty = Math.max(1, item.qty + delta);
-    const res = await updateCartItemQuantity(id, newQty);
-    if (res.success) {
-      syncCartWithServer();
-    } else {
-      toast.error(res.message || "Erro ao atualizar quantidade.");
-    }
-  };
-
-  const handleOpenRemoveModal = (id: string) => {
-    setIdToRemove(id);
-    setModalType("single");
-  };
-
-  const handleConfirmAction = async () => {
-    if (modalType === "single" && idToRemove) {
-      try {
-        const res = await removeFromCart(idToRemove);
-        if (res.success) {
-          syncCartWithServer();
-          toast.success("Item removido.");
-        }
-      } catch (error) {
-        toast.error("Não foi possível remover o item.");
-      }
-    } else if (modalType === "all") {
-      try {
-        const res = await clearCart();
-        if (res.success) {
-          syncCartWithServer();
-          toast.success("Carrinho limpo com sucesso.");
-        }
-      } catch (error) {
-        toast.error("Erro ao limpar o carrinho.");
-      }
-    }
-    closeModal();
-  };
-
-  const handleConfirmCheckout = async () => {
-    try {
-      const mode =
-        paymentType === "online"
-          ? PaymentMode.ONLINE_PAYMENT
-          : PaymentMode.ONSITE_PAYMENT;
-      let method;
-      if (paymentType === "online") {
-        method =
-          paymentMethod === "mcx"
-            ? PaymentMethod.MULTICAIXA_EXPRESS
-            : PaymentMethod.REFERENCE;
-      }
-      const response = await checkoutFromCart({
-        paymentMode: mode,
-        paymentMethod: method,
-      });
-      if (response && response.success) {
-        toast.success("Pedido realizado com sucesso.");
-        syncCartWithServer();
-        navigate("/meus-pedidos", { state: { order: response.data } });
-        return response.data;
-      } else {
-        toast.error(response.message || "Erro ao processar o pedido.");
-      }
-    } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Erro ao finalizar checkout.",
-      );
-    }
-  };
-
-  const closeModal = () => {
-    setModalType(null);
-    setIdToRemove(null);
-  };
-
-  const subtotal = formattedItems.reduce(
-    (acc, item) => acc + item.price * item.qty,
-    0,
-  );
-  const deliveryFee = paymentType === "presencial" ? 0 : 2500;
-  const serviceFee = subtotal * 0.035;
-  const total = subtotal + deliveryFee + serviceFee;
-
-  const isClearingAll = modalType === "all";
+  const {
+    loading,
+    formattedItems,
+    modalType,
+    setModalType,
+    paymentType,
+    setPaymentType,
+    paymentMethod,
+    setPaymentMethod,
+    subtotal,
+    deliveryFee,
+    serviceFee,
+    total,
+    updateQty,
+    handleOpenRemoveModal,
+    handleConfirmAction,
+    handleConfirmCheckout,
+    closeModal,
+    isClearingAll,
+  } = useCartPage();
 
   return (
     <div className="min-h-screen bg-[#f6f5f8] dark:bg-[#141022] text-[#121118] dark:text-white pb-60">
@@ -203,6 +96,7 @@ const CartPage: React.FC = () => {
           />
         </div>
       )}
+
       {modalType === "checkout" && (
         <CheckoutModal
           paymentType={paymentType}
