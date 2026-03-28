@@ -6,7 +6,7 @@ import { VideoCard } from "@/components/VideoCard";
 const DispatchInfoScreen: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-50/50 font-inter overflow-x-hidden">
-      <PageHeader title="Como Funciona" showUser={true} />
+      <PageHeader title="Despacho Rápido" showUser={true} />
 
       <main className="relative pt-20 md:pt-24 pb-12 md:pb-16 px-4 md:px-6">
         <div className="max-w-5xl mx-auto">
@@ -29,7 +29,7 @@ const DispatchInfoScreen: React.FC = () => {
             </div>
 
             <h2 className="text-3xl md:text-5xl font-extrabold text-[#0F172A] tracking-tight leading-tight mb-4 md:mb-6 uppercase px-2">
-              Domine o <br />
+              Como Funciona o <br />
               <span className="text-[#6C3EF8]">Despacho Rápido</span>
             </h2>
             <p className="text-[#64748B] text-base md:text-xl max-w-2xl mx-auto leading-relaxed px-4">
@@ -41,12 +41,14 @@ const DispatchInfoScreen: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 mb-16 md:mb-24">
             <VideoCard
-              title="Parte 1: Como Comprar"
+              title="Como Funciona o Despacho Rápido"
               thumbnail="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=1000&auto=format&fit=crop"
+              videoSrc="/videos/generico-temporario.mp4"
             />
             <VideoCard
-              title="Parte 2: Garantir o Desconto"
+              title="Como Comprar"
               thumbnail="https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=1000&auto=format&fit=crop"
+              videoSrc="/videos/generico-temporario.mp4"
             />
           </div>
 
@@ -117,7 +119,7 @@ const DispatchInfoScreen: React.FC = () => {
                   </h4>
                   <p className="text-[#64748B] text-sm md:text-base leading-relaxed">
                     Quanto mais você espera, menor o preço fica. Mas cuidado
-                    quem der o lance primeiro garante a compra.
+                    quem der o lance primeiro garante a compra
                   </p>
                 </div>
                 <div className="absolute -bottom-4 -right-4 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity">
@@ -150,7 +152,7 @@ const DispatchInfoScreen: React.FC = () => {
                   </h4>
                   <p className="text-[#64748B] text-sm md:text-base leading-relaxed">
                     Produtos no Despacho Rápido são entregues em menos de 24
-                    horas.
+                    horas
                   </p>
                 </div>
                 <div className="absolute -bottom-4 -right-4 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity">
@@ -181,8 +183,8 @@ const DispatchInfoScreen: React.FC = () => {
                     Garantia Total
                   </h4>
                   <p className="text-[#64748B] text-sm md:text-base leading-relaxed">
-                    Todos os itens passam por uma curadoria rigorosa antes de
-                    entrar na live.
+                    Todos os produtos passam por uma verificação rigorosa antes de
+                    entrar em despacho
                   </p>
                 </div>
                 <div className="absolute -bottom-4 -right-4 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity">
@@ -212,7 +214,7 @@ const DispatchInfoScreen: React.FC = () => {
                 <p className="text-[#64748B] text-sm md:text-base leading-relaxed">
                   Sim, cada produto tem um preço mínimo limite definido pelo
                   vendedor. Se atingir esse valor sem nenhum lance de compra,
-                  ele volta ao preço inicial.
+                  ele volta ao preço inicial
                 </p>
               </div>
               <div className="space-y-2 md:space-y-4">
@@ -221,7 +223,7 @@ const DispatchInfoScreen: React.FC = () => {
                 </p>
                 <p className="text-[#64748B] text-sm md:text-base leading-relaxed">
                   Não. No sistema de Despacho, a prioridade é de quem finalizar
-                  a compra primeiro. A agilidade é essencial.
+                  a compra primeiro. A agilidade é essencial
                 </p>
               </div>
             </div>
