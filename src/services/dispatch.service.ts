@@ -16,7 +16,7 @@ export const dispatchService = {
         return await http.get<DispatchStatusResponseDto>(endpoints.dispatches.status(productId));
     },
 
-    async buy(data: CheckoutDispatchDto): Promise<ApiResponse<any>> {
+    async buyNow(data: CheckoutDispatchDto): Promise<ApiResponse<any>> {
         return await http.post<any>(endpoints.dispatches.buy, data);
     },
 };

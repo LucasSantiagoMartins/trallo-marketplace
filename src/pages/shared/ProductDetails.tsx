@@ -1,93 +1,37 @@
-import React, { useState, useEffect } from "react";
-import { useLocation, useParams, useNavigate } from "react-router-dom";
+import React from "react";
 import MobileLayout from "@/layouts/MobileLayout";
 import PageHeader from "@/components/PageHeader";
-import { SearchedProductDTO } from "@/types/product";
 import ProductImageGallery from "@/components/ProductImageGallery";
 import ProductDetailSellerInfo from "@/components/ProductDetailSellerInfo";
-import { checkoutFromProduct } from "@/services/checkout.service";
-import { searchBySlug } from "@/services/product.service";
-import { dispatchService } from "@/services/dispatch.service"; 
-import { DispatchStatusResponseDto } from "@/dtos/dispatches";
-import { PaymentMethod, PaymentMode } from "@/enums/payment";
-import { useAuth } from "@/context/AuthContext";
-import toast from "react-hot-toast";
-import { UserRole } from "@/enums/user";
 import ProductMainInfo from "@/components/ProductMainInfo";
 import ProductDescription from "@/components/ProductDescription";
-import { useProductGallery } from "@/hooks/useProductGallery";
 import ProductDetailModals from "@/components/ProductDetailModals";
 import EmptyState from "@/components/EmptyState";
+import { useProductGallery } from "@/hooks/useProductGallery";
+import { UserRole } from "@/enums/user";
+import { useProductDetails } from "@/hooks/useProductDetails";
 
 const ProductDetails: React.FC = () => {
-  const { slug } = useParams<{ slug?: string }>();
-  const location = useLocation();
-  const navigate = useNavigate();
-  const { user, isAuthenticated } = useAuth();
-
-  const [product, setProduct] = useState<SearchedProductDTO | null>(
-    (location.state?.product as SearchedProductDTO) || null,
-  );
-
-  const [dispatchStatus, setDispatchStatus] =
-    useState<DispatchStatusResponseDto | null>(null);
-
-  const [loading, setLoading] = useState(!product && !!slug);
-  const [modalType, setModalType] = useState<
-    "payment_choice" | "checkout" | "video" | "share" | null
-  >(null);
-  const [paymentType, setPaymentType] = useState<"online" | "presencial">(
-    "online",
-  );
-  const [paymentMethod, setPaymentMethod] = useState<"mcx" | "transfer">("mcx");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const {
+    product,
+    dispatchStatus,
+    loading,
+    modalType,
+    setModalType,
+    paymentType,
+    setPaymentType,
+    paymentMethod,
+    setPaymentMethod,
+    pricing,
+    handleBuyClick,
+    handleConfirmCheckout,
+    user,
+  } = useProductDetails();
 
   const allImages = [product?.coverImage, ...(product?.images || [])].filter(
     Boolean,
   ) as string[];
   const gallery = useProductGallery(allImages.length);
-
-  useEffect(() => {
-    async function loadProduct() {
-      if (product || !slug) {
-        setLoading(false);
-        return;
-      }
-      try {
-        setLoading(true);
-        const response = await searchBySlug(slug);
-        if (response?.success) {
-          const data = Array.isArray(response.data)
-            ? response.data[0]
-            : response.data;
-          if (data) setProduct(data);
-        }
-      } catch (error) {
-        console.error("Erro ao carregar produto:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadProduct();
-  }, [slug]);
-
-  // Efeito para buscar status do despacho
-  useEffect(() => {
-    async function fetchDispatch() {
-      if (product?.id && product.isDispatch) {
-        try {
-          const response = await dispatchService.getStatus(product.id);
-          console.log(response.message)
-          if (response?.success) {
-            setDispatchStatus(response.data);
-          }
-        } catch (error) {
-          console.error("Erro ao carregar status do despacho:", error);
-        }
-      }
-    }
-    fetchDispatch();
-  }, [product]);
 
   if (loading)
     return (
@@ -105,58 +49,14 @@ const ProductDetails: React.FC = () => {
       </MobileLayout>
     );
 
-  const handleConfirmCheckout = async () => {
-    if (isSubmitting || !isAuthenticated) {
-      !isAuthenticated && navigate("/entrar");
-      return;
-    }
-    try {
-      setIsSubmitting(true);
-      const mode =
-        paymentType === "online"
-          ? PaymentMode.ONLINE_PAYMENT
-          : PaymentMode.ONSITE_PAYMENT;
-      const method =
-        paymentType === "online"
-          ? paymentMethod === "mcx"
-            ? PaymentMethod.MULTICAIXA_EXPRESS
-            : PaymentMethod.REFERENCE
-          : undefined;
-
-      const response = await checkoutFromProduct(product.id, {
-        paymentMode: mode,
-        paymentMethod: method,
-      });
-      if (response?.success) {
-        toast.success("Pedido realizado com sucesso.");
-        navigate("/meus-pedidos", { state: { order: response.data } });
-      } else {
-        toast.error(response.message || "Erro ao processar checkout.");
-      }
-    } catch (error) {
-      toast.error("Erro ao conectar com o servidor.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  // Ajuste do preço para o cálculo do total (Prioriza o preço do despacho)
-  const subtotal = dispatchStatus
-    ? Number(dispatchStatus.currentPrice)
-    : Number(product.price || 0);
-
-  const deliveryFee = paymentType === "presencial" ? 0 : 2500;
-  const serviceFee = subtotal * 0.035;
-  const total = subtotal + deliveryFee + serviceFee;
-
   return (
     <MobileLayout>
       <PageHeader
         title="Detalhes do Produto"
         rightElement={
           <button
-            className="size-10 flex items-center justify-center bg-card rounded-full shadow-soft active:scale-90 transition-transform"
             onClick={() => setModalType("share")}
+            className="size-10 flex items-center justify-center bg-card rounded-full shadow-soft"
           >
             <span className="material-symbols-outlined text-foreground">
               share
@@ -172,7 +72,6 @@ const ProductDetails: React.FC = () => {
               images={allImages}
               currentIndex={gallery.currentImageIndex}
               productName={product.name}
-              category={product.category}
               onIndexChange={gallery.setCurrentImageIndex}
               onTouchStart={gallery.handleTouchStart}
               onTouchMove={gallery.handleTouchMove}
@@ -196,31 +95,22 @@ const ProductDetails: React.FC = () => {
           </div>
 
           <div className="px-4 space-y-4 relative z-20 -mt-10 lg:mt-0">
-            {/* Passando o status do despacho para o componente de info */}
             <ProductMainInfo
               product={product}
               dispatchStatus={dispatchStatus}
             />
-
             <ProductDetailSellerInfo seller={product.seller} />
             <ProductDescription
               description={product.description}
               details={product.details}
             />
+
             {user?.role === UserRole.BUYER && (
               <div className="pt-4">
                 <button
                   disabled={(product.stock?.availableQuantity || 0) <= 0}
-                  onClick={() =>
-                    isAuthenticated
-                      ? setModalType("payment_choice")
-                      : navigate("/entrar")
-                  }
-                  className={`w-full ${
-                    (product.stock?.availableQuantity || 0) <= 0
-                      ? "bg-slate-300"
-                      : "buy-gradient"
-                  } text-primary-foreground font-semibold text-lg rounded-full py-4 shadow-lg active:scale-[0.98] transition-transform`}
+                  onClick={handleBuyClick}
+                  className={`w-full ${(product.stock?.availableQuantity || 0) <= 0 ? "bg-slate-300" : "buy-gradient"} text-primary-foreground font-semibold text-lg rounded-full py-4 shadow-lg active:scale-[0.98] transition-transform`}
                 >
                   {(product.stock?.availableQuantity || 0) <= 0
                     ? "Esgotado"
@@ -237,9 +127,7 @@ const ProductDetails: React.FC = () => {
         product={product}
         paymentType={paymentType}
         paymentMethod={paymentMethod}
-        deliveryFee={deliveryFee}
-        serviceFee={serviceFee}
-        total={total}
+        pricing={pricing}
         closeModal={() => setModalType(null)}
         setPaymentType={setPaymentType}
         setModalType={setModalType}

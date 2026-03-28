@@ -11,9 +11,12 @@ interface ProductDetailModalsProps {
   product: SearchedProductDTO;
   paymentType: "online" | "presencial";
   paymentMethod: "mcx" | "transfer";
-  deliveryFee: number;
-  serviceFee: number;
-  total: number;
+  pricing: {
+    subtotal: number;
+    deliveryFee: number;
+    serviceFee: number;
+    total: number;
+  };
   closeModal: () => void;
   setPaymentType: (type: "online" | "presencial") => void;
   setModalType: (
@@ -28,17 +31,13 @@ const ProductDetailModals: React.FC<ProductDetailModalsProps> = ({
   product,
   paymentType,
   paymentMethod,
-  deliveryFee,
-  total,
+  pricing,
   closeModal,
   setPaymentType,
   setModalType,
   setPaymentMethod,
   handleConfirmCheckout,
 }) => {
-  const subtotal = product.price || 0;
-  const calculatedServiceFee = subtotal * 0.035;
-
   return (
     <>
       {modalType === "payment_choice" && (
@@ -56,10 +55,10 @@ const ProductDetailModals: React.FC<ProductDetailModalsProps> = ({
           paymentType={paymentType}
           paymentMethod={paymentMethod}
           setPaymentMethod={setPaymentMethod}
-          subtotal={subtotal}
-          deliveryFee={deliveryFee}
-          serviceFee={calculatedServiceFee}
-          total={total}
+          subtotal={pricing.subtotal}
+          deliveryFee={pricing.deliveryFee}
+          serviceFee={pricing.serviceFee}
+          total={pricing.total}
           onClose={() => setModalType(null)}
           onConfirm={handleConfirmCheckout}
         />
