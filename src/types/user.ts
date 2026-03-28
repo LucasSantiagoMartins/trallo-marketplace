@@ -27,3 +27,14 @@ export interface GetUsersResponseDTO {
   users: UserResponseDTO[];
   pagination: PaginationDTO
 }
+
+export interface RegisterDTO {
+  fullName: string;
+  phoneNumber: string;
+  email: string;
+  password: string;
+  role: "BUYER" | "SELLER";
+  address?: string;
+  latitude?: number;
+  longitude?: number;
+}

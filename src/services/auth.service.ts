@@ -2,6 +2,7 @@ import type { ApiResponse, AuthUser, MfaRequiredDto } from "@/types/api";
 import { http } from "../api/http";
 import { endpoints } from "../api/endpoints";
 import { VerificationType } from "@/enums/verification-type.enum";
+import { RegisterDTO } from "@/types/user";
 
 interface LoginPayload {
   identifier: string;
@@ -46,24 +47,12 @@ export async function verify2faCode(
 }
 
 export async function register(
-  fullName: string,
-  phoneNumber: string,
-  email: string,
-  password: string,
-  role: "BUYER" | "SELLER",
-  address?: string,
+  data: RegisterDTO
 ): Promise<ApiResponse<AuthUser>> {
   const res = await http.post<
     AuthUser,
-    RegisterPayload
-  >(endpoints.auth.register, {
-    fullName,
-    phoneNumber,
-    email,
-    password,
-    address,
-    role,
-  });
+    RegisterDTO
+  >(endpoints.auth.register, data);
 
   if (res.success && res.data) {
     localStorage.setItem("user_session", JSON.stringify(res.data));

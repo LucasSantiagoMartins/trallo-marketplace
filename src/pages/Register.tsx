@@ -1,90 +1,23 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
+import React from "react";
+import { Link } from "react-router-dom";
 import MobileLayout from "@/layouts/MobileLayout";
 import TralloInput from "@/components/TralloInput";
 import TralloButton from "@/components/TralloButton";
 import PasswordTooltip from "@/components/PasswordTooltip";
-import { register } from "@/services/auth.service";
-import { useAuth } from "@/context/AuthContext";
-
-type UserRole = "buyer" | "seller";
+import LocationPicker from "@/components/LocationPicker";
+import { useRegister } from "@/hooks/useRegister";
 
 const Register: React.FC = () => {
-  const [role, setRole] = useState<UserRole>("buyer");
-  const [loading, setLoading] = useState(false);
-  const [showTooltip, setShowTooltip] = useState(false);
-  const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    phoneNumber: "",
-    password: "",
-    address: "",
-  });
-  const { setUser } = useAuth();
-  const navigate = useNavigate();
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{6,}$/;
-    if (!passwordRegex.test(formData.password)) {
-      toast.error("A senha não cumpre todos os requisitos de segurança.");
-      return;
-    }
-
-    if (
-      !formData.fullName ||
-      !formData.email ||
-      !formData.password ||
-      !formData.phoneNumber
-    ) {
-      toast.error("Preencha os campos obrigatórios.");
-      return;
-    }
-
-    if (role === "buyer" && !formData.address) {
-      toast.error("O endereço é obrigatório para compradores.");
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const apiRole = role.toUpperCase() as "BUYER" | "SELLER";
-      const res = await register(
-        formData.fullName,
-        formData.phoneNumber,
-        formData.email,
-        formData.password,
-        apiRole,
-        formData.address || undefined,
-      );
-      if (res.success) {
-        toast.success(res.message || "Conta criada com sucesso.");
-        setUser({
-          id: res.data.id,
-          fullName: res.data.fullName,
-          role: res.data.role as any,
-          token: res.data.token,
-          secureLogin: false,
-          secureOperations: false,
-          isVerified: res.data.isVerified,
-        });
-        navigate("/");
-      } else {
-        toast.error(res.message || "Erro ao criar conta.");
-      }
-    } catch (err) {
-      toast.error(
-        err instanceof Error ? err.message : "Erro ao conectar ao servidor.",
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const updateField = (field: string) => (value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
+  const {
+    role,
+    setRole,
+    loading,
+    formData,
+    showTooltip,
+    setShowTooltip,
+    updateField,
+    handleSubmit,
+  } = useRegister();
 
   return (
     <MobileLayout className="bg-background">
@@ -114,51 +47,47 @@ const Register: React.FC = () => {
               onSubmit={handleSubmit}
               className="space-y-3 lg:space-y-4 w-full max-w-2xl mx-auto lg:max-w-none"
             >
-              <div>
-                <div className="grid grid-cols-2 gap-3 md:gap-4">
-                  <label className="relative cursor-pointer group">
-                    <input
-                      type="radio"
-                      name="user_role"
-                      checked={role === "buyer"}
-                      onChange={() => setRole("buyer")}
-                      className="peer sr-only"
-                    />
-                    <div className="flex flex-col items-center justify-center p-3 lg:p-2 rounded-xl border-2 border-border bg-card transition-all peer-checked:border-primary peer-checked:bg-primary/5">
-                      <span
-                        className={`material-symbols-outlined text-xl lg:text-lg ${role === "buyer" ? "text-primary" : "text-muted-foreground"}`}
-                      >
-                        shopping_bag
-                      </span>
-                      <span
-                        className={`text-[9px] lg:text-[10px] font-bold ${role === "buyer" ? "text-primary" : "text-muted-foreground"}`}
-                      >
-                        COMPRADOR
-                      </span>
-                    </div>
-                  </label>
-                  <label className="relative cursor-pointer group">
-                    <input
-                      type="radio"
-                      name="user_role"
-                      checked={role === "seller"}
-                      onChange={() => setRole("seller")}
-                      className="peer sr-only"
-                    />
-                    <div className="flex flex-col items-center justify-center p-3 lg:p-2 rounded-xl border-2 border-border bg-card transition-all peer-checked:border-primary peer-checked:bg-primary/5">
-                      <span
-                        className={`material-symbols-outlined text-xl lg:text-lg ${role === "seller" ? "text-primary" : "text-muted-foreground"}`}
-                      >
-                        storefront
-                      </span>
-                      <span
-                        className={`text-[9px] lg:text-[10px] font-bold ${role === "seller" ? "text-primary" : "text-muted-foreground"}`}
-                      >
-                        VENDEDOR
-                      </span>
-                    </div>
-                  </label>
-                </div>
+              <div className="grid grid-cols-2 gap-3 md:gap-4">
+                <label className="relative cursor-pointer group">
+                  <input
+                    type="radio"
+                    checked={role === "buyer"}
+                    onChange={() => setRole("buyer")}
+                    className="peer sr-only"
+                  />
+                  <div className="flex flex-col items-center justify-center p-3 lg:p-2 rounded-xl border-2 border-border bg-card transition-all peer-checked:border-primary peer-checked:bg-primary/5">
+                    <span
+                      className={`material-symbols-outlined text-xl lg:text-lg ${role === "buyer" ? "text-primary" : "text-muted-foreground"}`}
+                    >
+                      shopping_bag
+                    </span>
+                    <span
+                      className={`text-[9px] lg:text-[10px] font-bold ${role === "buyer" ? "text-primary" : "text-muted-foreground"}`}
+                    >
+                      COMPRADOR
+                    </span>
+                  </div>
+                </label>
+                <label className="relative cursor-pointer group">
+                  <input
+                    type="radio"
+                    checked={role === "seller"}
+                    onChange={() => setRole("seller")}
+                    className="peer sr-only"
+                  />
+                  <div className="flex flex-col items-center justify-center p-3 lg:p-2 rounded-xl border-2 border-border bg-card transition-all peer-checked:border-primary peer-checked:bg-primary/5">
+                    <span
+                      className={`material-symbols-outlined text-xl lg:text-lg ${role === "seller" ? "text-primary" : "text-muted-foreground"}`}
+                    >
+                      storefront
+                    </span>
+                    <span
+                      className={`text-[9px] lg:text-[10px] font-bold ${role === "seller" ? "text-primary" : "text-muted-foreground"}`}
+                    >
+                      VENDEDOR
+                    </span>
+                  </div>
+                </label>
               </div>
 
               <TralloInput
@@ -182,13 +111,13 @@ const Register: React.FC = () => {
                   label="Telemóvel"
                   type="tel"
                   placeholder="9XX..."
-                  icon="call"
+                  icon="person" // Alterado para person conforme seu TralloInput icon switch
                   value={formData.phoneNumber}
                   onChange={updateField("phoneNumber")}
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:gap-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:gap-3 gap-4 items-end">
                 <div className="relative">
                   <PasswordTooltip
                     password={formData.password}
@@ -206,12 +135,15 @@ const Register: React.FC = () => {
                     onBlur={() => setShowTooltip(false)}
                   />
                 </div>
-                <TralloInput
-                  label={`Endereço ${role === "seller" ? "(Opcional)" : ""}`}
-                  placeholder="Bairro, Rua..."
-                  icon="location_on"
-                  value={formData.address}
-                  onChange={updateField("address")}
+
+                <LocationPicker
+                  role={role}
+                  address={formData.address}
+                  onAddressChange={updateField("address")}
+                  onCoordsChange={(coords) => {
+                    updateField("latitude")(coords.lat);
+                    updateField("longitude")(coords.lng);
+                  }}
                 />
               </div>
 
