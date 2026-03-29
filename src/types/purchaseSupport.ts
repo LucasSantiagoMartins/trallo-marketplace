@@ -9,3 +9,11 @@ export const profileTranslation = {
     [PurchaseProfileEnum.VALUE_FOR_MONEY]: "Custo-Benefício",
     [PurchaseProfileEnum.HIGH_PERFORMANCE]: "Alta Performance",
 };
+
+export interface PurchaseRequestDto {
+  query: string;
+  investment: string;
+  profileId: PurchaseProfileEnum;
+  profileTitle: string;
+  profileDesc: string;
+}

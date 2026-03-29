@@ -1,14 +1,6 @@
-import { PurchaseProfileEnum } from "@/types/purchaseSupport";
+import { PurchaseRequestDto } from "@/types/purchaseSupport";
 import { useState } from "react";
 import toast from "react-hot-toast";
-
-export interface PurchaseRequestDto {
-  query: string;
-  investment: string;
-  profileId: PurchaseProfileEnum; // Usando o Enum aqui
-  profileTitle: string;
-  profileDesc: string;
-}
 
 export const usePurchaseSupport = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -16,7 +8,6 @@ export const usePurchaseSupport = () => {
   const sendPurchaseRequest = async (data: PurchaseRequestDto) => {
     setIsLoading(true);
     try {
-      // Limpa a formatação de milhar (pontos) antes de enviar para a API
       const payload = {
         ...data,
         investment: data.investment.replace(/\./g, ""),
@@ -28,9 +19,8 @@ export const usePurchaseSupport = () => {
 
       toast.success("Solicitação enviada com sucesso!");
       return true;
-    } catch (error) {
-      console.error("Erro ao enviar suporte de compra:", error);
-      toast.error("Ocorreu um erro ao processar sua solicitação.");
+    } catch (err) {
+      toast.error(err.message ?? "Ocorreu um erro ao processar sua solicitação");
       return false;
     } finally {
       setIsLoading(false);
@@ -39,7 +29,7 @@ export const usePurchaseSupport = () => {
 
   const validateInitialStep = (search: string) => {
     if (!search.trim()) {
-      toast("Informe o que precisas primeiro", { icon: "⚠️" });
+      toast("Informe o que precisas primeiro");
       return false;
     }
     return true;
