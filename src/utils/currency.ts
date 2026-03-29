@@ -11,3 +11,10 @@ export const formatPrice = (price: number, includeSymbol: boolean = true) => {
 
   return `${formatted} Kz`;
 };
+export const formatThousands = (val: string) => {
+  const raw = val.replace(/\D/g, "");
+  if (!raw) return "";
+  const cleanRaw = raw.replace(/^0+/, "");
+  if (!cleanRaw) return "";
+  return cleanRaw.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+};

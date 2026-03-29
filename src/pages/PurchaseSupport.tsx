@@ -4,19 +4,33 @@ import TralloInput from "@/components/TralloInput";
 import TralloButton from "@/components/TralloButton";
 import { VideoCard } from "@/components/VideoCard";
 import BudgetSelector from "@/components/BudgetSelector";
+import { usePurchaseSupport } from "@/hooks/usePurchaseSupport";
 
 const PurchaseSupport: React.FC = () => {
   const [search, setSearch] = useState("");
   const [showBudget, setShowBudget] = useState(false);
+  const { sendPurchaseRequest, validateInitialStep, isLoading } =
+    usePurchaseSupport();
 
-  const handleConfirm = (budget: string, profile: string) => {
-    const data = {
+  const handleOpenBudget = () => {
+    if (validateInitialStep(search)) {
+      setShowBudget(true);
+    }
+  };
+
+  const handleConfirm = async (budget: string, profile: any) => {
+    const success = await sendPurchaseRequest({
       query: search,
       investment: budget,
-      profile: profile,
-    };
-    console.log("Enviando para o suporte:", data);
-    setShowBudget(false);
+      profileId: profile.id,
+      profileTitle: profile.title,
+      profileDesc: profile.desc,
+    });
+
+    if (success) {
+      setShowBudget(false);
+      setSearch("");
+    }
   };
 
   return (
@@ -30,10 +44,10 @@ const PurchaseSupport: React.FC = () => {
             cuida do resto!
           </h1>
           <p className="text-base md:text-[14px] text-slate-600 max-w-2xl mx-auto font-medium">
-            Diz o que precisas como "Preciso montar um estudio de podcast" ou "Quero um
-            computador adequado para tarefas de escritório" e nós tratamos do
-            resto — selecionamos os melhores produtos para ti ou organizamos
-            tudo numa lista completa pronta a comprar.
+            Diz o que precisas como "Preciso montar um estudio de podcast" ou
+            "Quero um computador adequado para tarefas de escritório" e nós
+            tratamos do resto — selecionamos os melhores produtos para ti ou
+            organizamos tudo numa lista completa pronta a comprar.
           </p>
         </section>
 
@@ -53,7 +67,7 @@ const PurchaseSupport: React.FC = () => {
               <TralloButton
                 variant="primary"
                 className="uppercase tracking-wide text-sm px-4 md:px-10 h-full min-h-[58px]"
-                onClick={() => setShowBudget(true)}
+                onClick={handleOpenBudget}
               >
                 <span className="hidden md:inline">Usar Agora</span>
                 <span className="material-symbols-outlined md:hidden">
@@ -68,6 +82,7 @@ const PurchaseSupport: React.FC = () => {
               <BudgetSelector
                 onConfirm={handleConfirm}
                 onCancel={() => setShowBudget(false)}
+                isLoading={isLoading}
               />
             </div>
           )}
@@ -98,6 +113,7 @@ const PurchaseSupport: React.FC = () => {
           <BudgetSelector
             onConfirm={handleConfirm}
             onCancel={() => setShowBudget(false)}
+            isLoading={isLoading}
           />
         </div>
       )}

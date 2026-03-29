@@ -1,39 +1,57 @@
 import React, { useState } from "react";
 import TralloButton from "./TralloButton";
 import TralloInput from "./TralloInput";
+import { formatThousands } from "@/utils/currency";
+import { PurchaseProfileEnum, profileTranslation } from "@/types/purchaseSupport";
+interface Profile {
+  id: PurchaseProfileEnum;
+  title: string;
+  desc: string;
+  icon: string;
+}
 
 interface BudgetSelectorProps {
-  onConfirm: (budget: string, profile: string) => void;
+  onConfirm: (amount: string, profile: Profile) => void;
   onCancel: () => void;
+  isLoading?: boolean;
 }
 
 const BudgetSelector: React.FC<BudgetSelectorProps> = ({
   onConfirm,
   onCancel,
+  isLoading,
 }) => {
   const [amount, setAmount] = useState("");
-  const [selectedProfile, setSelectedProfile] = useState("custo-beneficio");
+  const [selectedProfileId, setSelectedProfileId] =
+    useState<PurchaseProfileEnum>(PurchaseProfileEnum.VALUE_FOR_MONEY);
 
-  const profiles = [
+  const profiles: Profile[] = [
     {
-      id: "melhor-preco",
-      title: "Melhor Preço",
+      id: PurchaseProfileEnum.BEST_PRICE,
+      title: profileTranslation[PurchaseProfileEnum.BEST_PRICE],
       desc: "Foco total em economia e produtos de entrada.",
       icon: "payments",
     },
     {
-      id: "custo-beneficio",
-      title: "Custo-Benefício",
+      id: PurchaseProfileEnum.VALUE_FOR_MONEY,
+      title: profileTranslation[PurchaseProfileEnum.VALUE_FOR_MONEY],
       desc: "O equilíbrio perfeito entre qualidade e preço justo.",
       icon: "balance",
     },
     {
-      id: "melhor-qualidade",
-      title: "Alta Performance",
+      id: PurchaseProfileEnum.HIGH_PERFORMANCE,
+      title: profileTranslation[PurchaseProfileEnum.HIGH_PERFORMANCE],
       desc: "Produtos premium para quem não abre mão do melhor.",
       icon: "star",
     },
   ];
+
+  const handleConfirm = () => {
+    const profile = profiles.find((p) => p.id === selectedProfileId);
+    if (profile) {
+      onConfirm(amount, profile);
+    }
+  };
 
   return (
     <div className="md:fixed md:inset-0 md:z-[100] md:flex md:items-center md:justify-center md:p-6 md:bg-slate-900/60 md:backdrop-blur-md animate-in fade-in duration-300">
@@ -47,10 +65,10 @@ const BudgetSelector: React.FC<BudgetSelectorProps> = ({
           </label>
           <TralloInput
             icon="sell"
-            placeholder="Ex: 500.000 Kz"
-            type="number"
+            placeholder="Ex: 500.000"
+            type="text" // 'text' permite os pontos sem bugar o input
             value={amount}
-            onChange={(val) => setAmount(val)}
+            onChange={(val) => setAmount(formatThousands(val))}
           />
         </div>
 
@@ -58,22 +76,27 @@ const BudgetSelector: React.FC<BudgetSelectorProps> = ({
           {profiles.map((p) => (
             <button
               key={p.id}
-              onClick={() => setSelectedProfile(p.id)}
+              disabled={isLoading}
+              onClick={() => setSelectedProfileId(p.id)}
               className={`p-5 md:p-6 rounded-2xl border-2 transition-all text-left flex flex-row md:flex-col items-center md:items-start gap-4 md:gap-5 ${
-                selectedProfile === p.id
+                selectedProfileId === p.id
                   ? "border-[#6c3ef8] bg-white shadow-md scale-[1.01] md:scale-[1.02]"
                   : "border-transparent bg-slate-100 hover:bg-slate-200"
               }`}
             >
               <span
                 className={`material-symbols-outlined !text-2xl md:!text-3xl ${
-                  selectedProfile === p.id ? "text-[#6c3ef8]" : "text-slate-400"
+                  selectedProfileId === p.id
+                    ? "text-[#6c3ef8]"
+                    : "text-slate-400"
                 }`}
               >
                 {p.icon}
               </span>
               <div className="flex-1">
-                <h4 className="font-bold text-slate-900 text-sm md:text-base">{p.title}</h4>
+                <h4 className="font-bold text-slate-900 text-sm md:text-base">
+                  {p.title}
+                </h4>
                 <p className="text-[11px] md:text-xs text-slate-500 mt-1 leading-tight md:leading-relaxed">
                   {p.desc}
                 </p>
@@ -87,13 +110,15 @@ const BudgetSelector: React.FC<BudgetSelectorProps> = ({
             variant="secondary"
             className="w-full md:flex-1 !bg-slate-200 !text-slate-600 border-none order-2 md:order-1 h-12 md:h-14"
             onClick={onCancel}
+            disabled={isLoading}
           >
             Cancelar
           </TralloButton>
           <TralloButton
             variant="primary"
             className="w-full md:flex-1 order-1 md:order-2 h-12 md:h-14"
-            onClick={() => onConfirm(amount, selectedProfile)}
+            onClick={handleConfirm}
+            isLoading={isLoading}
           >
             Confirmar Escolha
           </TralloButton>
