@@ -147,5 +147,8 @@ export const endpoints = {
   identityVerifications: {
     base: "/identity-verifications",
     review: (id: string) => `/identity-verifications/${id}/review`,
+  },
+  purchaseSupport: {
+    recommendations: "/purchase-support/recommendations",
   }
 };

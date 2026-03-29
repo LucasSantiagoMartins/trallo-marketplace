@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import TralloButton from "./TralloButton";
 import TralloInput from "./TralloInput";
 import { formatThousands } from "@/utils/currency";
-import { PurchaseProfileEnum, profileTranslation } from "@/types/purchaseSupport";
+import {  profileTranslation } from "@/types/purchase-support";
+import { PurchaseProfileEnum } from "@/enums/purchase-support.enums";
 interface Profile {
   id: PurchaseProfileEnum;
   title: string;

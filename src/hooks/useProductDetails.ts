@@ -9,12 +9,17 @@ import { SearchedProductDTO } from "@/types/product";
 import { DispatchStatusResponseDto } from "@/dtos/dispatches";
 import { PaymentMethod, PaymentMode } from "@/enums/payment";
 import toast from "react-hot-toast";
+import { UserRole } from "@/enums/user";
 
 export const useProductDetails = () => {
     const { slug } = useParams<{ slug?: string }>();
     const location = useLocation();
     const navigate = useNavigate();
     const { user, isAuthenticated } = useAuth();
+
+    const isBuyer = useMemo(() => {
+        return isAuthenticated && user?.role ===  UserRole.BUYER;
+    }, [isAuthenticated, user]);
 
     const [product, setProduct] = useState<SearchedProductDTO | null>(
         (location.state?.product as SearchedProductDTO) || null
@@ -28,7 +33,7 @@ export const useProductDetails = () => {
     const [deliveryFee, setDeliveryFee] = useState<number>(0);
 
     const fetchFees = useCallback(async () => {
-        if (!isAuthenticated) return;
+        if (!isBuyer) return;
         try {
             const res = await deliveryService.getMyShippingFee();
             if (res.success) {
@@ -40,7 +45,7 @@ export const useProductDetails = () => {
             toast.error(err.message ?? 'Erro ao buscar a taxa de entrega');
             console.error(err);
         }
-    }, [isAuthenticated]);
+    }, [isBuyer]);
 
     useEffect(() => {
         async function loadProduct() {
@@ -65,10 +70,10 @@ export const useProductDetails = () => {
     }, [slug]);
 
     useEffect(() => {
-        if (isAuthenticated) {
+        if (isBuyer) {
             fetchFees();
         }
-    }, [isAuthenticated, fetchFees]);
+    }, [isBuyer, fetchFees]);
 
     useEffect(() => {
         async function fetchDispatch() {
@@ -173,6 +178,7 @@ export const useProductDetails = () => {
         handleConfirmCheckout,
         user,
         isAuthenticated,
+        isBuyer,
         navigate
     };
 };

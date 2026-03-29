@@ -32,7 +32,6 @@ const ProductDetails: React.FC = () => {
     Boolean,
   ) as string[];
   const gallery = useProductGallery(allImages.length);
-
   if (loading)
     return (
       <MobileLayout>
@@ -70,6 +69,7 @@ const ProductDetails: React.FC = () => {
           <div className="relative group">
             <ProductImageGallery
               images={allImages}
+              category={product.category}
               currentIndex={gallery.currentImageIndex}
               productName={product.name}
               onIndexChange={gallery.setCurrentImageIndex}

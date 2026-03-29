@@ -72,12 +72,7 @@ const App = () => (
             <Route path="/criar-conta" element={<Register />} />
             <Route path="/esqueceu-senha" element={<ResetPassword />} />
             <Route path="/despachos" element={<DispatchInfoScreen />} />
-            <Route
-              path="/suporte-compra"
-              element={<SmartSupport />}
-            />
             <Route path="/sobre-nos" element={<AboutUs />} />
-
             <Route path="/detalhes-produto" element={<ProductDetails />} />
             <Route path="/notificacoes" element={<NotificationsScreen />} />
             <Route
@@ -90,10 +85,14 @@ const App = () => (
               path="/detalhes-produto/:slug"
               element={<ProductDetails />}
             />
+
+            {/* --- 3. ÁREA DO COMPRADOR (BUYER) --- */}
+
             <Route path="/perfil" element={<UserProfileScreen />} />
             <Route element={<ProtectedRoute allowedRoles={[UserRole.BUYER]} />}>
               <Route path="/editar-perfil" element={<EditProfile />} />
               <Route path="/alterar-senha" element={<ChangePassword />} />
+              <Route path="/suporte-compra" element={<SmartSupport />} />
               <Route path="/carrinho" element={<CartPage />} />
               <Route path="/meus-pedidos" element={<BuyerOrdersHistory />} />
               <Route path="/central-reclamacoes" element={<CreateDispute />} />

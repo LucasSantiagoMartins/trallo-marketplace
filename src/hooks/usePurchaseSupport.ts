@@ -1,43 +1,71 @@
-import { PurchaseRequestDto } from "@/types/purchaseSupport";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { PurchaseRequestDto, PurchaseSupportResponseDto } from "@/types/purchase-support";
+import { purchaseSupportService } from "@/services/purchase-support.service";
+
+// Variável global ao módulo para persistir os dados entre navegações
+let persistedRecommendations: PurchaseSupportResponseDto | null = null;
+let persistedSearch: string = "";
 
 export const usePurchaseSupport = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [recommendations, setRecommendations] = useState<PurchaseSupportResponseDto | null>(persistedRecommendations);
+  const [search, setSearch] = useState<string>(persistedSearch);
 
   const sendPurchaseRequest = async (data: PurchaseRequestDto) => {
     setIsLoading(true);
+
     try {
-      const payload = {
+      const cleanInvestment = data.investment.replace(/\D/g, "");
+
+      const response = await purchaseSupportService.getRecommendations({
         ...data,
-        investment: data.investment.replace(/\./g, ""),
-      };
+        investment: cleanInvestment,
+      });
 
-      console.log("Payload padronizado para API:", payload);
+      if (response.success && response.data) {
+        persistedRecommendations = response.data;
+        persistedSearch = data.query;
 
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+        setRecommendations(response.data);
+        setSearch(data.query);
 
-      toast.success("Solicitação enviada com sucesso!");
-      return true;
-    } catch (err) {
-      toast.error(err.message ?? "Ocorreu um erro ao processar sua solicitação");
+        toast.success("Encontramos as melhores opções!");
+        return true;
+      }
+
+      throw new Error(response.message || "Não encontramos produtos para esse perfil.");
+
+    } catch (err: any) {
+      toast.error(err.message || "Erro de conexão com o assistente.");
       return false;
     } finally {
       setIsLoading(false);
     }
   };
 
-  const validateInitialStep = (search: string) => {
-    if (!search.trim()) {
-      toast("Informe o que precisas primeiro");
+  const validateInitialStep = (val: string) => {
+    if (!val || val.trim().length < 3) {
+      toast.error("Descreve melhor o que precisas.");
       return false;
     }
     return true;
   };
 
+  const clearRecommendations = () => {
+    persistedRecommendations = null;
+    persistedSearch = "";
+    setRecommendations(null);
+    setSearch("");
+  };
+
   return {
     sendPurchaseRequest,
     validateInitialStep,
+    recommendations,
+    search,
+    setSearch,
+    clearRecommendations,
     isLoading,
   };
 };
