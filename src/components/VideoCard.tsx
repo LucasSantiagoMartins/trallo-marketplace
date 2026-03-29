@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import VideoPlayer from "./VideoPlayer";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -14,6 +15,43 @@ export const VideoCard: React.FC<VideoCardProps> = ({
   videoSrc,
 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    if (isPlaying) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isPlaying]);
+
+  const modalContent = (
+    <AnimatePresence>
+      {isPlaying && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-[10000] bg-black flex items-center justify-center"
+        >
+          <button
+            onClick={() => setIsPlaying(false)}
+            className="absolute top-6 right-6 z-[10001] w-12 h-12 bg-white/10 hover:bg-white/20 text-white rounded-full backdrop-blur-md flex items-center justify-center transition-colors"
+          >
+            <span className="material-symbols-outlined text-3xl">close</span>
+          </button>
+
+          <div className="w-full h-full">
+            <VideoPlayer src={videoSrc} />
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
 
   return (
     <>
@@ -50,27 +88,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({
         </div>
       </div>
 
-      <AnimatePresence>
-        {isPlaying && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[9999] bg-black flex items-center justify-center"
-          >
-            <button
-              onClick={() => setIsPlaying(false)}
-              className="absolute top-6 right-6 z-[10000] w-12 h-12 bg-white/10 hover:bg-white/20 text-white rounded-full backdrop-blur-md flex items-center justify-center transition-colors"
-            >
-              <span className="material-symbols-outlined text-3xl">close</span>
-            </button>
-
-            <div className="w-full h-full">
-              <VideoPlayer src={videoSrc} />
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {mounted && createPortal(modalContent, document.body)}
     </>
   );
 };

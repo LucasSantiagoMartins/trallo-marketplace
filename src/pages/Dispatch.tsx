@@ -1,6 +1,5 @@
 import React from "react";
 import PageHeader from "@/components/PageHeader";
-import TralloButton from "@/components/TralloButton";
 import { VideoCard } from "@/components/VideoCard";
 
 const DispatchInfoScreen: React.FC = () => {

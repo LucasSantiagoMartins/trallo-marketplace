@@ -10,6 +10,7 @@ interface CarouselSlide {
   buttonColor?: string;
   backgroundImage: string;
   backgroundColor: string;
+  link: string;
 }
 
 interface CarouselProps {
@@ -32,6 +33,10 @@ const Carousel: React.FC<CarouselProps> = ({ slides, activeIndex = 0 }) => {
       left: slideWidth * index,
       behavior: "smooth",
     });
+  };
+
+  const handleRedirect = (link: string) => {
+    window.location.href = link;
   };
 
   useEffect(() => {
@@ -112,6 +117,7 @@ const Carousel: React.FC<CarouselProps> = ({ slides, activeIndex = 0 }) => {
                   {slide.description}
                 </p>
                 <button
+                  onClick={() => handleRedirect(slide.link)}
                   className={`px-5 py-2.5 md:px-6 md:py-3 rounded-full text-xs md:text-sm font-black shadow-sm transition-all active:scale-95 ${
                     slide.buttonColor || "bg-white text-slate-900"
                   }`}
