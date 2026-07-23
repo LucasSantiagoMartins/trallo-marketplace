@@ -154,7 +154,7 @@ const SalesCenter: React.FC = () => {
               onClick={() =>
                 stat.isClickable && stat.path && navigate(stat.path)
               }
-              className={`relative bg-card p-4 sm:p-5 rounded-[2rem] border border-border shadow-soft flex items-center transition-all shrink-0 w-[300px] sm:w-auto snap-center mr-4 sm:mr-0 ${
+              className={`relative bg-card p-4 sm:p-5 rounded-2xl border border-border shadow-soft flex items-center transition-all shrink-0 w-[300px] sm:w-auto snap-center mr-4 sm:mr-0 ${
                 stat.isClickable
                   ? "cursor-pointer hover:border-primary/40 hover:shadow-md"
                   : ""

@@ -183,9 +183,7 @@ const Home: React.FC = () => {
                 />
               </button>
             </div>
-            <div className="relative z-10 w-24 h-24 md:w-32 md:h-32 bg-gradient-to-br from-white/40 to-[#6C3EF8]/10 rounded-[2rem] flex items-center justify-center border border-white/50 backdrop-blur-2xl rotate-6 shadow-xl">
-              <Sparkles size={48} className="text-[#6C3EF8] animate-pulse" />
-            </div>
+             
           </div>
         </div>
       </main>

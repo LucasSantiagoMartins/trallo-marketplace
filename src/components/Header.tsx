@@ -5,6 +5,7 @@ import { useCart } from "@/hooks/use-cart";
 import { BASE_UPLOAD_URL } from "@/api/endpoints";
 import { useNotifications } from "@/context/NotificationContext";
 import { ArrowLeft, ShoppingBag, ShoppingCart, Bell, User } from "lucide-react";
+import { UserRole } from "@/enums/user";
 
 interface HeaderProps {
   showBack?: boolean;
@@ -27,7 +28,8 @@ const Header: React.FC<HeaderProps> = ({
   const location = useLocation();
   const navigate = useNavigate();
 
-  const isSeller = user?.role === "SELLER";
+  const isSeller = user?.role === UserRole.SELLER;
+  const isBuyer = user?.role === UserRole.BUYER;
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -154,7 +156,6 @@ const Header: React.FC<HeaderProps> = ({
           </nav>
 
           <div className="flex items-center gap-2">
-            {/* Carrinho: Só aparece se estiver logado E não for vendedor */}
             {isAuthenticated && !isSeller && (
               <Link
                 to="/carrinho"
@@ -170,8 +171,7 @@ const Header: React.FC<HeaderProps> = ({
               </Link>
             )}
 
-            {/* Notificações: Só renderiza se o usuário estiver autenticado */}
-            {isAuthenticated && (
+            {isAuthenticated && !isBuyer && (
               <Link
                 to="/notificacoes"
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-card hover:bg-muted border border-border/5 transition-colors active:scale-95"
@@ -185,7 +185,6 @@ const Header: React.FC<HeaderProps> = ({
               </Link>
             )}
 
-            {/* Perfil */}
             <Link
               to="/perfil"
               onClick={(e) => handleProtectedNavigation(e, "/perfil")}
